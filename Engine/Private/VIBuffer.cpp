@@ -173,14 +173,14 @@ void CVIBuffer::Free()
 {
 	__super::Free();
 
-	for (auto& pPassDesc : m_PassesDesc)
+	if (false == m_isCloned) // if, onriginal 
 	{
-		Safe_Release(pPassDesc->pInputlayout);
-		Safe_Release(pPassDesc->pPass);
-	}
+		for (auto& pPassDesc : m_PassesDesc)
+		{
+			Safe_Release(pPassDesc->pInputlayout);
+			Safe_Release(pPassDesc->pPass);
+		}
 
-	if (false == m_isCloned)
-	{
 		Safe_Delete_Array(m_pVertices);
 		Safe_Delete_Array(m_pPrimitiveIndices);
 

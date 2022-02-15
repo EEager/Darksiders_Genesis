@@ -30,6 +30,15 @@ protected:
 	CAMERADESC					m_CameraDesc;
 	class CTransform*			m_pTransform = nullptr;	
 
+public:// Used in ImGUI
+	CTransform* Get_Camera_Transform() { return m_pTransform; }
+	void Set_Camera_Speed(_float speed) {
+		m_CameraDesc.TransformDesc.fSpeedPerSec = speed;
+		if (m_pTransform)
+			m_pTransform->Set_TransformDesc(m_CameraDesc.TransformDesc);
+	}
+	const CAMERADESC Get_Camera_Desc() const { return m_CameraDesc; }
+
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void Free() override;

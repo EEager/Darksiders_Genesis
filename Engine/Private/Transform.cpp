@@ -26,9 +26,14 @@ void CTransform::Set_TransformDesc(const TRANSFORMDESC & TransformDesc)
 	m_TransformDesc = TransformDesc;
 }
 
-_vector CTransform::Get_State(STATE eState)
+_vector CTransform::Get_State_Vec(STATE eState)
 {
 	return XMLoadFloat4((_float4*)&m_WorldMatrix.m[eState]);
+}
+
+_float4 CTransform::Get_State_Flt(STATE eState)
+{
+	return *(_float4*)&m_WorldMatrix.m[eState];
 }
 
 HRESULT CTransform::NativeConstruct_Prototype()

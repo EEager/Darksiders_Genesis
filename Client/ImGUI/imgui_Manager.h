@@ -55,8 +55,15 @@ public:
 private:
 	void ShowMainControlWindow(_float fDeltaTime);
 	HRESULT Open_Level(LEVEL eStartID);
-
 private:
-	static bool show_demo_window;
+	static bool m_bShow_demo_window;
+	static bool m_bshow_camera_window;
+	static bool m_bshow_gameobject_control_window;
+	static bool m_bshow_editor_window;
+	int m_iNextLevel = 0;
 
+
+	// ==========================================
+	// Camera Control Window
+	void ShowCameraControlWindow();
 };

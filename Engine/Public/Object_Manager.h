@@ -26,6 +26,9 @@ public:
 	_int LateTick(_float fTimeDelta);
 	HRESULT Clear_LevelLayers(_uint iLevelIndex);
 
+public: // Used in ImGUI
+	list<CGameObject*>* Get_GameObject_CloneList(const _tchar* pLayerTag, int iLevelIndex = -1);
+
 private:
 	/* 원형객체들을 저장한다. */
 	unordered_map<const _tchar*, class CGameObject*>			m_Prototypes;

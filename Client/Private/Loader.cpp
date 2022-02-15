@@ -55,7 +55,7 @@ HRESULT CLoader::Loading_ForLogoLevel()
 	/* 로고 레벨에 필요한 객체들의 원형을 생성한다. */
 
 
-	wsprintf(m_szLoading, TEXT("로딩이 완료되었습니다. "));
+	wsprintf(m_szLoading, TEXT("LEVEL_LOGO 로딩이 완료되었습니다. "));
 
 	m_isFinished = true;
 
@@ -108,7 +108,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CModel::Create(m_pDevice, m_pDeviceContext, TEXT(""), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.FBX"))))
 		return E_FAIL;
 
-	wsprintf(m_szLoading, TEXT("로딩이 완료되었습니다. "));
+	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY 로딩이 완료되었습니다. "));
 
 
 	m_isFinished = true;

@@ -36,9 +36,14 @@ HRESULT CObject_Manager::Reserve_Container(_uint iNumLevels)
 
 HRESULT CObject_Manager::Add_Prototype(const _tchar * pPrototypeTag, CGameObject * pPrototype)
 {
-	if (nullptr == pPrototype ||
-		nullptr != Find_Prototype(pPrototypeTag))
+	if (nullptr == pPrototype)
 		return E_FAIL;
+
+	if (nullptr != Find_Prototype(pPrototypeTag))
+	{
+		Safe_Release(pPrototype);
+		return S_OK;
+	}
 
 	m_Prototypes.insert(PROTOTYPES::value_type(pPrototypeTag, pPrototype));
 
@@ -119,6 +124,37 @@ HRESULT CObject_Manager::Clear_LevelLayers(_uint iLevelIndex)
 	m_pLayers[iLevelIndex].clear();
 
 	return S_OK;
+}
+
+list<CGameObject*>* CObject_Manager::Get_GameObject_CloneList(const _tchar* pLayerTag, int iLevelIndex)
+{
+	if (iLevelIndex >= (int)m_iNumLevels)
+		return nullptr;
+
+	// iLevelIndex == -1 인 경우, 레벨 전부 순회하며 pLayerTag에 해당하는 CLayer의 List를 리턴한다. 
+	if (iLevelIndex == -1)
+	{
+		for (_uint i = 0; i < m_iNumLevels; i++)
+		{
+			auto	iterFind = find_if(m_pLayers[i].begin(), m_pLayers[i].end(), CTagFinder(pLayerTag));
+			if (iterFind != m_pLayers[i].end())
+			{
+				return iterFind->second->Get_List_Adr();
+			}
+		}
+	}
+	// iLevelIndex != -1 인 경우, 해당 레벨 정보만 가져온다.
+	else
+	{
+		auto	iterFind = find_if(m_pLayers[iLevelIndex].begin(), m_pLayers[iLevelIndex].end(), CTagFinder(pLayerTag));
+		if (iterFind != m_pLayers[iLevelIndex].end())
+		{
+			return iterFind->second->Get_List_Adr();
+
+		}
+	}
+
+	return nullptr;
 }
 
 CGameObject * CObject_Manager::Find_Prototype(const _tchar * pPrototypeTag)
