@@ -12,6 +12,8 @@
 using namespace DirectX;
 
 
+#include <iostream>
+
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
@@ -33,8 +35,9 @@ using namespace std;
 // -----------------------
 //	ImGUI
 // -----------------------
+#ifdef _DEBUG
 #define USE_IMGUI
-
+#endif
 
 
 #ifndef USE_IMGUI

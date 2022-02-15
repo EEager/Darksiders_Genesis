@@ -14,3 +14,12 @@ using namespace Client;
 extern HINSTANCE g_hInst;
 extern HWND g_hWnd;
 
+// ====================================
+// 콘솔 디버깅 추가
+#ifdef _DEBUG
+#ifdef UNICODE
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#else
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
+#endif

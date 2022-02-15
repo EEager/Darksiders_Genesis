@@ -1,0 +1,6 @@
+ignore에 추가해도 이미 git에서 관리되고 있으면 아래 명령어를 통해
+cached를 지워야한다. 
+
+## 파일 이라면 git rm --cached test.txt 
+## 전체파일 이라면 git rm --cached *.txt 
+## 폴더 라면 git rm --cached test/ -r

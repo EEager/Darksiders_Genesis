@@ -66,4 +66,14 @@ private:
 	// ==========================================
 	// Camera Control Window
 	void ShowCameraControlWindow();
+
+
+	// ===========================================
+	// Key
+	void ImGUI_Key(_float fTimeDelta);
+
+	// ===========================================
+	// Save and Load
+	wstring SaveFilePath();
+	wstring LoadFilePath();
 };

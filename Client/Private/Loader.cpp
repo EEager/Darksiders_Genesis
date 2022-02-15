@@ -98,15 +98,15 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 	
 
-	/* For.Prototype_Component_Model_Player */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), 
-		CModel::Create(m_pDevice, m_pDeviceContext, TEXT(""), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx"))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Player */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), 
+	//	CModel::Create(m_pDevice, m_pDeviceContext, TEXT(""), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx"))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Model_Fork*/
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
-		CModel::Create(m_pDevice, m_pDeviceContext, TEXT(""), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.FBX"))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Fork*/
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, TEXT(""), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.FBX"))))
+	//	return E_FAIL;
 
 	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY 로딩이 완료되었습니다. "));
 

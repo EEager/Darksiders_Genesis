@@ -6,6 +6,10 @@
 #include "GameInstance.h"
 #include "MainApp.h"
 
+#ifdef _DEBUG
+#include <vld.h>
+#endif
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
