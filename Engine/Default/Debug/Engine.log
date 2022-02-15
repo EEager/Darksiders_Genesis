@@ -1,0 +1,12 @@
+﻿  Timer_Manager.cpp
+  Timer.cpp
+  Graphic_Device.cpp
+d:\burger\122\framework\engine\private\graphic_device.cpp(43): warning C4244: '=': 'Engine::_uint'에서 'FLOAT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\burger\122\framework\engine\private\graphic_device.cpp(44): warning C4244: '=': 'Engine::_uint'에서 'FLOAT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  Base.cpp
+  코드를 생성하고 있습니다...
+     D:\Burger\122\Framework\Debug\Engine.lib 라이브러리 및 D:\Burger\122\Framework\Debug\Engine.exp 개체를 생성하고 있습니다.
+Graphic_Device.obj : error LNK2019: _D3D11CreateDevice@40 외부 기호(참조 위치: "public: long __thiscall Engine::CGraphic_Device::Ready_Graphic_Device(struct HWND__ *,enum Engine::CGraphic_Device::WINMODE,unsigned int,unsigned int,struct ID3D11Device * *,struct ID3D11DeviceContext * *)" (?Ready_Graphic_Device@CGraphic_Device@Engine@@QAEJPAUHWND__@@W4WINMODE@12@IIPAPAUID3D11Device@@PAPAUID3D11DeviceContext@@@Z) 함수)에서 확인하지 못했습니다.
+D:\Burger\122\Framework\Debug\Engine.dll : fatal error LNK1120: 1개의 확인할 수 없는 외부 참조입니다.

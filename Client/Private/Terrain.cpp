@@ -1,0 +1,219 @@
+#include "stdafx.h"
+#include "..\public\Terrain.h"
+
+#include "GameInstance.h"
+
+
+CTerrain::CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CGameObject(pDevice, pDeviceContext)
+{
+}
+
+CTerrain::CTerrain(const CTerrain & rhs)
+	: CGameObject(rhs)
+{
+}
+
+HRESULT CTerrain::NativeConstruct_Prototype()
+{	
+
+	return S_OK;
+}
+
+HRESULT CTerrain::NativeConstruct(void * pArg)
+{
+	if (SetUp_Component())
+		return E_FAIL;
+
+	if (FAILED(Create_FilterTexture()))
+		return E_FAIL;
+
+	
+
+	return S_OK;
+}
+
+_int CTerrain::Tick(_float fTimeDelta)
+{
+	return _int();
+}
+
+_int CTerrain::LateTick(_float fTimeDelta)
+{
+	if (nullptr == m_pRendererCom)
+		return -1;
+	
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		return 0;
+
+	return _int();
+}
+
+HRESULT CTerrain::Render()
+{
+	if (FAILED(SetUp_ConstantTable()))
+		return E_FAIL;
+
+	/* 장치에 월드변환 행렬을 저장한다. */
+
+	m_pVIBufferCom->Render(0);
+
+	return S_OK;
+}
+
+HRESULT CTerrain::SetUp_Component()
+{
+	/* For.Com_Transform */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+		return E_FAIL;
+
+	/* For.Com_Renderer*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+		return E_FAIL;
+
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+		return E_FAIL;
+	
+	/* For.Com_Texture*/
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
+		return E_FAIL;
+
+	/* For.Com_Filter */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Filter"), TEXT("Com_Filter"), (CComponent**)&m_pTextureCom[TYPE_FILTER])))
+		return E_FAIL;
+
+	/* For.Com_Brush*/
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Brush"), TEXT("Com_Brush"), (CComponent**)&m_pTextureCom[TYPE_BRUSH])))
+		return E_FAIL;
+
+	
+
+	return S_OK;
+}
+
+HRESULT CTerrain::SetUp_ConstantTable()
+{
+	if (nullptr == m_pVIBufferCom)
+		return E_FAIL;
+
+	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
+
+	m_pTransformCom->Bind_OnShader(m_pVIBufferCom, "g_WorldMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIBufferCom, "g_ViewMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIBufferCom, "g_ProjMatrix");
+
+
+
+	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
+	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
+	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
+	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
+	m_pVIBufferCom->Set_RawValue("g_vLightSpecular", &LightDesc.vSpecular, sizeof(_float4));
+
+	_float4			vCamPosition;	
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+
+	if (FAILED(m_pTextureCom[TYPE_DIFFUSE]->SetUp_OnShader(m_pVIBufferCom, "g_SourTexture", 0)))
+		return E_FAIL;	
+	if (FAILED(m_pTextureCom[TYPE_DIFFUSE]->SetUp_OnShader(m_pVIBufferCom, "g_DestTexture", 1)))
+		return E_FAIL;
+	if (FAILED(m_pTextureCom[TYPE_FILTER]->SetUp_OnShader(m_pVIBufferCom, "g_FilterTexture")))
+		return E_FAIL;
+	if (FAILED(m_pTextureCom[TYPE_BRUSH]->SetUp_OnShader(m_pVIBufferCom, "g_BrushTexture")))
+		return E_FAIL;
+	// m_pVIBufferCom->Set_ShaderResourceView("g_FilterTexture", pSRV);
+
+	if (FAILED(m_pVIBufferCom->Set_RawValue("g_vBrushPosition", &_float4(10.f, 0.f, 10.f, 1.f), sizeof(_float4))))
+		return E_FAIL;
+	_float		fRange = 5.f;
+	if (FAILED(m_pVIBufferCom->Set_RawValue("g_fRange", &fRange, sizeof(_float))))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CTerrain::Create_FilterTexture()
+{
+	DirectX::ScratchImage		ScratchImage;
+
+	if (FAILED(ScratchImage.Initialize2D(DXGI_FORMAT_B8G8R8A8_UNORM, 128, 128, 1, 1)))
+		return E_FAIL;	
+
+
+	const DirectX::Image*	pImage = ScratchImage.GetImage(0, 0, 0);
+
+	for (_uint i = 0; i < 128; ++i)
+	{
+		for (_uint j = 0; j < 128; ++j)
+		{
+			_uint iIndex = i * 128 + j;			
+
+			if(j < 64)
+				((_uint*)pImage->pixels)[iIndex] = D3D11COLOR_ARGB(255, 0, 0, 0);
+			else
+				((_uint*)pImage->pixels)[iIndex] = D3D11COLOR_ARGB(255, 255, 255, 255);
+		}
+	}
+	
+
+	ID3D11Resource*			pTextureResource = nullptr;
+
+	if (FAILED(DirectX::CreateTexture(m_pDevice, ScratchImage.GetImages(), ScratchImage.GetImageCount(), ScratchImage.GetMetadata(), &pTextureResource)))
+		return E_FAIL;	
+
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource, nullptr, &pSRV)))
+		return E_FAIL;
+
+	if (FAILED(DirectX::SaveToTGAFile(*ScratchImage.GetImage(0, 0, 0), TEXT("../Bin/Test.tga"), nullptr)))
+		return E_FAIL;
+	
+	
+
+	return S_OK;
+}
+
+CTerrain * CTerrain::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CTerrain*		pInstance = new CTerrain(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CTerrain");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+
+CGameObject * CTerrain::Clone(void* pArg)
+{
+	CTerrain*		pInstance = new CTerrain(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CTerrain");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CTerrain::Free()
+{
+
+	__super::Free();
+
+	for (_uint i = 0; i < TYPE_END; ++i)
+		Safe_Release(m_pTextureCom[i]);
+
+	Safe_Release(m_pTransformCom);	
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pVIBufferCom);
+}

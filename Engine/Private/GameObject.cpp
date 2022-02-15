@@ -1,0 +1,97 @@
+#include "..\public\GameObject.h"
+#include "Component.h"
+#include "GameInstance.h"
+
+CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: m_pDeviceContext(pDeviceContext)
+	, m_pDevice(pDevice)
+{
+	Safe_AddRef(m_pDeviceContext);
+	Safe_AddRef(m_pDevice);
+
+}
+
+CGameObject::CGameObject(const CGameObject & rhs)
+	: m_pDeviceContext(rhs.m_pDeviceContext)
+	, m_pDevice(rhs.m_pDevice)
+{
+	Safe_AddRef(m_pDeviceContext);
+	Safe_AddRef(m_pDevice);
+}
+
+CComponent * CGameObject::Get_ComponentPtr(const _tchar * pComponentTag)
+{
+	auto	iter = find_if(m_Components.begin(), m_Components.end(), CTagFinder(pComponentTag));
+	if (iter == m_Components.end())
+		return nullptr;
+
+	return iter->second;	
+}
+
+HRESULT CGameObject::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CGameObject::NativeConstruct(void* pArg)
+{
+	return S_OK;
+}
+
+_int CGameObject::Tick(_float fTimeDelta)
+{
+	return _int();
+}
+
+_int CGameObject::LateTick(_float fTimeDelta)
+{
+	return _int();
+}
+
+HRESULT CGameObject::Render()
+{
+	return S_OK;
+}
+
+
+HRESULT CGameObject::Add_Component(_uint iLevelIndex, const _tchar * pPrototypeTag, const _tchar * pComponentTag, CComponent ** ppOut, void * pArg)
+{
+	CGameInstance*	pGameInstance = GET_INSTANCE(CGameInstance);
+
+	CComponent*		pComponent = pGameInstance->Clone_Component(iLevelIndex, pPrototypeTag, pArg);
+	if (nullptr == pComponent)
+		return E_FAIL;
+
+	if (NULL == Find_Component(pComponentTag))
+		m_Components.insert(COMPONENTS::value_type(pComponentTag, pComponent));
+
+	*ppOut = pComponent;
+
+	Safe_AddRef(pComponent);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+CComponent * CGameObject::Find_Component(const _tchar * pComponentTag)
+{
+	auto	iter = find_if(m_Components.begin(), m_Components.end(), CTagFinder(pComponentTag));
+	if (iter == m_Components.end())
+		return nullptr;
+
+	return iter->second;
+}
+
+void CGameObject::Free()
+{
+	Safe_Release(m_pDeviceContext);
+	Safe_Release(m_pDevice);
+
+	for (auto& Pair : m_Components)
+		Safe_Release(Pair.second);
+
+	m_Components.clear();
+
+
+}
