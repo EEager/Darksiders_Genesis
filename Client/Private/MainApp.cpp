@@ -48,9 +48,12 @@ HRESULT CMainApp::NativeConstruct()
 _int CMainApp::Tick(_float fTimeDelta)
 {
 #if defined(USE_IMGUI)
-	CImguiManager::GetInstance()->Tick(fTimeDelta);
-#endif
+	_float dt = CImguiManager::GetInstance()->Get_SpeedFactor() * fTimeDelta;
+	CImguiManager::GetInstance()->Tick(dt);
+	m_pGameInstance->Tick_Engine(dt);
+#else
 	m_pGameInstance->Tick_Engine(fTimeDelta);
+#endif
 
 
 	return _int();

@@ -13,8 +13,9 @@
 #include <shobjidl.h>  // Ifileopendialog 관련 cominterface 들어있는거
 #include <Shlwapi.h> // 초기 경로 얻어올때 사용하자
 
-bool CImguiManager::m_bShow_demo_window = true;
-bool CImguiManager::m_bshow_camera_window = false;
+bool CImguiManager::m_bShow_demo_window = false;
+bool CImguiManager::m_bshow_camera_window = true;
+bool CImguiManager::m_bShow_Simulation_Speed = false;
 bool CImguiManager::m_bshow_gameobject_control_window = false;
 bool CImguiManager::m_bshow_editor_window = false;
 
@@ -188,20 +189,21 @@ wstring CImguiManager::LoadFilePath()
 }
 
 
-
 // ------------------------------------------------------------------------------
 // Tick, Render, Init, Release
 
 void CImguiManager::Tick(_float fTimeDelta)
 {
+	// Check Key First Before, m_bImGUIEnable
+	ImGUI_Key(fTimeDelta);
+
+	if (!m_bImGUIEnable)
+		return;
+
 	// Start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
-
-	// ImGUI_Key(fTimeDelta);
-	ImGUI_Key(fTimeDelta);
 
 	// Main Window 
 	ShowMainControlWindow(fTimeDelta);
@@ -212,10 +214,16 @@ void CImguiManager::Tick(_float fTimeDelta)
 
 	// Camera Window
 	ShowCameraControlWindow();
+
+	// Speed Factor
+	ShowSpeedFactorControlWindow();
 }
 
 void CImguiManager::Render()
 {
+	if (!m_bImGUIEnable)
+		return;
+	
 	// Rendering
 	ImGui::EndFrame();
 	ImGui::Render();
@@ -270,7 +278,7 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Begin("Main Control");
 	ImGui::Text("Debugging Stuff: (hover over me~)");
 	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("F1:On/Off, ESC:CursorOn/CursorOff");
+		ImGui::SetTooltip("F2:On/Off, ESC:CursorOn/CursorOff");
 
 	ImGui::BulletText("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
@@ -303,14 +311,6 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 			m_iNextLevel = curLevel;
 	}
 
-	// =========================================
-	// 카메라 빼고 다 멈추자
-	if (ImGui::Button("Play"))
-		;// m_pGameInstance->StopAllTickWithOutCamera(false);
-	ImGui::SameLine();
-	if (ImGui::Button("Stop"))
-		; //m_pGameInstance->StopAllTickWithOutCamera(true);
-
 
 	// ====================================
 	// GUI 컨트롤 
@@ -318,6 +318,7 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Text("Show GUI Stuff:");
 	ImGui::Checkbox("Demo Control Window", &m_bShow_demo_window);      // Edit  bools storing our window open/close state
 	ImGui::Checkbox("Camera Control Window", &m_bshow_camera_window);
+	ImGui::Checkbox("Simulation Speed Factor", &m_bShow_Simulation_Speed);
 	ImGui::Checkbox("GameObject Manager Window", &m_bshow_gameobject_control_window);
 	ImGui::Checkbox("Editor Window", &m_bshow_editor_window);
 
@@ -364,7 +365,7 @@ void CImguiManager::ShowCameraControlWindow()
 	float f0 = pCamera->Get_Camera_Desc().TransformDesc.fSpeedPerSec;
 	bool speedDirty = false;
 
-	dCheck(ImGui::InputFloat("Camera Move Speed", &f0, 1.f), speedDirty);
+	dCheck(ImGui::InputFloat("Speed", &f0, 1.f), speedDirty);
 	if (speedDirty)
 		pCamera->Set_Camera_Speed(f0);
 
@@ -480,8 +481,34 @@ void CImguiManager::ShowCameraControlWindow()
 	ImGui::End(); // "Camera Control"
 }
 
+void CImguiManager::ShowSpeedFactorControlWindow()
+{
+	if (!m_bShow_Simulation_Speed)
+		return;
+
+	ImGui::Begin("Simulation Speed");
+	ImGui::SliderFloat("Simulation Speed Factor", &m_fSpeedFactor, 0.0f, 4.0f);
+	// =========================================
+	// 카메라 빼고 다 멈추자
+	if (ImGui::Button("Play"))
+		;// m_pGameInstance->StopAllTickWithOutCamera(false);
+	ImGui::SameLine();
+	if (ImGui::Button("Stop"))
+		; //m_pGameInstance->StopAllTickWithOutCamera(true);
+	ImGui::End();
+}
+
 void CImguiManager::ImGUI_Key(_float fTimeDelta)
 {
+	if (CInput_Device::GetInstance()->Key_Down(DIK_F2))
+	{
+		m_bImGUIEnable = !m_bImGUIEnable;
+		if (m_bImGUIEnable)
+			EnableCursor();
+		else
+			DisableCursor();
+	}
+
 	if (CInput_Device::GetInstance()->Key_Down(DIK_ESCAPE))
 	{
 		m_bCursorEnable = !m_bCursorEnable;

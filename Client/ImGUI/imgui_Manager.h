@@ -60,20 +60,32 @@ private:
 	static bool m_bshow_camera_window;
 	static bool m_bshow_gameobject_control_window;
 	static bool m_bshow_editor_window;
+	static bool m_bShow_Simulation_Speed;
 	int m_iNextLevel = 0;
 
 
 	// ==========================================
 	// Camera Control Window
+private:
 	void ShowCameraControlWindow();
+
+	// ===========================================
+	// Speed Factor
+private:
+	void ShowSpeedFactorControlWindow();
+	_float m_fSpeedFactor = 1.f;
+public:
+	_float Get_SpeedFactor() { return m_fSpeedFactor; }
 
 
 	// ===========================================
 	// Key
+private:
 	void ImGUI_Key(_float fTimeDelta);
 
 	// ===========================================
 	// Save and Load
+private:
 	wstring SaveFilePath();
 	wstring LoadFilePath();
 };
