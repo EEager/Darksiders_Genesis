@@ -84,17 +84,18 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix
 
 
 	/* 블렌드인덱스와 웨이트는 나중에 채울께.(애니메이션을 위한 데이터) */
-	VTXMESH*		pVertices = (VTXMESH*)m_pVertices;
 
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
-		memcpy(&pVertices[i].vPosition, &pMesh->mVertices[i], sizeof(_float3));
+		VTXMESH* pVertices = (VTXMESH*)((_byte*)m_pVertices + (i * m_iStride));
 
-		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
+		memcpy(&pVertices->vPosition, &pMesh->mVertices[i], sizeof(_float3));
 
-		memcpy(&pVertices[i].vNormal, &pMesh->mNormals[i], sizeof(_float3));
-		memcpy(&pVertices[i].vTexUV, &pMesh->mTextureCoords[0][i], sizeof(_float2));
-		memcpy(&pVertices[i].vTangent, &pMesh->mTangents[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix));
+
+		memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));
+		memcpy(&pVertices->vTexUV, &pMesh->mTextureCoords[0][i], sizeof(_float2));
+		memcpy(&pVertices->vTangent, &pMesh->mTangents[i], sizeof(_float3));
 	}
 
 	m_VBSubresourceData.pSysMem = m_pVertices;
@@ -130,6 +131,13 @@ HRESULT CMeshContainer::SetUp_IndicesDesc(aiMesh * pMesh)
 	}
 
 	m_IBSubresourceData.pSysMem = m_pPrimitiveIndices;
+
+	return S_OK;
+}
+
+HRESULT CMeshContainer::SetUp_SkinnedDesc(aiMesh* pMesh)
+{
+
 
 	return S_OK;
 }

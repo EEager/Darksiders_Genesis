@@ -1,6 +1,7 @@
 #include "..\Public\Model.h"
 #include "MeshContainer.h"
 #include "Texture.h"
+#include "HierarchyNode.h"
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
@@ -27,8 +28,11 @@ CModel::CModel(const CModel & rhs)
 	}
 
 
-	for (auto& pMeshContainer : m_MeshContainers)
-		Safe_AddRef(pMeshContainer);
+	for (auto& MtrlMeshContainer : m_MeshContainers)
+	{
+		for (auto& pMeshContainer : MtrlMeshContainer)
+			Safe_AddRef(pMeshContainer);
+	}
 
 	for (auto& pPassDesc : m_PassesDesc)
 	{
@@ -62,6 +66,9 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
  	m_isAnimMesh = m_pScene->HasAnimations();
 
+	m_MeshContainers.resize(m_pScene->mNumMaterials);
+
+
 	if (FAILED(Create_MeshContainers()))
 		return E_FAIL;
 
@@ -74,6 +81,25 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	if (FAILED(Compile_Shader(pShaderFilePath)))
 		return E_FAIL;
 
+	///* 뼈의 상속구조를 표현한다. */
+	//m_pScene->mRootNode->
+	
+	///* 실제뼈의 정보다. */
+	///* 이 뼈가 어떤 정점들에게 영향을 주고 있는지? 얼마나 영향르 줘야하는지? */
+	//m_pScene->mMeshes[0]->mBones[0];
+	
+	///* 특정 애님에ㅣ션 재생 시에 뼈의 상태 변환을표현하기위한 데\이터.  */
+	//m_pScene->mAnimations[0]->mChannels[0]
+
+	if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
+		return E_FAIL;
+
+	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+		{
+			return pSour->Get_Depth() < pDest->Get_Depth();
+		});
+
+
 	return S_OK;
 }
 
@@ -82,16 +108,26 @@ HRESULT CModel::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-HRESULT CModel::Render(_uint iMeshContainerIndex, _uint iPassIndex)
+HRESULT CModel::Bind_Shader(_uint iPassIndex)
+{
+	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout);
+	m_PassesDesc[iPassIndex]->pPass->Apply(0, m_pDeviceContext);
+
+	return S_OK;
+}
+
+
+HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 {
 	if (iPassIndex >= m_PassesDesc.size())
 		return E_FAIL;
 
-	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout);
-	m_PassesDesc[iPassIndex]->pPass->Apply(0, m_pDeviceContext);
+	Bind_Shader(iPassIndex);
 
-	if (nullptr != m_MeshContainers[iMeshContainerIndex])
-		m_MeshContainers[iMeshContainerIndex]->Render();
+	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
+	{
+		pMeshContainer->Render();
+	}
 
 	return S_OK;
 }
@@ -107,7 +143,7 @@ HRESULT CModel::Set_RawValue(const char* pConstantName, void* pData, _uint iSize
 	return pVariable->SetRawValue(pData, 0, iSize);
 }
 
-HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMeshContainerIndex, aiTextureType eTextureType)
+HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMaterialIndex, aiTextureType eTextureType)
 {
 	if (nullptr == m_pEffect)
 		return E_FAIL;
@@ -116,7 +152,6 @@ HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMeshCon
 	if (nullptr == pVariable)
 		return E_FAIL;
 
-	_uint iMaterialIndex = m_MeshContainers[iMeshContainerIndex]->Get_MaterialIndex();
 	if (iMaterialIndex >= m_iNumMaterials)
 		return E_FAIL;
 
@@ -141,7 +176,7 @@ HRESULT CModel::Create_MeshContainers()
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
-		m_MeshContainers.push_back(pMeshContainer);
+		m_MeshContainers[pMesh->mMaterialIndex].push_back(pMeshContainer);
 	}
 
 	return S_OK;
@@ -261,11 +296,35 @@ HRESULT CModel::Compile_Shader(const _tchar * pShaderFilePath)
 
 HRESULT CModel::Create_VertexIndexBuffers()
 {
-	for (auto& pMeshContainer : m_MeshContainers)
-		pMeshContainer->Create_VertexIndexBuffer();
+	for (auto& pMtrlMeshContainer : m_MeshContainers)
+	{
+		for (auto& pMeshContainer : pMtrlMeshContainer)
+			pMeshContainer->Create_VertexIndexBuffer();
+	}
+
 
 	return S_OK;
 }
+
+HRESULT CModel::Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent, _uint iDepth)
+{
+	_matrix			TransformationMatrix;
+	memcpy(&TransformationMatrix, &pNode->mTransformation, sizeof(_matrix));
+
+	CHierarchyNode* pHierarchyNode = CHierarchyNode::Create(pNode->mName.data, XMMatrixTranspose(TransformationMatrix), pParent, iDepth);
+	if (nullptr == pHierarchyNode)
+		return E_FAIL;
+
+	m_HierarchyNodes.push_back(pHierarchyNode);
+
+	for (_uint i = 0; i < pNode->mNumChildren; ++i)
+	{
+		Create_HierarchyNodes(pNode->mChildren[i], pHierarchyNode, iDepth + 1);
+	}
+
+	return S_OK;
+}
+
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
@@ -293,6 +352,10 @@ CComponent * CModel::Clone(void * pArg)
 
 void CModel::Free()
 {
+	// m_HierarchyNodes
+	for (auto& hNode : m_HierarchyNodes)
+		Safe_Release(hNode);
+
 	// m_Materials
 	for (auto& MaterialDesc : m_Materials)
 	{
@@ -304,9 +367,14 @@ void CModel::Free()
 	m_Materials.clear();
 
 	// m_MeshContainers
-	for (auto& pMeshContainer : m_MeshContainers)
-		Safe_Release(pMeshContainer);
-	m_MeshContainers.clear();
+	for (auto& MtrlMeshContainer : m_MeshContainers)
+	{
+		for (auto& pMeshContainer : MtrlMeshContainer)
+			Safe_Release(pMeshContainer);
+		MtrlMeshContainer.clear();
+	}
+	if (false == m_isCloned)
+		m_MeshContainers.clear();
 
 
 	// m_PassesDesc

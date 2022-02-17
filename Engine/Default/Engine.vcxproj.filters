@@ -91,6 +91,9 @@
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Model\MeshContainer">
       <UniqueIdentifier>{d5d64c8e-ed9b-493d-a0d6-b89b480926d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Model\HierarchyNode">
+      <UniqueIdentifier>{ef75366d-ca54-4e0c-a03b-04a59579a84a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -183,6 +186,9 @@
     <ClInclude Include="..\public\MeshContainer.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Model\MeshContainer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\HierarchyNode.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Model\HierarchyNode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -259,6 +265,9 @@
     </ClCompile>
     <ClCompile Include="..\private\MeshContainer.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Model\MeshContainer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\HierarchyNode.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Model\HierarchyNode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -35,6 +35,7 @@ private:
 	/* 정점의 정보를 채우낟. */
 	HRESULT SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix);
 	HRESULT SetUp_IndicesDesc(aiMesh* pMesh);	
+	HRESULT SetUp_SkinnedDesc(aiMesh* pMesh);
 
 public:
 	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);

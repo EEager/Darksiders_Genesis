@@ -16,12 +16,17 @@ public:
 		return m_iNumMeshes;
 	}
 
+	_uint Get_NumMaterials() const {
+		return m_iNumMaterials;
+	}
+
 public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
 	virtual HRESULT NativeConstruct(void* pArg);
 
 public:
-	HRESULT Render(_uint iMeshContainerIndex, _uint iPassIndex);
+	HRESULT Bind_Shader(_uint iPassIndex);
+	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
 
 public:
 	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);
@@ -32,8 +37,14 @@ private:
 	Assimp::Importer	m_Importer;
 
 private:
-	vector<class CMeshContainer*>			m_MeshContainers;
-	typedef vector<class CMeshContainer*>	MESHCONTAINERS;
+	vector<vector<class CMeshContainer*>>			m_MeshContainers;
+	typedef vector<vector<class CMeshContainer*>>	MESHCONTAINERS;
+
+private:
+	vector<class CHierarchyNode*>					m_HierarchyNodes;
+	typedef vector<class CHierarchyNode*>			HIERARCHYNODES;
+
+private:
 	_uint									m_iNumMeshes;
 
 	vector<MESHMATERIAL>					m_Materials;
@@ -53,6 +64,7 @@ private:
 	HRESULT Create_Materials(const char* pModelFilePath);
 	HRESULT Compile_Shader(const _tchar* pShaderFilePath);
 	HRESULT Create_VertexIndexBuffers();
+	HRESULT Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent = nullptr, _uint iDepth = 0);
 	
 
 
