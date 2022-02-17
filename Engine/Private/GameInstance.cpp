@@ -237,6 +237,22 @@ HRESULT CGameInstance::Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, C
 	return S_OK;
 }
 
+HRESULT CGameInstance::Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, CModel* pModel, const char* pConstantName)
+{
+	if (nullptr == m_pPipeLine)
+		return E_FAIL;
+
+	_matrix	TransformMatrix = m_pPipeLine->Get_Transform(eType);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+
+	_float4x4	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+
+	pModel->Set_RawValue(pConstantName, &TransformFloat4x4, sizeof(_float4x4));
+
+	return S_OK;
+}
+
 const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex) const
 {
 	if (nullptr == m_pLight_Manager)

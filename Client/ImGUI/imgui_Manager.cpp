@@ -85,24 +85,6 @@ wstring CImguiManager::SaveFilePath()
 			IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave));
 		if (SUCCEEDED(hr))
 		{
-
-			// ========================================================
-			// 디폴트 경로 설정하는거 어케하는거지 시발
-			//TCHAR szCurrentDir[128] = L"";
-
-			//// 현재 작업 경로를 얻어오는 함수.
-			//::GetCurrentDirectory(128, szCurrentDir);
-
-			//// 경로에서 파일명을 지우는 함수. 마지막이 폴더명이면 말단 폴더명을 지움.
-			// PathRemoveFileSpecW(szCurrentDir);
-
-			//TCHAR szSaveDir[128] = L"";
-			//::lstrcat(szCurrentDir, L"Client\\Save\\");
-			//::PathCombine(szSaveDir, szCurrentDir, L"Client\\Save\\");
-			//LPWSTR wszPath = TEXT("C:\Users\JJLEE\Desktop\Master");
-			//hr = SHCreateItemFromParsingName(wszPath, NULL, IID_PPV_ARGS(&pFileSave))
-			// ========================================================
-
 			// Set default extension
 			hr = pFileSave->SetDefaultExtension(L"txt");
 			if (SUCCEEDED(hr))
@@ -188,13 +170,9 @@ wstring CImguiManager::LoadFilePath()
 	return retPath;
 }
 
-
-// ------------------------------------------------------------------------------
-// Tick, Render, Init, Release
-
 void CImguiManager::Tick(_float fTimeDelta)
 {
-	// Check Key First Before, m_bImGUIEnable
+	// Check Key First
 	ImGUI_Key(fTimeDelta);
 
 	if (!m_bImGUIEnable)
@@ -487,8 +465,9 @@ void CImguiManager::ShowSpeedFactorControlWindow()
 		return;
 
 	ImGui::Begin("Simulation Speed");
-	ImGui::SliderFloat("Simulation Speed Factor", &m_fSpeedFactor, 0.0f, 4.0f);
-	// =========================================
+	//ImGui::SliderFloat("Simulation Speed Factor", &m_fSpeedFactor, 0.0f, 4.0f);
+	ImGui::DragFloat("Simulation Speed Factor", &m_fSpeedFactor, 0.01f, 0.f, 10.f);
+	
 	// 카메라 빼고 다 멈추자
 	if (ImGui::Button("Play"))
 		;// m_pGameInstance->StopAllTickWithOutCamera(false);

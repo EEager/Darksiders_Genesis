@@ -12,6 +12,11 @@ private:
 	virtual ~CTexture() = default;
 
 public:
+	ID3D11ShaderResourceView* Get_SRV(_uint iIndex = 0) {
+		return m_Textures[iIndex];
+	}
+
+public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pTextureFilePath, _uint iNumTextures);
 	virtual HRESULT NativeConstruct(void* pArg) override;
 

@@ -52,6 +52,7 @@ public: /* For.Input_Device */
 public: /* For.PipeLine */
 	_vector Get_CamPosition();
 	HRESULT Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, CVIBuffer* pVIBuffer, const char* pConstantName);
+	HRESULT Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, CModel * pModel, const char* pConstantName);
 
 public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex = 0) const;

@@ -1,5 +1,6 @@
 #include "..\Public\Transform.h"
 #include "VIBuffer.h"
+#include "Model.h"
 
 CTransform::CTransform(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
@@ -62,6 +63,21 @@ HRESULT CTransform::Bind_OnShader(CVIBuffer * pVIBuffer, const char * pConstantN
 	XMStoreFloat4x4(&WorldMatrix, WorldMatrixTransPose);
 
 	pVIBuffer->Set_RawValue(pConstantName, &WorldMatrix, sizeof(_float4x4));
+
+	return S_OK;
+}
+
+HRESULT CTransform::Bind_OnShader(CModel* pModel, const char* pConstantName)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	_matrix			WorldMatrixTransPose = XMMatrixTranspose(XMLoadFloat4x4(&m_WorldMatrix));
+
+	_float4x4		WorldMatrix;
+	XMStoreFloat4x4(&WorldMatrix, WorldMatrixTransPose);
+
+	pModel->Set_RawValue(pConstantName, &WorldMatrix, sizeof(_float4x4));
 
 	return S_OK;
 }

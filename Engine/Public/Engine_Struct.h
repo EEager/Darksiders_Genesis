@@ -2,6 +2,11 @@
 
 namespace Engine
 {
+	typedef struct tagMeshMaterial
+	{
+		class CTexture* pTexture[AI_TEXTURE_TYPE_MAX];
+	}MESHMATERIAL;
+
 	typedef struct tagLightDesc
 	{
 		enum TYPE { TYPE_DIRECTIONAL, TYPE_POINT, TYPE_END };

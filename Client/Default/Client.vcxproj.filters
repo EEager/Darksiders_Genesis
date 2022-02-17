@@ -46,6 +46,9 @@
     <Filter Include="77.ImGUI\Misc">
       <UniqueIdentifier>{6917045b-5f6d-4227-9ae0-c9935aca7462}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Fork">
+      <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -117,6 +120,9 @@
     <ClInclude Include="..\Public\Client_Defines.h">
       <Filter>98.Default</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Fork.h">
+      <Filter>02.GameObjects\Fork</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -173,6 +179,9 @@
     <ClCompile Include="..\ImGUI\imgui_widgets.cpp">
       <Filter>77.ImGUI\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Fork.cpp">
+      <Filter>02.GameObjects\Fork</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -192,6 +201,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

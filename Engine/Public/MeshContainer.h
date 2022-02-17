@@ -12,23 +12,32 @@ private:
 	virtual ~CMeshContainer() = default;
 
 public:
-	virtual HRESULT NativeConstruct_Prototype(_bool isAnimMesh, aiMesh* pMesh);
+	_uint Get_MaterialIndex() const {
+		return m_iMaterialIndex;
+	}
+
+public:
+	virtual HRESULT NativeConstruct_Prototype(_bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
 	virtual HRESULT NativeConstruct(void* pArg);
-	virtual HRESULT Render(_uint iPassIndex);
+	virtual HRESULT Render();
 
 public:
 	HRESULT Create_VertexIndexBuffer();
+
+private:
+	/* 현재 메쉬컨테이너가 어떤 머테리얼 인덱스를 쓰는지 */
+	_uint	m_iMaterialIndex = 0;
 
 
 	
 
 private:
 	/* 정점의 정보를 채우낟. */
-	HRESULT SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim);
+	HRESULT SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix);
 	HRESULT SetUp_IndicesDesc(aiMesh* pMesh);	
 
 public:
-	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _bool isAnimMesh, aiMesh* pMesh);
+	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

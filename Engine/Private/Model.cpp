@@ -1,5 +1,6 @@
 #include "..\Public\Model.h"
 #include "MeshContainer.h"
+#include "Texture.h"
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
@@ -9,11 +10,37 @@ CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 CModel::CModel(const CModel & rhs)
 	: CComponent(rhs)
 	, m_pScene(rhs.m_pScene)	
+	, m_pEffect(rhs.m_pEffect)
+	, m_PassesDesc(rhs.m_PassesDesc)
+	, m_MeshContainers(rhs.m_MeshContainers)
+	, m_iNumMeshes(rhs.m_iNumMeshes)
+	, m_isAnimMesh(rhs.m_isAnimMesh)
+	, m_Materials(rhs.m_Materials)
+	, m_iNumMaterials(rhs.m_iNumMaterials)
 {
+	for (auto& MaterialDesc : m_Materials)
+	{
+		for (auto& pTexture : MaterialDesc.pTexture)
+		{
+			Safe_AddRef(pTexture);
+		}
+	}
+
+
+	for (auto& pMeshContainer : m_MeshContainers)
+		Safe_AddRef(pMeshContainer);
+
+	for (auto& pPassDesc : m_PassesDesc)
+	{
+		Safe_AddRef(pPassDesc->pInputlayout);
+		Safe_AddRef(pPassDesc->pPass);
+	}
+
+	Safe_AddRef(m_pEffect);
 
 }
 
-HRESULT CModel::NativeConstruct_Prototype(const _tchar * pShaderFilePath, const char * pModelFilePath, const char * pModelFileName)
+HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
 	char		szModelPath[MAX_PATH] = "";
 
@@ -31,6 +58,8 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar * pShaderFilePath, const 
 	if (nullptr == m_pScene)
 		return E_FAIL;	
 
+	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
+
  	m_isAnimMesh = m_pScene->HasAnimations();
 
 	if (FAILED(Create_MeshContainers()))
@@ -39,12 +68,11 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar * pShaderFilePath, const 
 	if (FAILED(Create_VertexIndexBuffers()))
 		return E_FAIL;
 
-	//if (FAILED(Compile_Shader(pShaderFilePath)))
-	//	return E_FAIL;
+	if (FAILED(Create_Materials(pModelFilePath)))
+		return E_FAIL;
 
-
-
-
+	if (FAILED(Compile_Shader(pShaderFilePath)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -52,6 +80,47 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar * pShaderFilePath, const 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
 	return S_OK;
+}
+
+HRESULT CModel::Render(_uint iMeshContainerIndex, _uint iPassIndex)
+{
+	if (iPassIndex >= m_PassesDesc.size())
+		return E_FAIL;
+
+	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout);
+	m_PassesDesc[iPassIndex]->pPass->Apply(0, m_pDeviceContext);
+
+	if (nullptr != m_MeshContainers[iMeshContainerIndex])
+		m_MeshContainers[iMeshContainerIndex]->Render();
+
+	return S_OK;
+}
+
+HRESULT CModel::Set_RawValue(const char* pConstantName, void* pData, _uint iSize)
+{
+	if (nullptr == m_pEffect)
+		return E_FAIL;
+	ID3DX11EffectVariable* pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	return pVariable->SetRawValue(pData, 0, iSize);
+}
+
+HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMeshContainerIndex, aiTextureType eTextureType)
+{
+	if (nullptr == m_pEffect)
+		return E_FAIL;
+
+	ID3DX11EffectShaderResourceVariable* pVariable = m_pEffect->GetVariableByName(pConstantName)->AsShaderResource();
+	if (nullptr == pVariable)
+		return E_FAIL;
+
+	_uint iMaterialIndex = m_MeshContainers[iMeshContainerIndex]->Get_MaterialIndex();
+	if (iMaterialIndex >= m_iNumMaterials)
+		return E_FAIL;
+
+	return pVariable->SetResource(m_Materials[iMaterialIndex].pTexture[eTextureType]->Get_SRV());
 }
 
 HRESULT CModel::Create_MeshContainers()
@@ -68,11 +137,54 @@ HRESULT CModel::Create_MeshContainers()
 			return E_FAIL;
 
 		/* 파일로 읽어온 정점과인덱스의 정보들을 저장한다.  */
-		CMeshContainer*		pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, m_isAnimMesh, pMesh);
+		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, m_isAnimMesh, pMesh, XMLoadFloat4x4(&m_PivotMatrix));
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
 		m_MeshContainers.push_back(pMeshContainer);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel::Create_Materials(const char* pModelFilePath)
+{
+	m_iNumMaterials = m_pScene->mNumMaterials;
+
+	for (_uint i = 0; i < m_iNumMaterials; ++i)
+	{
+		aiMaterial* pMaterial = m_pScene->mMaterials[i];
+
+		MESHMATERIAL		MeshMaterialDesc;
+		ZeroMemory(&MeshMaterialDesc, sizeof(MESHMATERIAL));
+
+		for (_uint j = 0; j < AI_TEXTURE_TYPE_MAX; ++j)
+		{
+			aiString		TexturePath;
+
+			if (FAILED(pMaterial->GetTexture(aiTextureType(j), 0, &TexturePath)))
+				continue;
+
+			char		szFileName[MAX_PATH];
+			char		szExt[MAX_PATH];
+
+			_splitpath_s(TexturePath.data, nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+
+			char		szFullPath[MAX_PATH] = "";
+
+			strcpy_s(szFullPath, pModelFilePath);
+			strcat_s(szFullPath, szFileName);
+			strcat_s(szFullPath, szExt);
+
+			_tchar		szPerfectPath[MAX_PATH] = TEXT("");
+			MultiByteToWideChar(CP_ACP, 0, szFullPath, (int)strlen(szFullPath), szPerfectPath, MAX_PATH);
+
+			MeshMaterialDesc.pTexture[j] = CTexture::Create(m_pDevice, m_pDeviceContext, szPerfectPath);
+			if (nullptr == MeshMaterialDesc.pTexture[j])
+				return E_FAIL;
+		}
+
+		m_Materials.push_back(MeshMaterialDesc);
 	}
 
 	return S_OK;
@@ -155,13 +267,13 @@ HRESULT CModel::Create_VertexIndexBuffers()
 	return S_OK;
 }
 
-CModel * CModel::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const _tchar * pShaderFilePath, const char * pModelFilePath, const char * pModelFileName)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
-	CModel*	pInstance = new CModel(pDevice, pDeviceContext);
+	CModel* pInstance = new CModel(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, pModelFilePath, pModelFileName)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, pModelFilePath, pModelFileName, PivotMatrix)))
 	{
-		MSG_BOX("Failed To Creating CVIBuffer_Rect");
+		MSG_BOX("Failed To Creating CModel");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
@@ -181,9 +293,40 @@ CComponent * CModel::Clone(void * pArg)
 
 void CModel::Free()
 {
+	// m_Materials
+	for (auto& MaterialDesc : m_Materials)
+	{
+		for (auto& pTexture : MaterialDesc.pTexture)
+		{
+			Safe_Release(pTexture);
+		}
+	}
+	m_Materials.clear();
+
+	// m_MeshContainers
 	for (auto& pMeshContainer : m_MeshContainers)
 		Safe_Release(pMeshContainer);
 	m_MeshContainers.clear();
+
+
+	// m_PassesDesc
+	for (auto& pPassDesc : m_PassesDesc)
+	{
+		Safe_Release(pPassDesc->pInputlayout);
+		Safe_Release(pPassDesc->pPass);
+	}
+
+	if (false == m_isCloned)
+	{
+		for (auto& pPassDesc : m_PassesDesc)
+			Safe_Delete(pPassDesc);
+
+		m_PassesDesc.clear();
+	}
+
+
+	// m_pEffect
+	Safe_Release(m_pEffect);
 
 	m_Importer.FreeScene();
 }

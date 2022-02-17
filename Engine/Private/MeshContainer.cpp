@@ -6,13 +6,17 @@ CMeshContainer::CMeshContainer(ID3D11Device* pDevice, ID3D11DeviceContext* pDevi
 
 }
 
-HRESULT CMeshContainer::NativeConstruct_Prototype(_bool isAnimMesh, aiMesh* pMesh)
-{	
-	if (FAILED(SetUp_VerticesDesc(pMesh, isAnimMesh)))
-		return E_FAIL;	
+HRESULT CMeshContainer::NativeConstruct_Prototype(_bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
+{
+	if (FAILED(SetUp_VerticesDesc(pMesh, isAnimMesh, PivotMatrix)))
+		return E_FAIL;
 
 	if (FAILED(SetUp_IndicesDesc(pMesh)))
 		return E_FAIL;
+
+	m_iMaterialIndex = pMesh->mMaterialIndex;
+
+	//pMesh->mMaterialIndex
 
 
 	return S_OK;
@@ -23,10 +27,22 @@ HRESULT CMeshContainer::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-HRESULT CMeshContainer::Render(_uint iPassIndex)
+HRESULT CMeshContainer::Render()
 {
+	if (nullptr == m_pDeviceContext)
+		return E_FAIL;
+
+	_uint		iOffset = 0;
+
+	m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pVB, &m_iStride, &iOffset);
+	m_pDeviceContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
+	m_pDeviceContext->IASetPrimitiveTopology(m_ePrimitiveTopology);
+
+	m_pDeviceContext->DrawIndexed(m_iNumPrimitive * m_iNumIndicesPerFigure, 0, 0);
+
 	return S_OK;
 }
+
 
 HRESULT CMeshContainer::Create_VertexIndexBuffer()
 {
@@ -39,7 +55,7 @@ HRESULT CMeshContainer::Create_VertexIndexBuffer()
 	return S_OK;
 }
 
-HRESULT CMeshContainer::SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim)
+HRESULT CMeshContainer::SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix)
 {
 	m_iNumVertices = pMesh->mNumVertices;	
 	m_iNumVertexBuffers = 1;
@@ -73,6 +89,9 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim)
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		memcpy(&pVertices[i].vPosition, &pMesh->mVertices[i], sizeof(_float3));
+
+		XMStoreFloat3(&pVertices[i].vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PivotMatrix));
+
 		memcpy(&pVertices[i].vNormal, &pMesh->mNormals[i], sizeof(_float3));
 		memcpy(&pVertices[i].vTexUV, &pMesh->mTextureCoords[0][i], sizeof(_float2));
 		memcpy(&pVertices[i].vTangent, &pMesh->mTangents[i], sizeof(_float3));
@@ -115,11 +134,11 @@ HRESULT CMeshContainer::SetUp_IndicesDesc(aiMesh * pMesh)
 	return S_OK;
 }
 
-CMeshContainer * CMeshContainer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _bool isAnimMesh, aiMesh* pMesh)
+CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
 {
 	CMeshContainer*	pInstance = new CMeshContainer(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(isAnimMesh, pMesh)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(isAnimMesh, pMesh, PivotMatrix)))
 	{
 		MSG_BOX("Failed To Creating CMeshContainer");
 		Safe_Release(pInstance);

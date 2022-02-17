@@ -4,7 +4,6 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "Client_Defines.h"
-#endif
 
 BEGIN(Engine)
 class CGameInstance;
@@ -89,3 +88,5 @@ private:
 	wstring SaveFilePath();
 	wstring LoadFilePath();
 };
+
+#endif

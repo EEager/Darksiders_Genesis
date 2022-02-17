@@ -43,6 +43,7 @@ public:
 
 public:
 	HRESULT Bind_OnShader(class CVIBuffer* pVIBuffer, const char* pConstantName);
+	HRESULT Bind_OnShader(class CModel* pModel, const char* pConstantName);
 	
 
 public:
