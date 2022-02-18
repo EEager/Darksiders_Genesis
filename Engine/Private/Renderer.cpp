@@ -1,6 +1,30 @@
 #include "..\public\Renderer.h"
 #include "GameObject.h"
 
+#if 1 // JJLEE_TEST_RenderStates
+class RenderStates
+{
+public:
+	static ID3D11RasterizerState* WireframeRS;
+	static ID3D11RasterizerState* NoCullRS;
+
+	static ID3D11DepthStencilState* EqualsDSS;
+
+	static ID3D11BlendState* AlphaToCoverageBS;
+	static ID3D11BlendState* TransparentBS;
+};
+
+
+ID3D11RasterizerState* RenderStates::WireframeRS = 0;
+ID3D11RasterizerState* RenderStates::NoCullRS = 0;
+
+ID3D11DepthStencilState* RenderStates::EqualsDSS = 0;
+
+ID3D11BlendState* RenderStates::AlphaToCoverageBS = 0;
+ID3D11BlendState* RenderStates::TransparentBS = 0;
+
+#endif
+
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
 {
@@ -9,6 +33,28 @@ CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 
 HRESULT CRenderer::NativeConstruct_Prototype()
 {
+
+#if 1 // JJLEE_TEST_RenderStates
+	//
+	// TransparentBS
+	//
+
+	D3D11_BLEND_DESC transparentDesc = { 0 };
+	transparentDesc.AlphaToCoverageEnable = false;
+	transparentDesc.IndependentBlendEnable = false;
+
+	transparentDesc.RenderTarget[0].BlendEnable = true;
+	transparentDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	transparentDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	transparentDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	transparentDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	transparentDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	transparentDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	transparentDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	m_pDevice->CreateBlendState(&transparentDesc, &RenderStates::TransparentBS);
+#endif
+
 	return S_OK;
 }
 
@@ -94,8 +140,8 @@ HRESULT CRenderer::Render_NonAlpha()
 
 HRESULT CRenderer::Render_Alpha()
 {
-
-
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
 
 	/* 카메라로부터 멀리 있는 객체부터 그린다. */
 	m_RenderObjects[RENDER_ALPHA].sort([&](CGameObject* pSour, CGameObject* pDest) 
@@ -117,6 +163,9 @@ HRESULT CRenderer::Render_Alpha()
 	}
 
 	m_RenderObjects[RENDER_ALPHA].clear();
+
+	// Restore default blend state
+	m_pDeviceContext->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 
 
@@ -166,6 +215,15 @@ CComponent * CRenderer::Clone(void * pArg)
 
 void CRenderer::Free()
 {
+#if 1 // JJLEE_TEST_RenderStates
+	//ID3D11RasterizerState* RenderStates::WireframeRS = 0;
+	//ID3D11RasterizerState* RenderStates::NoCullRS = 0;
+
+	//ID3D11DepthStencilState* RenderStates::EqualsDSS = 0;
+
+	//ID3D11BlendState* RenderStates::AlphaToCoverageBS = 0;
+	Safe_Release(RenderStates::TransparentBS);
+#endif
 	__super::Free();
 
 	for (auto& ObjectList : m_RenderObjects)

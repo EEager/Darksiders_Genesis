@@ -1,4 +1,6 @@
 #include "..\Public\MeshContainer.h"
+#include "Model.h"
+#include "HierarchyNode.h"
 
 CMeshContainer::CMeshContainer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CVIBuffer(pDevice, pDeviceContext)
@@ -6,9 +8,9 @@ CMeshContainer::CMeshContainer(ID3D11Device* pDevice, ID3D11DeviceContext* pDevi
 
 }
 
-HRESULT CMeshContainer::NativeConstruct_Prototype(_bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
+HRESULT CMeshContainer::NativeConstruct_Prototype(CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
 {
-	if (FAILED(SetUp_VerticesDesc(pMesh, isAnimMesh, PivotMatrix)))
+	if (FAILED(SetUp_VerticesDesc(pModel, pMesh, isAnimMesh, PivotMatrix)))
 		return E_FAIL;
 
 	if (FAILED(SetUp_IndicesDesc(pMesh)))
@@ -55,7 +57,7 @@ HRESULT CMeshContainer::Create_VertexIndexBuffer()
 	return S_OK;
 }
 
-HRESULT CMeshContainer::SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix)
+HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix)
 {
 	m_iNumVertices = pMesh->mNumVertices;	
 	m_iNumVertexBuffers = 1;
@@ -98,6 +100,9 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix
 		memcpy(&pVertices->vTangent, &pMesh->mTangents[i], sizeof(_float3));
 	}
 
+	if (true == isAnim)
+		SetUp_SkinnedDesc(pModel, pMesh);
+
 	m_VBSubresourceData.pSysMem = m_pVertices;
 
 	return S_OK;
@@ -135,18 +140,67 @@ HRESULT CMeshContainer::SetUp_IndicesDesc(aiMesh * pMesh)
 	return S_OK;
 }
 
-HRESULT CMeshContainer::SetUp_SkinnedDesc(aiMesh* pMesh)
+HRESULT CMeshContainer::SetUp_SkinnedDesc(CModel* pModel, aiMesh* pMesh)
 {
+	m_iNumBones = pMesh->mNumBones;
 
+	for (_uint i = 0; i < m_iNumBones; ++i)
+	{
+		/* 현재 이 뼈가 어떤 정점에게 영햐을 미치고 있는지?! */
+		/* 이 뼈ㅑ가 얼마나 영향을 주는지?! */
+		aiBone* pBone = pMesh->mBones[i];
+
+		CHierarchyNode* pHierarchyNode = pModel->Find_HierarchyNode(pBone->mName.data);
+		if (nullptr == pHierarchyNode)
+			return E_FAIL;
+
+		_matrix		OffsetMatrix;
+		memcpy(&OffsetMatrix, &pBone->mOffsetMatrix, sizeof(_matrix));
+
+		pHierarchyNode->Set_OffsetMatrix(XMMatrixTranspose(OffsetMatrix));
+
+		m_Bones.push_back(pHierarchyNode);
+		Safe_AddRef(pHierarchyNode);
+
+		/* 현재 이 뼈가 몇개의 정점에 영향르 주는지. */
+		for (_uint j = 0; j < pBone->mNumWeights; ++j)
+		{
+			VTXMESH_ANIM* pVertices = (VTXMESH_ANIM*)m_pVertices;
+
+			if (pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.x == 0.0f)
+			{
+				pVertices[pBone->mWeights[j].mVertexId].vBlendIndex.x = i;
+				pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.x = pBone->mWeights[j].mWeight;
+			}
+
+			else if (pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.y == 0.0f)
+			{
+				pVertices[pBone->mWeights[j].mVertexId].vBlendIndex.y = i;
+				pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.y = pBone->mWeights[j].mWeight;
+			}
+
+			else if (pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.z == 0.0f)
+			{
+				pVertices[pBone->mWeights[j].mVertexId].vBlendIndex.z = i;
+				pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.z = pBone->mWeights[j].mWeight;
+			}
+
+			else
+			{
+				pVertices[pBone->mWeights[j].mVertexId].vBlendIndex.w = i;
+				pVertices[pBone->mWeights[j].mVertexId].vBlendWeight.w = pBone->mWeights[j].mWeight;
+			}
+		}
+	}
 
 	return S_OK;
 }
 
-CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
+CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
 {
 	CMeshContainer*	pInstance = new CMeshContainer(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(isAnimMesh, pMesh, PivotMatrix)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(pModel, isAnimMesh, pMesh, PivotMatrix)))
 	{
 		MSG_BOX("Failed To Creating CMeshContainer");
 		Safe_Release(pInstance);

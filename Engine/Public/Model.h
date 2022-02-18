@@ -32,6 +32,10 @@ public:
 	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);
 	HRESULT	Set_ShaderResourceView(const char* pConstantName, _uint iMeshContainerIndex, aiTextureType eTextureType);
 
+public:
+	class CHierarchyNode* Find_HierarchyNode(const char* pNodeName);
+
+
 private:
 	const aiScene*		m_pScene = nullptr;
 	Assimp::Importer	m_Importer;
@@ -45,6 +49,10 @@ private:
 	typedef vector<class CHierarchyNode*>			HIERARCHYNODES;
 
 private:
+	vector<class CAnimation*>						m_Animations;
+	typedef vector<class CAnimation*>				ANIMATIONS;
+
+private:
 	_uint									m_iNumMeshes;
 
 	vector<MESHMATERIAL>					m_Materials;
@@ -53,6 +61,8 @@ private:
 
 	_bool									m_isAnimMesh = false;
 	_float4x4								m_PivotMatrix;
+
+	_uint									m_iNumAnimation;
 
 
 private:
@@ -65,6 +75,7 @@ private:
 	HRESULT Compile_Shader(const _tchar* pShaderFilePath);
 	HRESULT Create_VertexIndexBuffers();
 	HRESULT Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent = nullptr, _uint iDepth = 0);
+	HRESULT Create_Animation();
 	
 
 

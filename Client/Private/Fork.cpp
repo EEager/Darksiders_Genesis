@@ -25,7 +25,7 @@ HRESULT CFork::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet((float)(rand() % 10), 0.f, (float)(rand() % 10), 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet((float)(rand() % 10), 2.f, (float)(rand() % 10), 1.f));
 
 	return S_OK;
 }
@@ -64,6 +64,10 @@ HRESULT CFork::Render()
 
 		m_pModelCom->Render(i, 0);
 	}
+
+	// restore default states, as the SkyFX changes them in the effect file.
+	m_pDeviceContext->RSSetState(0);
+	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 
 	
 

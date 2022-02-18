@@ -17,7 +17,7 @@ public:
 	}
 
 public:
-	virtual HRESULT NativeConstruct_Prototype(_bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
+	virtual HRESULT NativeConstruct_Prototype(class CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual HRESULT Render();
 
@@ -26,19 +26,28 @@ public:
 
 private:
 	/* 현재 메쉬컨테이너가 어떤 머테리얼 인덱스를 쓰는지 */
-	_uint	m_iMaterialIndex = 0;
+	_uint			m_iMaterialIndex = 0;
+
+private:
+	_uint			m_iNumBones = 0;
+
+private:
+	/* 렌더링 시에 현재 메시컨테이너에 영향을 주는 뼈를 모아서 셰이더로 던진다. */
+	/* 그 뼈들의 행렬ㄹ을 모아오기위해 뼈를 모아두낟. */
+	vector<class CHierarchyNode*>			m_Bones;
+	typedef vector<class CHierarchyNode*>	BONES;
 
 
 	
 
 private:
 	/* 정점의 정보를 채우낟. */
-	HRESULT SetUp_VerticesDesc(aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix);
+	HRESULT SetUp_VerticesDesc(class CModel* pModel, aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix);
 	HRESULT SetUp_IndicesDesc(aiMesh* pMesh);	
-	HRESULT SetUp_SkinnedDesc(aiMesh* pMesh);
+	HRESULT SetUp_SkinnedDesc(class CModel* pModel, aiMesh* pMesh);
 
 public:
-	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
+	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, class CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

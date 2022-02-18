@@ -15,11 +15,20 @@ public:
 		return m_iDepth;
 	}
 
+	const char* Get_Name() const {
+		return m_szName;
+	}
+
+	void Set_OffsetMatrix(_fmatrix OffsetMatrix) {
+		XMStoreFloat4x4(&m_OffsetMatrix, OffsetMatrix);
+	}
+
 public:
 	HRESULT NativeConstruct(const char* pName, _fmatrix TransformationMatrix, CHierarchyNode* pParent, _uint iDepth);
 
 private:
-	char					m_szName[MAX_PATH] = "";
+	char					m_szName[MAX_PATH] = ""; // aiNode's Name
+	_float4x4				m_OffsetMatrix; // »À -> Á¤Á¡ 
 	_float4x4				m_TransformationMatrix;
 	CHierarchyNode*			m_pParent = nullptr;
 	_uint					m_iDepth = 0;

@@ -2,6 +2,7 @@
 #include "MeshContainer.h"
 #include "Texture.h"
 #include "HierarchyNode.h"
+#include "Animation.h"
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
@@ -69,6 +70,19 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	m_MeshContainers.resize(m_pScene->mNumMaterials);
 
 
+	if (true == m_isAnimMesh)
+	{
+		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
+			return E_FAIL;
+
+		sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+			{
+				return pSour->Get_Depth() < pDest->Get_Depth();
+			});
+	}
+
+
+
 	if (FAILED(Create_MeshContainers()))
 		return E_FAIL;
 
@@ -91,13 +105,6 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	///* 특정 애님에ㅣ션 재생 시에 뼈의 상태 변환을표현하기위한 데\이터.  */
 	//m_pScene->mAnimations[0]->mChannels[0]
 
-	if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
-		return E_FAIL;
-
-	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
-		{
-			return pSour->Get_Depth() < pDest->Get_Depth();
-		});
 
 
 	return S_OK;
@@ -122,10 +129,22 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 	if (iPassIndex >= m_PassesDesc.size())
 		return E_FAIL;
 
-	Bind_Shader(iPassIndex);
+	_matrix		BoneMatrices[128];
 
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
+		_matrix		BoneMatrices[128];
+
+		/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
+		// pMeshContainer->SetUp_BoneMatrices(BoneMatrices);
+
+		/* 셰이더에 던진다. */
+
+
+		/* 그려지는 정점들이 뼈들의 행렬집합에서 현재 정점에 영향ㅇ르 주는 뼈의 행렬을 찾아 곱한다음 그린다. */
+
+		Bind_Shader(iPassIndex);
+
 		pMeshContainer->Render();
 	}
 
@@ -155,7 +174,20 @@ HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMateria
 	if (iMaterialIndex >= m_iNumMaterials)
 		return E_FAIL;
 
+	if (!m_Materials[iMaterialIndex].pTexture[eTextureType])
+		return E_FAIL;
+
 	return pVariable->SetResource(m_Materials[iMaterialIndex].pTexture[eTextureType]->Get_SRV());
+}
+
+CHierarchyNode* CModel::Find_HierarchyNode(const char* pNodeName)
+{
+	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)
+		{
+			return !strcmp(pNodeName, pNode->Get_Name());
+		});
+
+	return *iter;
 }
 
 HRESULT CModel::Create_MeshContainers()
@@ -172,7 +204,7 @@ HRESULT CModel::Create_MeshContainers()
 			return E_FAIL;
 
 		/* 파일로 읽어온 정점과인덱스의 정보들을 저장한다.  */
-		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, m_isAnimMesh, pMesh, XMLoadFloat4x4(&m_PivotMatrix));
+		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, m_isAnimMesh, pMesh, XMLoadFloat4x4(&m_PivotMatrix));
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -184,7 +216,7 @@ HRESULT CModel::Create_MeshContainers()
 
 HRESULT CModel::Create_Materials(const char* pModelFilePath)
 {
-	m_iNumMaterials = m_pScene->mNumMaterials;
+ 	m_iNumMaterials = m_pScene->mNumMaterials;
 
 	for (_uint i = 0; i < m_iNumMaterials; ++i)
 	{
@@ -325,6 +357,41 @@ HRESULT CModel::Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent, _u
 	return S_OK;
 }
 
+HRESULT CModel::Create_Animation()
+{
+	m_iNumAnimation = m_pScene->mNumAnimations;
+
+	for (_uint i = 0; i < m_iNumAnimation; ++i)
+	{
+		aiAnimation* pAnim = m_pScene->mAnimations[i];
+
+		CAnimation* pAnimation = CAnimation::Create(pAnim->mName.data, pAnim->mDuration, pAnim->mTicksPerSecond);
+
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		/* 현재 애니메이션에 영향을 주는 뼈의 갯수. */
+		for (_uint j = 0; j < pAnim->mNumChannels; ++j)
+		{
+			aiNodeAnim* pNodeAnim = pAnim->mChannels[j];
+
+			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지? */
+			_uint	iNumKeyFrames = max(pNodeAnim->mNumScalingKeys, pNodeAnim->mNumRotationKeys);
+			iNumKeyFrames = max(iNumKeyFrames, pNodeAnim->mNumPositionKeys);
+
+			for (_uint k = 0; k < iNumKeyFrames; ++k)
+			{
+				KEYFRAME* pKeyFrame = new KEYFRAME;
+				ZeroMemory(pKeyFrame, sizeof(KEYFRAME));
+			}
+		}
+
+	}
+
+	return S_OK;
+}
+
+
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
@@ -332,7 +399,7 @@ CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContex
 
 	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, pModelFilePath, pModelFileName, PivotMatrix)))
 	{
-		MSG_BOX("Failed To Creating CModel");
+ 		MSG_BOX("Failed To Creating CModel");
 		Safe_Release(pInstance);
 	}
 	return pInstance;

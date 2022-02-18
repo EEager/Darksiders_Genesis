@@ -94,6 +94,12 @@
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Model\HierarchyNode">
       <UniqueIdentifier>{ef75366d-ca54-4e0c-a03b-04a59579a84a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Model\Channel">
+      <UniqueIdentifier>{0de5544d-170b-4aa7-ab4d-3ed6d2fd0619}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Model\Animation">
+      <UniqueIdentifier>{4aaa912f-abda-44e3-87bf-bf0b1a8e86c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -189,6 +195,12 @@
     <ClInclude Include="..\Public\HierarchyNode.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Model\HierarchyNode</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Animation.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Channel.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Model\Channel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -268,6 +280,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\HierarchyNode.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Model\HierarchyNode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Animation.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Model\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Channel.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Model\Channel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
