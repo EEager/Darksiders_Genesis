@@ -27,6 +27,12 @@ public:
 	HRESULT Clear_BackBuffer_View(_float4 vClearColor);
 	HRESULT Clear_DepthStencil_View();
 	HRESULT Present();
+
+public:
+	ID3D11Device* GetDevice() { return m_pDevice; }
+	ID3D11DeviceContext* GetDC() { return m_pDeviceContext; }
+	IDXGISwapChain* GetSwapChain() { return m_pSwapChain; }
+
 private:	
 
 	/* 메모리 할당. (정점버퍼, 인덱스버퍼, 텍스쳐로드) */

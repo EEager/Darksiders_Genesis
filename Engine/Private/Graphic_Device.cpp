@@ -13,15 +13,97 @@ CGraphic_Device::CGraphic_Device()
 
 HRESULT CGraphic_Device::Ready_Graphic_Device(HWND hWnd, WINMODE WinMode, _uint iWinCX, _uint iWinCY, ID3D11Device** ppDeviceOut, ID3D11DeviceContext** ppDeviceContextOut)
 {
+	// JJLEE
+	// https://commen.tistory.com/106
+	// gpu 정보 설정하는 함수들
+	//{
+	//	HRESULT hr;
+
+	//	IDXGIFactory* factory;
+	//	hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+	//	assert(SUCCEEDED(hr));
+
+	//	// 해외에선 그래픽 어답터라고 함 그래픽 카드를
+
+	//	IDXGIAdapter* adapter;
+	//	hr = factory->EnumAdapters(0, &adapter);
+	//	assert(SUCCEEDED(hr));
+
+	//	// gpu 정보 가져오는거
+	//	IDXGIOutput* adapterOutput;
+	//	hr = adapter->EnumOutputs(0, &adapterOutput);
+	//	assert(SUCCEEDED(hr));
+
+	//	UINT modeCount;
+	//	hr = adapterOutput->GetDisplayModeList
+	//	(
+	//		DXGI_FORMAT_R8G8B8A8_UNORM
+	//		, DXGI_ENUM_MODES_INTERLACED
+	//		, &modeCount
+	//		, NULL
+	//	);
+	//	assert(SUCCEEDED(hr));
+
+	//	// r8g8b8a8
+	//	// 0 ~ 255(0xff) 앞으로 16진수 많이 다룰꺼
+
+	//	DXGI_MODE_DESC* displayModeList = new DXGI_MODE_DESC[modeCount];
+	//	hr = adapterOutput->GetDisplayModeList
+	//	(
+	//		// 16진수 형의 unsinged 쓰겠다는거 (UNORM)
+	//		DXGI_FORMAT_R8G8B8A8_UNORM
+	//		, DXGI_ENUM_MODES_INTERLACED
+	//		, &modeCount
+	//		, displayModeList
+	//	);
+	//	assert(SUCCEEDED(hr));
+
+	//	for (UINT i = 0; i < modeCount; i++)
+	//	{
+	//		bool isCheck = true;
+	//		isCheck &= displayModeList[i].Width == g_iWinCX;
+	//		isCheck &= displayModeList[i].Height == g_iWinCY;
+
+	//		if (isCheck == true)
+	//		{
+	//			auto numerator = displayModeList[i].RefreshRate.Numerator;
+	//			auto denominator = displayModeList[i].RefreshRate.Denominator;
+	//		}
+	//	}
+
+	//	DXGI_ADAPTER_DESC adapterDesc;
+	//	hr = adapter->GetDesc(&adapterDesc);
+	//	assert(SUCCEEDED(hr));
+
+	//	auto gpuMemorySize = adapterDesc.DedicatedVideoMemory / 1024 / 1024;
+	//	auto gpuDescription = adapterDesc.Description;
+
+	//	Safe_Delete_Array(displayModeList);
+
+
+	//	Safe_Release(adapterOutput);
+	//	Safe_Release(adapter);
+	//	Safe_Release(factory);
+	//}
+
 	_uint		iFlag = 0;
 
 #ifdef _DEBUG
-	iFlag = D3D11_CREATE_DEVICE_DEBUG;
+	iFlag = /*D3D11_CREATE_DEVICE_DEBUG | */D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #endif
-	D3D_FEATURE_LEVEL			FreatureLV;
+	D3D_FEATURE_LEVEL			FreatureLV[] =
+	{
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_10_0,
+		D3D_FEATURE_LEVEL_9_3,
+		D3D_FEATURE_LEVEL_9_2,
+		D3D_FEATURE_LEVEL_9_1
+	};
 
 	/* 그래픽 장치를 초기화한다. */
-	if (FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, iFlag, nullptr, 0, D3D11_SDK_VERSION, &m_pDevice, &FreatureLV, &m_pDeviceContext)))
+	if (FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, iFlag, nullptr, 0, D3D11_SDK_VERSION, &m_pDevice, FreatureLV, &m_pDeviceContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_SwapChain(hWnd, WinMode, iWinCX, iWinCY)))
@@ -84,7 +166,7 @@ HRESULT CGraphic_Device::Present()
 	if (nullptr == m_pSwapChain)
 		return E_FAIL;
 
-	return m_pSwapChain->Present(0, 0);	
+	return m_pSwapChain->Present(0/*d3dDesc.bVsync == true?1:0*/, 0);
 }
 
 

@@ -19,7 +19,10 @@ private:
 public:
 	HRESULT NativeConstruct();
 	_int Tick(_float fTimeDelta);
+	HRESULT Clear();
 	HRESULT Render();
+	HRESULT PostRender();
+	HRESULT Present();
 
 public:
 	// Wrapping wndProc

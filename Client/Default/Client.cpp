@@ -90,7 +90,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			TimerAcc = 0.0;
 
 			pMainApp->Tick((float)pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-			pMainApp->Render();
+
+			pMainApp->Clear();
+			{
+				pMainApp->Render();
+				CDirectFont::GetInstance()->GetFontDC()->BeginDraw();
+				{
+					pMainApp->PostRender();
+				}
+				CDirectFont::GetInstance()->GetFontDC()->EndDraw();
+			}
+			pMainApp->Present();
+
 		}
 	}
 

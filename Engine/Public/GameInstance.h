@@ -1,13 +1,21 @@
 #pragma once
 
+// System
 #include "Graphic_Device.h"
 #include "Input_Device.h"
+#include "DirectFont.h"
+
+// Utility
 #include "Timer_Manager.h"
 #include "Object_Manager.h"
 #include "Component_Manager.h"
 #include "Level_Manager.h"
 #include "PipeLine.h"
 #include "Light_Manager.h"
+
+// DirectX Utils
+#include "DXString.h"
+
 
 BEGIN(Engine)
 

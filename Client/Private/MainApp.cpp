@@ -45,6 +45,7 @@ HRESULT CMainApp::NativeConstruct()
 
 	return S_OK;
 }
+
 _int CMainApp::Tick(_float fTimeDelta)
 {
 #if defined(USE_IMGUI)
@@ -59,8 +60,10 @@ _int CMainApp::Tick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CMainApp::Render()
+HRESULT CMainApp::Clear()
 {
+	assert(m_pGameInstance);
+
 #if defined(USE_IMGUI)
 	m_pGameInstance->Clear_BackBuffer_View(CImguiManager::GetInstance()->GetClearColor());
 #else
@@ -68,16 +71,38 @@ HRESULT CMainApp::Render()
 #endif
 	m_pGameInstance->Clear_DepthStencil_View();
 
-	m_pRenderer->Draw();
+	return S_OK;
+}
 
-	m_pGameInstance->Render_Engine();
+HRESULT CMainApp::Render()
+{
+	m_pRenderer->Draw(); // Main Draw
+
+	m_pGameInstance->Render_Engine(); // Level Dummy
 
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Render();
 #endif
+	return S_OK;
+}
 
-	m_pGameInstance->Present();
+HRESULT CMainApp::PostRender()
+{
+	assert(m_pGameInstance);
+	// m_pGameInstance->PostRender();
+
+	RECT rect = { 0,0,300,300 };
+
+	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
+	//DirectFont::RenderText(str, rect, 12);
 	
+	return S_OK;
+}
+
+HRESULT CMainApp::Present()
+{
+	assert(m_pGameInstance);
+	m_pGameInstance->Present();
 	return S_OK;
 }
 
@@ -140,7 +165,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), CTransform::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_VIBuffer_Rect */
+	/* For.Prototype_Component_VIBuffer_Rect */ 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Rect.hlsl")))))
 		return E_FAIL;
 	

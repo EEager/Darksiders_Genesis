@@ -4,7 +4,6 @@
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
 
-// -------------------
 // client headers
 #include "GameInstance.h"
 #include "Level_Loading.h"
@@ -72,7 +71,6 @@ void CImguiManager::DisableCursor()
 
 wstring CImguiManager::SaveFilePath()
 {
-	//string path = "";
 	wstring retPath = L"";
 	HRESULT hr = CoInitializeEx(NULL, COINITBASE_MULTITHREADED |
 		COINIT_DISABLE_OLE1DDE);
@@ -170,6 +168,7 @@ wstring CImguiManager::LoadFilePath()
 	return retPath;
 }
 
+_float ratio; // TEST
 void CImguiManager::Tick(_float fTimeDelta)
 {
 	// Check Key First
@@ -195,6 +194,15 @@ void CImguiManager::Tick(_float fTimeDelta)
 
 	// Speed Factor
 	ShowSpeedFactorControlWindow();
+
+	// Test
+	if (ratio < 1.0f)
+		ratio += 0.1f * fTimeDelta;
+	else 
+		ratio = 1.f;
+	ImGui::Begin("ProgressBar");
+	ImGui::ProgressBar(ratio);
+	ImGui::End();
 }
 
 void CImguiManager::Render()
@@ -214,8 +222,6 @@ void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContex
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -227,13 +233,12 @@ void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContex
 
 	m_pGraphic_Device = pGraphic_Device;
 	Safe_AddRef(pGraphic_Device);
+
 	m_pDevice_Context = pDeviceContext;
 	Safe_AddRef(pDeviceContext);
 
-
 	m_pGameInstance = CGameInstance::GetInstance();
 	Safe_AddRef(m_pGameInstance);
-
 }
 
 void CImguiManager::Release()
@@ -241,11 +246,12 @@ void CImguiManager::Release()
 	// Cleanup
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
 
 	Safe_Release(m_pGraphic_Device);
 	Safe_Release(m_pDevice_Context);
 	Safe_Release(m_pGameInstance);
+
+	ImGui::DestroyContext();
 }
 
 void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
@@ -280,13 +286,14 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::BulletText("Current Level : %s\n", curLevel < 0 ? "Error" : g_level_items[curLevel]);
 	if (ImGui::Combo("Level Select", &m_iNextLevel, g_level_items, IM_ARRAYSIZE(g_level_items)))
 	{
+		// 아래 레벨이 아닐때만 레벨 이동을 하자
 		if (m_iNextLevel != LEVEL_STATIC && m_iNextLevel != LEVEL_LOADING && m_iNextLevel != LEVEL_END)
 		{
 			if (FAILED(Open_Level(LEVEL(m_iNextLevel))))
 				return;
 		}
 		else
-			m_iNextLevel = curLevel;
+			m_iNextLevel = curLevel; // 레벨 이동을 안했을 때는 이전 레벨 select되도록하자
 	}
 
 
@@ -338,7 +345,7 @@ void CImguiManager::ShowCameraControlWindow()
 	bool rotDirty_yaw = false;
 	bool posDirty = false;
 
-	const auto dCheck = [](bool d, bool& carry) { carry = carry || d; }; // 람다 한번 사용해보자
+	const auto dCheck = [](bool d, bool& carry) { carry = carry || d; }; 
 
 	float f0 = pCamera->Get_Camera_Desc().TransformDesc.fSpeedPerSec;
 	bool speedDirty = false;
