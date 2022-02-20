@@ -1,5 +1,6 @@
 #include "..\public\Graphic_Device.h"
 
+
 IMPLEMENT_SINGLETON(CGraphic_Device)
 
 CGraphic_Device::CGraphic_Device()
@@ -13,83 +14,10 @@ CGraphic_Device::CGraphic_Device()
 
 HRESULT CGraphic_Device::Ready_Graphic_Device(HWND hWnd, WINMODE WinMode, _uint iWinCX, _uint iWinCY, ID3D11Device** ppDeviceOut, ID3D11DeviceContext** ppDeviceContextOut)
 {
-	// JJLEE
-	// https://commen.tistory.com/106
-	// gpu 정보 설정하는 함수들
-	//{
-	//	HRESULT hr;
-
-	//	IDXGIFactory* factory;
-	//	hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-	//	assert(SUCCEEDED(hr));
-
-	//	// 해외에선 그래픽 어답터라고 함 그래픽 카드를
-
-	//	IDXGIAdapter* adapter;
-	//	hr = factory->EnumAdapters(0, &adapter);
-	//	assert(SUCCEEDED(hr));
-
-	//	// gpu 정보 가져오는거
-	//	IDXGIOutput* adapterOutput;
-	//	hr = adapter->EnumOutputs(0, &adapterOutput);
-	//	assert(SUCCEEDED(hr));
-
-	//	UINT modeCount;
-	//	hr = adapterOutput->GetDisplayModeList
-	//	(
-	//		DXGI_FORMAT_R8G8B8A8_UNORM
-	//		, DXGI_ENUM_MODES_INTERLACED
-	//		, &modeCount
-	//		, NULL
-	//	);
-	//	assert(SUCCEEDED(hr));
-
-	//	// r8g8b8a8
-	//	// 0 ~ 255(0xff) 앞으로 16진수 많이 다룰꺼
-
-	//	DXGI_MODE_DESC* displayModeList = new DXGI_MODE_DESC[modeCount];
-	//	hr = adapterOutput->GetDisplayModeList
-	//	(
-	//		// 16진수 형의 unsinged 쓰겠다는거 (UNORM)
-	//		DXGI_FORMAT_R8G8B8A8_UNORM
-	//		, DXGI_ENUM_MODES_INTERLACED
-	//		, &modeCount
-	//		, displayModeList
-	//	);
-	//	assert(SUCCEEDED(hr));
-
-	//	for (UINT i = 0; i < modeCount; i++)
-	//	{
-	//		bool isCheck = true;
-	//		isCheck &= displayModeList[i].Width == g_iWinCX;
-	//		isCheck &= displayModeList[i].Height == g_iWinCY;
-
-	//		if (isCheck == true)
-	//		{
-	//			auto numerator = displayModeList[i].RefreshRate.Numerator;
-	//			auto denominator = displayModeList[i].RefreshRate.Denominator;
-	//		}
-	//	}
-
-	//	DXGI_ADAPTER_DESC adapterDesc;
-	//	hr = adapter->GetDesc(&adapterDesc);
-	//	assert(SUCCEEDED(hr));
-
-	//	auto gpuMemorySize = adapterDesc.DedicatedVideoMemory / 1024 / 1024;
-	//	auto gpuDescription = adapterDesc.Description;
-
-	//	Safe_Delete_Array(displayModeList);
-
-
-	//	Safe_Release(adapterOutput);
-	//	Safe_Release(adapter);
-	//	Safe_Release(factory);
-	//}
-
 	_uint		iFlag = 0;
 
 #ifdef _DEBUG
-	iFlag = /*D3D11_CREATE_DEVICE_DEBUG | */D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	iFlag = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #endif
 	D3D_FEATURE_LEVEL			FreatureLV[] =
 	{
@@ -116,24 +44,33 @@ HRESULT CGraphic_Device::Ready_Graphic_Device(HWND hWnd, WINMODE WinMode, _uint 
 		return E_FAIL;
 
 	/* 장치에 바인드해놓을 렌더타겟들과 뎁스스텐실뷰를 셋팅한다. */
-	m_pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferRTV, m_pDepthStencilView);		
-	
-	D3D11_VIEWPORT			ViewPortDesc;
-	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
-	ViewPortDesc.TopLeftX = 0;
-	ViewPortDesc.TopLeftY = 0;
-	ViewPortDesc.Width = (float)iWinCX;
-	ViewPortDesc.Height = (float)iWinCY;
-	ViewPortDesc.MinDepth = 0.f;
-	ViewPortDesc.MaxDepth = 1.f;
+	{
+		m_pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferRTV, m_pDepthStencilView);
 
-	m_pDeviceContext->RSSetViewports(1, &ViewPortDesc);
+		D3D11_VIEWPORT			ViewPortDesc;
+		ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
+		ViewPortDesc.TopLeftX = 0;
+		ViewPortDesc.TopLeftY = 0;
+		ViewPortDesc.Width = (float)iWinCX;
+		ViewPortDesc.Height = (float)iWinCY;
+		ViewPortDesc.MinDepth = 0.f;
+		ViewPortDesc.MaxDepth = 1.f;
 
-	*ppDeviceOut = m_pDevice;
-	*ppDeviceContextOut = m_pDeviceContext;
+		m_pDeviceContext->RSSetViewports(1, &ViewPortDesc);
 
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pDeviceContext);
+		*ppDeviceOut = m_pDevice;
+		*ppDeviceContextOut = m_pDeviceContext;
+
+		Safe_AddRef(m_pDevice);
+		Safe_AddRef(m_pDeviceContext);
+	}
+
+	/* Initialize Font */
+	{
+	/*	m_spriteBatch = &DirectX::SpriteBatch(m_pDeviceContext);
+		m_spriteFont = &DirectX::SpriteFont(m_pDevice, L"../../FontData/myfile.spritefont");*/
+	}
+
 
 	return S_OK;
 }

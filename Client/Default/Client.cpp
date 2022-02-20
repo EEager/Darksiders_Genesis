@@ -94,11 +94,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			pMainApp->Clear();
 			{
 				pMainApp->Render();
-				CDirectFont::GetInstance()->GetFontDC()->BeginDraw();
-				{
-					pMainApp->PostRender();
-				}
-				CDirectFont::GetInstance()->GetFontDC()->EndDraw();
+
+				pMainApp->PostRender();
 			}
 			pMainApp->Present();
 

@@ -19,6 +19,8 @@ CMainApp::CMainApp()
 	Safe_AddRef(m_pGameInstance);
 }
 
+std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 HRESULT CMainApp::NativeConstruct()
 {
 	CGraphic_Device::GRAPHICDEVDESC		GraphicDevDesc;
@@ -29,6 +31,9 @@ HRESULT CMainApp::NativeConstruct()
 
 	if (FAILED(m_pGameInstance->Initialize_Engine(g_hInst, LEVEL_END, GraphicDevDesc, &m_pDevice, &m_pDeviceContext)))
 		return E_FAIL;
+
+	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pDeviceContext);
+	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../../FontData/myfile.spritefont");
 
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
@@ -92,6 +97,11 @@ HRESULT CMainApp::PostRender()
 	// m_pGameInstance->PostRender();
 
 	RECT rect = { 0,0,300,300 };
+	 
+	m_spriteBatch->Begin();
+
+	m_spriteFont->DrawString(m_spriteBatch.get(), L"Hellow World", _float2(50, 50));
+	m_spriteBatch->End();
 
 	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
 	//DirectFont::RenderText(str, rect, 12);

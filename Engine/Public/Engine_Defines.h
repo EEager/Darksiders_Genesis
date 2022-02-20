@@ -1,9 +1,14 @@
 #pragma once
 
-static const unsigned int		g_iWinCX = 1280;
-static const unsigned int		g_iWinCY = 720;
-
 #pragma warning (disable : 4251)
+
+//#pragma warning (disable : 2579)
+//#pragma warning (disable : 2599)
+//#pragma warning (disable : 3308)
+
+#pragma warning (disable : 4099) // warning LNK4099: 'Effects11d.pdb' PDB를 'Effects11d.lib(d3dxGlobal.obj)' 또는 'C:\Users\JJLEE\Desktop\DarksidersGenesis\Darksiders_Genesis\Engine\Bin\Effects11d.pdb'에서 찾을 수 없습니다.
+
+
 
 // -----------------------
 // DirectX
@@ -14,12 +19,20 @@ static const unsigned int		g_iWinCY = 720;
 #include <DirectXMath.h>
 #include <d3dx11effect.h>
 #include <d3dcompiler.h>
+
+// DirectXTex
 #include "DirectXTex.h"
 using namespace DirectX;
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
+// DirectXTK
+#ifdef _DEBUG
+#pragma comment(lib, "DirectXTKd.lib")
+#else
+#pragma comment(lib, "DirectXTK.lib")
+#endif
 
 // -----------------------
 // Font
