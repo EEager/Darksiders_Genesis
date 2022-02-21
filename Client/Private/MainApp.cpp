@@ -94,40 +94,35 @@ HRESULT CMainApp::PostRender()
 
 	RECT rect = { 0,0,300,300 };
 	m_spriteBatch->Begin();
-	//m_spriteFont->DrawString(m_spriteBatch.get(),
-	//	DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate).c_str(),
-	//	_float2(g_iWinCX / 2.f, g_iWinCY / 2.f));
+	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
+	const wchar_t* output = str.c_str();
+	
+	//auto origin = m_spriteFont->MeasureString(output) / 2.f;
+	auto origin = DirectX::g_XMZero;
 
-	const wchar_t* output = L"3,056";
-
-	auto origin = m_spriteFont->MeasureString(output) / 2.f;
-	origin = DirectX::g_XMZero;
-
-	_float2 tmp;
-
+	_float2 tmpPos;
 	// Font Position
-	tmp = _float2(g_iWinCX/2.f, g_iWinCY/2.f); 
-	XMVECTOR m_fontPos = XMLoadFloat2(&tmp);
+	tmpPos = _float2(g_iWinCX/2.f, g_iWinCY/2.f); 
+	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
 
 	// Outline Effect
-	tmp = _float2(1.f, 1.f);
+	tmpPos = _float2(1.f, 1.f);
 	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
-	tmp = _float2(-1.f, 1.f);
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	tmpPos = _float2(-1.f, 1.f);
 	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
-	tmp = _float2(-1.f, -1.f);
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	tmpPos = _float2(-1.f, -1.f);
 	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
-	tmp = _float2(1.f, -1.f);
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	tmpPos = _float2(1.f, -1.f);
 	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
 
 	// Origin Text
 	m_spriteFont->DrawString(m_spriteBatch.get(), output,
 		m_fontPos, Colors::White, 0.f, origin);
 	
-
 	m_spriteBatch->End();
 	
 
