@@ -1,5 +1,5 @@
 
-#include "Shader_Defines.hpp"
+#include "Shader_Defines.hlsl"
 
 cbuffer LightDesc
 {
@@ -21,11 +21,12 @@ cbuffer BrushDesc
 };
 
 
-cbuffer Matrices 
+cbuffer cbPerObject
 {
 	matrix			g_WorldMatrix;
 	matrix			g_ViewMatrix;
 	matrix			g_ProjMatrix;
+	Material		g_Material;
 };
 
 texture2D		g_SourTexture;
@@ -116,12 +117,12 @@ PS_OUT PS_MAIN(PS_IN In)
 	vector		vReflect = reflect(normalize(g_vLightDir), In.vNormal);
 	vector		vLook = normalize(In.vWorldPos - g_vCamPosition);
 
-	float		fSpecular = pow(max(dot(normalize(vReflect) * -1.f, vLook), 0.f), g_fMtrlPower);
+	float		fSpecular = pow(max(dot(normalize(vReflect) * -1.f, vLook), 0.f), g_Material.fMtrlPower);
 
 	vector		vDiffuseMtrl = vSourDiffuse * vFilterDesc + vDestDiffuse * (1.f - vFilterDesc) + vBrushColor;
 
-	Out.vColor = (g_vLightDiffuse * vDiffuseMtrl) * saturate(fShade + (g_vLightAmbient * g_vMtrlAmbient)) 
-		+ (g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
+	Out.vColor = (g_vLightDiffuse * vDiffuseMtrl) * saturate(fShade + (g_vLightAmbient * g_Material.vMtrlAmbient))
+		+ (g_vLightSpecular * g_Material.vMtrlSpecular) * fSpecular;
 
 	return Out;
 }

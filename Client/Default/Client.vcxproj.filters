@@ -49,6 +49,12 @@
     <Filter Include="02.GameObjects\Fork">
       <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.ShaderFiles\Header">
+      <UniqueIdentifier>{1f28af27-a403-4abe-8414-dbf3c2416300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.ShaderFiles\App">
+      <UniqueIdentifier>{4fa29561-5dee-487e-a939-55b8dfacffd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -87,9 +93,6 @@
     <ClInclude Include="..\Public\Camera_Fly.h">
       <Filter>02.GameObjects\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Bin\ShaderFiles\Shader_Defines.hpp">
-      <Filter>97.ShaderFiles</Filter>
-    </ClInclude>
     <ClInclude Include="..\ImGUI\imgui_Manager.h">
       <Filter>77.ImGUI\Manager</Filter>
     </ClInclude>
@@ -122,6 +125,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Fork.h">
       <Filter>02.GameObjects\Fork</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Bin\ShaderFiles\Shader_Defines.hlsl">
+      <Filter>97.ShaderFiles\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\LightHelper.h">
+      <Filter>97.ShaderFiles\App</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +191,9 @@
     <ClCompile Include="..\Private\Fork.cpp">
       <Filter>02.GameObjects\Fork</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\LightHelper.cpp">
+      <Filter>97.ShaderFiles\App</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -208,6 +220,12 @@
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl">
       <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl">
+      <Filter>97.ShaderFiles\Header</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

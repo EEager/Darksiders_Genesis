@@ -124,7 +124,7 @@ HRESULT CMainApp::PostRender()
 		m_fontPos, Colors::White, 0.f, origin);
 	
 	m_spriteBatch->End();
-	
+
 
 	/*
 		m_spriteBatch changes some render states...

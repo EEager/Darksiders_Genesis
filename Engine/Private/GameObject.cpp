@@ -11,9 +11,10 @@ CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceCont
 
 }
 
-CGameObject::CGameObject(const CGameObject & rhs)
+CGameObject::CGameObject(const CGameObject& rhs)
 	: m_pDeviceContext(rhs.m_pDeviceContext)
 	, m_pDevice(rhs.m_pDevice)
+	, m_tMtrlDesc(rhs.m_tMtrlDesc)
 {
 	Safe_AddRef(m_pDeviceContext);
 	Safe_AddRef(m_pDevice);

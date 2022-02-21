@@ -167,7 +167,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Bin\ShaderFiles\Shader_Defines.hpp" />
+    <ClInclude Include="..\Bin\ShaderFiles\Shader_Defines.hlsl" />
     <ClInclude Include="..\ImGUI\imconfig.h" />
     <ClInclude Include="..\ImGUI\imgui.h" />
     <ClInclude Include="..\ImGUI\imgui_impl_dx11.h" />
@@ -184,6 +184,7 @@
     <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\Level_Logo.h" />
+    <ClInclude Include="..\Public\LightHelper.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\Public\Terrain.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
+    <ClCompile Include="..\Private\LightHelper.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
@@ -226,10 +228,12 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

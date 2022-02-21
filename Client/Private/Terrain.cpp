@@ -17,6 +17,12 @@ CTerrain::CTerrain(const CTerrain & rhs)
 
 HRESULT CTerrain::NativeConstruct_Prototype()
 {	
+	// Material Init
+	m_tMtrlDesc.vMtrlDiffuse = { 0.48f, 0.77f, 0.46f, 1.0f };
+	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
+	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 16.0f };
+	m_tMtrlDesc.vMtrlEmissive = {1.f, 1.f, 1.f, 1.f};
+	m_tMtrlDesc.fMtrlPower = 20.f;
 
 	return S_OK;
 }
@@ -100,17 +106,22 @@ HRESULT CTerrain::SetUp_ConstantTable()
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
+	// Bind Directional Light
+	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
+	DirectionalLight mDirLight;
+	mDirLight.Ambient = LightDesc.vAmbient;
+	mDirLight.Diffuse = LightDesc.vDiffuse;
+	mDirLight.Specular = LightDesc.vSpecular;
+	mDirLight.Direction = LightDesc.vDirection;
+	m_pVIBufferCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+
+	// Bind Material
+	m_pVIBufferCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
 	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pVIBufferCom, "g_WorldMatrix"); 
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIBufferCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIBufferCom, "g_ProjMatrix"); 
-
-	// Bind Light
-	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
-	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightSpecular", &LightDesc.vSpecular, sizeof(_float4));
 
 	// Bind Position
 	_float4			vCamPosition;	

@@ -1,5 +1,5 @@
 
-#include "Shader_Defines.hpp"
+#include "Shader_Defines.hlsl"
 
 cbuffer Matrices 
 {

@@ -33,3 +33,8 @@ static const unsigned int		g_iWinCY = 720;
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
 #endif
+
+// -----------------------
+// LightHelper.h
+// -----------------------
+#include "LightHelper.h"

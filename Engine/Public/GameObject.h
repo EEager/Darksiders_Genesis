@@ -40,6 +40,9 @@ protected:
 private:
 	CComponent* Find_Component(const _tchar* pComponentTag);
 
+protected:
+	MTRLDESC m_tMtrlDesc;
+
 public:
 	/* 원형객체가 호출한다. */
 	virtual CGameObject* Clone(void* pArg) = 0;

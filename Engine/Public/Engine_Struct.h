@@ -15,6 +15,27 @@ namespace Engine
 		class CTexture* pTexture[AI_TEXTURE_TYPE_MAX];
 	}MESHMATERIAL;
 
+	typedef struct tagMaterialDesc
+	{
+		tagMaterialDesc()
+			: 
+			vMtrlDiffuse(XMVectorSplatOne()),
+			vMtrlAmbient(XMVectorSplatOne()),
+			vMtrlSpecular(XMVectorSplatOne()),
+			vMtrlReflect(XMVectorSplatOne()),
+			vMtrlEmissive(XMVectorSplatOne()),
+			fMtrlPower(20.f)
+		{}
+
+		XMVECTOR			vMtrlDiffuse; // πÊ«‚
+		XMVECTOR			vMtrlAmbient; 
+		XMVECTOR			vMtrlSpecular; 
+		XMVECTOR			vMtrlReflect; 
+		XMVECTOR			vMtrlEmissive;
+		_float				fMtrlPower; 
+		_float3				pad;
+	}MTRLDESC;
+
 	typedef struct tagLightDesc
 	{
 		enum TYPE { TYPE_DIRECTIONAL, TYPE_POINT, TYPE_END };
