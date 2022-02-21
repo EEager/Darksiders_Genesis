@@ -20,6 +20,10 @@ public:
 	_vector Get_CamPosition() {
 		return XMLoadFloat4(&m_vCamPosition);
 	}
+	_vector Get_CamLook() {
+		return XMLoadFloat4(&m_vCamLook);
+	}
+
 
 public:
 	void Set_Transform(TRANSFORMTYPE eTransformType, _fmatrix TransformMatrix);
@@ -35,6 +39,7 @@ private:
 	_float4x4					m_ProjMatrix;
 
 	_float4						m_vCamPosition;
+	_float4						m_vCamLook;
 
 public:
 	virtual void Free() override;

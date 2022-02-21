@@ -221,6 +221,14 @@ _vector CGameInstance::Get_CamPosition()
 	return m_pPipeLine->Get_CamPosition();
 }
 
+_vector CGameInstance::Get_CamLook()
+{
+	if (nullptr == m_pPipeLine)
+		return XMVectorZero();
+
+	return m_pPipeLine->Get_CamLook();
+}
+
 HRESULT CGameInstance::Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, CVIBuffer * pVIBuffer, const char * pConstantName)
 {
 	if (nullptr == m_pPipeLine)

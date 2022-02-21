@@ -137,6 +137,9 @@ HRESULT CTerrain::SetUp_ConstantTable()
 	// like we are holding a flashlight
 	XMStoreFloat3(&mSpotLight.Position, pGameInstance->Get_CamPosition());
 	XMStoreFloat3(&pSpotLightDesc->vPosition, pGameInstance->Get_CamPosition());
+
+	XMStoreFloat3(&mSpotLight.Direction, pGameInstance->Get_CamLook());
+	XMStoreFloat3(&pSpotLightDesc->vDirection, pGameInstance->Get_CamLook());
 	
 	mSpotLight.Att = _float3(1.f, 0.f, 0.f);
 	mSpotLight.Spot = 96.f;

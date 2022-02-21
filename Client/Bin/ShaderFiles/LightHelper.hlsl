@@ -155,7 +155,7 @@ void ComputeSpotLight(Material mat, SpotLight L, float3 pos, float3 normal, floa
 	float d = length(lightVec);
 
 	// Range test.
-	if (d > L.Range)
+	if (d > L.Range) // 시야에서 멀어지면 밝은건없다.
 		return;
 
 	// Normalize the light vector.

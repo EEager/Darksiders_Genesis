@@ -25,6 +25,7 @@ void CPipeLine::Tick()
 	XMStoreFloat4x4(&m_ViewMatrixInverse, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_ViewMatrix)));
 
 	memcpy(&m_vCamPosition, &m_ViewMatrixInverse.m[3][0], sizeof(_float4));
+	memcpy(&m_vCamLook, &m_ViewMatrixInverse.m[2][0], sizeof(_float4));
 }
 
 void CPipeLine::Free()
