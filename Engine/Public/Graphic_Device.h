@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Base.h"
-#include "DirectXTK\SpriteBatch.h"
-#include "DirectXTK\SpriteFont.h"
 
 BEGIN(Engine)
 
-class ENGINE_DLL CGraphic_Device final : public CBase
+class CGraphic_Device final : public CBase
 {
 	DECLARE_SINGLETON(CGraphic_Device)
 
@@ -34,8 +32,6 @@ public:
 	ID3D11Device* GetDevice() { return m_pDevice; }
 	ID3D11DeviceContext* GetDC() { return m_pDeviceContext; }
 	IDXGISwapChain* GetSwapChain() { return m_pSwapChain; }
-	DirectX::SpriteBatch* GetSpriteBatch() { return m_spriteBatch; }
-	DirectX::SpriteFont* GetSpriteFont() { return m_spriteFont; }
 
 private:	
 
@@ -55,10 +51,6 @@ private:
 	HRESULT Ready_SwapChain(HWND hWnd, WINMODE WinMode, _uint iWinCX, _uint iWinCY);
 	HRESULT Ready_BackBufferRenderTargetView();
 	HRESULT Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint iWinCY);
-
-private:
-	DirectX::SpriteBatch* m_spriteBatch; 
-	DirectX::SpriteFont* m_spriteFont;
 
 
 public:

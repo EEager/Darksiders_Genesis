@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
+#include "GameInstance.h"
 #include "Base.h"
 
 BEGIN(Engine)
@@ -33,6 +34,8 @@ private:
 	ID3D11Device*					m_pDevice = nullptr;
 	ID3D11DeviceContext*			m_pDeviceContext = nullptr;
 	CRenderer*						m_pRenderer = nullptr;
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 
 private:
 	HRESULT Open_Level(LEVEL eStartID);

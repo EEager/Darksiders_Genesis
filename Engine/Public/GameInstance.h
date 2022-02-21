@@ -3,7 +3,6 @@
 // System
 #include "Graphic_Device.h"
 #include "Input_Device.h"
-#include "DirectFont.h"
 
 // Utility
 #include "Timer_Manager.h"

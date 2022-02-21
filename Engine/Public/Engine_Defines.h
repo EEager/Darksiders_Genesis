@@ -37,10 +37,8 @@ using namespace DirectX;
 // -----------------------
 // Font
 // -----------------------
-#include <d2d1_1.h>
-#include <dwrite.h>
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib, "dwrite.lib")
+#include "DirectXTK\SpriteBatch.h"
+#include "DirectXTK\SpriteFont.h"
 
 // -----------------------
 // Library

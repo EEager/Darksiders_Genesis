@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "..\Public\MainApp.h"
-#include "GameInstance.h"
 #include "Level_Loading.h"
 #include "BackGround.h"
 #include "Camera_Fly.h"
@@ -19,8 +18,6 @@ CMainApp::CMainApp()
 	Safe_AddRef(m_pGameInstance);
 }
 
-std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 HRESULT CMainApp::NativeConstruct()
 {
 	CGraphic_Device::GRAPHICDEVDESC		GraphicDevDesc;
@@ -33,7 +30,7 @@ HRESULT CMainApp::NativeConstruct()
 		return E_FAIL;
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pDeviceContext);
-	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../../FontData/myfile.spritefont");
+	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/DotumChe_16.spritefont");
 
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
@@ -94,18 +91,63 @@ HRESULT CMainApp::Render()
 HRESULT CMainApp::PostRender()
 {
 	assert(m_pGameInstance);
-	// m_pGameInstance->PostRender();
 
 	RECT rect = { 0,0,300,300 };
-	 
 	m_spriteBatch->Begin();
+	//m_spriteFont->DrawString(m_spriteBatch.get(),
+	//	DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate).c_str(),
+	//	_float2(g_iWinCX / 2.f, g_iWinCY / 2.f));
 
-	m_spriteFont->DrawString(m_spriteBatch.get(), L"Hellow World", _float2(50, 50));
-	m_spriteBatch->End();
+	const wchar_t* output = L"3,056";
 
-	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
-	//DirectFont::RenderText(str, rect, 12);
+	auto origin = m_spriteFont->MeasureString(output) / 2.f;
+	origin = DirectX::g_XMZero;
+
+	_float2 tmp;
+
+	// Font Position
+	tmp = _float2(g_iWinCX/2.f, g_iWinCY/2.f); 
+	XMVECTOR m_fontPos = XMLoadFloat2(&tmp);
+
+	// Outline Effect
+	tmp = _float2(1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
+	tmp = _float2(-1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
+	tmp = _float2(-1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
+	tmp = _float2(1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmp), Colors::Black, 0.f, origin);
+
+	// Origin Text
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos, Colors::White, 0.f, origin);
 	
+
+	m_spriteBatch->End();
+	
+
+	/*
+		m_spriteBatch changes some render states...
+		https://shawnhargreaves.com/blog/spritebatch-and-renderstates.html
+		So, we need to restore render state...
+
+		GraphicsDevice.RenderState.DepthBufferEnable = true;
+		GraphicsDevice.RenderState.AlphaBlendEnable = false;
+		GraphicsDevice.RenderState.AlphaTestEnable = false;
+		(Depending on your 3D content)
+	    GraphicsDevice.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+		GraphicsDevice.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
+	*/
+	m_pDeviceContext->RSSetState(0);
+	m_pDeviceContext->OMSetDepthStencilState(0, 0);
+	m_pDeviceContext->OMSetBlendState(0, 0, 0xffffffff);
+	m_pDeviceContext->PSSetSamplers(0, 0, 0);
+
 	return S_OK;
 }
 

@@ -65,12 +65,6 @@ HRESULT CGraphic_Device::Ready_Graphic_Device(HWND hWnd, WINMODE WinMode, _uint 
 		Safe_AddRef(m_pDeviceContext);
 	}
 
-	/* Initialize Font */
-	{
-	/*	m_spriteBatch = &DirectX::SpriteBatch(m_pDeviceContext);
-		m_spriteFont = &DirectX::SpriteFont(m_pDevice, L"../../FontData/myfile.spritefont");*/
-	}
-
 
 	return S_OK;
 }

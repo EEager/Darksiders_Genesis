@@ -95,10 +95,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				pMainApp->Render();
 
+				// Post Font Render
 				pMainApp->PostRender();
 			}
 			pMainApp->Present();
-
 		}
 	}
 
