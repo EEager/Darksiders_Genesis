@@ -105,38 +105,66 @@ PS_OUT PS(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
+	// --------------------------
+	// Texture
+	// --------------------------
+	vector		vSourDiffuse = g_SourTexture.Sample(DefaultSampler, In.vTexUV * 10.f);
+	vector		vDestDiffuse = g_DestTexture.Sample(DefaultSampler, In.vTexUV * 20.f);
+	vector		vFilterDesc = g_FilterTexture.Sample(DefaultSampler, In.vTexUV);
+	vector		vBrushColor = vector(0.f, 0.f, 0.f, 0.f);
+
+	/* 브러시 색상이 올라가야할 픽셀들이었다면. */
+	if (g_vBrushPosition.x - g_fRange < In.vPosW.x && In.vPosW.x <= g_vBrushPosition.x + g_fRange &&
+		g_vBrushPosition.z - g_fRange < In.vPosW.z && In.vPosW.z <= g_vBrushPosition.z + g_fRange)
+	{
+		float2		vTexUV;
+		vTexUV.x = (In.vPosW.x - (g_vBrushPosition.x - g_fRange)) / (2.f * g_fRange);
+		vTexUV.y = ((g_vBrushPosition.z + g_fRange) - In.vPosW.z) / (2.f * g_fRange);
+
+		vBrushColor = g_BrushTexture.Sample(DefaultSampler, vTexUV);
+	}
+
+
 	// Interpolating normal can unnormalize it, so normalize it.
 	In.vNormalW = normalize(In.vNormalW);
 
 	float3 toEyeW = normalize(g_vCamPosition - In.vPosW).xyz;
 
-	// Start with a sum of zero. 
-	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	// Sum the light contribution from each light source.
-	float4 A, D, S;
+	// --------------------------
+	//	Light
+	// --------------------------
+	float4 texColor = vSourDiffuse * vFilterDesc + vDestDiffuse * (1.f - vFilterDesc) + vBrushColor;
+	Out.vColor = texColor;
+	{
+		float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
+		// Sum the light contribution from each light source.
+		float4 A, D, S;
 
-	ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
+		ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW, A, D, S);
+		ambient += A;
+		diffuse += D;
+		spec += S;
 
-	ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-	ambient += A;
-	diffuse += D;
-	spec += S;
+		ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+		ambient += A;
+		diffuse += D;
+		spec += S;
 
-	Out.vColor = ambient + diffuse + spec;
+		ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+		ambient += A;
+		diffuse += D;
+		spec += S;
 
-	// Common to take alpha from diffuse material.
-	Out.vColor.a = g_Material.vMtrlDiffuse.a;
+		// Modulate with late add.
+		Out.vColor = texColor * (ambient + diffuse) + spec;
+	}
+
+	// Common to take alpha from diffuse material and texture.
+	Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
 
 	return Out;
 }

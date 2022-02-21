@@ -61,8 +61,8 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	LIGHTDESC			LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	LightDesc.eType = tagLightDesc::TYPE_DIRECTIONAL;
-	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.0f);
-	LightDesc.vDiffuse = _float4(0.5f, 0.5f, 0.5f, 1.0f);
+	LightDesc.vDiffuse = _float4(0.2f, 0.2f, 0.2f, 1.0f);
+	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.0f);
 	LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.0f);
 	LightDesc.vDirection = _float3(0.57735f, -0.57735f, 0.57735f);
 
@@ -73,8 +73,8 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	// Point Light
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	LightDesc.eType = tagLightDesc::TYPE_POINT;
-	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.0f);
 	LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 1.0f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.0f);
 	LightDesc.vSpecular = _float4(0.7f, 0.7f, 0.7f, 1.0f);
 	LightDesc.fRadiuse = 25.f;
 	/*
@@ -89,8 +89,8 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	// Spot Light
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	LightDesc.eType = tagLightDesc::TYPE_SPOT;
-	LightDesc.vAmbient = _float4(0.0f, 0.0f, 0.0f, 1.0f);
 	LightDesc.vDiffuse = _float4(1.0f, 1.0f, 0.0f, 1.0f);
+	LightDesc.vAmbient = _float4(0.0f, 0.0f, 0.0f, 1.0f);
 	LightDesc.vSpecular = _float4(1.0f, 1.0f, 1.0f, 1.0f);
 	LightDesc.fRadiuse = 10000.0f;
 
