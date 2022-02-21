@@ -70,6 +70,18 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
 		return E_FAIL;
 
+	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+
+	LightDesc.eType = tagLightDesc::TYPE_POINT;
+	LightDesc.vDirection = _float3(1.f, -1.f, 1.f);
+
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
+		return E_FAIL;
+
 
 	RELEASE_INSTANCE(CGameInstance);
 	

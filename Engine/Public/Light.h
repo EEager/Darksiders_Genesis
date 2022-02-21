@@ -11,8 +11,12 @@ public:
 	virtual ~CLight() = default;
 
 public:
-	const LIGHTDESC* Get_LightDesc() const {
+	LIGHTDESC* Get_LightDesc() {
 		return &m_LightDesc;
+	}
+
+	void Set_LightDesc(const LIGHTDESC& LightDesc) {
+		m_LightDesc = LightDesc;
 	}
 
 public:

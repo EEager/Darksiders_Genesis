@@ -20,9 +20,9 @@ namespace Engine
 		enum TYPE { TYPE_DIRECTIONAL, TYPE_POINT, TYPE_END };
 
 		TYPE				eType;
-		XMFLOAT3			vDirection;
-		XMFLOAT3			vPosition;
-		float				fRadiuse;
+		XMFLOAT3			vDirection; // 방향
+		XMFLOAT3			vPosition; // 위치
+		float				fRadiuse; // 거리? 
 
 		XMFLOAT4			vDiffuse;
 		XMFLOAT4			vAmbient;

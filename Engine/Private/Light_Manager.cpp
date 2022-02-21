@@ -7,14 +7,26 @@ CLight_Manager::CLight_Manager()
 {
 }
 
-const LIGHTDESC * CLight_Manager::Get_LightDesc(_uint iIndex) const
+LIGHTDESC * CLight_Manager::Get_LightDesc(_uint iIndex)
 {
 	auto	iter = m_Lights.begin();
 
 	for (_uint i = 0; i < iIndex; ++i)
 		++iter;	
+	if (iter == m_Lights.end())
+		return nullptr;
 
 	return (*iter)->Get_LightDesc();
+}
+
+void CLight_Manager::Set_LightDesc(_uint iIndex, const LIGHTDESC& LightDesc)
+{
+	auto	iter = m_Lights.begin();
+
+	for (_uint i = 0; i < iIndex; ++i)
+		++iter;
+
+	return (*iter)->Set_LightDesc(LightDesc);
 }
 
 HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const LIGHTDESC & LightDesc)

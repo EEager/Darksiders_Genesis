@@ -2,6 +2,7 @@
 #include "..\public\Terrain.h"
 
 #include "GameInstance.h"
+#include "Light.h"
 
 
 CTerrain::CTerrain(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -99,23 +100,24 @@ HRESULT CTerrain::SetUp_ConstantTable()
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
-	m_pTransformCom->Bind_OnShader(m_pVIBufferCom, "g_WorldMatrix");
+	// Bind Transform
+	m_pTransformCom->Bind_OnShader(m_pVIBufferCom, "g_WorldMatrix"); 
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIBufferCom, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIBufferCom, "g_ProjMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIBufferCom, "g_ProjMatrix"); 
 
-
-
+	// Bind Light
 	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
 	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightSpecular", &LightDesc.vSpecular, sizeof(_float4));
 
+	// Bind Position
 	_float4			vCamPosition;	
 	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
 	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
 
-
+	// Bind Texture 
 	if (FAILED(m_pTextureCom[TYPE_DIFFUSE]->SetUp_OnShader(m_pVIBufferCom, "g_SourTexture", 0)))
 		return E_FAIL;	
 	if (FAILED(m_pTextureCom[TYPE_DIFFUSE]->SetUp_OnShader(m_pVIBufferCom, "g_DestTexture", 1)))
@@ -125,7 +127,6 @@ HRESULT CTerrain::SetUp_ConstantTable()
 	if (FAILED(m_pTextureCom[TYPE_BRUSH]->SetUp_OnShader(m_pVIBufferCom, "g_BrushTexture")))
 		return E_FAIL;
 	// m_pVIBufferCom->Set_ShaderResourceView("g_FilterTexture", pSRV);
-
 	if (FAILED(m_pVIBufferCom->Set_RawValue("g_vBrushPosition", &_float4(10.f, 0.f, 10.f, 1.f), sizeof(_float4))))
 		return E_FAIL;
 	_float		fRange = 5.f;
@@ -167,7 +168,7 @@ HRESULT CTerrain::Create_FilterTexture()
 		return E_FAIL;	
 
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource, nullptr, &pSRV)))
+	if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource, nullptr, &m_pFilter_SRV)))
 		return E_FAIL;
 
 	if (FAILED(DirectX::SaveToTGAFile(*ScratchImage.GetImage(0, 0, 0), TEXT("../Bin/Test.tga"), nullptr)))

@@ -12,7 +12,11 @@ public:
 	virtual ~CLight_Manager() = default;
 
 public:
-	const LIGHTDESC* Get_LightDesc(_uint iIndex = 0) const;
+	LIGHTDESC* Get_LightDesc(_uint iIndex = 0);
+	void Set_LightDesc(_uint iIndex, const LIGHTDESC& LightDesc);
+
+	list<class CLight*>* Get_LightList_Addr() { return &m_Lights; }
+
 
 public:
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const LIGHTDESC& LightDesc);

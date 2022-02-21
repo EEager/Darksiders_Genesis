@@ -14,6 +14,7 @@
 
 bool CImguiManager::m_bShow_demo_window = false;
 bool CImguiManager::m_bshow_camera_window = true;
+bool CImguiManager::m_bshow_light_window = false;
 bool CImguiManager::m_bShow_Simulation_Speed = false;
 bool CImguiManager::m_bshow_gameobject_control_window = false;
 bool CImguiManager::m_bshow_editor_window = false;
@@ -168,6 +169,7 @@ wstring CImguiManager::LoadFilePath()
 	return retPath;
 }
 
+
 _float ratio; // TEST
 void CImguiManager::Tick(_float fTimeDelta)
 {
@@ -197,12 +199,16 @@ void CImguiManager::Tick(_float fTimeDelta)
 
 	// Test
 	if (ratio < 1.0f)
-		ratio += 0.1f * fTimeDelta;
+		ratio += 0.2f * fTimeDelta;
 	else 
 		ratio = 1.f;
 	ImGui::Begin("ProgressBar");
 	ImGui::ProgressBar(ratio);
 	ImGui::End();
+
+	// Light Window
+	ShowLightControlWindow();
+
 }
 
 void CImguiManager::Render()
@@ -283,7 +289,7 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Text("Level Stuff:");
 	int curLevel = m_pGameInstance->Get_CurrentLevel();
 	m_iNextLevel = curLevel;
-	ImGui::BulletText("Current Level : %s\n", curLevel < 0 ? "Error" : g_level_items[curLevel]);
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Current Level : %s\n", curLevel < 0 ? "Error" : g_level_items[curLevel]);
 	if (ImGui::Combo("Level Select", &m_iNextLevel, g_level_items, IM_ARRAYSIZE(g_level_items)))
 	{
 		// 아래 레벨이 아닐때만 레벨 이동을 하자
@@ -303,6 +309,7 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Text("Show GUI Stuff:");
 	ImGui::Checkbox("Demo Control Window", &m_bShow_demo_window);      // Edit  bools storing our window open/close state
 	ImGui::Checkbox("Camera Control Window", &m_bshow_camera_window);
+	ImGui::Checkbox("Light Control Window", &m_bshow_light_window);
 	ImGui::Checkbox("Simulation Speed Factor", &m_bShow_Simulation_Speed);
 	ImGui::Checkbox("GameObject Manager Window", &m_bshow_gameobject_control_window);
 	ImGui::Checkbox("Editor Window", &m_bshow_editor_window);
@@ -481,6 +488,90 @@ void CImguiManager::ShowSpeedFactorControlWindow()
 	ImGui::SameLine();
 	if (ImGui::Button("Stop"))
 		; //m_pGameInstance->StopAllTickWithOutCamera(true);
+	ImGui::End();
+}
+
+string LightTagName(LIGHTDESC::TYPE eType, int idx)
+{
+	string retStr = "";
+	switch (eType)
+	{
+	case Engine::tagLightDesc::TYPE_DIRECTIONAL:
+		retStr = "DIRECTIONAL ";
+		retStr += (char)('0'+idx);
+		return retStr;
+	case Engine::tagLightDesc::TYPE_POINT:
+		retStr = "POINT ";
+		retStr += (char)('0' + idx);
+		return retStr;
+	default:
+		retStr = "NONE ";
+		retStr += (char)('0' + idx);
+		return retStr;
+	}
+}
+
+
+
+void CImguiManager::ShowLightControlWindow()
+{
+	if (!m_bshow_light_window)
+		return;
+
+	ImGui::Begin("Light", &m_bshow_light_window);
+
+	auto pLightsList = m_pGameInstance->Get_LightList_Addr();
+	if (pLightsList == nullptr || pLightsList->size() == 0)
+	{
+		ImGui::Text("No Lights");
+		ImGui::End();
+		return;
+	}
+
+	if (!m_pSelected_Light)
+	{
+		m_pSelected_Light = pLightsList->front();
+		m_active_light = 0;
+	}
+
+	if (ImGui::BeginCombo("Active Lights", LightTagName(m_pSelected_Light->Get_LightDesc()->eType, m_active_light).c_str()))
+	{
+		int i = 0;
+		for (auto& iterLight = pLightsList->begin(); iterLight != pLightsList->end(); iterLight++, i++)
+		{
+			const bool isSelected = i == m_active_light;
+			if (ImGui::Selectable(LightTagName((*iterLight)->Get_LightDesc()->eType, i).c_str(), isSelected))
+			{
+				m_active_light = i;
+				m_pSelected_Light = *iterLight;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	LIGHTDESC* pLightDesc = m_pSelected_Light->Get_LightDesc();
+
+	bool dirtyPos = false;
+	const auto d = [&dirtyPos](bool dirty) {dirtyPos = dirtyPos || dirty; };
+
+	ImGui::Text("Position");
+	d(ImGui::DragFloat("posX", &pLightDesc->vPosition.x, 0.1f));
+	d(ImGui::DragFloat("posY", &pLightDesc->vPosition.y, 0.1f));
+	d(ImGui::DragFloat("posZ", &pLightDesc->vPosition.z, 0.1f));
+	
+	ImGui::Text("Direction");
+	d(ImGui::DragFloat("dirX", &pLightDesc->vDirection.x, 0.1f));
+	d(ImGui::DragFloat("dirY", &pLightDesc->vDirection.y, 0.1f));
+	d(ImGui::DragFloat("dirZ", &pLightDesc->vDirection.z, 0.1f));
+
+	if (ImGui::Button("Reset"))
+	{
+		pLightDesc->vDirection = _float3(1.f, -1.f, 1.f);
+		pLightDesc->vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+		pLightDesc->vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
+		pLightDesc->vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	}
+
 	ImGui::End();
 }
 

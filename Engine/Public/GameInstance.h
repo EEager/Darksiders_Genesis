@@ -62,8 +62,9 @@ public: /* For.PipeLine */
 	HRESULT Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, CModel * pModel, const char* pConstantName);
 
 public: /* For.Light_Manager */
-	const LIGHTDESC* Get_LightDesc(_uint iIndex = 0) const;
+	LIGHTDESC* Get_LightDesc(_uint iIndex = 0);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const LIGHTDESC& LightDesc);
+	list<class CLight*>* Get_LightList_Addr();
 
 
 

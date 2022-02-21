@@ -5,6 +5,8 @@
 #include "imgui_impl_win32.h"
 #include "Client_Defines.h"
 
+#include "Light.h"
+
 BEGIN(Engine)
 class CGameInstance;
 END
@@ -57,6 +59,7 @@ private:
 private:
 	static bool m_bShow_demo_window;
 	static bool m_bshow_camera_window;
+	static bool m_bshow_light_window;
 	static bool m_bshow_gameobject_control_window;
 	static bool m_bshow_editor_window;
 	static bool m_bShow_Simulation_Speed;
@@ -75,6 +78,15 @@ private:
 	_float m_fSpeedFactor = 1.f;
 public:
 	_float Get_SpeedFactor() { return m_fSpeedFactor; }
+
+
+	// ==========================================
+	// Light Control Window
+private:
+	void ShowLightControlWindow();
+private:
+	int m_active_light = 0;
+	class CLight* m_pSelected_Light = nullptr;
 
 
 	// ===========================================

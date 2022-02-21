@@ -253,7 +253,7 @@ HRESULT CGameInstance::Bind_Transform_OnShader(CPipeLine::TRANSFORMTYPE eType, C
 	return S_OK;
 }
 
-const LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex) const
+LIGHTDESC * CGameInstance::Get_LightDesc(_uint iIndex) 
 {
 	if (nullptr == m_pLight_Manager)
 		return nullptr;
@@ -267,6 +267,14 @@ HRESULT CGameInstance::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * p
 		return E_FAIL;
 
 	return m_pLight_Manager->Add_Light(pDevice, pDeviceContext, LightDesc);
+}
+
+list<class CLight*>* CGameInstance::Get_LightList_Addr()
+{
+	if (nullptr == m_pLight_Manager)
+		return nullptr;
+
+	return m_pLight_Manager->Get_LightList_Addr();
 }
 
 HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel * pNextLevel)

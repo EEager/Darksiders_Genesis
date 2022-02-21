@@ -34,7 +34,7 @@ private:
 	CVIBuffer_Terrain*			m_pVIBufferCom = nullptr;
 
 private:
-	ID3D11ShaderResourceView*	pSRV = nullptr;
+	ID3D11ShaderResourceView*	m_pFilter_SRV = nullptr;
 
 private:
 	HRESULT SetUp_Component();
