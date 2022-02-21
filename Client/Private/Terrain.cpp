@@ -18,7 +18,7 @@ CTerrain::CTerrain(const CTerrain & rhs)
 HRESULT CTerrain::NativeConstruct_Prototype()
 {	
 	// Material Init
-	m_tMtrlDesc.vMtrlDiffuse = { 0.48f, 0.77f, 0.46f, 1.0f };
+	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
 	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 16.0f };
 	m_tMtrlDesc.vMtrlEmissive = {1.f, 1.f, 1.f, 1.f};

@@ -13,6 +13,9 @@ cbuffer cbPerFrame
 	DirectionalLight g_DirLight;
 	PointLight g_PointLight;
 	SpotLight g_SpotLight;
+
+	float  gFogStart;
+	float  gFogRange;
 };
 
 cbuffer cbPerObject
@@ -128,8 +131,29 @@ PS_OUT PS(PS_IN In)
 	// Interpolating normal can unnormalize it, so normalize it.
 	In.vNormalW = normalize(In.vNormalW);
 
-	float3 toEyeW = normalize(g_vCamPosition - In.vPosW).xyz;
+	float3 toEyeW = g_vCamPosition.xyz - In.vPosW.xyz;
 
+	// Cache the distance to the eye from this surface point.
+	float distToEye = length(toEyeW);
+
+	// Normalize.
+	toEyeW /= distToEye;
+
+	//// Default to multiplicative identity.
+	//float4 texColor = float4(1, 1, 1, 1);
+	//if (gUseTexure)
+	//{
+	//	// Sample texture.
+	//	texColor = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+
+	//	if (gAlphaClip)
+	//	{
+	//		// Discard pixel if texture alpha < 0.1.  Note that we do this
+	//		// test as soon as possible so that we can potentially exit the shader 
+	//		// early, thereby skipping the rest of the shader code.
+	//		clip(texColor.a - 0.1f);
+	//	}
+	//}
 
 	// --------------------------
 	//	Light
@@ -162,6 +186,20 @@ PS_OUT PS(PS_IN In)
 		// Modulate with late add.
 		Out.vColor = texColor * (ambient + diffuse) + spec;
 	}
+
+	//
+	// Fogging
+	//
+
+	//if (gFogEnabled)
+	{
+		// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
+		float fogLerp = saturate((distToEye - 15.0f) / 50.f);
+
+		// Blend the fog color and the lit color.
+		Out.vColor = lerp(Out.vColor, vector(0.75f, 0.75f, 0.75f, 1.0f), fogLerp);
+	}
+
 
 	// Common to take alpha from diffuse material and texture.
 	Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
