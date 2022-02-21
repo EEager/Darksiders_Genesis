@@ -107,13 +107,41 @@ HRESULT CTerrain::SetUp_ConstantTable()
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
 	// Bind Directional Light
-	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
+	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
 	DirectionalLight mDirLight;
-	mDirLight.Ambient = LightDesc.vAmbient;
-	mDirLight.Diffuse = LightDesc.vDiffuse;
-	mDirLight.Specular = LightDesc.vSpecular;
-	mDirLight.Direction = LightDesc.vDirection;
+	mDirLight.Ambient = dirLightDesc.vAmbient;
+	mDirLight.Diffuse = dirLightDesc.vDiffuse;
+	mDirLight.Specular = dirLightDesc.vSpecular;
+	mDirLight.Direction = dirLightDesc.vDirection;
 	m_pVIBufferCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+
+	// Bind Point Light
+	LIGHTDESC		pointLightDesc = *pGameInstance->Get_LightDesc(1);
+	PointLight mPointLight;
+	mPointLight.Ambient = pointLightDesc.vAmbient;
+	mPointLight.Diffuse = pointLightDesc.vDiffuse;
+	mPointLight.Specular = pointLightDesc.vSpecular;
+	mPointLight.Position = pointLightDesc.vPosition;
+	mPointLight.Att = _float3(0.f, 0.1f, 0.f);
+	mPointLight.Range = pointLightDesc.fRadiuse;
+	m_pVIBufferCom->Set_RawValue("g_PointLight", &mPointLight, sizeof(PointLight));
+
+	// Bind Spot Light
+	LIGHTDESC*	pSpotLightDesc = pGameInstance->Get_LightDesc(2);
+	SpotLight mSpotLight;
+	mSpotLight.Ambient = pSpotLightDesc->vAmbient;
+	mSpotLight.Diffuse = pSpotLightDesc->vDiffuse;
+	mSpotLight.Specular = pSpotLightDesc->vSpecular;
+	// The spotlight takes on the camera position and is aimed in the
+	// same direction the camera is looking.  In this way, it looks
+	// like we are holding a flashlight
+	XMStoreFloat3(&mSpotLight.Position, pGameInstance->Get_CamPosition());
+	XMStoreFloat3(&pSpotLightDesc->vPosition, pGameInstance->Get_CamPosition());
+	
+	mSpotLight.Att = _float3(1.f, 0.f, 0.f);
+	mSpotLight.Spot = 96.f;
+	mSpotLight.Range = pSpotLightDesc->fRadiuse;
+	m_pVIBufferCom->Set_RawValue("g_SpotLight", &mSpotLight, sizeof(SpotLight));
 
 	// Bind Material
 	m_pVIBufferCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));

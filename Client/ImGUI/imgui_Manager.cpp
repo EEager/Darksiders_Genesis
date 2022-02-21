@@ -504,6 +504,10 @@ string LightTagName(LIGHTDESC::TYPE eType, int idx)
 		retStr = "POINT ";
 		retStr += (char)('0' + idx);
 		return retStr;
+	case Engine::tagLightDesc::TYPE_SPOT:
+		retStr = "SPOT ";
+		retStr += (char)('0' + idx);
+		return retStr;
 	default:
 		retStr = "NONE ";
 		retStr += (char)('0' + idx);
@@ -563,6 +567,11 @@ void CImguiManager::ShowLightControlWindow()
 	d(ImGui::DragFloat("dirX", &pLightDesc->vDirection.x, 0.1f));
 	d(ImGui::DragFloat("dirY", &pLightDesc->vDirection.y, 0.1f));
 	d(ImGui::DragFloat("dirZ", &pLightDesc->vDirection.z, 0.1f));
+
+	ImGui::Text("Color");
+	ImGui::ColorEdit3("Diffuse Color", &pLightDesc->vDiffuse.x);
+	ImGui::ColorEdit3("Ambient Color", &pLightDesc->vAmbient.x);
+	ImGui::ColorEdit3("Specular Color", &pLightDesc->vSpecular.x);
 
 	if (ImGui::Button("Reset"))
 	{

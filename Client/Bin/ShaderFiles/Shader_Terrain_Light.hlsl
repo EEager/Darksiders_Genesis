@@ -11,6 +11,8 @@
 cbuffer cbPerFrame
 {
 	DirectionalLight g_DirLight;
+	PointLight g_PointLight;
+	SpotLight g_SpotLight;
 };
 
 cbuffer cbPerObject
@@ -44,7 +46,6 @@ sampler DefaultSampler = sampler_state
 	AddressV = wrap;
 
 	Filter = min_mag_mip_linear;
-
 };
 
 // --------------------
@@ -122,15 +123,15 @@ PS_OUT PS(PS_IN In)
 	diffuse += D;
 	spec += S;
 
-	//ComputePointLight(gMaterial, gPointLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
-	//ambient += A;
-	//diffuse += D;
-	//spec += S;
+	ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+	ambient += A;
+	diffuse += D;
+	spec += S;
 
-	//ComputeSpotLight(gMaterial, gSpotLight, pin.PosW, pin.NormalW, toEyeW, A, D, S);
-	//ambient += A;
-	//diffuse += D;
-	//spec += S;
+	ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+	ambient += A;
+	diffuse += D;
+	spec += S;
 
 	Out.vColor = ambient + diffuse + spec;
 

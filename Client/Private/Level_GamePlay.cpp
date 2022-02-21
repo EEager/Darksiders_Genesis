@@ -57,6 +57,7 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
+	// Directional Light
 	LIGHTDESC			LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	LightDesc.eType = tagLightDesc::TYPE_DIRECTIONAL;
@@ -68,14 +69,30 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
 		return E_FAIL;
 
+
+	// Point Light
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
-
 	LightDesc.eType = tagLightDesc::TYPE_POINT;
-	LightDesc.vDirection = _float3(1.f, -1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.0f);
+	LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 1.0f);
+	LightDesc.vSpecular = _float4(0.7f, 0.7f, 0.7f, 1.0f);
+	LightDesc.fRadiuse = 25.f;
+	/*
+	mSpotLight.Att      = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	mSpotLight.Spot     = 96.0f;
+	*/
 
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
+		return E_FAIL;
+
+
+	// Spot Light
+	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+	LightDesc.eType = tagLightDesc::TYPE_SPOT;
+	LightDesc.vAmbient = _float4(0.0f, 0.0f, 0.0f, 1.0f);
+	LightDesc.vDiffuse = _float4(1.0f, 1.0f, 0.0f, 1.0f);
+	LightDesc.vSpecular = _float4(1.0f, 1.0f, 1.0f, 1.0f);
+	LightDesc.fRadiuse = 10000.0f;
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
 		return E_FAIL;
