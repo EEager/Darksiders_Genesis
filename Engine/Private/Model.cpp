@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "HierarchyNode.h"
 #include "Animation.h"
+#include "Channel.h"
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
@@ -112,6 +113,25 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
+	return S_OK;
+}
+
+HRESULT CModel::Update_Animation(_float fTimeDelta)
+{
+	if (m_iCurrentAnimIndex > m_iNumAnimation)
+		return E_FAIL;
+
+	/* 현재 애니메이션 상태에 맞는 뼈의 행렬들을 모두 갱신한다. */
+	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(fTimeDelta);
+
+	/* 노드들을 순회하면서 노드에 컴바인트 트랜스포메이션 행려을 만든다. */
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+	{
+		// pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex);
+	}
+
+
+
 	return S_OK;
 }
 
@@ -366,7 +386,6 @@ HRESULT CModel::Create_Animation()
 		aiAnimation* pAnim = m_pScene->mAnimations[i];
 
 		CAnimation* pAnimation = CAnimation::Create(pAnim->mName.data, pAnim->mDuration, pAnim->mTicksPerSecond);
-
 		if (nullptr == pAnimation)
 			return E_FAIL;
 
@@ -375,16 +394,57 @@ HRESULT CModel::Create_Animation()
 		{
 			aiNodeAnim* pNodeAnim = pAnim->mChannels[j];
 
-			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지? */
-			_uint	iNumKeyFrames = max(pNodeAnim->mNumScalingKeys, pNodeAnim->mNumRotationKeys);
-			iNumKeyFrames = max(iNumKeyFrames, pNodeAnim->mNumPositionKeys);
+			CChannel* pChannel = CChannel::Create(pNodeAnim->mNodeName.data);
+			if (nullptr == pChannel)
+				return E_FAIL;
 
-			for (_uint k = 0; k < iNumKeyFrames; ++k)
+			CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pNodeAnim->mNodeName.data);
+			if (nullptr == pHierarchyNode)
+				return E_FAIL;
+
+			pHierarchyNode->Add_Channel(pChannel);
+
+			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지? */
+			_uint	iNumMaxKeyFrames = max(pNodeAnim->mNumScalingKeys, pNodeAnim->mNumRotationKeys);
+			iNumMaxKeyFrames = max(iNumMaxKeyFrames, pNodeAnim->mNumPositionKeys);
+
+			_float3		vScale = _float3(1.f, 1.f, 1.f);
+			_float4		vRotation = _float4(0.f, 0.f, 0.f, 0.f);
+			_float3		vPosition = _float3(0.f, 0.f, 0.f);
+
+			for (_uint k = 0; k < iNumMaxKeyFrames; ++k)
 			{
 				KEYFRAME* pKeyFrame = new KEYFRAME;
 				ZeroMemory(pKeyFrame, sizeof(KEYFRAME));
+
+				if (pNodeAnim->mNumScalingKeys > k)
+				{
+					memcpy(&vScale, &pNodeAnim->mScalingKeys[k].mValue, sizeof(_float3));
+					pKeyFrame->Time = pNodeAnim->mScalingKeys[k].mTime;
+				}
+
+				if (pNodeAnim->mNumRotationKeys > k)
+				{
+					vRotation.x = pNodeAnim->mRotationKeys[k].mValue.x;
+					vRotation.y = pNodeAnim->mRotationKeys[k].mValue.y;
+					vRotation.z = pNodeAnim->mRotationKeys[k].mValue.z;
+					vRotation.w = pNodeAnim->mRotationKeys[k].mValue.w;
+					pKeyFrame->Time = pNodeAnim->mRotationKeys[k].mTime;
+				}
+
+				if (pNodeAnim->mNumPositionKeys > k)
+				{
+					memcpy(&vPosition, &pNodeAnim->mPositionKeys[k].mValue, sizeof(_float3));
+					pKeyFrame->Time = pNodeAnim->mPositionKeys[k].mTime;
+				}
+
+				pChannel->Add_KeyFrame(pKeyFrame);
 			}
+
+			pAnimation->Add_Channels(pChannel);
 		}
+
+		m_Animations.push_back(pAnimation);
 
 	}
 

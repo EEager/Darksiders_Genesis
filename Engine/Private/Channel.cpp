@@ -5,6 +5,26 @@ CChannel::CChannel()
 
 }
 
+HRESULT CChannel::NativeConstruct(const char* pName)
+{
+	strcpy_s(m_szName, pName);
+
+	return S_OK;
+}
+
+CChannel* CChannel::Create(const char* pName)
+{
+	CChannel* pInstance = new CChannel();
+
+	if (FAILED(pInstance->NativeConstruct(pName)))
+	{
+		MSG_BOX("Failed To Creating CChannel");
+		Safe_Release(pInstance);
+	}
+	return pInstance;
+}
+
+
 void CChannel::Free()
 {
 }

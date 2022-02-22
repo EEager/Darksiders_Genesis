@@ -25,6 +25,10 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg);
 
 public:
+	void SetUp_Animation(_uint iAnimIndex) {
+		m_iCurrentAnimIndex = iAnimIndex;
+	}
+	HRESULT Update_Animation(_float fTimeDelta);
 	HRESULT Bind_Shader(_uint iPassIndex);
 	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
 
@@ -63,6 +67,7 @@ private:
 	_float4x4								m_PivotMatrix;
 
 	_uint									m_iNumAnimation;
+	_uint									m_iCurrentAnimIndex = 0;
 
 
 private:

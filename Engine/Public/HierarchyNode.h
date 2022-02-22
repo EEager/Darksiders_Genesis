@@ -23,6 +23,11 @@ public:
 		XMStoreFloat4x4(&m_OffsetMatrix, OffsetMatrix);
 	}
 
+	void Add_Channel(class CChannel* pChannel) {
+		m_Channels.push_back(pChannel);
+	}
+
+
 public:
 	HRESULT NativeConstruct(const char* pName, _fmatrix TransformationMatrix, CHierarchyNode* pParent, _uint iDepth);
 
@@ -30,8 +35,15 @@ private:
 	char					m_szName[MAX_PATH] = ""; // aiNode's Name
 	_float4x4				m_OffsetMatrix; // »À -> Á¤Á¡ 
 	_float4x4				m_TransformationMatrix;
+	/* m_CombinedTransformationMatrix =
+	OffsetMatrix * TransformationMatrix * pParent->CombinedTransformationMatrix */
+	_float4x4				m_CombinedTransformationMatrix;
 	CHierarchyNode*			m_pParent = nullptr;
 	_uint					m_iDepth = 0;
+
+private:
+	vector<class CChannel*>			m_Channels;
+	typedef vector<class CChannel*>	CHANNELS;
 
 public:
 	static CHierarchyNode* Create(const char* pName, _fmatrix TransformationMatrix, CHierarchyNode* pParent, _uint iDepth);
