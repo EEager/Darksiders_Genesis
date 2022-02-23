@@ -57,6 +57,21 @@ HRESULT CMeshContainer::Create_VertexIndexBuffer()
 	return S_OK;
 }
 
+HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix PivotMatrix)
+{
+	_uint			iBoneIndex = 0;
+
+	for (auto& pHierarchyNode : m_Bones)
+	{
+		_matrix		OffsetMatrix = pHierarchyNode->Get_OffsetMatix();
+		_matrix		CombinedTransformationMatrix = pHierarchyNode->Get_CombinedMatix();
+
+		XMStoreFloat4x4(&pBoneMatrices[iBoneIndex++], XMMatrixTranspose(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix));
+	}
+
+	return S_OK;
+}
+
 HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix)
 {
 	m_iNumVertices = pMesh->mNumVertices;	
@@ -217,5 +232,9 @@ void CMeshContainer::Free()
 {
 	__super::Free();
 
+	for (auto& pHierarchyNode : m_Bones)
+		Safe_Release(pHierarchyNode);
+
+	m_Bones.clear();
 
 }

@@ -21,6 +21,10 @@ public:
 		return m_iCurrentKeyFrameIndex;
 	}
 
+	_matrix Get_TransformationMatrix() {
+		return XMLoadFloat4x4(&m_TransformationMatrix);
+	}
+
 	void Set_KeyFrameIndex(_uint iKeyFrameIndex) {
 		m_iCurrentKeyFrameIndex = iKeyFrameIndex;
 	}
@@ -32,6 +36,10 @@ public:
 	HRESULT Add_KeyFrame(KEYFRAME* pKeyFrame) {
 		m_KeyFrames.push_back(pKeyFrame);
 		return S_OK;
+	}
+
+	void Set_TransformationMatrix(_fmatrix TransformationMatrix) {
+		XMStoreFloat4x4(&m_TransformationMatrix, TransformationMatrix);
 	}
 
 private:

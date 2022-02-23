@@ -15,7 +15,7 @@ HRESULT CAnimation::NativeConstruct(char * pName, _double Duration, _double Tick
 	return S_OK;
 }
 
-HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta)
+HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 {
 	m_fTimeAcc += m_TickPerSecond * fTimeDelta;
 
@@ -39,7 +39,6 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta)
 
 		if (true == m_isFinished)
 		{
-			m_isFinished = false;
 			iCurrentKeyFrameIndex = 0;
 			pChannel->Set_KeyFrameIndex(iCurrentKeyFrameIndex);
 		}
@@ -75,8 +74,14 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta)
 
 		_matrix		TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
 
-		// pChannel->Set_TransformationMatrix(TransformationMatrix);
+		pChannel->Set_TransformationMatrix(TransformationMatrix);
 
+	}
+
+	if (true == m_isFinished)
+	{
+		if (true == isLoop)
+			m_isFinished = false;
 	}
 
 
@@ -98,5 +103,10 @@ CAnimation * CAnimation::Create(char * pName, _double Duration, _double TickPerS
 
 void CAnimation::Free()
 {
+
+	for (auto& pChannel : m_Channels)
+		Safe_Release(pChannel);
+
+	m_Channels.clear();
 	
 }

@@ -14,11 +14,10 @@ public:
 	HRESULT NativeConstruct(char* pName, _double Duration, _double TickPerSecond);
 	HRESULT Add_Channels(class CChannel* pChannel) { 
 		m_Channels.push_back(pChannel);
-		Safe_AddRef(pChannel);
 		return S_OK;
 	}
 
-	HRESULT Update_TransformationMatrix(_float fTimeDelta);
+	HRESULT Update_TransformationMatrix(_float fTimeDelta, _bool isLoop);
 
 private:
 	char			m_szName[MAX_PATH] = "";

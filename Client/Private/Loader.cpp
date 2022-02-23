@@ -4,7 +4,7 @@
 #include "GameInstance.h"
 #include "Terrain.h"
 #include "Fork.h"
-
+#include "Player.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -78,10 +78,14 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Fork"),
 		CFork::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_Player */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
+		CPlayer::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
 	
 
 	/* 게임플레이 레벨에 필요한 컴포넌트들의 원형을 생성한다.  */
-
 	/* For.Prototype_Component_VIBuffer_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), 
 		CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
@@ -107,10 +111,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	PivotMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationY(XMConvertToRadians(-90.f));
 	
 
-	///* For.Prototype_Component_Model_Player */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), 
-	//	CModel::Create(m_pDevice, m_pDeviceContext, TEXT(""), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx"))))
-	//	return E_FAIL;
+	/* For.Prototype_Component_Model_Player */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
+		CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_AnimMesh.hlsl"), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx", XMMatrixIdentity()))))
+		return E_FAIL;
+
 
 	/* For.Prototype_Component_Model_Fork*/
  	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),

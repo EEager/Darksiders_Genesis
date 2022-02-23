@@ -27,5 +27,9 @@ CChannel* CChannel::Create(const char* pName)
 
 void CChannel::Free()
 {
+	for (auto& pKeyFrame : m_KeyFrames)
+		Safe_Delete(pKeyFrame);
+
+	m_KeyFrames.clear();
 }
 

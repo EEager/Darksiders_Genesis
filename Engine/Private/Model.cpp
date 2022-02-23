@@ -20,6 +20,11 @@ CModel::CModel(const CModel & rhs)
 	, m_isAnimMesh(rhs.m_isAnimMesh)
 	, m_Materials(rhs.m_Materials)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
+	, m_HierarchyNodes(rhs.m_HierarchyNodes)
+	, m_Animations(rhs.m_Animations)
+	, m_PivotMatrix(rhs.m_PivotMatrix)
+	, m_iNumAnimation(rhs.m_iNumAnimation)
+	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 {
 	for (auto& MaterialDesc : m_Materials)
 	{
@@ -96,15 +101,8 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	if (FAILED(Compile_Shader(pShaderFilePath)))
 		return E_FAIL;
 
-	///* 뼈의 상속구조를 표현한다. */
-	//m_pScene->mRootNode->
-	
-	///* 실제뼈의 정보다. */
-	///* 이 뼈가 어떤 정점들에게 영향을 주고 있는지? 얼마나 영향르 줘야하는지? */
-	//m_pScene->mMeshes[0]->mBones[0];
-	
-	///* 특정 애님에ㅣ션 재생 시에 뼈의 상태 변환을표현하기위한 데\이터.  */
-	//m_pScene->mAnimations[0]->mChannels[0]
+	if (FAILED(Create_Animation()))
+		return E_FAIL;
 
 
 
@@ -122,12 +120,12 @@ HRESULT CModel::Update_Animation(_float fTimeDelta)
 		return E_FAIL;
 
 	/* 현재 애니메이션 상태에 맞는 뼈의 행렬들을 모두 갱신한다. */
-	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(fTimeDelta);
+	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(fTimeDelta, m_isLoop);
 
 	/* 노드들을 순회하면서 노드에 컴바인트 트랜스포메이션 행려을 만든다. */
 	for (auto& pHierarchyNode : m_HierarchyNodes)
 	{
-		// pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex);
+		pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex);
 	}
 
 
@@ -153,15 +151,16 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
-		_matrix		BoneMatrices[128] = {};
+		_float4x4		BoneMatrices[128];
+		ZeroMemory(BoneMatrices, sizeof(_float4x4) * 128);
 
 		/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
-		// pMeshContainer->SetUp_BoneMatrices(BoneMatrices);
+		pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
+
 
 		/* 셰이더에 던진다. */
-
-
-		/* 그려지는 정점들이 뼈들의 행렬집합에서 현재 정점에 영향ㅇ르 주는 뼈의 행렬을 찾아 곱한다음 그린다. */
+		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * 128)))
+			return E_FAIL;
 
 		Bind_Shader(iPassIndex);
 
@@ -224,7 +223,7 @@ HRESULT CModel::Create_MeshContainers()
 			return E_FAIL;
 
 		/* 파일로 읽어온 정점과인덱스의 정보들을 저장한다.  */
-		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, m_isAnimMesh, pMesh, XMLoadFloat4x4(&m_PivotMatrix));
+		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, m_isAnimMesh, pMesh, false == m_isAnimMesh ? XMLoadFloat4x4(&m_PivotMatrix) : XMMatrixIdentity());
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -369,6 +368,8 @@ HRESULT CModel::Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent, _u
 
 	m_HierarchyNodes.push_back(pHierarchyNode);
 
+	pHierarchyNode->Reserve_Channels(m_pScene->mNumAnimations);
+
 	for (_uint i = 0; i < pNode->mNumChildren; ++i)
 	{
 		Create_HierarchyNodes(pNode->mChildren[i], pHierarchyNode, iDepth + 1);
@@ -402,7 +403,7 @@ HRESULT CModel::Create_Animation()
 			if (nullptr == pHierarchyNode)
 				return E_FAIL;
 
-			pHierarchyNode->Add_Channel(pChannel);
+			pHierarchyNode->Add_Channel(i, pChannel);
 
 			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지? */
 			_uint	iNumMaxKeyFrames = max(pNodeAnim->mNumScalingKeys, pNodeAnim->mNumRotationKeys);
@@ -437,6 +438,10 @@ HRESULT CModel::Create_Animation()
 					memcpy(&vPosition, &pNodeAnim->mPositionKeys[k].mValue, sizeof(_float3));
 					pKeyFrame->Time = pNodeAnim->mPositionKeys[k].mTime;
 				}
+
+				pKeyFrame->vScale = vScale;
+				pKeyFrame->vRotation = vRotation;
+				pKeyFrame->vPosition = vPosition;
 
 				pChannel->Add_KeyFrame(pKeyFrame);
 			}
@@ -479,9 +484,21 @@ CComponent * CModel::Clone(void * pArg)
 
 void CModel::Free()
 {
+	// m_Animations 
+	if (false == m_isCloned)
+	{
+		for (auto& pAnimation : m_Animations)
+			Safe_Release(pAnimation);
+		m_Animations.clear();
+	}
+
 	// m_HierarchyNodes
-	for (auto& hNode : m_HierarchyNodes)
-		Safe_Release(hNode);
+	if (false == m_isCloned)
+	{
+		for (auto& hNode : m_HierarchyNodes)
+			Safe_Release(hNode);
+		m_HierarchyNodes.clear();
+	}
 
 	// m_Materials
 	for (auto& MaterialDesc : m_Materials)

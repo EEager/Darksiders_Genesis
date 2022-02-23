@@ -25,8 +25,9 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg);
 
 public:
-	void SetUp_Animation(_uint iAnimIndex) {
+	void SetUp_Animation(_uint iAnimIndex, _bool isLoop = true) {
 		m_iCurrentAnimIndex = iAnimIndex;
+		m_isLoop = isLoop;
 	}
 	HRESULT Update_Animation(_float fTimeDelta);
 	HRESULT Bind_Shader(_uint iPassIndex);
@@ -68,6 +69,7 @@ private:
 
 	_uint									m_iNumAnimation;
 	_uint									m_iCurrentAnimIndex = 0;
+	_bool									m_isLoop = true;
 
 
 private:

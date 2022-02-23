@@ -23,6 +23,7 @@ public:
 
 public:
 	HRESULT Create_VertexIndexBuffer();
+	HRESULT SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix PivotMatrix);
 
 private:
 	/* 현재 메쉬컨테이너가 어떤 머테리얼 인덱스를 쓰는지 */
