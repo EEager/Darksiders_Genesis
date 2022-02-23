@@ -28,6 +28,9 @@ public:
 
 public: // Used in ImGUI
 	list<CGameObject*>* Get_GameObject_CloneList(const _tchar* pLayerTag, int iLevelIndex = -1);
+	unordered_map<const _tchar*, class CGameObject*>* Get_GameObject_PrototypeUMap();
+	unordered_map<const _tchar*, class CLayer*>* Get_GameObject_LayerUMap();
+
 
 private:
 	/* 원형객체들을 저장한다. */

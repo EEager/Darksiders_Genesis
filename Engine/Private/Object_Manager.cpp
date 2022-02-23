@@ -78,6 +78,12 @@ HRESULT CObject_Manager::Add_GameObjectToLayer(_uint iLevelIndex, const _tchar *
 	else
 		pLayer->Add_GameObject(pGameObject);
 
+
+	// Set PrototypeTag n LayerTag
+	pGameObject->Set_PrototypeTag(pPrototypeTag);
+	pGameObject->Set_LayerTag(pLayerTag);
+
+
 	return S_OK;
 }
 
@@ -155,6 +161,16 @@ list<CGameObject*>* CObject_Manager::Get_GameObject_CloneList(const _tchar* pLay
 	}
 
 	return nullptr;
+}
+
+unordered_map<const _tchar*, class CGameObject*>* CObject_Manager::Get_GameObject_PrototypeUMap()
+{
+	return &m_Prototypes;;
+}
+
+unordered_map<const _tchar*, class CLayer*>* CObject_Manager::Get_GameObject_LayerUMap()
+{
+	return m_pLayers;
 }
 
 CGameObject * CObject_Manager::Find_Prototype(const _tchar * pPrototypeTag)

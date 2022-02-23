@@ -46,6 +46,8 @@ public: /* For.Object_Manager */
 
 	// Used In ImGUI
 	list<CGameObject*>* Get_GameObject_CloneList(const _tchar * pLayerTag, int iLevelIndex = -1);
+	unordered_map<const _tchar*, class CGameObject*>* Get_GameObject_PrototypeUMap();
+	unordered_map<const _tchar*, class CLayer*>* Get_GameObject_LayerUMap();
 
 public: /* For.Component_Manager */
 	HRESULT Add_Prototype(_uint iLevelIndex, const _tchar* pPrototypeTag, class CComponent* pPrototype);

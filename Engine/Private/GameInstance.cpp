@@ -173,6 +173,22 @@ list<CGameObject*>* CGameInstance::Get_GameObject_CloneList(const _tchar* pLayer
 	return m_pObject_Manager->Get_GameObject_CloneList(pLayerTag, iLevelIndex);
 }
 
+unordered_map<const _tchar*, class CGameObject*>* CGameInstance::Get_GameObject_PrototypeUMap()
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_GameObject_PrototypeUMap();
+}
+
+unordered_map<const _tchar*, class CLayer*>* CGameInstance::Get_GameObject_LayerUMap()
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_GameObject_LayerUMap();
+}
+
 HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const _tchar * pPrototypeTag, CComponent * pPrototype)
 {
 	if (nullptr == m_pComponent_Manager)

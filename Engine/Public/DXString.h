@@ -25,6 +25,15 @@ public:
 	// ... 가변 인수
 	static string Format(const string format, ...);
 	static wstring Format(const wstring format, ...);
+
+#define MAX_TAG_LEN 128
+	// Wide -> Char
+	static const char* WideToChar (const _tchar* pWideChar);
+	// Char -> Wide
+	static const _tchar* CharToWide (const char* pChar);
+
+	static string DXString::WideToString(const _tchar* pWideChar);
+	static wstring DXString::CharToWString(const char* pChar);
 };
 
 END

@@ -60,8 +60,8 @@ private:
 	static bool m_bShow_demo_window;
 	static bool m_bshow_camera_window;
 	static bool m_bshow_light_window;
-	static bool m_bshow_gameobject_control_window;
-	static bool m_bshow_editor_window;
+	static bool m_bshow_gameobject_manager_window;
+	static bool m_bshow_gameobject_editor_window;
 	static bool m_bShow_Simulation_Speed;
 	int m_iNextLevel = 0;
 
@@ -87,6 +87,12 @@ private:
 private:
 	int m_active_light = 0;
 	class CLight* m_pSelected_Light = nullptr;
+
+	// ==========================================
+	// GameObject Control Window
+private:
+	void ShowGameObjectManagerWindow();
+private:
 
 
 	// ===========================================

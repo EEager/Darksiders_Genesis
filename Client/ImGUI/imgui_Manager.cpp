@@ -8,6 +8,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Camera_Fly.h"
+#include "Layer.h"
 
 #include <shobjidl.h>  // Ifileopendialog 관련 cominterface 들어있는거
 #include <Shlwapi.h> // 초기 경로 얻어올때 사용하자
@@ -16,8 +17,8 @@ bool CImguiManager::m_bShow_demo_window = false;
 bool CImguiManager::m_bshow_camera_window = true;
 bool CImguiManager::m_bshow_light_window = false;
 bool CImguiManager::m_bShow_Simulation_Speed = false;
-bool CImguiManager::m_bshow_gameobject_control_window = false;
-bool CImguiManager::m_bshow_editor_window = false;
+bool CImguiManager::m_bshow_gameobject_manager_window = false;
+bool CImguiManager::m_bshow_gameobject_editor_window = false;
 
 ImVec4 CImguiManager::clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -170,7 +171,7 @@ wstring CImguiManager::LoadFilePath()
 }
 
 
-_float ratio; // TEST
+_float ratio; // TEST_RATIO
 void CImguiManager::Tick(_float fTimeDelta)
 {
 	// Check Key First
@@ -197,7 +198,8 @@ void CImguiManager::Tick(_float fTimeDelta)
 	// Speed Factor
 	ShowSpeedFactorControlWindow();
 
-	// Test
+	// ---------------------------------
+	// TEST_RATIO
 	if (ratio < 1.0f)
 		ratio += 0.2f * fTimeDelta;
 	else 
@@ -205,9 +207,13 @@ void CImguiManager::Tick(_float fTimeDelta)
 	ImGui::Begin("ProgressBar");
 	ImGui::ProgressBar(ratio);
 	ImGui::End();
+	// ---------------------------------
 
 	// Light Window
 	ShowLightControlWindow();
+
+	// GameObject Manager Window
+	ShowGameObjectManagerWindow();
 
 }
 
@@ -311,8 +317,8 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Checkbox("Camera Control Window", &m_bshow_camera_window);
 	ImGui::Checkbox("Light Control Window", &m_bshow_light_window);
 	ImGui::Checkbox("Simulation Speed Factor", &m_bShow_Simulation_Speed);
-	ImGui::Checkbox("GameObject Manager Window", &m_bshow_gameobject_control_window);
-	ImGui::Checkbox("Editor Window", &m_bshow_editor_window);
+	ImGui::Checkbox("GameObject Manager Window", &m_bshow_gameobject_manager_window);
+	ImGui::Checkbox("Editor Window", &m_bshow_gameobject_editor_window);
 
 	ImGui::End();
 
@@ -603,6 +609,115 @@ void CImguiManager::ImGUI_Key(_float fTimeDelta)
 		else
 			DisableCursor();
 	}
+}
+
+
+char m_Selected_PrototypeTag[MAX_TAG_LEN] = "";
+char m_Selected_LayerTag[MAX_TAG_LEN] = "";
+int m_Selected_GameObectIdx = 0;
+int m_Selected_LayerIdx = 0;
+
+void CImguiManager::ShowGameObjectManagerWindow()
+{
+	if (!m_bshow_gameobject_manager_window)
+		return;
+	ImGui::Begin("GameObject Manager Window", &m_bshow_gameobject_manager_window);
+	
+	// ====================================
+	// Node : GameObject Prototype List
+	auto pGameObjectPrototypeMap = m_pGameInstance->Get_GameObject_PrototypeUMap();
+	int GameObjectUMapSize = min((int)pGameObjectPrototypeMap->size(), 5);
+	static int item_current_protoIdx = 0;
+
+	if (ImGui::TreeNode("GameObject Prototype List"))
+	{
+		if (ImGui::BeginListBox("##PrototypeList", ImVec2(-FLT_MIN, GameObjectUMapSize * ImGui::GetTextLineHeightWithSpacing() + 5/*jjlee*/)))
+		{
+			auto iter = pGameObjectPrototypeMap->begin();
+
+			for (int n = 0; iter != pGameObjectPrototypeMap->end(); iter++, n++)
+			{
+				const bool is_selected = (item_current_protoIdx == n);
+				const char* Prototype_Item_Tag = DXString::WideToChar(iter->first);
+				if (ImGui::Selectable(Prototype_Item_Tag, is_selected))
+				{
+					item_current_protoIdx = n;
+					strcpy_s(m_Selected_PrototypeTag, Prototype_Item_Tag);
+				}
+
+				if (is_selected) // 디폴트 ㅎ 
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+		ImGui::TreePop();
+	}
+
+
+	// ====================================
+	// Node :GameObject Clone List Tree View
+	auto pGameObjectLayerUMap = m_pGameInstance->Get_GameObject_LayerUMap();
+	// #1. Node : Game Object Clone List Tree View
+	if (ImGui::TreeNode("GameObject Clone Tree View"))
+	{
+		for (int i = 0; i < LEVEL_END; i++)
+		{
+			if (pGameObjectLayerUMap[i].empty())
+				continue;
+			// #2. Node : Level 
+			if (ImGui::TreeNode(DXString::Format("%s : LayerNum(%zd)", g_level_items[i], pGameObjectLayerUMap[i].size()).c_str()))
+			{
+				auto iterLayer = pGameObjectLayerUMap[i].begin();
+				for (int n = 0; iterLayer != pGameObjectLayerUMap[i].end(); iterLayer++, n++)
+				{
+					// Layer를 하나 얻어오자
+					auto pGameObjectList = iterLayer->second->Get_List_Adr();
+
+					// #3. Node : Layer 
+					char chIterLayerTag[MAX_TAG_LEN];
+					strcpy_s(chIterLayerTag, DXString::WideToChar(iterLayer->first));
+					if (ImGui::TreeNode(DXString::Format("%s : ObjectNum(%zd)", chIterLayerTag, pGameObjectList->size()).c_str()))
+					{
+						if (ImGui::BeginListBox("##LayerList", ImVec2(-FLT_MIN, 4 * ImGui::GetTextLineHeightWithSpacing() + 5/*jjlee*/)))
+						{
+							auto iterList = pGameObjectList->begin();
+							for (int n = 0; iterList != pGameObjectList->end(); iterList++, n++)
+							{
+								char selectedGameObjectPrototypeTag[MAX_TAG_LEN] = "";
+								strcpy_s(selectedGameObjectPrototypeTag, DXString::WideToChar((*iterList)->Get_PrototypeTag()));
+								bool is_selected = (m_Selected_GameObectIdx == n);
+								if (ImGui::Selectable(DXString::Format("%s(%d)", selectedGameObjectPrototypeTag, n).c_str(), &is_selected) == true)
+								{
+									m_Selected_GameObectIdx = n;
+									m_Selected_LayerIdx = i;
+									strcpy_s(m_Selected_PrototypeTag, selectedGameObjectPrototypeTag);
+									strcpy_s(m_Selected_LayerTag, chIterLayerTag);
+								}
+
+								if (is_selected) // 디폴트 ㅎ 
+								{
+									ImGui::SetItemDefaultFocus();
+								}
+							}
+
+							ImGui::EndListBox();
+						}
+
+						ImGui::TreePop();
+					}
+				}
+
+				ImGui::TreePop();
+			}
+
+		}
+		ImGui::TreePop();
+	}
+
+	ImGui::End();
+	
 }
 
 #endif // USE_IMGUI

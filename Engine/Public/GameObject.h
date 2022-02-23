@@ -43,6 +43,19 @@ private:
 protected:
 	MTRLDESC m_tMtrlDesc;
 
+
+	// Used In ImGUI
+public:
+	const _tchar* Get_LayerTag() { return m_pLayerTag; }
+	void Set_LayerTag(const _tchar* pPrototypeTag) { m_pLayerTag = pPrototypeTag; }
+
+	const _tchar* Get_PrototypeTag() { return m_pPrototypeTag; }
+	void Set_PrototypeTag(const _tchar* pPrototypeTag) { m_pPrototypeTag = pPrototypeTag; }
+
+protected:
+	const _tchar* m_pPrototypeTag = nullptr;
+	const _tchar* m_pLayerTag = nullptr;
+
 public:
 	/* 원형객체가 호출한다. */
 	virtual CGameObject* Clone(void* pArg) = 0;
