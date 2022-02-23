@@ -147,19 +147,18 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 	if (iPassIndex >= m_PassesDesc.size())
 		return E_FAIL;
 
-	_matrix		BoneMatrices[128] = {};
-
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
-		_float4x4		BoneMatrices[128];
-		ZeroMemory(BoneMatrices, sizeof(_float4x4) * 128);
+#define MAX_BONE_NUM 256
+		_float4x4		BoneMatrices[MAX_BONE_NUM];
+		ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 
 		/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
 		pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
 
 		/* 셰이더에 던진다. */
-		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * 128)))
+		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
 			return E_FAIL;
 
 		Bind_Shader(iPassIndex);

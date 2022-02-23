@@ -10,7 +10,7 @@ cbuffer Matrices
 
 struct tagBoneMatrixArray
 {
-	matrix		Bones[128];
+	matrix		Bones[256];
 };
 
 cbuffer BoneMatrices
