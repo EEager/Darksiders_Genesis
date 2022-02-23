@@ -103,7 +103,8 @@ HRESULT CFork::SetUp_ConstantTable()
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
-	/*LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
+	/*LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0); 
+	* m_pModelCom->Set_RawValue 만들어야함 시방...
 	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));

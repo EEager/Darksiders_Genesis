@@ -35,7 +35,7 @@ private:
 private:
 	/* 렌더링 시에 현재 메시컨테이너에 영향을 주는 뼈를 모아서 셰이더로 던진다. */
 	/* 그 뼈들의 행렬ㄹ을 모아오기위해 뼈를 모아두낟. */
-	vector<class CHierarchyNode*>			m_Bones;
+	vector<class CHierarchyNode*>			m_Bones; // 일단 모든 뼈들을 넣고보는군. 
 	typedef vector<class CHierarchyNode*>	BONES;
 
 

@@ -61,6 +61,7 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 {
 	_uint			iBoneIndex = 0;
 
+	// 현재 정점에 영향을 주고 있는 뼈들을 순회를 도는데...이거보니 사실상 134개 모두 다 도네 ㅎㅎ 
 	for (auto& pHierarchyNode : m_Bones)
 	{
 		_matrix		OffsetMatrix = pHierarchyNode->Get_OffsetMatix();
@@ -100,8 +101,7 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _bool 
 	m_VBDesc.StructureByteStride = m_iStride;
 
 
-	/* 블렌드인덱스와 웨이트는 나중에 채울께.(애니메이션을 위한 데이터) */
-
+	/* 노말 texUV Tangent */
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
 		VTXMESH* pVertices = (VTXMESH*)((_byte*)m_pVertices + (i * m_iStride));
@@ -115,6 +115,8 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _bool 
 		memcpy(&pVertices->vTangent, &pMesh->mTangents[i], sizeof(_float3));
 	}
 
+
+	/* 블렌드인덱스와 웨이트 */
 	if (true == isAnim)
 		SetUp_SkinnedDesc(pModel, pMesh);
 

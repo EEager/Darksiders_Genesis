@@ -402,9 +402,11 @@ HRESULT CModel::Create_Animation()
 			if (nullptr == pHierarchyNode)
 				return E_FAIL;
 
-			pHierarchyNode->Add_Channel(i, pChannel);
+			pHierarchyNode->Add_Channel(i, pChannel); // 하이라키는 애니메이션 인덱스별로 채널을 가지고 있는다. 채널은 134개의 
+			// 뼈들로 가득차게될것이다. 각 뼈들을 159개의 키프레임을 가지고있다.
+			// 
 
-			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지? */
+			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지?, 사실상 모든 키프레임 개수가 같기때문에 이부분은 생략가능하다. */
 			_uint	iNumMaxKeyFrames = max(pNodeAnim->mNumScalingKeys, pNodeAnim->mNumRotationKeys);
 			iNumMaxKeyFrames = max(iNumMaxKeyFrames, pNodeAnim->mNumPositionKeys);
 
@@ -417,38 +419,39 @@ HRESULT CModel::Create_Animation()
 				KEYFRAME* pKeyFrame = new KEYFRAME;
 				ZeroMemory(pKeyFrame, sizeof(KEYFRAME));
 
-				if (pNodeAnim->mNumScalingKeys > k)
+				if (pNodeAnim->mNumScalingKeys > k) // 사실상 모든 키프레임이 159개로 동일한 키프레임 개수를 가지고 있어, 이부분은 생략가능하다.
 				{
 					memcpy(&vScale, &pNodeAnim->mScalingKeys[k].mValue, sizeof(_float3));
-					pKeyFrame->Time = pNodeAnim->mScalingKeys[k].mTime;
+					// pKeyFrame->Time = pNodeAnim->mScalingKeys[k].mTime; // 사실상 모든 time마다 키프레임이 존재하기때문에 pKeyFrame->Time는 한번만해도된다. 
 				}
 
-				if (pNodeAnim->mNumRotationKeys > k)
+				if (pNodeAnim->mNumRotationKeys > k) // 사실상 모든 키프레임이 159개로 동일한 키프레임 개수를 가지고 있어, 이부분은 생략가능하다.
 				{
 					vRotation.x = pNodeAnim->mRotationKeys[k].mValue.x;
 					vRotation.y = pNodeAnim->mRotationKeys[k].mValue.y;
 					vRotation.z = pNodeAnim->mRotationKeys[k].mValue.z;
 					vRotation.w = pNodeAnim->mRotationKeys[k].mValue.w;
-					pKeyFrame->Time = pNodeAnim->mRotationKeys[k].mTime;
+					//pKeyFrame->Time = pNodeAnim->mRotationKeys[k].mTime;
 				}
 
-				if (pNodeAnim->mNumPositionKeys > k)
+				if (pNodeAnim->mNumPositionKeys > k) // 사실상 모든 키프레임이 159개로 동일한 키프레임 개수를 가지고 있어, 이부분은 생략가능하다.
 				{
 					memcpy(&vPosition, &pNodeAnim->mPositionKeys[k].mValue, sizeof(_float3));
-					pKeyFrame->Time = pNodeAnim->mPositionKeys[k].mTime;
+					//pKeyFrame->Time = pNodeAnim->mPositionKeys[k].mTime;
 				}
 
+				pKeyFrame->Time = pNodeAnim->mPositionKeys[k].mTime;
 				pKeyFrame->vScale = vScale;
 				pKeyFrame->vRotation = vRotation;
 				pKeyFrame->vPosition = vPosition;
 
-				pChannel->Add_KeyFrame(pKeyFrame);
+				pChannel->Add_KeyFrame(pKeyFrame); // 채널(뼈)가 키프레임들의 정보를 가지게된다. 
 			}
 
-			pAnimation->Add_Channels(pChannel);
+			pAnimation->Add_Channels(pChannel); // 159개의 키프레임 정보가 담긴 채널을 애니메이션 객체에 push_back하여 넣어주자
 		}
 
-		m_Animations.push_back(pAnimation);
+		m_Animations.push_back(pAnimation); // Walk.ao 정보를 모델이 가지고 있게하자
 
 	}
 

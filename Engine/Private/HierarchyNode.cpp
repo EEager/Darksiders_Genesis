@@ -28,7 +28,7 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(_uint iCurrentAnimIndex
 	if (iCurrentAnimIndex >= m_Channels.size())
 		return;
 
-	if (nullptr != m_Channels[iCurrentAnimIndex])
+	if (nullptr != m_Channels[iCurrentAnimIndex]) // iCurrentAnimIndex의 보간한 행렬을 가져온다.
 		XMStoreFloat4x4(&m_TransformationMatrix, m_Channels[iCurrentAnimIndex]->Get_TransformationMatrix());
 
 	if (nullptr != m_pParent)

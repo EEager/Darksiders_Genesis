@@ -91,9 +91,16 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
+	// alpha testing
+	clip(Out.vColor.a - 0.1f);
+
 	return Out;
 }
 
+RasterizerState NoCull
+{
+	CullMode = None;
+};
 
 
 technique11	DefaultTechnique
@@ -103,6 +110,7 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
+		SetRasterizerState(NoCull);
 	}
 
 }

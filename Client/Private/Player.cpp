@@ -66,11 +66,14 @@ HRESULT CPlayer::Render()
 
 	for (_uint i = 0; i < iNumMaterials; ++i)
 	{
-		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE); // aiTextureType_DIFFUSE만 했군, 노말, 스펙은? 따로 해줘야하한다.
 
 		m_pModelCom->Render(i, 0);
 	}
 
+	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
+	m_pDeviceContext->RSSetState(0);
+	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 	
 
 	return S_OK;
