@@ -18,7 +18,8 @@ cbuffer BoneMatrices
 	tagBoneMatrixArray		g_BoneMatrices;
 };
 
-texture2D		g_DiffuseTexture;
+texture2D		g_DiffuseTexture; // Diffuse Map
+texture2D		g_NormalTexture; // Normal Map
 
 sampler DefaultSampler = sampler_state
 {

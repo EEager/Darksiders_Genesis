@@ -71,6 +71,7 @@ HRESULT CPlayer::Render()
 	for (_uint i = 0; i < iNumMaterials; ++i)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE); // aiTextureType_DIFFUSE만 했군, 노말, 스펙은? 따로 해줘야하한다.
+		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS); 
 
 		m_pModelCom->Render(i, 0);
 	}
@@ -108,11 +109,31 @@ HRESULT CPlayer::SetUp_ConstantTable()
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
+	// Bind Directional Light
+	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
+	DirectionalLight mDirLight;
+	mDirLight.Ambient = dirLightDesc.vAmbient;
+	mDirLight.Diffuse = dirLightDesc.vDiffuse;
+	mDirLight.Specular = dirLightDesc.vSpecular;
+	mDirLight.Direction = dirLightDesc.vDirection;
+	m_pModelCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+
+	// Bind Material
+	m_pModelCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
-	/*LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
+	// Bind Position
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	m_pModelCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+
+#if 0 // Legacy
+	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
 	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
 	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
@@ -120,7 +141,8 @@ HRESULT CPlayer::SetUp_ConstantTable()
 
 	_float4			vCamPosition;	
 	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));*/
+	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+#endif
 	
 
 	RELEASE_INSTANCE(CGameInstance);

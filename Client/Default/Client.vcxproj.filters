@@ -236,6 +236,9 @@
     <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl">
       <Filter>97.ShaderFiles\Header</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh_Normal.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">
