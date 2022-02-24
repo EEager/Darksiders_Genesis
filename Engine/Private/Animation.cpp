@@ -49,7 +49,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 			pChannel->Set_KeyFrameIndex(iCurrentKeyFrameIndex);
 		}
 
-		if (m_fTimeAcc >= KeyFrames.back()->Time) /* 마지막 키프레임이면. */
+		if (m_fTimeAcc >= KeyFrames.back()->Time) /* #1. 마지막 키프레임이면. */
 		{
 			// 마지막 키프레임 행렬을 가져오자.
 			vScale = XMLoadFloat3(&KeyFrames.back()->vScale); 
@@ -57,8 +57,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 			vPosition = XMLoadFloat3(&KeyFrames.back()->vPosition);
 			vPosition = XMVectorSetW(vPosition, 1.f);
 		}
-
-		else /* 키프레임사이에 있을때 뼈의 상태행렬을 선형보간으로 만들어낸다. */
+		else /* #2. 키프레임사이에 있을때 뼈의 상태행렬을 선형보간으로 만들어낸다. */
 		{
 		   /* 델타타임튀는거 방지용. 
 			* 
@@ -67,35 +66,65 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 			* 3) 0에서 2로 델타타임이 튀는경우 실제 iCurrentKeyFrameIndex는 2인데 1을 가리키게된다.
 			*    이는 fRatio 계산기 오류가 발생한다.
 			* 
-			* KeyIdx: 0       1        2         3
-			*         |-------|--------|---------|
+			* KeyIdx: 0       1        2        3       n-1
+			*         |-------|--------|--------|  ... --| 
 			*/
 			while (m_fTimeAcc > KeyFrames[iCurrentKeyFrameIndex + 1]->Time) 
 				pChannel->Set_KeyFrameIndex(++iCurrentKeyFrameIndex);
 
-			// 0 ~ 1 사이의 보간 비율을 구한다.
-			// p.s 위에 if (m_fTimeAcc >= m_Duration)에서 마지막 키프레임일때 iCurrentKeyFrameIndex = 0이라서 +1은 ㄱㅊ다
-			_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
-				(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
+			/* #3. 처음 키프레임이면 가장 최근 행렬값과 비교하여 보간한다. */
+			if (iCurrentKeyFrameIndex == 0 && m_isBeginFirst == true)
+			{
+				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
+					(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
 
-			// 보간
-			vScale = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vScale),
-				XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vScale), fRatio);
+				// 보간
+				vScale = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vScale),
+					XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vScale), fRatio);
 
-			vRotation = XMQuaternionSlerp(XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex]->vRotation),
-				XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex + 1]->vRotation), fRatio);
+				vRotation = XMQuaternionSlerp(XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex]->vRotation),
+					XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex + 1]->vRotation), fRatio);
 
-			vPosition = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vPosition),
-				XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vPosition), fRatio);
+				vPosition = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vPosition),
+					XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vPosition), fRatio);
 
-			vPosition = XMVectorSetW(vPosition, 1.f);
+				vPosition = XMVectorSetW(vPosition, 1.f);
+
+				bool XM_CALLCONV  noexcept XMMatrixDecompose(
+					[in, out] XMVECTOR * outScale,
+					[in, out] XMVECTOR * outRotQuat,
+					[in, out] XMVECTOR * outTrans,
+					[in]      FXMMATRIX M
+				);
+			}
+			else
+			{
+				// 0 ~ 1 사이의 보간 비율을 구한다.
+				// p.s 위에 if (m_fTimeAcc >= m_Duration)에서 마지막 키프레임일때 iCurrentKeyFrameIndex = 0이라서 +1은 ㄱㅊ다
+				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
+					(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
+
+				// 보간
+				vScale = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vScale),
+					XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vScale), fRatio);
+
+				vRotation = XMQuaternionSlerp(XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex]->vRotation),
+					XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex + 1]->vRotation), fRatio);
+
+				vPosition = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vPosition),
+					XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vPosition), fRatio);
+
+				vPosition = XMVectorSetW(vPosition, 1.f);
+			}
 		}
 
 		// 정점들에게 적용할 TransformationMatrix를 만들었다.
 		_matrix		TransformationMatrix = XMMatrixAffineTransformation(vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vPosition);
 
-		// 채널에 저장해둔다.Get_TransformationMatrix()은 하이라키순회하면서 Update_CombinedTransformationMatrix에서 사용된다.
+		// 채널에 저장해둔다. Get_TransformationMatrix(m_iCurrentAnimIndex)은 하이라키순회하면서 Update_CombinedTransformationMatrix에서 사용된다.
 		pChannel->Set_TransformationMatrix(TransformationMatrix);
+
+		// 
 
 	}
 

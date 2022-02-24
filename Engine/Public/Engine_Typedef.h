@@ -41,9 +41,11 @@ namespace Engine
 	}_float4;
 	
 	typedef XMVECTOR				_vector;
+	// for.Compute 
 	typedef FXMVECTOR				_fvector;
 
 	typedef XMFLOAT4X4				_float4x4;	
+	// for.Compute 
 	typedef XMMATRIX				_matrix;
 	typedef FXMMATRIX				_fmatrix;
 

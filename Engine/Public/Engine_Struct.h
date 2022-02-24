@@ -4,6 +4,11 @@ namespace Engine
 {
 	typedef struct tagKeyFrame
 	{
+		struct tagKeyFrame()
+		{
+			ZeroMemory(this, sizeof(this));
+		}
+
 		_float3		vScale;
 		_float4		vRotation;
 		_float3		vPosition;

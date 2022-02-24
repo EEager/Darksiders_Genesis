@@ -9,6 +9,8 @@ HRESULT CChannel::NativeConstruct(const char* pName)
 {
 	strcpy_s(m_szName, pName);
 
+	XMStoreFloat4x4(&m_LatestTransformationMat, XMMatrixIdentity());
+
 	return S_OK;
 }
 

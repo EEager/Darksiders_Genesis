@@ -25,9 +25,11 @@ public:
 		return XMLoadFloat4x4(&m_TransformationMatrix);
 	}
 
-	void Set_KeyFrameIndex(_uint iKeyFrameIndex) {
-		m_iCurrentKeyFrameIndex = iKeyFrameIndex;
+	_matrix Get_Latest_TransformationMatrix() {
+		return XMLoadFloat4x4(&m_LatestTransformationMat);
 	}
+
+
 
 public:
 	HRESULT NativeConstruct(const char* pName);
@@ -42,9 +44,18 @@ public:
 		XMStoreFloat4x4(&m_TransformationMatrix, TransformationMatrix);
 	}
 
+	void Set_Latest_TransformationMatrix(_fmatrix lastestTransform) {
+		XMStoreFloat4x4(&m_LatestTransformationMat, lastestTransform);
+	}
+
+	void Set_KeyFrameIndex(_uint iKeyFrameIndex) {
+		m_iCurrentKeyFrameIndex = iKeyFrameIndex;
+	}
+
 private:
 	char					m_szName[MAX_PATH] = "";
 	_float4x4				m_TransformationMatrix;
+	_float4x4				m_LatestTransformationMat; // 이전 키프레임 행렬저장.
 	_uint					m_iCurrentKeyFrameIndex = 0;
 
 
