@@ -26,6 +26,11 @@ private:
 	_bool			m_isFinished = false;
 	_float			m_fTimeAcc = 0.0f;
 
+public:
+	void SetBeginFirst(_bool b = true) { m_isBeginFirst = b; }
+private:
+	_bool m_isBeginFirst = true; // 애니메이션 인덱스바뀌면 키프레임 처음부터 출력하자.
+
 private:
 	/* 현재 애니메이션에 영향르 주는 뼈들. */
 	vector<class CChannel*>			m_Channels;	

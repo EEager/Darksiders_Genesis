@@ -36,8 +36,11 @@ _int CPlayer::Tick(_float fTimeDelta)
 	{
 		m_pModelCom->SetUp_Animation(1);
 	}
-	else
+
+	if (GetKeyState(VK_DOWN) & 0x8000)
+	{
 		m_pModelCom->SetUp_Animation(0);
+	}
 
 
 	m_pModelCom->Update_Animation(fTimeDelta);

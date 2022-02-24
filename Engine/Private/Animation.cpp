@@ -17,6 +17,11 @@ HRESULT CAnimation::NativeConstruct(char * pName, _double Duration, _double Tick
 
 HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 {
+	if (m_isBeginFirst == true)
+	{
+		m_fTimeAcc = 0;
+	}
+
 	m_fTimeAcc += m_TickPerSecond * fTimeDelta;
 
 	if (m_fTimeAcc >= m_Duration)
@@ -38,12 +43,11 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 
 		_uint		iCurrentKeyFrameIndex = pChannel->Get_KeyFrameIndex();
 
-		if (true == m_isFinished)
+		if (true == m_isFinished || m_isBeginFirst)
 		{
 			iCurrentKeyFrameIndex = 0;
 			pChannel->Set_KeyFrameIndex(iCurrentKeyFrameIndex);
 		}
-
 
 		if (m_fTimeAcc >= KeyFrames.back()->Time) /* 마지막 키프레임이면. */
 		{
@@ -93,6 +97,11 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 		// 채널에 저장해둔다.Get_TransformationMatrix()은 하이라키순회하면서 Update_CombinedTransformationMatrix에서 사용된다.
 		pChannel->Set_TransformationMatrix(TransformationMatrix);
 
+	}
+
+	if (m_isBeginFirst)
+	{
+		m_isBeginFirst = false;
 	}
 
 	// 이거는 조금 손보자 ㅎㅎ 

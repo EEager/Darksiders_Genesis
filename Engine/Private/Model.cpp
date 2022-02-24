@@ -114,6 +114,12 @@ HRESULT CModel::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
+void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
+	m_Animations[iAnimIndex]->SetBeginFirst();
+	m_iCurrentAnimIndex = iAnimIndex;
+	m_isLoop = isLoop;
+}
+
 HRESULT CModel::Update_Animation(_float fTimeDelta)
 {
 	if (m_iCurrentAnimIndex > m_iNumAnimation)
@@ -149,7 +155,7 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
-#define MAX_BONE_NUM 256
+#define MAX_BONE_NUM 192
 		_float4x4		BoneMatrices[MAX_BONE_NUM];
 		ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 
