@@ -5,23 +5,21 @@
 class RenderStates
 {
 public:
-	static ID3D11RasterizerState* WireframeRS;
-	static ID3D11RasterizerState* NoCullRS;
-
-	static ID3D11DepthStencilState* EqualsDSS;
-
-	static ID3D11BlendState* AlphaToCoverageBS;
-	static ID3D11BlendState* TransparentBS;
+	static ComPtr<ID3D11RasterizerState> WireframeRS;
+	static ComPtr<ID3D11RasterizerState> NoCullRS;
+	static ComPtr<ID3D11DepthStencilState> EqualsDSS;
+	static ComPtr<ID3D11BlendState> AlphaToCoverageBS;
+	static ComPtr<ID3D11BlendState> TransparentBS;
 };
 
 
-ID3D11RasterizerState* RenderStates::WireframeRS = 0;
-ID3D11RasterizerState* RenderStates::NoCullRS = 0;
+ComPtr<ID3D11RasterizerState> RenderStates::WireframeRS = 0;
+ComPtr<ID3D11RasterizerState> RenderStates::NoCullRS = 0;
 
-ID3D11DepthStencilState* RenderStates::EqualsDSS = 0;
+ComPtr<ID3D11DepthStencilState> RenderStates::EqualsDSS = 0;
 
-ID3D11BlendState* RenderStates::AlphaToCoverageBS = 0;
-ID3D11BlendState* RenderStates::TransparentBS = 0;
+ComPtr<ID3D11BlendState> RenderStates::AlphaToCoverageBS = 0;
+ComPtr<ID3D11BlendState> RenderStates::TransparentBS = 0;
 
 #endif
 
@@ -141,7 +139,7 @@ HRESULT CRenderer::Render_NonAlpha()
 HRESULT CRenderer::Render_Alpha()
 {
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
+	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS.Get(), blendFactor, 0xffffffff);
 
 	/* 카메라로부터 멀리 있는 객체부터 그린다. */
 	m_RenderObjects[RENDER_ALPHA].sort([&](CGameObject* pSour, CGameObject* pDest) 
@@ -216,13 +214,6 @@ CComponent * CRenderer::Clone(void * pArg)
 void CRenderer::Free()
 {
 #if 1 // JJLEE_TEST_RenderStates
-	//ID3D11RasterizerState* RenderStates::WireframeRS = 0;
-	//ID3D11RasterizerState* RenderStates::NoCullRS = 0;
-
-	//ID3D11DepthStencilState* RenderStates::EqualsDSS = 0;
-
-	//ID3D11BlendState* RenderStates::AlphaToCoverageBS = 0;
-	Safe_Release(RenderStates::TransparentBS);
 #endif
 	__super::Free();
 
