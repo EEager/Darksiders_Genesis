@@ -147,15 +147,16 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 	if (nullptr == m_pDevice)
 		return E_FAIL;
 
-	ID3D11Texture2D*		pBackBufferTexture = nullptr;
 
-	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture)))
+	ComPtr<ID3D11Texture2D>		pBackBufferTexture;
+
+	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)pBackBufferTexture.GetAddressOf())))
 		return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture, nullptr, &m_pBackBufferRTV)))
+	if (FAILED(m_pDevice->CreateRenderTargetView(pBackBufferTexture.Get(), nullptr, &m_pBackBufferRTV)))
 		return E_FAIL;	
 
-	Safe_Release(pBackBufferTexture);
+	//Safe_Release(pBackBufferTexture);
 
 	return S_OK;
 }
@@ -165,7 +166,7 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 	if (nullptr == m_pDevice)
 		return E_FAIL;
 
-	ID3D11Texture2D*		pDepthStencilTexture = nullptr;
+	ComPtr<ID3D11Texture2D>		pDepthStencilTexture;
 	
 	D3D11_TEXTURE2D_DESC	TextureDesc;
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -184,17 +185,17 @@ HRESULT CGraphic_Device::Ready_DepthStencilRenderTargetView(_uint iWinCX, _uint 
 	TextureDesc.CPUAccessFlags = 0;
 	TextureDesc.MiscFlags = 0;
 
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &pDepthStencilTexture)))
+	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, pDepthStencilTexture.GetAddressOf())))
 		return E_FAIL;
 
 	/* RenderTarget */
 	/* ShaderResource */
 	/* DepthStencil */
 
-	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture, nullptr, &m_pDepthStencilView)))
+	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture.Get(), nullptr, &m_pDepthStencilView)))
 		return E_FAIL;	
 
-	Safe_Release(pDepthStencilTexture);
+	//Safe_Release(pDepthStencilTexture);
 
 	return S_OK;
 }
@@ -205,5 +206,24 @@ void CGraphic_Device::Free()
 	Safe_Release(m_pDepthStencilView);
 	Safe_Release(m_pBackBufferRTV);
 	Safe_Release(m_pDeviceContext);
+
+#if defined(DEBUG) || defined(_DEBUG)
+	ID3D11Debug* d3dDebug;
+	HRESULT hr = m_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
+	if (SUCCEEDED(hr))
+	{
+		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r\n");
+		OutputDebugStringW(L"                                                                    D3D11 Live Object ref Count Checker \r\n");
+		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r\n");
+
+		hr = d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+
+		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r\n");
+		OutputDebugStringW(L"                                                                    D3D11 Live Object ref Count Checker END \r\n");
+		OutputDebugStringW(L"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \r\n");
+	}
+	if (d3dDebug != nullptr)            d3dDebug->Release();
+#endif
+
 	Safe_Release(m_pDevice);
 }

@@ -94,7 +94,11 @@ HRESULT CMainApp::PostRender()
 
 	RECT rect = { 0,0,300,300 };
 	m_spriteBatch->Begin();
+#ifdef USE_IMGUI
 	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
+#else
+	wstring str = DXString::Format(L"Font Test");
+#endif
 	const wchar_t* output = str.c_str();
 	
 	//auto origin = m_spriteFont->MeasureString(output) / 2.f;

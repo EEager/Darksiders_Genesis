@@ -8,7 +8,17 @@ class CAnimation final : public CBase
 {
 private:
 	CAnimation();
+	CAnimation(const CAnimation& rhs);
 	virtual ~CAnimation() = default;
+
+public:
+	const char* Get_Name() const {
+		return m_szName;
+	}
+
+	vector<class CChannel*>* Get_Channels() {
+		return &m_Channels;
+	}
 
 public:
 	HRESULT NativeConstruct(char* pName, _double Duration, _double TickPerSecond);
@@ -38,6 +48,7 @@ private:
 
 public:
 	static CAnimation* Create(char* pName, _double Duration, _double TickPerSecond);
+	CAnimation* Clone();
 	virtual void Free();
 };
 

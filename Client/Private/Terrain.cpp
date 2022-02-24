@@ -204,17 +204,19 @@ HRESULT CTerrain::Create_FilterTexture()
 	}
 	
 
-	ID3D11Resource*			pTextureResource = nullptr;
+	ComPtr<ID3D11Resource>			pTextureResource;
 
-	if (FAILED(DirectX::CreateTexture(m_pDevice, ScratchImage.GetImages(), ScratchImage.GetImageCount(), ScratchImage.GetMetadata(), &pTextureResource)))
+	if (FAILED(DirectX::CreateTexture(m_pDevice, ScratchImage.GetImages(), ScratchImage.GetImageCount(), ScratchImage.GetMetadata(), pTextureResource.GetAddressOf())))
 		return E_FAIL;	
 
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource, nullptr, &m_pFilter_SRV)))
+	if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource.Get(), nullptr, &m_pFilter_SRV)))
 		return E_FAIL;
 
 	if (FAILED(DirectX::SaveToTGAFile(*ScratchImage.GetImage(0, 0, 0), TEXT("../Bin/Test.tga"), nullptr)))
 		return E_FAIL;
+
+	//Safe_Release(pTextureResource);
 	
 	
 
@@ -256,6 +258,7 @@ void CTerrain::Free()
 	for (_uint i = 0; i < TYPE_END; ++i)
 		Safe_Release(m_pTextureCom[i]);
 
+	Safe_Release(m_pFilter_SRV);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pVIBufferCom);

@@ -54,6 +54,10 @@ using namespace DirectX;
 #include <process.h>
 using namespace std;
 
+
+#include <wrl.h>
+using namespace Microsoft::WRL;
+
 // -----------------------
 // Assimp
 // -----------------------
@@ -67,7 +71,7 @@ using namespace std;
 //	ImGUI
 // -----------------------
 #ifdef _DEBUG
-#define USE_IMGUI
+//#define USE_IMGUI
 #endif
 
 #ifndef USE_IMGUI

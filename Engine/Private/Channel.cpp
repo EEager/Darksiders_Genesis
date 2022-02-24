@@ -1,8 +1,18 @@
 #include "..\Public\Channel.h"
 
 CChannel::CChannel()
+	: m_isClone(false)
 {
 
+}
+
+CChannel::CChannel(const CChannel& rhs)
+	: m_TransformationMatrix(rhs.m_TransformationMatrix)
+	, m_iCurrentKeyFrameIndex(rhs.m_iCurrentKeyFrameIndex)
+	, m_KeyFrames(rhs.m_KeyFrames)
+	, m_isClone(true)
+{
+	strcpy_s(m_szName, rhs.m_szName);
 }
 
 HRESULT CChannel::NativeConstruct(const char* pName)
@@ -13,6 +23,12 @@ HRESULT CChannel::NativeConstruct(const char* pName)
 
 	return S_OK;
 }
+
+CChannel* CChannel::Clone()
+{
+	return new CChannel(*this);
+}
+
 
 CChannel* CChannel::Create(const char* pName)
 {
@@ -29,9 +45,11 @@ CChannel* CChannel::Create(const char* pName)
 
 void CChannel::Free()
 {
-	for (auto& pKeyFrame : m_KeyFrames)
-		Safe_Delete(pKeyFrame);
-
-	m_KeyFrames.clear();
+	if (false == m_isClone)
+	{
+		for (auto& pKeyFrame : m_KeyFrames)
+			Safe_Delete(pKeyFrame);
+		m_KeyFrames.clear();
+	}
 }
 

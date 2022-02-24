@@ -6,6 +6,20 @@ CAnimation::CAnimation()
 {
 }
 
+CAnimation::CAnimation(const CAnimation& rhs)
+	: m_Duration(rhs.m_Duration)
+	, m_fTimeAcc(rhs.m_fTimeAcc)
+	, m_isFinished(rhs.m_isFinished)
+	, m_TickPerSecond(rhs.m_TickPerSecond)
+{
+	strcpy_s(m_szName, rhs.m_szName);
+
+	for (auto& pPrototypeChannel : rhs.m_Channels)
+	{
+		m_Channels.push_back(pPrototypeChannel->Clone());
+	}
+}
+
 HRESULT CAnimation::NativeConstruct(char * pName, _double Duration, _double TickPerSecond)
 {
 	strcpy_s(m_szName, pName);
@@ -73,31 +87,31 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 				pChannel->Set_KeyFrameIndex(++iCurrentKeyFrameIndex);
 
 			/* #3. 처음 키프레임이면 가장 최근 행렬값과 비교하여 보간한다. */
-			if (iCurrentKeyFrameIndex == 0 && m_isBeginFirst == true)
-			{
-				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
-					(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
+			//if (iCurrentKeyFrameIndex == 0 && m_isBeginFirst == true)
+			//{
+			//	_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
+			//		(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
 
-				// 보간
-				vScale = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vScale),
-					XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vScale), fRatio);
+			//	// 보간
+			//	vScale = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vScale),
+			//		XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vScale), fRatio);
 
-				vRotation = XMQuaternionSlerp(XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex]->vRotation),
-					XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex + 1]->vRotation), fRatio);
+			//	vRotation = XMQuaternionSlerp(XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex]->vRotation),
+			//		XMLoadFloat4(&KeyFrames[iCurrentKeyFrameIndex + 1]->vRotation), fRatio);
 
-				vPosition = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vPosition),
-					XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vPosition), fRatio);
+			//	vPosition = XMVectorLerp(XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex]->vPosition),
+			//		XMLoadFloat3(&KeyFrames[iCurrentKeyFrameIndex + 1]->vPosition), fRatio);
 
-				vPosition = XMVectorSetW(vPosition, 1.f);
+			//	vPosition = XMVectorSetW(vPosition, 1.f);
 
-				bool XM_CALLCONV  noexcept XMMatrixDecompose(
-					[in, out] XMVECTOR * outScale,
-					[in, out] XMVECTOR * outRotQuat,
-					[in, out] XMVECTOR * outTrans,
-					[in]      FXMMATRIX M
-				);
-			}
-			else
+			//	bool XM_CALLCONV  noexcept XMMatrixDecompose(
+			//		[in, out] XMVECTOR * outScale,
+			//		[in, out] XMVECTOR * outRotQuat,
+			//		[in, out] XMVECTOR * outTrans,
+			//		[in]      FXMMATRIX M
+			//	);
+			//}
+			//else
 			{
 				// 0 ~ 1 사이의 보간 비율을 구한다.
 				// p.s 위에 if (m_fTimeAcc >= m_Duration)에서 마지막 키프레임일때 iCurrentKeyFrameIndex = 0이라서 +1은 ㄱㅊ다
@@ -144,6 +158,12 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 
 	return S_OK;
 }
+
+CAnimation* CAnimation::Clone()
+{
+	return new CAnimation(*this);
+}
+
 
 CAnimation * CAnimation::Create(char * pName, _double Duration, _double TickPerSecond)
 {

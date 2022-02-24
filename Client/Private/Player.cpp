@@ -25,14 +25,15 @@ HRESULT CPlayer::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;	
 
-	m_pModelCom->SetUp_Animation(0);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
+	m_pModelCom->SetUp_Animation(rand() % 2);
 
 	return S_OK;
 }
 
 _int CPlayer::Tick(_float fTimeDelta)
 {
-	if (GetKeyState(VK_UP) & 0x8000)
+	/*if (GetKeyState(VK_UP) & 0x8000)
 	{
 		m_pModelCom->SetUp_Animation(1);
 	}
@@ -40,7 +41,7 @@ _int CPlayer::Tick(_float fTimeDelta)
 	if (GetKeyState(VK_DOWN) & 0x8000)
 	{
 		m_pModelCom->SetUp_Animation(0);
-	}
+	}*/
 
 
 	m_pModelCom->Update_Animation(fTimeDelta);

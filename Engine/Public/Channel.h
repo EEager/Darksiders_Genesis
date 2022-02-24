@@ -10,7 +10,13 @@ class CChannel final : public CBase
 {
 public:
 	CChannel();
+	CChannel(const CChannel& rhs);
 	virtual ~CChannel() = default;
+
+public:
+	const char* Get_Name() const {
+		return m_szName;
+	}
 
 public:
 	const vector<KEYFRAME*>* Get_KeyFrames() const {
@@ -58,6 +64,8 @@ private:
 	_float4x4				m_LatestTransformationMat; // 이전 키프레임 행렬저장.
 	_uint					m_iCurrentKeyFrameIndex = 0;
 
+	_bool					m_isClone = false;
+
 
 	/* 특정 애니메이션에서 이뼈가 표현되어야할 키프레임들. */
 	vector<KEYFRAME*>			m_KeyFrames;
@@ -65,6 +73,7 @@ private:
 
 public:
 	static CChannel* Create(const char* pName);
+	CChannel* Clone();
 	virtual void Free() override;
 };
 

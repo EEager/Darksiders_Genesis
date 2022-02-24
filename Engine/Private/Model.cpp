@@ -15,13 +15,11 @@ CModel::CModel(const CModel & rhs)
 	, m_pScene(rhs.m_pScene)	
 	, m_pEffect(rhs.m_pEffect)
 	, m_PassesDesc(rhs.m_PassesDesc)
-	, m_MeshContainers(rhs.m_MeshContainers)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
 	, m_isAnimMesh(rhs.m_isAnimMesh)
 	, m_Materials(rhs.m_Materials)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_HierarchyNodes(rhs.m_HierarchyNodes)
-	, m_Animations(rhs.m_Animations)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimation(rhs.m_iNumAnimation)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
@@ -34,11 +32,20 @@ CModel::CModel(const CModel & rhs)
 		}
 	}
 
+	m_MeshContainers.resize(m_iNumMaterials);
 
-	for (auto& MtrlMeshContainer : m_MeshContainers)
+	for (auto& MtrlMeshContainer : rhs.m_MeshContainers)
 	{
-		for (auto& pMeshContainer : MtrlMeshContainer)
-			Safe_AddRef(pMeshContainer);
+		for (auto& pPrototypeMeshContainer : MtrlMeshContainer)
+		{
+			CMeshContainer* pMeshContainer = (CMeshContainer*)pPrototypeMeshContainer->Clone(nullptr);
+			if (nullptr == pMeshContainer)
+				return;
+
+			m_MeshContainers[pMeshContainer->Get_MaterialIndex()].push_back(pMeshContainer);
+
+		}
+
 	}
 
 	for (auto& pPassDesc : m_PassesDesc)
@@ -48,6 +55,12 @@ CModel::CModel(const CModel & rhs)
 	}
 
 	Safe_AddRef(m_pEffect);
+
+
+	for (auto& pPrototypeAnim : rhs.m_Animations)
+	{
+		m_Animations.push_back(pPrototypeAnim->Clone());
+	}
 
 }
 
@@ -76,19 +89,6 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	m_MeshContainers.resize(m_pScene->mNumMaterials);
 
 
-	if (true == m_isAnimMesh)
-	{
-		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
-			return E_FAIL;
-
-		sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
-			{
-				return pSour->Get_Depth() < pDest->Get_Depth();
-			});
-	}
-
-
-
 	if (FAILED(Create_MeshContainers()))
 		return E_FAIL;
 
@@ -111,6 +111,39 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
+	if (true == m_isAnimMesh)
+	{
+		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
+			return E_FAIL;
+
+		sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+			{
+				return pSour->Get_Depth() < pDest->Get_Depth();
+			});
+
+		for (auto& MtrlMeshContainers : m_MeshContainers)
+		{
+			for (auto& pMeshContainer : MtrlMeshContainers)
+			{
+				pMeshContainer->Add_Bones(this);
+			}
+		}
+
+		for (_uint i = 0; i < m_iNumAnimation; ++i)
+		{
+			vector<class CChannel*>* pChannels = m_Animations[i]->Get_Channels();
+
+			for (auto& pChannel : *pChannels)
+			{
+				CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pChannel->Get_Name());
+				if (nullptr == pHierarchyNode)
+					return E_FAIL;
+
+				pHierarchyNode->Add_Channel(i, pChannel);
+			}
+		}
+	}
+
 	return S_OK;
 }
 
@@ -155,21 +188,24 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
+		if (true == m_isAnimMesh)
+		{
 #define MAX_BONE_NUM 192
-		_float4x4		BoneMatrices[MAX_BONE_NUM];
-		ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
+			_float4x4		BoneMatrices[MAX_BONE_NUM];
+			ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 
-		/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
-		pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
+			/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
+			pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
 
-		/* 셰이더에 던진다. */
-		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
-			return E_FAIL;
+			/* 셰이더에 던진다. */
+			if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
+				return E_FAIL;
 
-		Bind_Shader(iPassIndex);
+			Bind_Shader(iPassIndex);
 
-		pMeshContainer->Render();
+			pMeshContainer->Render();
+		}
 	}
 
 	return S_OK;
@@ -404,14 +440,6 @@ HRESULT CModel::Create_Animation()
 			if (nullptr == pChannel)
 				return E_FAIL;
 
-			CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pNodeAnim->mNodeName.data);
-			if (nullptr == pHierarchyNode)
-				return E_FAIL;
-
-			pHierarchyNode->Add_Channel(i, pChannel); // 하이라키는 애니메이션 인덱스별로 채널을 가지고 있는다. 채널은 134개의 
-			// 뼈들로 가득차게될것이다. 각 뼈들을 159개의 키프레임을 가지고있다.
-			// 
-
 			/* 이 뼈는 몇개의 키프레임에서 사용되고 있는지?, 사실상 모든 키프레임 개수가 같기때문에 이부분은 생략가능하다. */
 			_uint	iNumMaxKeyFrames = max(pNodeAnim->mNumScalingKeys, pNodeAnim->mNumRotationKeys);
 			iNumMaxKeyFrames = max(iNumMaxKeyFrames, pNodeAnim->mNumPositionKeys);
@@ -493,20 +521,14 @@ CComponent * CModel::Clone(void * pArg)
 void CModel::Free()
 {
 	// m_Animations 
-	if (false == m_isCloned)
-	{
-		for (auto& pAnimation : m_Animations)
-			Safe_Release(pAnimation);
-		m_Animations.clear();
-	}
+	for (auto& pAnimation : m_Animations)
+		Safe_Release(pAnimation);
+	m_Animations.clear();
 
 	// m_HierarchyNodes
-	if (false == m_isCloned)
-	{
-		for (auto& hNode : m_HierarchyNodes)
-			Safe_Release(hNode);
-		m_HierarchyNodes.clear();
-	}
+	for (auto& hNode : m_HierarchyNodes)
+		Safe_Release(hNode);
+	m_HierarchyNodes.clear();
 
 	// m_Materials
 	for (auto& MaterialDesc : m_Materials)
@@ -540,9 +562,8 @@ void CModel::Free()
 	{
 		for (auto& pPassDesc : m_PassesDesc)
 			Safe_Delete(pPassDesc);
-
-		m_PassesDesc.clear();
 	}
+	m_PassesDesc.clear();
 
 
 	// m_pEffect

@@ -42,18 +42,18 @@ HRESULT CTexture::NativeConstruct_Prototype(const _tchar* pTextureFilePath, _uin
 		else
 			DirectX::LoadFromWICFile(szFullPath, WIC_FLAGS_NONE, nullptr, Image);
 
-		ID3D11Resource*			pTextureResource = nullptr;
+		ComPtr<ID3D11Resource>			pTextureResource;
 
-		if (FAILED(DirectX::CreateTexture(m_pDevice, Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), &pTextureResource)))
+		if (FAILED(DirectX::CreateTexture(m_pDevice, Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), pTextureResource.GetAddressOf())))
 			return E_FAIL;
 
-
-
 		ID3D11ShaderResourceView*	pSRV = nullptr;
-		if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource, nullptr, &pSRV)))
+		if (FAILED(m_pDevice->CreateShaderResourceView(pTextureResource.Get(), nullptr, &pSRV)))
 			return E_FAIL;
 
 		m_Textures.push_back(pSRV);
+
+		//Safe_Release(pTextureResource);
 	}
 
 	return S_OK;
