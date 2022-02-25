@@ -43,36 +43,37 @@ _int CCamera_Fly::Tick(_float fTimeDelta)
 	if (CImguiManager::GetInstance()->GetCursorEnable() == false)
 	{
 		/* 카메라의 움직임을 주면서 카메라 월드행렬을 갱신한다. */
+#define CONST_TIME_DELTA_F 0.016f
 		if (pGameInstance->Get_DIKeyState(DIK_W) & 0x80)
 		{
-			m_pTransform->Go_Straight(fTimeDelta);
+			m_pTransform->Go_Straight(CONST_TIME_DELTA_F);
 		}
 
 		if (pGameInstance->Get_DIKeyState(DIK_S) & 0x80)
 		{
-			m_pTransform->Go_Backward(fTimeDelta);
+			m_pTransform->Go_Backward(CONST_TIME_DELTA_F);
 		}
 
 		if (pGameInstance->Get_DIKeyState(DIK_A) & 0x80)
 		{
-			m_pTransform->Go_Left(fTimeDelta);
+			m_pTransform->Go_Left(CONST_TIME_DELTA_F);
 		}
 
 		if (pGameInstance->Get_DIKeyState(DIK_D) & 0x80)
 		{
-			m_pTransform->Go_Right(fTimeDelta);
+			m_pTransform->Go_Right(CONST_TIME_DELTA_F);
 		}
 
 		_long	MouseMove = 0;
 
 		if (MouseMove = pGameInstance->Get_DIMouseMoveState(CInput_Device::DIMM_X))
 		{
-			m_pTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * 0.1f);
+			m_pTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), CONST_TIME_DELTA_F * MouseMove * 0.1f);
 		}
 
 		if (MouseMove = pGameInstance->Get_DIMouseMoveState(CInput_Device::DIMM_Y))
 		{
-			m_pTransform->Turn(m_pTransform->Get_State(CTransform::STATE_RIGHT), fTimeDelta * MouseMove * 0.1f);
+			m_pTransform->Turn(m_pTransform->Get_State(CTransform::STATE_RIGHT), CONST_TIME_DELTA_F * MouseMove * 0.1f);
 		}
 	}
 #endif

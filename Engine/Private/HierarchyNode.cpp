@@ -23,6 +23,16 @@ HRESULT CHierarchyNode::Reserve_Channels(_uint iNumAnimation)
 	return S_OK;
 }
 
+void CHierarchyNode::Update_CombinedTransformationMatrix()
+{
+	if (nullptr != m_pParent)
+		XMStoreFloat4x4(&m_CombinedTransformationMatrix,
+			XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&m_pParent->m_CombinedTransformationMatrix));
+	else
+		XMStoreFloat4x4(&m_CombinedTransformationMatrix,
+			XMLoadFloat4x4(&m_TransformationMatrix));
+}
+
 void CHierarchyNode::Update_CombinedTransformationMatrix(_uint iCurrentAnimIndex)
 {
 	if (iCurrentAnimIndex >= m_Channels.size())

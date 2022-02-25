@@ -104,6 +104,8 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	if (FAILED(Create_Animation()))
 		return E_FAIL;
 
+	m_pScene->mRootNode; // ??????????
+
 
 
 	return S_OK;
@@ -111,24 +113,31 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
+	if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
+		return E_FAIL;
+
+	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+		{
+			return pSour->Get_Depth() < pDest->Get_Depth();
+		});
+
+	for (auto& MtrlMeshContainers : m_MeshContainers)
+	{
+		for (auto& pMeshContainer : MtrlMeshContainers)
+		{
+			pMeshContainer->Add_Bones(this);
+		}
+	}
+
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+	{
+		pHierarchyNode->Update_CombinedTransformationMatrix();
+	}
+
+
+
 	if (true == m_isAnimMesh)
 	{
-		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
-			return E_FAIL;
-
-		sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
-			{
-				return pSour->Get_Depth() < pDest->Get_Depth();
-			});
-
-		for (auto& MtrlMeshContainers : m_MeshContainers)
-		{
-			for (auto& pMeshContainer : MtrlMeshContainers)
-			{
-				pMeshContainer->Add_Bones(this);
-			}
-		}
-
 		for (_uint i = 0; i < m_iNumAnimation; ++i)
 		{
 			vector<class CChannel*>* pChannels = m_Animations[i]->Get_Channels();
@@ -188,24 +197,21 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
-		if (true == m_isAnimMesh)
-		{
 #define MAX_BONE_NUM 192
-			_float4x4		BoneMatrices[MAX_BONE_NUM];
-			ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
+		_float4x4		BoneMatrices[MAX_BONE_NUM];
+		ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 
-			/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
-			pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
+		/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
+		pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
 
-			/* 셰이더에 던진다. */
-			if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
-				return E_FAIL;
+		/* 셰이더에 던진다. */
+		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
+			return E_FAIL;
 
-			Bind_Shader(iPassIndex);
+		Bind_Shader(iPassIndex);
 
-			pMeshContainer->Render();
-		}
+		pMeshContainer->Render();
 	}
 
 	return S_OK;

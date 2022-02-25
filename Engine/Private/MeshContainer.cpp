@@ -69,6 +69,11 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 {
 	_uint			iBoneIndex = 0;
 
+	if (0 == m_iNumBones)
+	{
+		XMStoreFloat4x4(&pBoneMatrices[0], XMMatrixIdentity());
+	}
+
 	// 현재 정점에 영향을 주고 있는 뼈들을 순회를 도는데...이거보니 사실상 134개 모두 다 도네 ㅎㅎ 
 	for (auto& pHierarchyNode : m_Bones)
 	{
@@ -167,6 +172,19 @@ HRESULT CMeshContainer::SetUp_IndicesDesc(aiMesh * pMesh)
 
 HRESULT CMeshContainer::Add_Bones(CModel* pModel)
 {
+	if (0 == m_iNumBones)
+	{
+		CHierarchyNode* pHierarchyNode = pModel->Find_HierarchyNode(m_pAIMesh->mName.data);
+		if (nullptr == pHierarchyNode)
+			return E_FAIL;
+
+		pHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity());
+		m_Bones.push_back(pHierarchyNode);
+
+		m_iNumBones = 1;
+		return S_OK;
+	}
+
 	for (_uint i = 0; i < m_iNumBones; ++i)
 	{
 		/* 현재 이 뼈가 어떤 정점에게 영햐을 미치고 있는지?! */

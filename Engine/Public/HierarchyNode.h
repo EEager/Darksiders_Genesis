@@ -39,6 +39,7 @@ public:
 public:
 	HRESULT NativeConstruct(const char* pName, _fmatrix TransformationMatrix, CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Reserve_Channels(_uint iNumAnimation);
+	void Update_CombinedTransformationMatrix();
 	void Update_CombinedTransformationMatrix(_uint iCurrentAnimIndex);
 
 
