@@ -22,7 +22,16 @@ HRESULT CVIBuffer_Rect::NativeConstruct_Prototype(const _tchar* pShaderFilePath)
 	ZeroMemory(&m_VBDesc, sizeof(D3D11_BUFFER_DESC));
 
 	m_VBDesc.ByteWidth = m_iStride * m_iNumVertices;
-	m_VBDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	/*
+	- D3D11_USAGE_IMMUTABLE : GPU의 읽기 허용, CPU는 접근 불가능. 생성할 때 초기화
+	- D3D11_USAGE_DYNAMIC : GPU의 읽기 허용, CPU의 쓰기 허용(Map, Unmap이 필요할 경우)
+	*/
+	m_VBDesc.Usage = D3D11_USAGE_IMMUTABLE; 
+
+	/*
+	- D3D11_BIND_VERTEX_BUFFER : Vertex
+	- D3D11_BIND_CONSTANT_BUFFER : 이런식으로 할 수도 있군.
+	*/
 	m_VBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_VBDesc.CPUAccessFlags = 0;
 	m_VBDesc.MiscFlags = 0;
