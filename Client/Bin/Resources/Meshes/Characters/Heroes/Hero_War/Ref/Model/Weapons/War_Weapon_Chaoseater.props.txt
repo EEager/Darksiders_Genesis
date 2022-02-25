@@ -1,0 +1,26 @@
+Materials[1] =
+{
+    Materials[0] = MaterialInstanceConstant'/Game/Characters/Heroes/Hero_War/Textures/Chaoseater_Inst_A.Chaoseater_Inst_A'
+}
+SourceModels[0] = {}
+StaticMaterials[1] =
+{
+    StaticMaterials[0] =
+    {
+        MaterialInterface = MaterialInstanceConstant'/Game/Characters/Heroes/Hero_War/Textures/Chaoseater_Inst_A.Chaoseater_Inst_A'
+        MaterialSlotName = Chaoseater
+        UVChannelData =
+        {
+            bInitialized = true
+            bOverrideDensities = false
+            LocalUVDensities[4] = { 114.693, 187.325, 0, 0 }
+        }
+    }
+}
+Sockets[30] = {  }
+ExtendedBounds =
+{
+    Origin = { X=-1.14441e-05, Y=-0.0241718, Z=-81.6657 }
+    BoxExtent = { X=8.33499, Y=26.7268, Z=122.564 }
+    SphereRadius = 122.574
+}
