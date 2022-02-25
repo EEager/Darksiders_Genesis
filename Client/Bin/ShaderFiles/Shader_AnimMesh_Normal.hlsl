@@ -18,6 +18,7 @@ cbuffer cbPerObject
 	matrix		g_ViewMatrix;
 	matrix		g_ProjMatrix;
 	Material	g_Material;
+	bool		g_UseNormalMap;
 };
 
 cbuffer CameraDesc
@@ -76,7 +77,7 @@ struct VS_IN
 	float3		vPosL : POSITION;
 	float3		vNormalL : NORMAL;
 	float2		vTexUV : TEXCOORD0;
-	float3		vTangent : TANGENT;
+	float3		vTangentL : TANGENT;
 	uint4		vBlendIndex : BLENDINDEX;
 	float4		vBlendWeight : BLENDWEIGHT;
 };
@@ -112,6 +113,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosP = mul(vPosBone, matWVP);
 	Out.vNormalW = normalize(mul(vector(In.vNormalL, 0.f), g_WorldMatrix));
 	Out.vTexUV = In.vTexUV;
+	Out.TangentW = mul(In.vTangentL, (float3x3)g_WorldMatrix);
 	Out.vPosW = mul(vector(In.vPosL, 1.f), g_WorldMatrix);
 
 	return Out;
@@ -185,8 +187,12 @@ PS_OUT PS_MAIN(PS_IN In)
 		// Sum the light contribution from each light source.
 		float4 A, D, S;
 
-		ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW, A, D, S);
-		//ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f) , toEyeW.xyz, A, D, S);
+
+		if (g_UseNormalMap)
+			ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
+		else
+			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW, A, D, S);
+
 		ambient += A;
 		diffuse += D;
 		spec += S;

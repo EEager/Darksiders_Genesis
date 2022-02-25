@@ -19,7 +19,7 @@ public:
 	/* 원형객체를 초기화하기위한 함수. (서버,파일로부터 데이터를 읽어서 저장ㅎ나다. ) */
 	virtual HRESULT NativeConstruct_Prototype();
 
-	/* 사본객체를 초기화하기위한 함수. (원형객체의 데이터를 메모리 복사하낟. ) */
+	/* 사본객체를 초기화하기위한 함수. (원형객체의 데이터를 메모리 복사한다. ) */
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);

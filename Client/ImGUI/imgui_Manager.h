@@ -63,6 +63,7 @@ private:
 	static bool m_bshow_gameobject_manager_window;
 	static bool m_bshow_gameobject_editor_window;
 	static bool m_bShow_Simulation_Speed;
+	static bool m_bshow_hlsl_window;
 	int m_iNextLevel = 0;
 
 
@@ -92,8 +93,11 @@ private:
 	// GameObject Control Window
 private:
 	void ShowGameObjectManagerWindow();
-private:
 
+	// ==========================================
+	// HLSL Control Window
+private:
+	void ShowHLSLControlWindow();
 
 	// ===========================================
 	// Key

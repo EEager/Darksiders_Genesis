@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Base.h" 
+#include "Base.h"
 
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
@@ -19,6 +19,7 @@ bool CImguiManager::m_bshow_light_window = false;
 bool CImguiManager::m_bShow_Simulation_Speed = false;
 bool CImguiManager::m_bshow_gameobject_manager_window = false;
 bool CImguiManager::m_bshow_gameobject_editor_window = false;
+bool CImguiManager::m_bshow_hlsl_window = false;
 
 ImVec4 CImguiManager::clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -200,13 +201,13 @@ void CImguiManager::Tick(_float fTimeDelta)
 
 	// ---------------------------------
 	// TEST_RATIO
-	if (ratio < 1.0f)
-		ratio += 0.2f * fTimeDelta;
-	else 
-		ratio = 1.f;
-	ImGui::Begin("ProgressBar");
-	ImGui::ProgressBar(ratio);
-	ImGui::End();
+	//if (ratio < 1.0f)
+	//	ratio += 0.2f * fTimeDelta;
+	//else 
+	//	ratio = 1.f;
+	//ImGui::Begin("ProgressBar");
+	//ImGui::ProgressBar(ratio);
+	//ImGui::End();
 	// ---------------------------------
 
 	// Light Window
@@ -214,6 +215,9 @@ void CImguiManager::Tick(_float fTimeDelta)
 
 	// GameObject Manager Window
 	ShowGameObjectManagerWindow();
+
+	// HLSL Window
+	ShowHLSLControlWindow();
 
 }
 
@@ -319,6 +323,8 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Checkbox("Simulation Speed Factor", &m_bShow_Simulation_Speed);
 	ImGui::Checkbox("GameObject Manager Window", &m_bshow_gameobject_manager_window);
 	ImGui::Checkbox("Editor Window", &m_bshow_gameobject_editor_window);
+	ImGui::Checkbox("HLSL Window", &m_bshow_hlsl_window);
+
 
 	ImGui::End();
 
@@ -581,10 +587,28 @@ void CImguiManager::ShowLightControlWindow()
 
 	if (ImGui::Button("Reset"))
 	{
-		pLightDesc->vDirection = _float3(1.f, -1.f, 1.f);
-		pLightDesc->vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-		pLightDesc->vAmbient = _float4(0.4f, 0.4f, 0.4f, 1.f);
-		pLightDesc->vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+		switch (pLightDesc->eType)
+		{
+		case tagLightDesc::TYPE_DIRECTIONAL:
+			pLightDesc->vDiffuse = _float4(0.5f, 0.5f, 0.5f, 1.0f);
+			pLightDesc->vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.0f);
+			pLightDesc->vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.0f);
+			pLightDesc->vDirection = _float3(0.57735f, -0.57735f, 0.57735f);
+			break;
+		case tagLightDesc::TYPE_POINT:
+			pLightDesc->vDiffuse = _float4(0.7f, 0.7f, 0.7f, 1.0f);
+			pLightDesc->vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.0f);
+			pLightDesc->vSpecular = _float4(0.7f, 0.7f, 0.7f, 1.0f);
+			pLightDesc->fRadiuse = 25.f;
+			break;
+		case tagLightDesc::TYPE_SPOT:
+			pLightDesc->eType = tagLightDesc::TYPE_SPOT;
+			pLightDesc->vDiffuse = _float4(1.0f, 1.0f, 0.0f, 1.0f);
+			pLightDesc->vAmbient = _float4(0.0f, 0.0f, 0.0f, 1.0f);
+			pLightDesc->vSpecular = _float4(1.0f, 1.0f, 1.0f, 1.0f);
+			pLightDesc->fRadiuse = 10000.0f;
+			break;
+		}
 	}
 
 	ImGui::End();
@@ -718,6 +742,19 @@ void CImguiManager::ShowGameObjectManagerWindow()
 
 	ImGui::End();
 	
+}
+
+void CImguiManager::ShowHLSLControlWindow()
+{
+	if (!m_bshow_hlsl_window)
+		return;
+
+	ImGui::Begin("HLSL Contorl Window", &m_bshow_hlsl_window);
+
+	ImGui::BulletText("Set HLSL Variables");
+
+	ImGui::Checkbox("g_bUseNormalMap", &g_bUseNormalMap);
+	ImGui::End();
 }
 
 #endif // USE_IMGUI

@@ -131,6 +131,10 @@ HRESULT CPlayer::SetUp_ConstantTable()
 	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
 	m_pModelCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
 
+	// Branch to Use Normal Mapping 
+	// 노멀맵할지 말지 선택을 여기서 하자
+	m_pModelCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+
 
 #if 0 // Legacy
 	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);

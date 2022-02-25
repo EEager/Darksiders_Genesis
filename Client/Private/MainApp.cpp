@@ -12,6 +12,12 @@
 #endif
 
 
+// ----------------------
+// Client_Extern.h Variables
+bool g_bUseNormalMap = true;
+// ----------------------
+
+
 CMainApp::CMainApp()
 	: m_pGameInstance(CGameInstance::GetInstance())
 {

@@ -38,3 +38,9 @@ static const unsigned int		g_iWinCY = 720;
 // LightHelper.h
 // -----------------------
 #include "LightHelper.h"
+
+// -----------------------
+// Client_Extern.h
+// -----------------------
+#include "Client_Extern.h" 
+
