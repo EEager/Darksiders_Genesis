@@ -10,6 +10,9 @@ HRESULT CHierarchyNode::NativeConstruct(const char* pName, _fmatrix Transformati
 {
 	strcpy_s(m_szName, pName);
 	XMStoreFloat4x4(&m_TransformationMatrix, TransformationMatrix);
+	XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_OffsetMatrix, XMMatrixIdentity());
+	
 	m_pParent = pParent;
 	m_iDepth = iDepth;
 

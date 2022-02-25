@@ -72,6 +72,17 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 	if (0 == m_iNumBones)
 	{
 		XMStoreFloat4x4(&pBoneMatrices[0], XMMatrixIdentity());
+
+		return S_OK;
+	}
+
+	if (1 == m_iNumBones)
+	{
+		_matrix		TransformationMatrix = m_Bones[0]->Get_TransformationMatrix();
+
+		XMStoreFloat4x4(&pBoneMatrices[iBoneIndex], XMMatrixTranspose(TransformationMatrix));
+
+		return S_OK;
 	}
 
 	// 현재 정점에 영향을 주고 있는 뼈들을 순회를 도는데...이거보니 사실상 134개 모두 다 도네 ㅎㅎ 
@@ -172,11 +183,14 @@ HRESULT CMeshContainer::SetUp_IndicesDesc(aiMesh * pMesh)
 
 HRESULT CMeshContainer::Add_Bones(CModel* pModel)
 {
-	if (0 == m_iNumBones)
+	if (0 == m_iNumBones) // Lift와 Sword를 구분하고 싶다면? 
 	{
 		CHierarchyNode* pHierarchyNode = pModel->Find_HierarchyNode(m_pAIMesh->mName.data);
 		if (nullptr == pHierarchyNode)
 			return E_FAIL;
+
+		if (pHierarchyNode->Get_Depth() == 4)
+			return S_OK;
 
 		pHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity());
 		m_Bones.push_back(pHierarchyNode);
@@ -198,6 +212,7 @@ HRESULT CMeshContainer::Add_Bones(CModel* pModel)
 		_matrix		OffsetMatrix;
 		memcpy(&OffsetMatrix, &pBone->mOffsetMatrix, sizeof(_matrix));
 
+		// aiBone* pBone이 가지고 있는 오프셋행렬을 CHierarchyNode에 넣고 내 뼈 목록에 추가
 		pHierarchyNode->Set_OffsetMatrix(XMMatrixTranspose(OffsetMatrix));
 
 		m_Bones.push_back(pHierarchyNode);

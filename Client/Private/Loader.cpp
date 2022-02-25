@@ -123,11 +123,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 	/* For.Prototype_Component_Model_Fork*/
- 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
-		//CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Mesh.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.FBX", PivotMatrix))))
-		//return E_FAIL;
-
-	/* For.Prototype_Component_Model_Fork*/
 	_matrix Fork_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
 		CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Mesh.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.FBX", Fork_PivotMat))))

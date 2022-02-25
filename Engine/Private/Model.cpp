@@ -32,8 +32,9 @@ CModel::CModel(const CModel & rhs)
 		}
 	}
 
-	m_MeshContainers.resize(m_iNumMaterials);
 
+	// m_MeshContainers(정점, 인덱스 버퍼들)는 얕은 복사를 하지 않지말자. 원본 모델의 CMeshContainer를 clone을 하여 내꺼에 넣어주자. 왜? Get_MaterialIndex()을 하기 위해... 
+	m_MeshContainers.resize(m_iNumMaterials);
 	for (auto& MtrlMeshContainer : rhs.m_MeshContainers)
 	{
 		for (auto& pPrototypeMeshContainer : MtrlMeshContainer)
@@ -48,15 +49,21 @@ CModel::CModel(const CModel & rhs)
 
 	}
 
+	// 얕.복
 	for (auto& pPassDesc : m_PassesDesc)
 	{
 		Safe_AddRef(pPassDesc->pInputlayout);
 		Safe_AddRef(pPassDesc->pPass);
 	}
 
+	// 얕.복
 	Safe_AddRef(m_pEffect);
 
-
+	// m_Animations는 얕은 복사를 하지말고, Clone을 하자. 왜? 아래 내용들은 Monster1, Monster2가 각자 가지고 가야하기때문이다
+	/*
+	CAnimation:
+		m_Duration, m_fTimeAcc, m_isFinished, m_TickPerSecond, m_szName, m_Channels
+	*/
 	for (auto& pPrototypeAnim : rhs.m_Animations)
 	{
 		m_Animations.push_back(pPrototypeAnim->Clone());
@@ -113,6 +120,9 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
+	// m_HierarchyNodes안에있는 1) m_TransformationMatrix에 aiNode* pNode->mTransformation를 넣고
+	// m_TransformationMatrix는 각 복사본마다 다르기때문에 여기서 
+	// "새로" 만들어 주자.
 	if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
 		return E_FAIL;
 
@@ -125,6 +135,8 @@ HRESULT CModel::NativeConstruct(void * pArg)
 	{
 		for (auto& pMeshContainer : MtrlMeshContainers)
 		{
+			// m_MeshContainers안에 있는 m_Bones(CHierarchyNode*) 를 채우자.
+			// 여기서 m_OffsetMatrix를 만든다. 
 			pMeshContainer->Add_Bones(this);
 		}
 	}
@@ -133,7 +145,6 @@ HRESULT CModel::NativeConstruct(void * pArg)
 	{
 		pHierarchyNode->Update_CombinedTransformationMatrix();
 	}
-
 
 
 	if (true == m_isAnimMesh)

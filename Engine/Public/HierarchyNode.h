@@ -22,6 +22,10 @@ public:
 	_matrix Get_OffsetMatix() {
 		return XMLoadFloat4x4(&m_OffsetMatrix);
 	}
+
+	_matrix Get_TransformationMatrix() {
+		return XMLoadFloat4x4(&m_TransformationMatrix);
+	}
 	_matrix Get_CombinedMatix() {
 		return XMLoadFloat4x4(&m_CombinedTransformationMatrix);
 	}

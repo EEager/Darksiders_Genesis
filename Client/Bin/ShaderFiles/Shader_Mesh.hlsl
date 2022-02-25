@@ -8,6 +8,16 @@ cbuffer Matrices
 	matrix			g_ProjMatrix;
 };
 
+struct tagBoneMatrixArray
+{
+	matrix		Bones[192];
+};
+
+cbuffer BoneMatrices
+{
+	tagBoneMatrixArray		g_BoneMatrices;
+};
+
 texture2D		g_DiffuseTexture;
 
 sampler DefaultSampler = sampler_state
@@ -40,10 +50,15 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	matrix		matWV, matWVP;
 
+	matrix		BoneMatrix = g_BoneMatrices.Bones[0];
+
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
 
-	Out.vPosition = mul(vector(In.vPosition, 1.f), matWVP);
+
+	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
+
+	Out.vPosition = mul(vPosition, matWVP);
 
 	Out.vTexUV = In.vTexUV;
 
