@@ -69,12 +69,13 @@ _int CWar::LateTick(_float fTimeDelta)
 HRESULT CWar::Render()
 {
 	/* 장치에 월드변환 행렬을 저장한다. */
-	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
+	for (int modelIdx = 0; modelIdx < MODELTYPE_WEAPON; modelIdx++)
 	{
 		if (FAILED(SetUp_ConstantTable(modelIdx)))
 			return E_FAIL;
 
-		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
+		// iNumMaterials : 망토, 몸통
+		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials(); 
 		for (_uint i = 0; i < iNumMaterials; ++i)
 		{
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE); 
