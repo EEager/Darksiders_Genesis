@@ -2,9 +2,14 @@
 #include "..\public\Loader.h"
 
 #include "GameInstance.h"
+
+// -------------------
+// GameObject Headers
+// -------------------
 #include "Terrain.h"
 #include "Fork.h"
 #include "Player.h"
+#include "War.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -79,6 +84,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CFork::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_War */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_War"),
+		CWar::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_Player */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
 		CPlayer::Create(m_pDevice, m_pDeviceContext))))
@@ -106,21 +116,21 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png")))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Model_Player */
-	_matrix		War_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(-90.f));
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
-	//	CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_AnimMesh.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/", "War.fbx", War_PivotMat))))
+	/* For.Prototype_Component_Model_Player , Fiona */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
+		CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_AnimMesh.hlsl"), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx", XMMatrixIdentity()))))
+		return E_FAIL;
 
-	// 노말 맵 테스트
-	// Player
+	/* For.Prototype_Component_Model_War */
+	_matrix		War_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(-90.f));
+	// War
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"),
 		CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War/", "War.fbx", War_PivotMat))))
 		return E_FAIL;
-	// Player_Gauntlet
+	// War_Gauntlet
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"),
 		CModel::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Gauntlet/", "War_Gauntlet.fbx", War_PivotMat))))
 		return E_FAIL;
-
 
 	/* For.Prototype_Component_Model_Fork*/
 	_matrix Fork_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.0f)) * XMMatrixRotationY(XMConvertToRadians(180.0f));

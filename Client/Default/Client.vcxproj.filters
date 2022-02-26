@@ -55,8 +55,11 @@
     <Filter Include="97.ShaderFiles\App">
       <UniqueIdentifier>{4fa29561-5dee-487e-a939-55b8dfacffd7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Player">
+    <Filter Include="02.GameObjects\War">
       <UniqueIdentifier>{f88cba2e-3e6e-44ce-b1c2-9c037c1a04b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player">
+      <UniqueIdentifier>{362d310c-032a-4cd9-8ee2-969b9462314f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,11 +138,14 @@
     <ClInclude Include="..\Public\LightHelper.h">
       <Filter>97.ShaderFiles\App</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObjects\Player</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Client_Extern.h">
       <Filter>98.Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\War.h">
+      <Filter>02.GameObjects\War</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player.h">
+      <Filter>02.GameObjects\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\LightHelper.cpp">
       <Filter>97.ShaderFiles\App</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\War.cpp">
+      <Filter>02.GameObjects\War</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
       <Filter>02.GameObjects\Player</Filter>

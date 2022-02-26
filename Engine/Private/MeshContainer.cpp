@@ -69,18 +69,9 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 {
 	_uint			iBoneIndex = 0;
 
-	if (0 == m_iNumBones)
+	if (0 == m_iNumBones) // ForkLift
 	{
 		XMStoreFloat4x4(&pBoneMatrices[0], XMMatrixIdentity());
-
-		return S_OK;
-	}
-
-	if (1 == m_iNumBones)
-	{
-		_matrix		TransformationMatrix = m_Bones[0]->Get_TransformationMatrix();
-
-		XMStoreFloat4x4(&pBoneMatrices[iBoneIndex], XMMatrixTranspose(TransformationMatrix));
 
 		return S_OK;
 	}
@@ -189,7 +180,9 @@ HRESULT CMeshContainer::Add_Bones(CModel* pModel)
 		if (nullptr == pHierarchyNode)
 			return E_FAIL;
 
-		if (pHierarchyNode->Get_Depth() == 4)
+		// ForkLift의 경우 SetUp_BoneMatrices에서 하이라키 Combined가 쓰레기값이 나온다. 
+		// ForkLift의 경우 m_iNumBones를 0으로 만들어, SetUp_BoneMatrices에서 항등행렬을 주도록하자.
+		if (!strcmp(pHierarchyNode->Get_Name(), "ForkLift"))
 			return S_OK;
 
 		pHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity());
