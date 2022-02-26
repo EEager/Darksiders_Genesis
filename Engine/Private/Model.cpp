@@ -71,7 +71,7 @@ CModel::CModel(const CModel & rhs)
 
 }
 
-HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
+HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim)
 {
 	char		szModelPath[MAX_PATH] = "";
 
@@ -91,7 +91,7 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
 
- 	m_isAnimMesh = m_pScene->HasAnimations();
+ 	m_isAnimMesh = isHasAnim | m_pScene->HasAnimations();
 
 	m_MeshContainers.resize(m_pScene->mNumMaterials);
 
@@ -136,11 +136,13 @@ HRESULT CModel::NativeConstruct(void * pArg)
 		for (auto& pMeshContainer : MtrlMeshContainers)
 		{
 			// m_MeshContainers안에 있는 m_Bones(CHierarchyNode*) 를 채우자.
+			// 해당 mesh에(피부에 영향을 주는 뼈 정보를 넣는것이다)ㄴ
 			// 여기서 m_OffsetMatrix를 만든다. 
-			pMeshContainer->Add_Bones(this);
+			pMeshContainer->Add_Bones(this, (CHierarchyNode*)pArg);
 		}
 	}
 
+	// Depth가 작은 뼈부터 시작. m_CombinedTransformationMatrix를 누적 계산한다.
 	for (auto& pHierarchyNode : m_HierarchyNodes)
 	{
 		pHierarchyNode->Update_CombinedTransformationMatrix();
@@ -168,14 +170,18 @@ HRESULT CModel::NativeConstruct(void * pArg)
 }
 
 void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
-	m_Animations[iAnimIndex]->SetBeginFirst();
-	m_iCurrentAnimIndex = iAnimIndex;
-	m_isLoop = isLoop;
+
+	if (iAnimIndex < m_iNumAnimation)
+	{
+		m_Animations[iAnimIndex]->SetBeginFirst();
+		m_iCurrentAnimIndex = iAnimIndex;
+		m_isLoop = isLoop;
+	}
 }
 
 HRESULT CModel::Update_Animation(_float fTimeDelta)
 {
-	if (m_iCurrentAnimIndex > m_iNumAnimation)
+	if (m_iCurrentAnimIndex > m_iNumAnimation || m_iNumAnimation == 0)
 		return E_FAIL;
 
 	/* 현재 애니메이션 상태에 맞는 뼈의 행렬들을 모두 갱신한다. */
@@ -342,7 +348,8 @@ HRESULT CModel::Compile_Shader(const _tchar * pShaderFilePath)
 	ZeroMemory(Elements, sizeof(D3D11_INPUT_ELEMENT_DESC) * D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT);
 
 
-	if (false == m_pScene->HasAnimations())
+	//if (false == m_pScene->HasAnimations())
+	if (m_isAnimMesh == false)
 	{
 		iNumElements = 4;
 
@@ -511,11 +518,11 @@ HRESULT CModel::Create_Animation()
 
 
 
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim)
 {
 	CModel* pInstance = new CModel(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, pModelFilePath, pModelFileName, PivotMatrix)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, pModelFilePath, pModelFileName, PivotMatrix, isHasAnim)))
 	{
  		MSG_BOX("Failed To Creating CModel");
 		Safe_Release(pInstance);

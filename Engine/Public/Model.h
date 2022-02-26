@@ -21,7 +21,7 @@ public:
 	}
 
 public:
-	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
+	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim = false);
 	virtual HRESULT NativeConstruct(void* pArg);
 
 public:
@@ -85,7 +85,7 @@ private:
 
 
 public:
-	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
+	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim = false);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

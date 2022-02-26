@@ -18,7 +18,10 @@ cbuffer cbPerObject
 	matrix		g_ViewMatrix;
 	matrix		g_ProjMatrix;
 	Material	g_Material;
+
+	// ImGUI에서 사용하는 bool 변수
 	bool		g_UseNormalMap;
+	bool		g_UseEmissiveMap;
 };
 
 cbuffer CameraDesc
@@ -38,6 +41,7 @@ cbuffer BoneMatrices
 
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
+texture2D		g_EmissiveTexture; // Emissive Map
 
 
 // --------------------
@@ -200,6 +204,12 @@ PS_OUT PS_MAIN(PS_IN In)
 		// Modulate with late add.
 		Out.vColor = texColor * (ambient + diffuse) + spec;
 
+		// --------------------------
+		//	Emissive mapping
+		// --------------------------
+		if (g_UseEmissiveMap)
+			Out.vColor += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+
 		// 거울 같은거 반사 효과 낼때 사용 gCubeMap를 사용하네 여기서 
 		/*if (gReflectionEnabled)
 		{
@@ -211,9 +221,13 @@ PS_OUT PS_MAIN(PS_IN In)
 		}*/
 	}
 
-	//
-	// Fogging
-	//
+
+
+
+
+	// --------------------------
+	// Fogging 마지막에 하자
+	// --------------------------
 
 	//if (gFogEnabled)
 	{

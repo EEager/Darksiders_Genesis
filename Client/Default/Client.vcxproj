@@ -237,6 +237,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh_Normal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl" />

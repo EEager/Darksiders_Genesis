@@ -754,6 +754,7 @@ void CImguiManager::ShowHLSLControlWindow()
 	ImGui::BulletText("Set HLSL Variables");
 
 	ImGui::Checkbox("g_bUseNormalMap", &g_bUseNormalMap);
+	ImGui::Checkbox("g_bUseEmissiveMap", &g_bUseEmissiveMap);
 	ImGui::End();
 }
 

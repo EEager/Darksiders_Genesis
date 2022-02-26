@@ -21,6 +21,9 @@ cbuffer BoneMatrices
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 
+// --------------------
+// sampler_state
+// --------------------
 sampler DefaultSampler = sampler_state
 {
 	/*minfilter = linear;
@@ -31,6 +34,9 @@ sampler DefaultSampler = sampler_state
 	
 };
 
+// --------------------
+// VS
+// --------------------
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -73,6 +79,9 @@ VS_OUT VS_MAIN(VS_IN In)
 }
 
 
+// --------------------
+// PS
+// --------------------
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;

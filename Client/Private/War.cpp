@@ -30,7 +30,9 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	int randAnimationIdx = rand() % 3;
 
 	for (int i = 0; i < MODELTYPE_END; i++)
+	{
 		m_pModelCom[i]->SetUp_Animation(randAnimationIdx);
+	}
 
 	return S_OK;
 }
@@ -77,6 +79,7 @@ HRESULT CWar::Render()
 		{
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE); 
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
 			m_pModelCom[modelIdx]->Render(i, 0);
 		}
@@ -105,6 +108,11 @@ HRESULT CWar::SetUp_Component()
 		return E_FAIL;
 	/* For.Com_Model_War_Gauntlet */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"), TEXT("Com_Model_War_Gauntlet"), (CComponent**)&m_pModelCom[MODELTYPE_GAUNTLET])))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_War_Weapon */
+	// Model_War가 갖고 있는 뼈중 이름이 "Bone_War_Weapon_Sword" 인것을 찾아 넣어주자.
+	CHierarchyNode* pWeaponBone = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], pWeaponBone)))
 		return E_FAIL;
 	
 
@@ -143,6 +151,7 @@ HRESULT CWar::SetUp_ConstantTable(int modelIdx)
 	// Branch to Use Normal Mapping 
 	// 노멀맵할지 말지 선택을 여기서 하자
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+	m_pModelCom[modelIdx]->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
 
 
 #if 0 // Legacy

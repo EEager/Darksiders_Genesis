@@ -172,26 +172,8 @@ HRESULT CMeshContainer::SetUp_IndicesDesc(aiMesh * pMesh)
 	return S_OK;
 }
 
-HRESULT CMeshContainer::Add_Bones(CModel* pModel)
+HRESULT CMeshContainer::Add_Bones(CModel* pModel, CHierarchyNode* parentHierarchyNode)
 {
-	if (0 == m_iNumBones) // Lift와 Sword를 구분하고 싶다면? 
-	{
-		CHierarchyNode* pHierarchyNode = pModel->Find_HierarchyNode(m_pAIMesh->mName.data);
-		if (nullptr == pHierarchyNode)
-			return E_FAIL;
-
-		// ForkLift의 경우 SetUp_BoneMatrices에서 하이라키 Combined가 쓰레기값이 나온다. 
-		// ForkLift의 경우 m_iNumBones를 0으로 만들어, SetUp_BoneMatrices에서 항등행렬을 주도록하자.
-		if (!strcmp(pHierarchyNode->Get_Name(), "ForkLift"))
-			return S_OK;
-
-		pHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity());
-		m_Bones.push_back(pHierarchyNode);
-
-		m_iNumBones = 1;
-		return S_OK;
-	}
-
 	for (_uint i = 0; i < m_iNumBones; ++i)
 	{
 		/* 현재 이 뼈가 어떤 정점에게 영햐을 미치고 있는지?! */
@@ -210,6 +192,34 @@ HRESULT CMeshContainer::Add_Bones(CModel* pModel)
 
 		m_Bones.push_back(pHierarchyNode);
 		Safe_AddRef(pHierarchyNode);
+	}
+
+	// 다른 모델의 특정 CHierarchyNode를 m_Bones에 넣고 싶다. (칼.fbx가 War모델이 가지고 있는 무기위치를 따라가고 싶다) 
+	if (parentHierarchyNode)
+	{
+		// parentHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity()); 부모꺼 고대로 사용하자
+		m_Bones.push_back(parentHierarchyNode);
+		m_iNumBones++;
+		return S_OK; // 여기서 바로 빠져나올경우, 원래 칼 매쉬에 뼈가 있을 경우 문제가 되긴하는데 일단 넘기자
+	}
+
+	if (0 == m_iNumBones) // 모델 매쉬중, 뼈가 없는 매쉬면(m_iNumBones == pMesh->mNumBones == 0), 뼈행렬을 넣어주자.
+					  // ex) 피오나 칼이 땅바닥에 떨어진경우. 
+	{
+		CHierarchyNode* pHierarchyNode = pModel->Find_HierarchyNode(m_pAIMesh->mName.data); // m_pAIMesh(칼메쉬...) : m_pScene->mMeshes[i]
+		if (nullptr == pHierarchyNode)
+			return E_FAIL;
+
+		// ForkLift의 경우 SetUp_BoneMatrices에서 하이라키 Combined가 쓰레기값이 나온다. 
+		// ForkLift의 경우 m_iNumBones를 0으로 만들어, SetUp_BoneMatrices에서 항등행렬을 주도록하자.
+		if (!strcmp(pHierarchyNode->Get_Name(), "ForkLift"))
+			return S_OK;
+
+		pHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity());
+		m_Bones.push_back(pHierarchyNode);
+
+		m_iNumBones = 1;
+		return S_OK;
 	}
 
 	return S_OK;

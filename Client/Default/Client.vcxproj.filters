@@ -251,6 +251,9 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh_Normal.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

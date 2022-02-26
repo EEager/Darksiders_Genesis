@@ -1,11 +1,30 @@
 
 #include "Shader_Defines.hlsl"
+#include "LightHelper.hlsl" 
 
-cbuffer Matrices
+cbuffer cbPerFrame
 {
-	matrix			g_WorldMatrix;
-	matrix			g_ViewMatrix;
-	matrix			g_ProjMatrix;
+	DirectionalLight g_DirLight;
+	PointLight g_PointLight;
+	SpotLight g_SpotLight;
+
+	float  gFogStart;
+	float  gFogRange;
+};
+
+
+cbuffer cbPerObject
+{
+	matrix		g_WorldMatrix;
+	matrix		g_ViewMatrix;
+	matrix		g_ProjMatrix;	
+	Material	g_Material;
+	bool		g_UseNormalMap;
+};
+
+cbuffer CameraDesc
+{
+	vector		g_vCamPosition = vector(0.f, 0.f, 0.f, 0.f);
 };
 
 struct tagBoneMatrixArray
@@ -18,19 +37,35 @@ cbuffer BoneMatrices
 	tagBoneMatrixArray		g_BoneMatrices;
 };
 
-texture2D		g_DiffuseTexture;
+texture2D		g_DiffuseTexture; // Diffuse Map
+texture2D		g_NormalTexture; // Normal Map
+
 
 // --------------------
 // sampler_state
 // --------------------
 sampler DefaultSampler = sampler_state
 {
-	/*minfilter = linear;
-	mipfilter = linear;
-	magfilter = linaer*/
+	AddressU = wrap;
+	AddressV = wrap;
 
 	Filter = min_mag_mip_linear;
+};
 
+SamplerState samAnisotropic
+{
+	Filter = ANISOTROPIC;
+	MaxAnisotropy = 4;
+
+	AddressU = WRAP;
+	AddressV = WRAP;
+};
+
+SamplerState samLinear
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = WRAP;
+	AddressV = WRAP;
 };
 
 // --------------------
