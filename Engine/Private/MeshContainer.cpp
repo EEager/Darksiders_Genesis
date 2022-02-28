@@ -201,6 +201,7 @@ HRESULT CMeshContainer::Add_Bones(CModel* pModel, CHierarchyNode* parentHierarch
 	if (parentHierarchyNode)
 	{
 		// parentHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity()); 부모꺼 고대로 사용하자
+		Safe_AddRef(parentHierarchyNode);
 		m_Bones.push_back(parentHierarchyNode);
 		m_iNumBones++;
 		return S_OK; // 여기서 바로 빠져나올경우, 원래 칼 매쉬에 뼈가 있을 경우 문제가 되긴하는데 일단 넘기자

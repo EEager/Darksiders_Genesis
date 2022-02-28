@@ -139,11 +139,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
 		return E_FAIL;
 
 	///* For.Fork*/
-	for (_uint i = 0; i < 3; ++i)
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Fork"))))
-			return E_FAIL;
-	}
+	//for (_uint i = 0; i < 3; ++i)
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Fork"))))
+	//		return E_FAIL;
+	//}
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -159,9 +159,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_War"))))
 			return E_FAIL;
 
-	for (int i = 0; i < 2; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Player"))))
-			return E_FAIL;
+	//for (int i = 0; i < 2; i++)
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Player"))))
+	//		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

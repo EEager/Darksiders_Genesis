@@ -39,6 +39,9 @@ private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;
 
 private:
+	void War_Key(_float fTimeDelta);
+
+private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);	
 

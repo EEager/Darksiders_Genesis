@@ -25,7 +25,7 @@ HRESULT CFork::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet((float)(rand() % 10), 2.f, (float)(rand() % 10), 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 50, 0.f, rand() % 50, 1.f));
 
 	return S_OK;
 }
@@ -39,10 +39,22 @@ _int CFork::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return -1;
-	
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
+	if (nullptr == pTerrainBuff)
+		return 0;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
+
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
 
+	RELEASE_INSTANCE(CGameInstance);
+	
 	return _int();
 }
 
@@ -50,7 +62,7 @@ HRESULT CFork::Render()
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
-
+	
 	/* 장치에 월드변환 행렬을 저장한다. */
 	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
 

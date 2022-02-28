@@ -131,9 +131,19 @@ HRESULT CModel::NativeConstruct(void * pArg)
 	{
 		MODELDESC* pModelDesc = (MODELDESC*)pArg;
 		m_HierarchyNodes.clear();
-		m_HierarchyNodes.assign(pModelDesc->pHierarchyNodes->begin(), pModelDesc->pHierarchyNodes->end()); 
+		//m_HierarchyNodes.assign(pModelDesc->pHierarchyNodes->begin(), pModelDesc->pHierarchyNodes->end());
+		for (auto& pHierarchy : *pModelDesc->pHierarchyNodes)
+		{
+			Safe_AddRef(pHierarchy);
+			m_HierarchyNodes.push_back(pHierarchy);
+		}
+
 		m_Animations.clear();
-		m_Animations.assign(pModelDesc->pAnimations->begin(), pModelDesc->pAnimations->end());
+		for (auto& pAnimation : *pModelDesc->pAnimations)
+		{
+			Safe_AddRef(pAnimation);
+			m_Animations.push_back(pAnimation);
+		}
 		m_iNumAnimation = m_Animations.size();
 
 		for (auto& MtrlMeshContainers : m_MeshContainers)
@@ -201,7 +211,7 @@ void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
 
 	if (iAnimIndex < m_iNumAnimation)
 	{
-		m_Animations[iAnimIndex]->SetBeginFirst();
+		//m_Animations[iAnimIndex]->SetBeginFirst();
 		m_iCurrentAnimIndex = iAnimIndex;
 		m_isLoop = isLoop;
 	}

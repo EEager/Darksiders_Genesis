@@ -37,14 +37,16 @@ HRESULT CWar::NativeConstruct(void * pArg)
 }
 
 
-int animIdx = 0; // For Test
 _int CWar::Tick(_float fTimeDelta)
 {
+	War_Key(fTimeDelta);
+
 	for (int i = 0; i < MODELTYPE_END; i++)
 		m_pModelCom[i]->Update_Animation(fTimeDelta);
 
 	// ----------------------------
 	// For Test
+	static int animIdx = 0; 
 	bool dirty = false;
 	const auto dirtyF = [&dirty](bool PlusOrMinus) {
 		if (!PlusOrMinus)
@@ -70,7 +72,6 @@ _int CWar::Tick(_float fTimeDelta)
 		for (int i = 0; i < MODELTYPE_END; i++)
 			m_pModelCom[i]->SetUp_Animation(animIdx);
 	}
-
 	// ----------------------------
 
 	return _int();
@@ -80,10 +81,22 @@ _int CWar::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return -1;
-	
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
-		return 0;
 
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
+	if (nullptr == pTerrainBuff)
+		goto _EXIT;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
+
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
+		goto _EXIT;
+
+_EXIT:
+	RELEASE_INSTANCE(CGameInstance);
 	return _int();
 }
 
@@ -149,10 +162,46 @@ HRESULT CWar::Render()
 	return S_OK;
 }
 
+void CWar::War_Key(_float fTimeDelta)
+{
+	if (CInput_Device::GetInstance()->Key_Pressing(DIK_RIGHT))
+	{
+		for (int i = 0; i < MODELTYPE_END; i++)
+			m_pModelCom[i]->SetUp_Animation(89);
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+	}
+
+	if (CInput_Device::GetInstance()->Key_Pressing(DIK_LEFT))
+	{
+		for (int i = 0; i < MODELTYPE_END; i++)
+			m_pModelCom[i]->SetUp_Animation(89);
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+	}
+
+	if (CInput_Device::GetInstance()->Key_Pressing(DIK_UP))
+	{
+		for (int i = 0; i < MODELTYPE_END; i++)
+			m_pModelCom[i]->SetUp_Animation(89);
+		m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+
+	if (CInput_Device::GetInstance()->Key_Pressing(DIK_DOWN))
+	{
+		for (int i = 0; i < MODELTYPE_END; i++)
+			m_pModelCom[i]->SetUp_Animation(89);
+		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+}
+
 HRESULT CWar::SetUp_Component()
 {
 	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	CTransform::TRANSFORMDESC		TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+
+	TransformDesc.fSpeedPerSec = 4.3f;
+	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
 
 	/* For.Com_Renderer*/

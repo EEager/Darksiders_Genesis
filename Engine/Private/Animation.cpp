@@ -31,6 +31,7 @@ HRESULT CAnimation::NativeConstruct(char * pName, _double Duration, _double Tick
 
 HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 {
+	// 첫 프레임인 경우 이전 m_fTimeAcc 초기화
 	if (m_isBeginFirst == true)
 	{
 		m_fTimeAcc = 0;
@@ -57,7 +58,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 
 		_uint		iCurrentKeyFrameIndex = pChannel->Get_KeyFrameIndex();
 
-		if (true == m_isFinished || m_isBeginFirst)
+		if (true == m_isFinished || m_isBeginFirst) // 마지막이거나, 첫 프레임인 경우, 다시 애니메이팅
 		{
 			iCurrentKeyFrameIndex = 0;
 			pChannel->Set_KeyFrameIndex(iCurrentKeyFrameIndex);
@@ -73,7 +74,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 		}
 		else /* #2. 키프레임사이에 있을때 뼈의 상태행렬을 선형보간으로 만들어낸다. */
 		{
-		   /* 델타타임튀는거 방지용. 
+		   /* while : 델타타임튀는거 방지용. 
 			* 
 			* 1) m_fTimeAcc += m_TickPerSecond * fTimeDelta 는 이렇게 계산되고
 			* 2) KeyFrames[iCurrentKeyFrameIndex + 1]->Time 으로 iCurrentKeyFrameIndex를 계산하면
