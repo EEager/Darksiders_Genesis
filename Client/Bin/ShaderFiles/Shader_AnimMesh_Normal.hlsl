@@ -39,6 +39,9 @@ cbuffer BoneMatrices
 	tagBoneMatrixArray		g_BoneMatrices;
 };
 
+// --------------------
+// Global Variables
+// --------------------
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map

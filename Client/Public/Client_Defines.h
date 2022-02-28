@@ -20,8 +20,8 @@ using namespace Client;
 extern HINSTANCE g_hInst;
 extern HWND g_hWnd;
 
-static const unsigned int		g_iWinCX = 1440;
-static const unsigned int		g_iWinCY = 810;
+static const unsigned int		g_iWinCX = 1600;
+static const unsigned int		g_iWinCY = 900;
 
 // -----------------------
 // For Console Debug

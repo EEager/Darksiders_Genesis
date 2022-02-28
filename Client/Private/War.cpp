@@ -69,7 +69,7 @@ _int CWar::LateTick(_float fTimeDelta)
 HRESULT CWar::Render()
 {
 	/* 장치에 월드변환 행렬을 저장한다. */
-	for (int modelIdx = 0; modelIdx < MODELTYPE_WEAPON; modelIdx++)
+	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
 	{
 		if (FAILED(SetUp_ConstantTable(modelIdx)))
 			return E_FAIL;
