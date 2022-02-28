@@ -28,10 +28,10 @@ HRESULT CHierarchyNode::Reserve_Channels(_uint iNumAnimation)
 
 void CHierarchyNode::Update_CombinedTransformationMatrix()
 {
-	if (nullptr != m_pParent)
+	if (nullptr != m_pParent) // 자식 노드 
 		XMStoreFloat4x4(&m_CombinedTransformationMatrix,
 			XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&m_pParent->m_CombinedTransformationMatrix));
-	else
+	else // 루트 노드
 		XMStoreFloat4x4(&m_CombinedTransformationMatrix,
 			XMLoadFloat4x4(&m_TransformationMatrix));
 }

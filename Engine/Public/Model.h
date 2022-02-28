@@ -7,7 +7,18 @@ BEGIN(Engine)
 class ENGINE_DLL CModel final : public CComponent
 {	
 public:
-	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_END };
+	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_ANIM_USE_OTHER, TYPE_END };
+
+	typedef struct tagModelDesc
+	{
+		tagModelDesc() {
+			ZeroMemory(this, sizeof(this));
+		}
+		vector<class CHierarchyNode*>* pHierarchyNodes;
+		vector<class CAnimation*>* pAnimations;
+		CHierarchyNode* pHierarchyNode;
+	}MODELDESC;
+
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CModel(const CModel& rhs);
@@ -24,6 +35,14 @@ public:
 
 	TYPE Get_MeshType() const {
 		return m_eType;
+	}
+
+	 vector<class CHierarchyNode*>* Get_HierarchyNodes() {
+		return &m_HierarchyNodes;
+	}
+
+	 vector<class CAnimation*>* Get_Animations() {
+		return &m_Animations;
 	}
 
 public:

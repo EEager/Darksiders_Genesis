@@ -20,6 +20,7 @@ HRESULT CWar::NativeConstruct_Prototype()
 	return S_OK;
 }
 
+#define MAX_ANIM_NUM 97
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 	if (SetUp_Component())
@@ -27,30 +28,50 @@ HRESULT CWar::NativeConstruct(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
 
-	int randAnimationIdx = rand() % 3;
+	int randAnimationIdx = rand() % MAX_ANIM_NUM;
 
 	for (int i = 0; i < MODELTYPE_END; i++)
-	{
 		m_pModelCom[i]->SetUp_Animation(randAnimationIdx);
-	}
 
 	return S_OK;
 }
 
+
+int animIdx = 0; // For Test
 _int CWar::Tick(_float fTimeDelta)
 {
-	/*if (GetKeyState(VK_UP) & 0x8000)
-	{
-		m_pModelCom->SetUp_Animation(1);
-	}
-
-	if (GetKeyState(VK_DOWN) & 0x8000)
-	{
-		m_pModelCom->SetUp_Animation(0);
-	}*/
-
 	for (int i = 0; i < MODELTYPE_END; i++)
 		m_pModelCom[i]->Update_Animation(fTimeDelta);
+
+	// ----------------------------
+	// For Test
+	bool dirty = false;
+	const auto dirtyF = [&dirty](bool PlusOrMinus) {
+		if (!PlusOrMinus)
+		{
+			animIdx = animIdx - 1;
+			if (animIdx < 0)
+				animIdx = MAX_ANIM_NUM-1;
+		}
+		else
+		{
+			animIdx = (animIdx + 1) % (MAX_ANIM_NUM);
+		}
+		dirty = true;
+	};
+	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS)) // '-'
+		dirtyF(false);
+	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS)) // '+'
+		dirtyF(true);
+
+	if (dirty)
+	{
+		cout << "animIdx : " << animIdx << endl;
+		for (int i = 0; i < MODELTYPE_END; i++)
+			m_pModelCom[i]->SetUp_Animation(animIdx);
+	}
+
+	// ----------------------------
 
 	return _int();
 }
@@ -141,13 +162,21 @@ HRESULT CWar::SetUp_Component()
 	/* For.Com_Model_War */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"), TEXT("Com_Model_War"), (CComponent**)&m_pModelCom[MODELTYPE_WAR])))
 		return E_FAIL;
+
 	/* For.Com_Model_War_Gauntlet */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"), TEXT("Com_Model_War_Gauntlet"), (CComponent**)&m_pModelCom[MODELTYPE_GAUNTLET])))
+	// 애니메이션은 Com_Model_War를 복사하자
+	CModel::MODELDESC	tagModelWarGauntletDesc;
+	tagModelWarGauntletDesc.pHierarchyNodes = m_pModelCom[MODELTYPE_WAR]->Get_HierarchyNodes();
+	tagModelWarGauntletDesc.pAnimations = m_pModelCom[MODELTYPE_WAR]->Get_Animations();
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"), TEXT("Com_Model_War_Gauntlet"), (CComponent**)&m_pModelCom[MODELTYPE_GAUNTLET], &tagModelWarGauntletDesc)))
 		return E_FAIL;
+
 	/* For.Prototype_Component_Model_War_Weapon */
 	// Model_War가 갖고 있는 뼈중 이름이 "Bone_War_Weapon_Sword" 인것을 찾아 넣어주자.
-	CHierarchyNode* pWeaponBone = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], pWeaponBone)))
+	CModel::MODELDESC	tagModelWarWeaponDesc;
+	tagModelWarWeaponDesc.pHierarchyNode = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], &tagModelWarWeaponDesc)))
 		return E_FAIL;
 	
 

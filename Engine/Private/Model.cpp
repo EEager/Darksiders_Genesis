@@ -89,7 +89,7 @@ HRESULT CModel::NativeConstruct_Prototype(TYPE eType, const _tchar* pShaderFileP
 
 	if (TYPE_NONANIM == eType) // 애니메이션이 없는 경우) aiProcess_PreTransformVertices: 모든 정점에 로컬 transformation을 미리 곱해준다. 
 		iFlag = aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_Triangulate;
-	else
+	else 
 		iFlag = aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_Triangulate;
 
 	m_pScene = m_Importer.ReadFile(szModelPath, iFlag);
@@ -122,49 +122,75 @@ HRESULT CModel::NativeConstruct_Prototype(TYPE eType, const _tchar* pShaderFileP
 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
-	if (TYPE_NONANIM == m_eType)
+	// 1. 애니메이션이 아니면, m_HierarchyNodes, m_Animations를 굳이 채울 필요가 없다. 
+	if (TYPE_NONANIM == m_eType) 
 		return S_OK;
 
-	// m_HierarchyNodes안에있는 1) m_TransformationMatrix에 aiNode* pNode->mTransformation를 넣고
-	// m_TransformationMatrix는 각 복사본마다 다르기때문에 여기서 
-	// "새로" 만들어 주자.
-	if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
-		return E_FAIL;
-
-	sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
-		{
-			return pSour->Get_Depth() < pDest->Get_Depth();
-		});
-
-	for (auto& MtrlMeshContainers : m_MeshContainers)
+	// 2. this 모델이 다른 모델의 애니메이션을 따라가고 싶다. 그걸 복사하자. ex) War Gauntlet같은 경우 애니메이션없고, 뼈는 있는데, War 애니메이션을 따라가고 싶다.
+	if (TYPE_ANIM_USE_OTHER == m_eType) 
 	{
-		for (auto& pMeshContainer : MtrlMeshContainers)
+		MODELDESC* pModelDesc = (MODELDESC*)pArg;
+		m_HierarchyNodes.clear();
+		m_HierarchyNodes.assign(pModelDesc->pHierarchyNodes->begin(), pModelDesc->pHierarchyNodes->end()); 
+		m_Animations.clear();
+		m_Animations.assign(pModelDesc->pAnimations->begin(), pModelDesc->pAnimations->end());
+		m_iNumAnimation = m_Animations.size();
+
+		for (auto& MtrlMeshContainers : m_MeshContainers)
 		{
-			// m_MeshContainers안에 있는 m_Bones(CHierarchyNode*) 를 채우자.
-			// 해당 mesh에(피부에 영향을 주는 뼈 정보를 넣는것이다)ㄴ
-			// 여기서 m_OffsetMatrix를 만든다. 
-			pMeshContainer->Add_Bones(this, (CHierarchyNode*)pArg);
+			for (auto& pMeshContainer : MtrlMeshContainers)
+			{
+				pMeshContainer->Add_Bones(this);
+			}
 		}
 	}
-
-	// Depth가 작은 뼈부터 시작. m_CombinedTransformationMatrix를 누적 계산한다.
-	for (auto& pHierarchyNode : m_HierarchyNodes)
+	else // 3. TYPE_ANIM
 	{
-		pHierarchyNode->Update_CombinedTransformationMatrix();
-	}
+		// m_HierarchyNodes를 채운다.
+		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
+			return E_FAIL;
 
+		sort(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [](CHierarchyNode* pSour, CHierarchyNode* pDest)
+			{
+				return pSour->Get_Depth() < pDest->Get_Depth();
+			});
 
-	for (_uint i = 0; i < m_iNumAnimation; ++i)
-	{
-		vector<class CChannel*>* pChannels = m_Animations[i]->Get_Channels();
-
-		for (auto& pChannel : *pChannels)
+		for (auto& MtrlMeshContainers : m_MeshContainers)
 		{
-			CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pChannel->Get_Name());
-			if (nullptr == pHierarchyNode)
-				return E_FAIL;
+			for (auto& pMeshContainer : MtrlMeshContainers)
+			{
+				// pArg가 있을 경우, 마지막에 Add_Bones한다. 
+				if (pArg)
+				{
+					MODELDESC* pModelDesc = (MODELDESC*)pArg;
+					if (pModelDesc->pHierarchyNode)
+						pMeshContainer->Add_Bones(this, pModelDesc->pHierarchyNode);
+				}
+				else
+					pMeshContainer->Add_Bones(this);// m_MeshContainers안에 있는 m_Bones(CHierarchyNode*) 를 채운다.
 
-			pHierarchyNode->Add_Channel(i, pChannel);
+			}
+		}
+
+		// Depth가 작은 뼈부터 시작(루트노드부터시작). 하이카이 노드의 m_CombinedTransformationMatrix를 누적 계산한다.
+		for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			pHierarchyNode->Update_CombinedTransformationMatrix();
+		}
+
+
+		for (_uint i = 0; i < m_iNumAnimation; ++i)
+		{
+			vector<class CChannel*>* pChannels = m_Animations[i]->Get_Channels();
+
+			for (auto& pChannel : *pChannels)
+			{
+				CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pChannel->Get_Name());
+				if (nullptr == pHierarchyNode)
+					return E_FAIL;
+
+				pHierarchyNode->Add_Channel(i, pChannel);
+			}
 		}
 	}
 
@@ -183,6 +209,9 @@ void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
 
 HRESULT CModel::Update_Animation(_float fTimeDelta)
 {
+	if (TYPE_ANIM != m_eType) // TYPE_NONANIM, TYPE_ANIM_USE_OTHER 인경우에는 Update안한다. TYPE_ANIM_USE_OTHER 경우 Update 하면 2번 업데이트된다. 
+		return S_OK;
+
 	if (m_iCurrentAnimIndex > m_iNumAnimation || m_iNumAnimation == 0)
 		return E_FAIL;
 
@@ -214,19 +243,20 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 	if (iPassIndex >= m_PassesDesc.size())
 		return E_FAIL;
 
-	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
+	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex]) // 1. 정점들 룹을 돈다.
 	{
-		if (TYPE_ANIM == m_eType)
+		if (TYPE_NONANIM != m_eType) // 2. TYPE_ANIM_USE_OTHER, TYPE_ANIM 모델인경우 메쉬에 뼈들 최종 행렬 곱해줘야한다. 
 		{
 #define MAX_BONE_NUM 192
 			_float4x4		BoneMatrices[MAX_BONE_NUM];
 			ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 
-			/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
+			// BoneMatrices 192개에 모두 다 채워서 
 			pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
 
-			/* 셰이더에 던진다. */
+			// 셰이더에 던진다. 셰이더에서는 위에서 채워진 192개의 행렬들중 본인 정점에 영향받는 뼈들 (In.vBlendIndex)을 인덱싱한 후, In.vBlendWeight 가중치를 곱해 최종 행렬을 구한다. 
+			// ex) g_BoneMatrices.Bones[7] * 0.1 + g_BoneMatrices.Bones[123] * 0.2 ... 
 			if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
 				return E_FAIL;
 		}

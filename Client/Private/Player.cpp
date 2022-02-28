@@ -35,11 +35,11 @@ HRESULT CPlayer::NativeConstruct(void * pArg)
 
 _int CPlayer::Tick(_float fTimeDelta)
 {
-	if (GetKeyState(VK_UP) & 0x8000)
-		m_pModelCom->SetUp_Animation(4);
-
-	if (GetKeyState(VK_DOWN) & 0x8000)
-		m_pModelCom->SetUp_Animation(3);
+	//if (GetKeyState(VK_UP) & 0x8000)
+	//	m_pModelCom->SetUp_Animation(4);
+	//
+	//if (GetKeyState(VK_DOWN) & 0x8000)
+	//	m_pModelCom->SetUp_Animation(3);
 
 	m_pModelCom->Update_Animation(fTimeDelta);
 
