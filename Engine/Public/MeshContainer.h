@@ -18,7 +18,7 @@ public:
 	}
 
 public:
-	virtual HRESULT NativeConstruct_Prototype(class CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
+	virtual HRESULT NativeConstruct_Prototype(class CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix);
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual HRESULT Render();
 
@@ -48,12 +48,12 @@ private:
 
 private:
 	/* 정점의 정보를 채우낟. */
-	HRESULT SetUp_VerticesDesc(class CModel* pModel, aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix);
+	HRESULT SetUp_VerticesDesc(class CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix);
 	HRESULT SetUp_IndicesDesc(aiMesh* pMesh);	
 	HRESULT SetUp_SkinnedDesc(class CModel* pModel, aiMesh* pMesh);
 
 public:
-	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, class CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix);
+	static CMeshContainer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, class CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

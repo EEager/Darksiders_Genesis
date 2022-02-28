@@ -6,6 +6,8 @@ BEGIN(Engine)
 
 class ENGINE_DLL CModel final : public CComponent
 {	
+public:
+	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_END };
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CModel(const CModel& rhs);
@@ -20,8 +22,12 @@ public:
 		return m_iNumMaterials;
 	}
 
+	TYPE Get_MeshType() const {
+		return m_eType;
+	}
+
 public:
-	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim = false);
+	virtual HRESULT NativeConstruct_Prototype(TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
 	virtual HRESULT NativeConstruct(void* pArg);
 
 public:
@@ -61,7 +67,7 @@ private:
 	typedef vector<MESHMATERIAL>			MATERIALS;
 	_uint									m_iNumMaterials;
 
-	_bool									m_isAnimMesh = false;
+	TYPE									m_eType = TYPE_END;
 	_float4x4								m_PivotMatrix;
 
 	_uint									m_iNumAnimation;
@@ -85,7 +91,7 @@ private:
 
 
 public:
-	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim = false);
+	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

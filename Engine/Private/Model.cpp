@@ -16,7 +16,7 @@ CModel::CModel(const CModel & rhs)
 	, m_pEffect(rhs.m_pEffect)
 	, m_PassesDesc(rhs.m_PassesDesc)
 	, m_iNumMeshes(rhs.m_iNumMeshes)
-	, m_isAnimMesh(rhs.m_isAnimMesh)
+	, m_eType(rhs.m_eType)
 	, m_Materials(rhs.m_Materials)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_HierarchyNodes(rhs.m_HierarchyNodes)
@@ -71,7 +71,7 @@ CModel::CModel(const CModel & rhs)
 
 }
 
-HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim)
+HRESULT CModel::NativeConstruct_Prototype(TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
 	char		szModelPath[MAX_PATH] = "";
 
@@ -84,14 +84,20 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 
 
 	/* 파일로부터 읽은 여러 정볼르 assimp타입에 맞도록 정리하낟. */
+	_uint			iFlag = 0;
+	m_eType = eType;
+
+	if (TYPE_NONANIM == eType) // 애니메이션이 없는 경우) aiProcess_PreTransformVertices: 모든 정점에 로컬 transformation을 미리 곱해준다. 
+		iFlag = aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_Triangulate;
+	else
+		iFlag = aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_Triangulate;
+
+	m_pScene = m_Importer.ReadFile(szModelPath, iFlag);
 	/* m_pScene이라는 놈이 다 가지고 있다. */
-	m_pScene = m_Importer.ReadFile(szModelPath, aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace | aiProcess_Triangulate);
 	if (nullptr == m_pScene)
 		return E_FAIL;	
 
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
-
- 	m_isAnimMesh = isHasAnim | m_pScene->HasAnimations();
 
 	m_MeshContainers.resize(m_pScene->mNumMaterials);
 
@@ -111,15 +117,14 @@ HRESULT CModel::NativeConstruct_Prototype(const _tchar* pShaderFilePath, const c
 	if (FAILED(Create_Animation()))
 		return E_FAIL;
 
-	m_pScene->mRootNode; // ??????????
-
-
-
 	return S_OK;
 }
 
 HRESULT CModel::NativeConstruct(void * pArg)
 {
+	if (TYPE_NONANIM == m_eType)
+		return S_OK;
+
 	// m_HierarchyNodes안에있는 1) m_TransformationMatrix에 aiNode* pNode->mTransformation를 넣고
 	// m_TransformationMatrix는 각 복사본마다 다르기때문에 여기서 
 	// "새로" 만들어 주자.
@@ -149,20 +154,17 @@ HRESULT CModel::NativeConstruct(void * pArg)
 	}
 
 
-	if (true == m_isAnimMesh)
+	for (_uint i = 0; i < m_iNumAnimation; ++i)
 	{
-		for (_uint i = 0; i < m_iNumAnimation; ++i)
+		vector<class CChannel*>* pChannels = m_Animations[i]->Get_Channels();
+
+		for (auto& pChannel : *pChannels)
 		{
-			vector<class CChannel*>* pChannels = m_Animations[i]->Get_Channels();
+			CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pChannel->Get_Name());
+			if (nullptr == pHierarchyNode)
+				return E_FAIL;
 
-			for (auto& pChannel : *pChannels)
-			{
-				CHierarchyNode* pHierarchyNode = Find_HierarchyNode(pChannel->Get_Name());
-				if (nullptr == pHierarchyNode)
-					return E_FAIL;
-
-				pHierarchyNode->Add_Channel(i, pChannel);
-			}
+			pHierarchyNode->Add_Channel(i, pChannel);
 		}
 	}
 
@@ -214,17 +216,20 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 
 	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex])
 	{
+		if (TYPE_ANIM == m_eType)
+		{
 #define MAX_BONE_NUM 192
-		_float4x4		BoneMatrices[MAX_BONE_NUM];
-		ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
+			_float4x4		BoneMatrices[MAX_BONE_NUM];
+			ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 
-		/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
-		pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
+			/* 현재 메시컨테이너에 영향을 주고있는 뼈들의 최종 렌더링행렬값들을ㅇ 받아온다. */
+			pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
 
-		/* 셰이더에 던진다. */
-		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
-			return E_FAIL;
+			/* 셰이더에 던진다. */
+			if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
+				return E_FAIL;
+		}
 
 		Bind_Shader(iPassIndex);
 
@@ -287,7 +292,7 @@ HRESULT CModel::Create_MeshContainers()
 			return E_FAIL;
 
 		/* 파일로 읽어온 정점과인덱스의 정보들을 저장한다.  */
-		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, m_isAnimMesh, pMesh, false == m_isAnimMesh ? XMLoadFloat4x4(&m_PivotMatrix) : XMMatrixIdentity());
+		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, pMesh, TYPE_NONANIM == m_eType ? XMLoadFloat4x4(&m_PivotMatrix) : XMMatrixIdentity());
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
@@ -348,8 +353,7 @@ HRESULT CModel::Compile_Shader(const _tchar * pShaderFilePath)
 	ZeroMemory(Elements, sizeof(D3D11_INPUT_ELEMENT_DESC) * D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT);
 
 
-	//if (false == m_pScene->HasAnimations())
-	if (m_isAnimMesh == false)
+	if (TYPE_NONANIM == m_eType)
 	{
 		iNumElements = 4;
 
@@ -518,13 +522,13 @@ HRESULT CModel::Create_Animation()
 
 
 
-CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix, _bool isHasAnim)
+CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, pModelFilePath, pModelFileName, PivotMatrix, isHasAnim)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(eType, pShaderFilePath, pModelFilePath, pModelFileName, PivotMatrix)))
 	{
- 		MSG_BOX("Failed To Creating CModel");
+		MSG_BOX("Failed To Creating CModel");
 		Safe_Release(pInstance);
 	}
 	return pInstance;

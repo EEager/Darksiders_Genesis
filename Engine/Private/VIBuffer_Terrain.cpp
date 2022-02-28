@@ -173,6 +173,47 @@ HRESULT CVIBuffer_Terrain::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
+_float CVIBuffer_Terrain::Compute_Height(_fvector vPosition)
+{
+	_uint		iIndex = (_uint)XMVectorGetZ(vPosition) * m_iNumVerticesX + (_uint)XMVectorGetX(vPosition);
+
+	_uint		iIndices[] = {
+		iIndex + m_iNumVerticesX,
+		iIndex + m_iNumVerticesX + 1,
+		iIndex + 1,
+		iIndex
+	};
+
+	VTXNORTEX* pVertices = (VTXNORTEX*)m_pVertices;
+
+	_float fWidth = XMVectorGetX(vPosition) - pVertices[iIndices[0]].vPosition.x;
+	_float fDepth = pVertices[iIndices[0]].vPosition.z - XMVectorGetZ(vPosition);
+
+	_vector		vPlane;
+
+	if (fWidth > fDepth)
+	{
+		vPlane = XMPlaneFromPoints(XMLoadFloat3(&pVertices[iIndices[0]].vPosition),
+			XMLoadFloat3(&pVertices[iIndices[1]].vPosition),
+			XMLoadFloat3(&pVertices[iIndices[2]].vPosition));
+	}
+
+	else
+	{
+		vPlane = XMPlaneFromPoints(XMLoadFloat3(&pVertices[iIndices[0]].vPosition),
+			XMLoadFloat3(&pVertices[iIndices[2]].vPosition),
+			XMLoadFloat3(&pVertices[iIndices[3]].vPosition));
+	}
+
+	/*ax + by + cz + d = 0;
+	y = (-ax - cz - d) / b;*/
+
+	return (XMVectorGetX(vPlane) * -1 * XMVectorGetX(vPosition) // -ax
+		- XMVectorGetZ(vPlane) * XMVectorGetZ(vPosition)
+		- XMVectorGetW(vPlane)) / XMVectorGetY(vPlane);
+
+}
+
 CVIBuffer_Terrain * CVIBuffer_Terrain::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const _tchar* pShaderFilePath, const _tchar* pHeighMapFilePath)
 {
 	CVIBuffer_Terrain*	pInstance = new CVIBuffer_Terrain(pDevice, pDeviceContext);

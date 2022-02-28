@@ -14,6 +14,9 @@ public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, const _tchar* pHeightMapFilePath);
 	virtual HRESULT NativeConstruct(void* pArg);
 
+public:
+	_float Compute_Height(_fvector vPosition);
+
 private:
 	_uint			m_iNumVerticesX = 0;
 	_uint			m_iNumVerticesZ = 0;

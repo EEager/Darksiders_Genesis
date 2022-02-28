@@ -17,11 +17,11 @@ CMeshContainer::CMeshContainer(const CMeshContainer& rhs)
 
 }
 
-HRESULT CMeshContainer::NativeConstruct_Prototype(CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
+HRESULT CMeshContainer::NativeConstruct_Prototype(CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix)
 {
 	m_pAIMesh = pMesh;
 
-	if (FAILED(SetUp_VerticesDesc(pModel, pMesh, isAnimMesh, PivotMatrix)))
+	if (FAILED(SetUp_VerticesDesc(pModel, pMesh, PivotMatrix)))
 		return E_FAIL;
 
 	if (FAILED(SetUp_IndicesDesc(pMesh)))
@@ -69,7 +69,7 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 {
 	_uint			iBoneIndex = 0;
 
-	if (0 == m_iNumBones) // ForkLift
+	if (0 == m_iNumBones) 
 	{
 		XMStoreFloat4x4(&pBoneMatrices[0], XMMatrixIdentity());
 
@@ -88,23 +88,28 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 	return S_OK;
 }
 
-HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _bool isAnim, _fmatrix PivotMatrix)
+HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix)
 {
 	m_iNumVertices = pMesh->mNumVertices;	
 	m_iNumVertexBuffers = 1;
 
-	if (false == isAnim)
+	CModel::TYPE		eMeshType = pModel->Get_MeshType();
+
+	if (CModel::TYPE_NONANIM == eMeshType) // 애니메이션 없는 경우.
 	{
 		m_pVertices = new VTXMESH[m_iNumVertices];
 		ZeroMemory(m_pVertices, sizeof(VTXMESH) * m_iNumVertices);
 		m_iStride = sizeof(VTXMESH);
 	}
 
-	else
+	else // 애니메이션 있는 경우.
 	{
 		m_pVertices = new VTXMESH_ANIM[m_iNumVertices];
 		ZeroMemory(m_pVertices, sizeof(VTXMESH_ANIM) * m_iNumVertices);
 		m_iStride = sizeof(VTXMESH_ANIM);		
+
+		/* 블렌드인덱스와 웨이트 */
+		SetUp_SkinnedDesc(pModel, pMesh);
 	}
 
 	ZeroMemory(&m_VBDesc, sizeof(D3D11_BUFFER_DESC));
@@ -131,9 +136,7 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _bool 
 	}
 
 
-	/* 블렌드인덱스와 웨이트 */
-	if (true == isAnim)
-		SetUp_SkinnedDesc(pModel, pMesh);
+
 
 	m_VBSubresourceData.pSysMem = m_pVertices;
 
@@ -210,11 +213,6 @@ HRESULT CMeshContainer::Add_Bones(CModel* pModel, CHierarchyNode* parentHierarch
 		if (nullptr == pHierarchyNode)
 			return E_FAIL;
 
-		// ForkLift의 경우 SetUp_BoneMatrices에서 하이라키 Combined가 쓰레기값이 나온다. 
-		// ForkLift의 경우 m_iNumBones를 0으로 만들어, SetUp_BoneMatrices에서 항등행렬을 주도록하자.
-		if (!strcmp(pHierarchyNode->Get_Name(), "ForkLift"))
-			return S_OK;
-
 		pHierarchyNode->Set_OffsetMatrix(XMMatrixIdentity());
 		m_Bones.push_back(pHierarchyNode);
 
@@ -269,11 +267,11 @@ HRESULT CMeshContainer::SetUp_SkinnedDesc(CModel* pModel, aiMesh* pMesh)
 	return S_OK;
 }
 
-CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, CModel* pModel, _bool isAnimMesh, aiMesh* pMesh, _fmatrix PivotMatrix)
+CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix) 
 {
 	CMeshContainer*	pInstance = new CMeshContainer(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(pModel, isAnimMesh, pMesh, PivotMatrix)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(pModel, pMesh, PivotMatrix)))
 	{
 		MSG_BOX("Failed To Creating CMeshContainer");
 		Safe_Release(pInstance);
