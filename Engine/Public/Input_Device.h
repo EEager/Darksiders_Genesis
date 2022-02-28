@@ -45,7 +45,7 @@ private:
 	LPDIRECTINPUTDEVICE8		m_pMouse= nullptr;
 
 private:
-	_byte			m_byKeyState[256];
+	_ubyte			m_byKeyState[256];
 	DIMOUSESTATE	m_MouseState;
 
 private:	
