@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "Renderer.h"
+#include "RendererStates.h"
 #include "Transform.h"
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Terrain.h"

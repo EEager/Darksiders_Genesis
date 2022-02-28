@@ -60,7 +60,7 @@ _int CWar::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return -1;
 	
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		return 0;
 
 	return _int();
@@ -68,10 +68,16 @@ _int CWar::LateTick(_float fTimeDelta)
 
 HRESULT CWar::Render()
 {
+	// --------------------------
+	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
+	// --------------------------
+	m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
+
+
 	/* 장치에 월드변환 행렬을 저장한다. */
 	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
 	{
-		if (FAILED(SetUp_ConstantTable(modelIdx)))
+		if (FAILED(SetUp_ConstantTable(false, modelIdx)))
 			return E_FAIL;
 
 		// iNumMaterials : 망토, 몸통
@@ -89,7 +95,35 @@ HRESULT CWar::Render()
 	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
-	
+	//m_pDeviceContext->OMSetBlendState(0, 0, 0xffffffff);
+
+
+	// --------------------------
+	// 2. (스텐실버퍼가 0인경우에) War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
+	// --------------------------
+	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
+
+	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
+	{
+		if (FAILED(SetUp_ConstantTable(true, modelIdx)))
+			return E_FAIL;
+
+		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
+		for (_uint i = 0; i < iNumMaterials; ++i)
+		{
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+
+
+			m_pModelCom[modelIdx]->Render(i, 0);
+		}
+	}
+
+	// Restore default states
+	m_pDeviceContext->RSSetState(0);
+	m_pDeviceContext->OMSetDepthStencilState(0, 0);
+
 
 	return S_OK;
 }
@@ -120,7 +154,7 @@ HRESULT CWar::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CWar::SetUp_ConstantTable(int modelIdx)
+HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
@@ -153,6 +187,9 @@ HRESULT CWar::SetUp_ConstantTable(int modelIdx)
 	// 노멀맵할지 말지 선택을 여기서 하자
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+
+	// Outline 원형은 그리지않는다.
+	m_pModelCom[modelIdx]->Set_RawValue("g_DrawOutLine", &drawOutLine, sizeof(bool));
 
 
 #if 0 // Legacy

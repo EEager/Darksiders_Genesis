@@ -50,7 +50,7 @@ _int CTerrain::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return -1;
 	
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_TERRAIN, this)))
 		return 0;
 
 	return _int();

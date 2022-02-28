@@ -46,6 +46,8 @@ texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
 
+bool		g_DrawOutLine = false;
+
 
 // --------------------
 // sampler_state
@@ -147,6 +149,14 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
+
+	if (g_DrawOutLine)
+	{
+		float4 texColor = g_DiffuseTexture.Sample(samAnisotropic, In.vTexUV);
+		clip(texColor.a - 0.1f);
+		Out.vColor.xyz = float3(1.f / 255.f, 249.f / 255.f, 254.f / 255.f);
+		return Out;
+	}
 
 	// Interpolating normal can unnormalize it, so normalize it.
 	In.vNormalW = normalize(In.vNormalW);

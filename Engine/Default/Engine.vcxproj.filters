@@ -103,6 +103,9 @@
     <Filter Include="02.DirectUtil">
       <UniqueIdentifier>{c7566fd9-beb1-443a-ab36-7c743780e369}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\Renderer\RendererStates">
+      <UniqueIdentifier>{9af9c6da-e980-41cd-ac88-40711b1925f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -207,6 +210,9 @@
     <ClInclude Include="..\Public\DXString.h">
       <Filter>02.DirectUtil</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\RendererStates.h">
+      <Filter>01.Utility\04.Component\Components\Renderer\RendererStates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -295,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\DXString.cpp">
       <Filter>02.DirectUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RendererStates.cpp">
+      <Filter>01.Utility\04.Component\Components\Renderer\RendererStates</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

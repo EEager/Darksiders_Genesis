@@ -40,7 +40,7 @@ private:
 
 private:
 	HRESULT SetUp_Component();
-	HRESULT SetUp_ConstantTable(int modelIdx = 0);	
+	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);	
 
 public:	
 	static CWar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

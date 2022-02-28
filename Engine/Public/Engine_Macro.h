@@ -68,3 +68,8 @@ unsigned long ClassName::DestroyInstance()				\
 	return dwRefCnt;									\
 }
 
+
+
+#ifndef HR
+#define HR(x) (x)
+#endif
