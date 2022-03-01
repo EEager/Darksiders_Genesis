@@ -70,11 +70,11 @@
     <Filter Include="02.GameObjects\UIs">
       <UniqueIdentifier>{7e34e849-0b73-4734-935f-9365445d891b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\UIs\HpBar">
-      <UniqueIdentifier>{f8c9a431-3632-4cd0-b741-08fcaff70cb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\UIs\WrathBar">
+    <Filter Include="02.GameObjects\UIs\Skills">
       <UniqueIdentifier>{790b5223-21bd-4e92-9130-fe390c9a826f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UIs\HpNWrathBar">
+      <UniqueIdentifier>{f8c9a431-3632-4cd0-b741-08fcaff70cb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -169,7 +169,10 @@
       <Filter>02.GameObjects\Mouse</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_War_Hp_n_Wrath_Bar.h">
-      <Filter>02.GameObjects\UIs\HpBar</Filter>
+      <Filter>02.GameObjects\UIs\HpNWrathBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_War_Skills.h">
+      <Filter>02.GameObjects\UIs\Skills</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -246,7 +249,10 @@
       <Filter>02.GameObjects\Mouse</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_War_Hp_n_Wrath_Bar.cpp">
-      <Filter>02.GameObjects\UIs\HpBar</Filter>
+      <Filter>02.GameObjects\UIs\HpNWrathBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_War_Skills.cpp">
+      <Filter>02.GameObjects\UIs\Skills</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

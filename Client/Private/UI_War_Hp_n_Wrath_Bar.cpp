@@ -26,12 +26,7 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::NativeConstruct(void * pArg)
 		return E_FAIL;
 
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(g_iWinCX, g_iWinCY, 0.f, 1.f)));	
-
-	m_fSizeX = 874;
-	m_fSizeY = 228;
-
-	m_fX = 338.f;
-	m_fY = 120.f;
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 
 	return S_OK;
 }
@@ -83,9 +78,8 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatc
 
 	auto origin = DirectX::g_XMZero;
 
-	_float2 tmpPos;
-	// Font Position
-	tmpPos = _float2(148, 57.f);
+	_float2 tmpPos; 
+	tmpPos = _float2(131.f, 45.f); // 처음 위치
 	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
 
 	// Outline Effect
@@ -120,16 +114,15 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
-	
-	/* For.Com_Texture_Base*/ // Notice : LEVEL_GAMEPLAY
+	/* For.Com_Texture_Base*/ 
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_War_Base"), TEXT("Com_Texture_Base"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
-	/* For.Com_Texture_HpBar*/ // Notice : LEVEL_GAMEPLAY
+	/* For.Com_Texture_HpBar*/ 
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_War_HpBar"), TEXT("Com_Texture_HpBar"), (CComponent**)m_pTextureCom_HpBar.GetAddressOf())))
 		return E_FAIL;
 
-	/* For.Com_Texture_WrathBar*/ // Notice : LEVEL_GAMEPLAY
+	/* For.Com_Texture_WrathBar*/ 
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_War_WrathBar"), TEXT("Com_Texture_WrathBar"), (CComponent**)m_pTextureCom_WrathBar.GetAddressOf())))
 		return E_FAIL;
 
@@ -142,22 +135,16 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::SetUp_ConstantTable_Base()
 	if (nullptr == m_pVIBufferCom)
 		return E_FAIL;
 
-	_float4x4		WorldMatrix, ViewMatrix;
-	
+	_float4x4		WorldMatrix;
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-	WorldMatrix._11 = m_fSizeX;
-	WorldMatrix._22 = m_fSizeY;
-	WorldMatrix._41 = m_fX - (g_iWinCX >> 1);
-	WorldMatrix._42 = -m_fY + (g_iWinCY >> 1);
-
-	/* Float4x4 -> XMMatrix  : Load */
-	/* XMMatrix -> Float4x4 : Store */
+	WorldMatrix._11 = 874.f / 1.5f;
+	WorldMatrix._22 = 228.f / 1.5f;
+	WorldMatrix._41 = 250.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -90.f + (g_iWinCY >> 1);
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 
-	XMStoreFloat4x4(&ViewMatrix, XMMatrixIdentity());		
-
 	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
-	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &ViewMatrix, sizeof(_float4x4));
+	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pVIBufferCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
 
 	if (FAILED(m_pTextureCom->SetUp_OnShader(m_pVIBufferCom, "g_DiffuseTexture")))
@@ -171,21 +158,18 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::SetUp_ConstantTable_HpBar()
 	if (nullptr == m_pVIBufferCom)
 		return E_FAIL;
 
-	_float4x4		WorldMatrix, ViewMatrix;
+	_float4x4		WorldMatrix;
 
 	// same position as SetUp_ConstantTable_Base
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-	WorldMatrix._11 = m_fSizeX;
-	WorldMatrix._22 = m_fSizeY;
-	WorldMatrix._41 = m_fX - (g_iWinCX >> 1);
-	WorldMatrix._42 = -m_fY + (g_iWinCY >> 1);
-
+	WorldMatrix._11 = 874.f / 1.5f;
+	WorldMatrix._22 = 228.f / 1.5f;
+	WorldMatrix._41 = 250.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -90.f + (g_iWinCY >> 1);
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 
-	XMStoreFloat4x4(&ViewMatrix, XMMatrixIdentity());
-
 	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
-	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &ViewMatrix, sizeof(_float4x4));
+	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pVIBufferCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
 
 	if (FAILED(m_pTextureCom_HpBar->SetUp_OnShader(m_pVIBufferCom, "g_DiffuseTexture")))
@@ -199,11 +183,11 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::SetUp_ConstantTable_WrathBar()
 	if (nullptr == m_pVIBufferCom)
 		return E_FAIL;
 
-	_float4x4		WorldMatrix, ViewMatrix;
-	_float fSizeX = 114.f;
-	_float fSizeY = 39.f;
-	_float fPosX = 204.f;
-	_float fPosY = 128.f;
+	_float4x4		WorldMatrix;
+	_float fSizeX = 114.f/1.5f;
+	_float fSizeY = 39.f / 1.5f;;
+	_float fPosX = 158.f;
+	_float fPosY = 97.f;
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
 	WorldMatrix._11 = fSizeX;
@@ -213,10 +197,8 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::SetUp_ConstantTable_WrathBar()
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 
-	XMStoreFloat4x4(&ViewMatrix, XMMatrixIdentity());
-
 	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
-	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &ViewMatrix, sizeof(_float4x4));
+	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pVIBufferCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
 
 	if (FAILED(m_pTextureCom_WrathBar->SetUp_OnShader(m_pVIBufferCom, "g_DiffuseTexture")))

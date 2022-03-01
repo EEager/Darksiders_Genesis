@@ -11,7 +11,7 @@
 #include "Player.h"
 #include "War.h"
 #include "UI_War_Hp_n_Wrath_Bar.h"
-
+#include "UI_War_Skills.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -100,10 +100,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CWar::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	// ---
 	// UIs
-	/* For.Prototype_GameObject_UI_HpBar */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Hp_n_Wrath_Bar"),
+	// ---
+	/* For.Prototype_GameObject_UI_War_Hp_n_Wrath_Bar */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_War_Hp_n_Wrath_Bar"),
 		CUI_War_Hp_n_Wrath_Bar::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_UI_War_Skills */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_War_Skills"),
+		CUI_War_Skills::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 	// ===========================================================================
@@ -151,6 +157,36 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	// ---
 	// GamePlay War Skill UI
 	// ---
+	/* For.Prototype_Component_Texture_UI_Skill_Base */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_Skill_Base"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_Skill_Base.dds")))))
+		return E_FAIL;
+
+
+	/* For.Prototype_Component_Texture_UI_WrathPower_War */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_WrathPower_War"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_WrathPower_War.dds")))))
+		return E_FAIL;
+
+
+	/* For.Prototype_Component_Texture_UI_Enhancement_War_Fire */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_Enhancement_War_Fire"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_Enhancement_War_Fire.dds")))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_UI_Enhancement_War_Leaf */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_Enhancement_War_Leaf"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_Enhancement_War_Leaf.dds")))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_UIButtonBase_1 */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UIButtonBase_1"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UIButtonBase_1.dds")))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_UIButtonBase_G */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UIButtonBase_G"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UIButtonBase_G.dds")))))
+		return E_FAIL;
+
 
 
 	// ===========================================================================
