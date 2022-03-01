@@ -82,34 +82,34 @@ HRESULT CUI_War_Skills::Render()
 
 HRESULT CUI_War_Skills::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
-	wstring str = DXString::Format(L"100");
+	//wstring str = DXString::Format(L"100");
 
-	const wchar_t* output = str.c_str();
+	//const wchar_t* output = str.c_str();
 
-	auto origin = DirectX::g_XMZero;
+	//auto origin = DirectX::g_XMZero;
 
-	_float2 tmpPos;
-	// Font Position
-	tmpPos = _float2(148, 57.f);
-	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
+	//_float2 tmpPos;
+	//// Font Position
+	//tmpPos = _float2(148, 57.f);
+	//XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
 
-	// Outline Effect
-	tmpPos = _float2(1.f, 1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(-1.f, 1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(-1.f, -1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(1.f, -1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	//// Outline Effect
+	//tmpPos = _float2(1.f, 1.f);
+	//m_spriteFont->DrawString(m_spriteBatch.get(), output,
+	//	m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	//tmpPos = _float2(-1.f, 1.f);
+	//m_spriteFont->DrawString(m_spriteBatch.get(), output,
+	//	m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	//tmpPos = _float2(-1.f, -1.f);
+	//m_spriteFont->DrawString(m_spriteBatch.get(), output,
+	//	m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	//tmpPos = _float2(1.f, -1.f);
+	//m_spriteFont->DrawString(m_spriteBatch.get(), output,
+	//	m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
 
-	// Origin Text
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos, Colors::White, 0.f, origin);
+	//// Origin Text
+	//m_spriteFont->DrawString(m_spriteBatch.get(), output,
+	//	m_fontPos, Colors::White, 0.f, origin);
 
 	return S_OK;
 }
@@ -160,8 +160,8 @@ HRESULT CUI_War_Skills::SetUp_ConstantTable_Base()
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
 	WorldMatrix._11 = 465.f/2.f;
 	WorldMatrix._22 = 288.f/2.f;
-	WorldMatrix._41 = 163.f - (g_iWinCX >> 1);
-	WorldMatrix._42 = -330.f + (g_iWinCY >> 1);
+	WorldMatrix._41 = 197.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -663.f + (g_iWinCY >> 1);
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
@@ -184,8 +184,8 @@ HRESULT CUI_War_Skills::SetUp_ConstantTable_WrathPower()
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
 	WorldMatrix._11 = 256.f/2.25f;
 	WorldMatrix._22 = 256.f/2.25f;
-	WorldMatrix._41 = 94.f - (g_iWinCX >> 1);
-	WorldMatrix._42 = -314.f + (g_iWinCY >> 1);
+	WorldMatrix._41 = 134.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -664.f + (g_iWinCY >> 1);
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
@@ -205,10 +205,10 @@ HRESULT CUI_War_Skills::SetUp_ConstantTable_Enhancement(CTexture* pEnhance_Textu
 
 	_float4x4		WorldMatrix;
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-	WorldMatrix._11 = 512.f/5.f;
-	WorldMatrix._22 = 512.f/5.f;
-	WorldMatrix._41 = 228.f - (g_iWinCX >> 1);
-	WorldMatrix._42 = -314.f + (g_iWinCY >> 1);
+	WorldMatrix._11 = 512.f/4.5f;
+	WorldMatrix._22 = 512.f/4.5f;
+	WorldMatrix._41 = 134.f+134.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -664.f + (g_iWinCY >> 1);
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 
@@ -232,8 +232,8 @@ HRESULT CUI_War_Skills::SetUp_ConstantTable_Bnt1()
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
 	WorldMatrix._11 = 128.f / 2.f;
 	WorldMatrix._22 = 128.f / 2.f;
-	WorldMatrix._41 = 94.f - (g_iWinCX >> 1);
-	WorldMatrix._42 = -(314.f + 60.f) + (g_iWinCY >> 1);
+	WorldMatrix._41 = 134.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -(664.f + 60.f) + (g_iWinCY >> 1);
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
 	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
@@ -255,10 +255,11 @@ HRESULT CUI_War_Skills::SetUp_ConstantTable_BntG()
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
 	WorldMatrix._11 = 128.f / 2.f;
 	WorldMatrix._22 = 128.f / 2.f;
-	WorldMatrix._41 = 228.f - (g_iWinCX >> 1);
-	WorldMatrix._42 = -(314.f + 60.f) + (g_iWinCY >> 1);
+	WorldMatrix._41 = 134.f + 134.f - (g_iWinCX >> 1);
+	WorldMatrix._42 = -(664.f + 60.f) + (g_iWinCY >> 1);
 
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
+	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
 	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
 	m_pVIBufferCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
 
