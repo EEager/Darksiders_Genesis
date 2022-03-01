@@ -10,6 +10,8 @@
 #include "Fork.h"
 #include "Player.h"
 #include "War.h"
+#include "UI_War_Hp_n_Wrath_Bar.h"
+
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -74,7 +76,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 	// ===========================================================================
-	/* 게임플레이 레벨에 필요한 객체들의 원형을 생성한다. */
+	/* GameObjects */
 	// ===========================================================================
 	wsprintf(m_szLoading, TEXT("Loading GameObjects"));
 
@@ -98,8 +100,14 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CWar::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	// UIs
+	/* For.Prototype_GameObject_UI_HpBar */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_UI_Hp_n_Wrath_Bar"),
+		CUI_War_Hp_n_Wrath_Bar::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 	// ===========================================================================
-	/* 게임플레이 레벨에 필요한 컴포넌트들의 원형을 생성한다.  */
+	/* Componenets */
 	// ===========================================================================
 	wsprintf(m_szLoading, TEXT("Loading Components"));
 
@@ -124,8 +132,29 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
+	// ---
+	// GamePlay War Hp and Wrath UI Bar
+	// ---
+	/* For.Prototype_Component_Texture_UI_War_Base */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_War_Base"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_War_Base.dds")))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_UI_War_HpBar */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_War_HpBar"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_War_HpBar.dds")))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_UI_War_WrathBar */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_UI_War_WrathBar"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UI_War_WrathBar.dds")))))
+		return E_FAIL;
+
+	// ---
+	// GamePlay War Skill UI
+	// ---
+
+
 	// ===========================================================================
-	/* 게임플레이 레벨에 필요한 컴포넌트들의 원형 (Model)를 생성한다.  */
+	/* Component Models  */
 	// ===========================================================================
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Fiona"));
 	_matrix		PivotMatrix = XMMatrixIdentity();
@@ -161,6 +190,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Weapon/", "War_Weapon.fbx", War_PivotMat))))
 		return E_FAIL;
+
+
 
 	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY Load Completed!"));
 

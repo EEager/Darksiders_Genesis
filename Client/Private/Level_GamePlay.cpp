@@ -185,7 +185,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar* pLayerTag)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-
+	/* For.Prototype_GameObject_UI_Hp_n_Wrath_Bar*/
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_UI_Hp_n_Wrath_Bar"))))
+		return E_FAIL;
 
 
 	RELEASE_INSTANCE(CGameInstance);

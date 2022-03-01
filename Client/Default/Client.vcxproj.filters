@@ -34,15 +34,6 @@
     <Filter Include="02.GameObjects\Camera">
       <UniqueIdentifier>{9f950e22-1222-4d61-a4b6-91e9d7e63ceb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="77.ImGUI">
-      <UniqueIdentifier>{ef296e70-b85a-4179-a8e5-32e98a863054}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="77.ImGUI\Manager">
-      <UniqueIdentifier>{a94bd706-c001-4756-aae9-cb2fd31cb9bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="77.ImGUI\Misc">
-      <UniqueIdentifier>{6917045b-5f6d-4227-9ae0-c9935aca7462}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Fork">
       <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
@@ -66,6 +57,24 @@
     </Filter>
     <Filter Include="02.GameObjects\Mouse">
       <UniqueIdentifier>{7c20b023-f3ff-4441-9319-491ae7df8716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.ImGUI">
+      <UniqueIdentifier>{ef296e70-b85a-4179-a8e5-32e98a863054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.ImGUI\Manager">
+      <UniqueIdentifier>{a94bd706-c001-4756-aae9-cb2fd31cb9bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.ImGUI\Misc">
+      <UniqueIdentifier>{6917045b-5f6d-4227-9ae0-c9935aca7462}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UIs">
+      <UniqueIdentifier>{7e34e849-0b73-4734-935f-9365445d891b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UIs\HpBar">
+      <UniqueIdentifier>{f8c9a431-3632-4cd0-b741-08fcaff70cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UIs\WrathBar">
+      <UniqueIdentifier>{790b5223-21bd-4e92-9130-fe390c9a826f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -106,31 +115,31 @@
       <Filter>02.GameObjects\Camera</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imgui_Manager.h">
-      <Filter>77.ImGUI\Manager</Filter>
+      <Filter>96.ImGUI\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imconfig.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imgui.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imgui_impl_dx11.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imgui_impl_win32.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imgui_internal.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imstb_rectpack.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imstb_textedit.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\ImGUI\imstb_truetype.h">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Defines.h">
       <Filter>98.Default</Filter>
@@ -158,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Mouse.h">
       <Filter>02.GameObjects\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_War_Hp_n_Wrath_Bar.h">
+      <Filter>02.GameObjects\UIs\HpBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -192,28 +204,28 @@
       <Filter>02.GameObjects\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_Manager.cpp">
-      <Filter>77.ImGUI\Manager</Filter>
+      <Filter>96.ImGUI\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_demo.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_draw.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_impl_dx11.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_impl_win32.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_tables.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\ImGUI\imgui_widgets.cpp">
-      <Filter>77.ImGUI\Misc</Filter>
+      <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Fork.cpp">
       <Filter>02.GameObjects\Fork</Filter>
@@ -232,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Mouse.cpp">
       <Filter>02.GameObjects\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_War_Hp_n_Wrath_Bar.cpp">
+      <Filter>02.GameObjects\UIs\HpBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

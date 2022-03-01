@@ -77,6 +77,13 @@ SamplerState samLinear
 	AddressV = WRAP;
 };
 
+SamplerState samPoint
+{
+	Filter = MIN_MAG_MIP_POINT;
+	AddressU = WRAP;
+	AddressV = WRAP;
+};
+
 
 // --------------------
 // VS
@@ -189,7 +196,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	// --------------------------
 	//	Normal mapping
 	// --------------------------
-	float3 normalMapSample = g_NormalTexture.Sample(samLinear, In.vTexUV).rgb;
+	float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
 	float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
 
 	// --------------------------

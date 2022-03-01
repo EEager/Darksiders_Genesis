@@ -97,6 +97,8 @@ HRESULT CMainApp::Render()
 
 	m_pGameInstance->Render_Engine(); // Level Dummy
 
+	m_pGameInstance->Render_Engine(); // UI_Manager Render
+
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Render();
 #endif
@@ -210,20 +212,19 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 
 
 	// 여기서부턴 Textures
-
 	/* For.Prototype_Component_Texture_Logo */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title1.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title.dds")))))
 		return E_FAIL;
 	
 	/* For.Prototype_Component_Texture_Loading */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/DSG_Loading_Emblem.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/DSG_Loading_Emblem.dds")))))
 		return E_FAIL;
 	/* For.Prototype_Component_Texture_Loading_Circle */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Circle"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/UI_RuneRingOuter.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Circle"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/UI_RuneRingOuter.dds")))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_Mouse */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Mouse/UI_Map_FocusCursor1.png")))))
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Mouse/UI_Map_FocusCursor.dds")))))
 		return E_FAIL;
 
 	return S_OK;

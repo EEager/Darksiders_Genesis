@@ -29,9 +29,6 @@ private:
 	vector<ID3D11ShaderResourceView*>			m_Textures;
 	typedef vector<ID3D11ShaderResourceView*>	TEXTURES;
 
-	vector<DirectX::ScratchImage*>			m_ScratchImages;
-	typedef vector<DirectX::ScratchImage*>	SCRATCHIMAGES;
-
 public:
 	static CTexture* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pTextureFilePath, _uint iNumTexture = 1);
 	virtual CComponent* Clone(void* pArg = nullptr);

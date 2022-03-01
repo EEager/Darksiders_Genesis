@@ -192,6 +192,7 @@
     <ClInclude Include="..\Public\Mouse.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_War_Hp_n_Wrath_Bar.h" />
     <ClInclude Include="..\Public\War.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="..\Private\Mouse.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_War_Hp_n_Wrath_Bar.cpp" />
     <ClCompile Include="..\Private\War.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

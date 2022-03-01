@@ -27,23 +27,28 @@ HRESULT CTexture::NativeConstruct_Prototype(const _tchar* pTextureFilePath, _uin
 
 		wsprintf(szFullPath, pTextureFilePath, i);
 
-		DirectX::ScratchImage* Image = new DirectX::ScratchImage();
+		DirectX::ScratchImage Image;
+
+		HRESULT hr = 0;
+		hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);//COM√ ±‚»≠
+		if (FAILED(hr))
+			return E_FAIL;
 
 		_tchar	szExt[MAX_PATH] = TEXT("");
 
 		_wsplitpath_s(szFullPath, nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
 
 		if (!lstrcmp(szExt, TEXT(".dds")))		
-			DirectX::LoadFromDDSFile(szFullPath, DDS_FLAGS_NONE, nullptr, *Image);
+			DirectX::LoadFromDDSFile(szFullPath, DDS_FLAGS_NONE, nullptr, Image);
 
 		else if (!lstrcmp(szExt, TEXT(".tga")))
-			DirectX::LoadFromTGAFile(szFullPath, nullptr, *Image);
+			DirectX::LoadFromTGAFile(szFullPath, nullptr, Image);
 		else
-			DirectX::LoadFromWICFile(szFullPath, WIC_FLAGS_NONE, nullptr, *Image);
+			DirectX::LoadFromWICFile(szFullPath, WIC_FLAGS_NONE, nullptr, Image);
 
 		ComPtr<ID3D11Resource>			pTextureResource;
 
-		if (FAILED(DirectX::CreateTexture(m_pDevice, Image->GetImages(), Image->GetImageCount(), Image->GetMetadata(), pTextureResource.GetAddressOf())))
+		if (FAILED(DirectX::CreateTexture(m_pDevice, Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), pTextureResource.GetAddressOf())))
 			return E_FAIL;
 
 		ID3D11ShaderResourceView*	pSRV = nullptr;
@@ -51,7 +56,6 @@ HRESULT CTexture::NativeConstruct_Prototype(const _tchar* pTextureFilePath, _uin
 			return E_FAIL;
 
 		m_Textures.push_back(pSRV);
-		m_ScratchImages.push_back(Image);
 
 	}
 
@@ -106,9 +110,6 @@ void CTexture::Free()
 
 	for (auto& pSRV : m_Textures)
 		Safe_Release(pSRV);
-
-	for (auto& pSIMG : m_ScratchImages)
-		Safe_Delete(pSIMG);
 
 	m_Textures.clear();
 
