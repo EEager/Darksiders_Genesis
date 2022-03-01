@@ -1,9 +1,15 @@
 #include "stdafx.h"
 #include "..\Public\MainApp.h"
+
+
+// ---------------------------
+// GameObject Headers
+// ---------------------------
 #include "Level_Loading.h"
 #include "Logo_BackGround.h"
 #include "Loading_BackGround.h"
 #include "Camera_Fly.h"
+#include "Mouse.h"
 
 // ----------------------
 //	ImGUI
@@ -38,12 +44,6 @@ HRESULT CMainApp::NativeConstruct()
 		return E_FAIL;
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pDeviceContext);
-	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/DotumChe_16.spritefont");
-	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/gulim_18.spritefont");
-	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/hy_gothic-extra_18.spritefont");
-	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/DotumChe_16.spritefont");
-
-	// 정답은 Requiem 이구연...
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/Requiem_18.spritefont");
 	
 
@@ -207,12 +207,14 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Rect.hlsl")))))
 		return E_FAIL;
 
+
+
+	// 여기서부턴 Textures
+
 	/* For.Prototype_Component_Texture_Logo */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title1.png")))))
 		return E_FAIL;
 	
-
-
 	/* For.Prototype_Component_Texture_Loading */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/DSG_Loading_Emblem.png")))))
 		return E_FAIL;
@@ -220,9 +222,14 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Circle"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/UI_RuneRingOuter.png")))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Mouse */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Mouse/UI_Map_FocusCursor1.png")))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
+// 로딩, 게임 전역에 사용될 만한 게임오브젝트 원형
 HRESULT CMainApp::Ready_GameObject_Prototype()
 {
 	// for.Prototype_GameObject_Logo_BackGround
@@ -233,6 +240,12 @@ HRESULT CMainApp::Ready_GameObject_Prototype()
 		return E_FAIL;
 	// for.Prototype_GameObject_Camera_Fly
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Fly"), CCamera_Fly::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	// for.Prototype_GameObject_Mouse
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Mouse"), CMouse::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance->Add_GameObjectToLayer(LEVEL_STATIC, L"Layer_Mouse", TEXT("Prototype_GameObject_Mouse"))))
 		return E_FAIL;
 
 

@@ -64,6 +64,9 @@
     <Filter Include="02.GameObjects\Logo">
       <UniqueIdentifier>{f82d7855-fa3d-4c00-94e8-11cd6d42e4de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Mouse">
+      <UniqueIdentifier>{7c20b023-f3ff-4441-9319-491ae7df8716}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -153,6 +156,9 @@
     <ClInclude Include="..\Public\Loading_BackGround.h">
       <Filter>02.GameObjects\Loading</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Mouse.h">
+      <Filter>02.GameObjects\Mouse</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -223,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Loading_BackGround.cpp">
       <Filter>02.GameObjects\Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mouse.cpp">
+      <Filter>02.GameObjects\Mouse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

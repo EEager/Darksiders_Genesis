@@ -58,8 +58,9 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 	if (FAILED(Render_UI()))
 		return E_FAIL;		
+	if (FAILED(Render_Mouse()))
+		return E_FAIL;
 	
-
 	return S_OK;
 }
 
@@ -234,6 +235,33 @@ HRESULT CRenderer::Render_UI()
 	ClearRenderStates();
 
 
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Mouse()
+{
+	// Disable z-Buffer
+	m_pDeviceContext->OMSetDepthStencilState(RenderStates::noDepthState.Get(), 0);
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS.Get(), blendFactor, 0xffffffff);
+
+	/* 리스트 순회 */
+	for (auto& pGameObject : m_RenderObjects[RENDER_MOUSE])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render()))
+				return E_FAIL;
+
+			Safe_Release(pGameObject);
+		}
+	}
+
+	m_RenderObjects[RENDER_MOUSE].clear();
+
+	// Restore default states
+	ClearRenderStates();
 
 	return S_OK;
 }

@@ -144,7 +144,7 @@ HRESULT CModel::NativeConstruct(void * pArg)
 			Safe_AddRef(pAnimation);
 			m_Animations.push_back(pAnimation);
 		}
-		m_iNumAnimation = m_Animations.size();
+		m_iNumAnimation = (_uint)m_Animations.size();
 
 		for (auto& MtrlMeshContainers : m_MeshContainers)
 		{
