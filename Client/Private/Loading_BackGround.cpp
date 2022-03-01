@@ -64,9 +64,6 @@ _int CLoading_BackGround::LateTick(_float fTimeDelta)
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this)))
 		return 0;
 
-	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
-		return 0;
-
 	return _int();
 }
 
@@ -83,48 +80,6 @@ HRESULT CLoading_BackGround::Render()
 		return E_FAIL;
 
 	m_pVIBufferCom->Render(0);
-
-	return S_OK;
-}
-
-HRESULT CLoading_BackGround::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
-{
-//#ifdef USE_IMGUI
-//	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
-//#else
-//	wstring str = DXString::Format(L"Font Test");
-//#endif
-	wstring str = DXString::Format(L"Loading...");
-
-	const wchar_t* output = str.c_str();
-
-	//auto origin = m_spriteFont->MeasureString(output) / 2.f;
-	auto origin = DirectX::g_XMZero;
-
-	_float2 tmpPos;
-	// Font Position
-	tmpPos = _float2(648.f + 100.f, 761.f - 10.f);
-	//m_fCircleX = 648.f;
-	//m_fCircleY = 761.f;
-	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
-
-	// Outline Effect
-	tmpPos = _float2(1.f, 1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(-1.f, 1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(-1.f, -1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(1.f, -1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-
-	// Origin Text
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos, Colors::White, 0.f, origin);
 
 	return S_OK;
 }
@@ -149,8 +104,6 @@ HRESULT CLoading_BackGround::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, 
 		TEXT("Prototype_Component_Texture_Loading_Circle"), TEXT("Com_Texture_LoadingCircle"), (CComponent**)&m_pTextureCom_LoadingCircle)))
 		return E_FAIL;
-
-
 	
 
 	return S_OK;

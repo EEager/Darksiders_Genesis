@@ -13,6 +13,13 @@ public:
 	virtual HRESULT NativeConstruct(LEVEL eNextLevel);
 	virtual _int Tick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont) final;
+
+private:
+	const _tchar* GetDots(bool loadFinished);
+private:
+	const float MAX_DOT_NUM_FLOAT = 7.f;
+	_float m_fNumDot = 0;
 
 private:
 	LEVEL				m_eNextLevel = LEVEL_END;

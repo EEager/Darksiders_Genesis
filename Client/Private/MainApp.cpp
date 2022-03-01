@@ -38,7 +38,14 @@ HRESULT CMainApp::NativeConstruct()
 		return E_FAIL;
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pDeviceContext);
-	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/DotumChe_16.spritefont");
+	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/DotumChe_16.spritefont");
+	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/gulim_18.spritefont");
+	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/hy_gothic-extra_18.spritefont");
+	//m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/DotumChe_16.spritefont");
+
+	// 정답은 Requiem 이구연...
+	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/Requiem_18.spritefont");
+	
 
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
@@ -104,6 +111,8 @@ HRESULT CMainApp::PostRender()
 	m_spriteBatch->Begin();
 
 	m_pRenderer->PostDraw(m_spriteBatch, m_spriteFont); // Post Draw
+
+	m_pGameInstance->PostRender_Engine(m_spriteBatch, m_spriteFont); // Level Post Dummy
 	m_spriteBatch->End();
 
 

@@ -23,6 +23,11 @@ HRESULT CLevel::Render()
 	return S_OK;
 }
 
+HRESULT CLevel::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	return S_OK;
+}
+
 void CLevel::Free()
 {
 	Safe_Release(m_pDeviceContext);

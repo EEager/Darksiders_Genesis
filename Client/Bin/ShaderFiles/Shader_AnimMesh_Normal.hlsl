@@ -152,7 +152,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	if (g_DrawOutLine)
 	{
-		float4 texColor = g_DiffuseTexture.Sample(samAnisotropic, In.vTexUV);
+		float4 texColor = g_DiffuseTexture.Sample(samLinear, In.vTexUV);
 		clip(texColor.a - 0.1f);
 		Out.vColor.xyz = float3(1.f / 255.f, 249.f / 255.f, 254.f / 255.f);
 		return Out;
@@ -174,7 +174,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	// if (gUseTexure)
 	{
 		// Sample texture.
-		texColor = g_DiffuseTexture.Sample(samAnisotropic, In.vTexUV);
+		texColor = g_DiffuseTexture.Sample(samLinear, In.vTexUV);
 
 		//if (gAlphaClip)
 		{

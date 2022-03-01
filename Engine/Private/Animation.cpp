@@ -139,8 +139,6 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 		// 채널에 저장해둔다. Get_TransformationMatrix(m_iCurrentAnimIndex)은 하이라키순회하면서 Update_CombinedTransformationMatrix에서 사용된다.
 		pChannel->Set_TransformationMatrix(TransformationMatrix);
 
-		// 
-
 	}
 
 	if (m_isBeginFirst)

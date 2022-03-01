@@ -1,0 +1,51 @@
+DarkSiders Genesis 도움되는 코드 모음
+
+------------------------------------------------------------
+1. 
+
+#include <wrl.h>
+using namespace Microsoft::WRL;
+
+------------------------------------------------------------
+2. create
+
+HRESULT Graphic_Device::Ready_DepthStencilState()
+{
+    D3D11_DEPTH_STENCILOP_DESC op_Desc;
+    op_Desc.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+    op_Desc.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    op_Desc.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    op_Desc.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+
+    D3D11_DEPTH_STENCIL_DESC ZBuffer_Desc;
+    ZBuffer_Desc.DepthEnable = FALSE;
+    ZBuffer_Desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    ZBuffer_Desc.DepthFunc = D3D11_COMPARISON_LESS;
+    ZBuffer_Desc.StencilEnable = FALSE;
+    ZBuffer_Desc.StencilReadMask = 0xff;
+    ZBuffer_Desc.StencilWriteMask = 0xff;
+    ZBuffer_Desc.FrontFace = op_Desc;
+    ZBuffer_Desc.BackFace = op_Desc;
+
+    m_pDevice->CreateDepthStencilState(&ZBuffer_Desc, &m_pDepthState);
+    return S_OK;
+}
+헤더에
+    ComPtr<ID3D11DepthStencilState>    m_pDepthState;
+	
+------------------------------------------------------------
+3. use
+void Graphic_Device::Set_DepthBufferWrite(bool b)
+{
+    if(b)
+        m_pDeviceContext->OMSetDepthStencilState(NULL, 0);
+    else
+        m_pDeviceContext->OMSetDepthStencilState(m_pDepthState.Get(), 0);
+
+}
+
+
+4. wsprintf 사용하자
+	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY 로딩이 완료되었습니다. "));
+

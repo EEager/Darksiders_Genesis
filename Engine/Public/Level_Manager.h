@@ -18,6 +18,7 @@ public:
 	HRESULT Open_Level(_uint iLevelIndex, class CLevel* pNextLevel);
 	_int Tick(_float fTimeDelta);
 	HRESULT Render();
+	HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 public: // Used in ImGUI
 	_uint Get_CurrentLevel() { return m_iCurrentLevelIndex; }

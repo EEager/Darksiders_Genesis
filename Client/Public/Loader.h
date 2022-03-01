@@ -43,7 +43,7 @@ private:
 	HANDLE					m_hThread;
 	CRITICAL_SECTION		m_CS;
 
-	_tchar					m_szLoading[MAX_PATH] = TEXT("");
+	_tchar					m_szLoading[MAX_PATH] = TEXT("Loading");
 	_bool					m_isFinished = false;
 
 public:

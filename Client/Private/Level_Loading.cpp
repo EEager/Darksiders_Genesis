@@ -60,6 +60,73 @@ HRESULT CLevel_Loading::Render()
 	return S_OK;
 }
 
+const _tchar* CLevel_Loading::GetDots(bool loadFinished)
+{
+	if (loadFinished)
+		return L"";
+
+	const _tchar* m_szDots = L"";
+	
+	switch ((int)m_fNumDot)
+	{
+	case 0: m_szDots = L"."; break;
+	case 1: m_szDots = L".."; break;
+	case 2: m_szDots = L"..."; break;
+	case 3: m_szDots = L"...."; break;
+	case 4: m_szDots = L"....."; break;
+	case 5: m_szDots = L"......"; break;
+	case 6: m_szDots = L"......."; break;
+	case 7: m_szDots = L"........"; break;
+	default:
+		break;
+	}
+
+	m_fNumDot += 0.12f;
+	if (m_fNumDot >= MAX_DOT_NUM_FLOAT)
+		m_fNumDot = 0.f;
+
+	return m_szDots;
+}
+
+HRESULT CLevel_Loading::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	if (nullptr == m_pLoader)
+		return E_FAIL;
+
+	//const wchar_t* output = ;
+
+	_tchar output[MAX_PATH];
+	wsprintf(output, TEXT("%s%s"), m_pLoader->Get_LoadingText(), GetDots(m_pLoader->Get_Finished()));
+	//auto origin = m_spriteFont->MeasureString(output) / 2.f; // 원점 변경
+
+	_float2 tmpPos;
+	// Font Position
+	tmpPos = _float2(733.f, 743.f);
+	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
+
+	// Outline Effect
+	tmpPos = _float2(1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f);
+	tmpPos = _float2(-1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f);
+	tmpPos = _float2(-1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f);
+	tmpPos = _float2(1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f);
+
+	// Origin Text
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos, Colors::White, 0.f);
+
+	return S_OK;
+}
+
+
+
 HRESULT CLevel_Loading::Open_Level()
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);

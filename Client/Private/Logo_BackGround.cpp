@@ -83,7 +83,7 @@ HRESULT CLogo_BackGround::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, uni
 
 	_float2 tmpPos;
 	// Font Position
-	tmpPos = _float2(1070.f, 600.f);
+	tmpPos = _float2(1022.f, 585.f);
 	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
 
 	// Outline Effect

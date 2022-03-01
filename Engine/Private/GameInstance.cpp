@@ -88,6 +88,20 @@ HRESULT CGameInstance::Render_Engine()
 
 }
 
+HRESULT CGameInstance::PostRender_Engine(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	if (nullptr == m_pLevel_Manager)
+		return E_FAIL;
+
+#ifdef _DEBUG
+	/* Dummy의 기능. (디버깅적 요소의 출력.) */
+	m_pLevel_Manager->PostRender(m_spriteBatch, m_spriteFont);
+#endif
+
+	return S_OK;
+
+}
+
 HRESULT CGameInstance::Clear_Level(_uint iLevelIndex)
 {
 	if (nullptr == m_pObject_Manager ||

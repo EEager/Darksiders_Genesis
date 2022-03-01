@@ -28,6 +28,8 @@ public:
 	HRESULT Initialize_Engine(HINSTANCE hInst, _uint iNumLevels, CGraphic_Device::GRAPHICDEVDESC GraphicDesc, ID3D11Device** ppDevice, ID3D11DeviceContext** ppDeviceContext);
 	_int Tick_Engine(_float fTimeDelta);
 	HRESULT Render_Engine();
+	HRESULT PostRender_Engine(unique_ptr<SpriteBatch>&m_spriteBatch, unique_ptr<SpriteFont>&m_spriteFont);
+
 	HRESULT Clear_Level(_uint iLevelIndex);
 
 public: /* For.Graphic_Device */
