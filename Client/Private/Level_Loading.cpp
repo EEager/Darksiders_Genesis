@@ -97,6 +97,8 @@ HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar * pLayerTag)
 {
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_LOADING, pLayerTag, TEXT("Prototype_GameObject_Loading_BackGround"))))
+		return E_FAIL;
 
 
 	RELEASE_INSTANCE(CGameInstance);

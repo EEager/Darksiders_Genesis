@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "..\public\BackGround.h"
+#include "..\public\Logo_BackGround.h"
 
 #include "GameInstance.h"
 
 
-CBackGround::CBackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CLogo_BackGround::CLogo_BackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
 }
 
-CBackGround::CBackGround(const CBackGround & rhs)
+CLogo_BackGround::CLogo_BackGround(const CLogo_BackGround & rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CBackGround::NativeConstruct_Prototype()
+HRESULT CLogo_BackGround::NativeConstruct_Prototype()
 {	
 
 	return S_OK;
 }
 
-HRESULT CBackGround::NativeConstruct(void * pArg)
+HRESULT CLogo_BackGround::NativeConstruct(void * pArg)
 {
 	if (SetUp_Component())
 		return E_FAIL;
@@ -36,12 +36,12 @@ HRESULT CBackGround::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-_int CBackGround::Tick(_float fTimeDelta)
+_int CLogo_BackGround::Tick(_float fTimeDelta)
 {
 	return _int();
 }
 
-_int CBackGround::LateTick(_float fTimeDelta)
+_int CLogo_BackGround::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return -1;
@@ -49,12 +49,13 @@ _int CBackGround::LateTick(_float fTimeDelta)
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this)))
 		return 0;
 
-	// D3D11_SAMPLER_DESC
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		return 0;
 
 	return _int();
 }
 
-HRESULT CBackGround::Render()
+HRESULT CLogo_BackGround::Render()
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
@@ -66,7 +67,48 @@ HRESULT CBackGround::Render()
 	return S_OK;
 }
 
-HRESULT CBackGround::SetUp_Component()
+HRESULT CLogo_BackGround::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	//#ifdef USE_IMGUI
+	//	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
+	//#else
+	//	wstring str = DXString::Format(L"Font Test");
+	//#endif
+	wstring str = DXString::Format(L"Press Any Key To Start");
+
+	const wchar_t* output = str.c_str();
+
+	//auto origin = m_spriteFont->MeasureString(output) / 2.f;
+	auto origin = DirectX::g_XMZero;
+
+	_float2 tmpPos;
+	// Font Position
+	tmpPos = _float2(1070.f, 600.f);
+	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
+
+	// Outline Effect
+	tmpPos = _float2(1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	tmpPos = _float2(-1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	tmpPos = _float2(-1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+	tmpPos = _float2(1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
+
+	// Origin Text
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos, Colors::White, 0.f, origin);
+
+	return S_OK;
+}
+
+
+HRESULT CLogo_BackGround::SetUp_Component()
 {
 	/* For.Com_Renderer*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -78,7 +120,7 @@ HRESULT CBackGround::SetUp_Component()
 
 	
 	/* For.Com_Texture*/
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Default"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
 
@@ -87,7 +129,7 @@ HRESULT CBackGround::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CBackGround::SetUp_ConstantTable()
+HRESULT CLogo_BackGround::SetUp_ConstantTable()
 {
 	if (nullptr == m_pVIBufferCom)
 		return E_FAIL;
@@ -116,9 +158,9 @@ HRESULT CBackGround::SetUp_ConstantTable()
 	return S_OK;
 }
 
-CBackGround * CBackGround::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CLogo_BackGround * CLogo_BackGround::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-	CBackGround*		pInstance = new CBackGround(pDevice, pDeviceContext);
+	CLogo_BackGround*		pInstance = new CLogo_BackGround(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
@@ -130,9 +172,9 @@ CBackGround * CBackGround::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pD
 }
 
 
-CGameObject * CBackGround::Clone(void* pArg)
+CGameObject * CLogo_BackGround::Clone(void* pArg)
 {
-	CBackGround*		pInstance = new CBackGround(*this);
+	CLogo_BackGround*		pInstance = new CLogo_BackGround(*this);
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{
@@ -143,7 +185,7 @@ CGameObject * CBackGround::Clone(void* pArg)
 	return pInstance;
 }
 
-void CBackGround::Free()
+void CLogo_BackGround::Free()
 {
 
 	__super::Free();

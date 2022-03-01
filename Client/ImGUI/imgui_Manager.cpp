@@ -21,7 +21,8 @@ bool CImguiManager::m_bshow_gameobject_manager_window = false;
 bool CImguiManager::m_bshow_gameobject_editor_window = false;
 bool CImguiManager::m_bshow_hlsl_window = false;
 
-ImVec4 CImguiManager::clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+//ImVec4 CImguiManager::clear_color = ImVec4(0.5f, 0.55f, 0.60f, 1.00f);
+ImVec4 CImguiManager::clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
 
 void EnableImGuiMouse()
 {

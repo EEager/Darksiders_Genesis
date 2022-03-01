@@ -50,11 +50,11 @@ CModel::CModel(const CModel & rhs)
 	}
 
 	// ¾è.º¹
-	for (auto& pPassDesc : m_PassesDesc)
-	{
-		Safe_AddRef(pPassDesc->pInputlayout);
-		Safe_AddRef(pPassDesc->pPass);
-	}
+	//for (auto& pPassDesc : m_PassesDesc)
+	//{
+	//	Safe_AddRef(pPassDesc->pInputlayout);
+	//	Safe_AddRef(pPassDesc->pPass);
+	//}
 
 	// ¾è.º¹
 	Safe_AddRef(m_pEffect);
@@ -241,7 +241,7 @@ HRESULT CModel::Update_Animation(_float fTimeDelta)
 
 HRESULT CModel::Bind_Shader(_uint iPassIndex)
 {
-	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout);
+	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout.Get());
 	m_PassesDesc[iPassIndex]->pPass->Apply(0, m_pDeviceContext);
 
 	return S_OK;
@@ -618,13 +618,6 @@ void CModel::Free()
 	if (false == m_isCloned)
 		m_MeshContainers.clear();
 
-
-	// m_PassesDesc
-	for (auto& pPassDesc : m_PassesDesc)
-	{
-		Safe_Release(pPassDesc->pInputlayout);
-		Safe_Release(pPassDesc->pPass);
-	}
 
 	if (false == m_isCloned)
 	{

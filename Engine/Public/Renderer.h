@@ -19,10 +19,15 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg) override;
 public:
 	HRESULT Add_RenderGroup(RENDER eRenderGroup, class CGameObject* pGameObject);
+	HRESULT Add_PostRenderGroup(class CGameObject* pGameObject);
 	HRESULT Draw(); /*모아놓은객체(화면에 그려질객체)들의 렌더함수를 호출해준다. */
+	HRESULT PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
+	HRESULT ClearRenderStates();
 private:
 	list<class CGameObject*>			m_RenderObjects[RENDER_END];
 	typedef list<class CGameObject*>	RENDEROBJECT;
+
+	list<class CGameObject*>			m_PostRenderObjects;
 private:
 	HRESULT Render_Priority();
 	
@@ -32,6 +37,7 @@ private:
 
 	HRESULT Render_Alpha();
 	HRESULT Render_UI();
+
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CComponent* Clone(void* pArg) override;

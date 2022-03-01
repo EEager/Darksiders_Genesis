@@ -24,6 +24,7 @@ public:
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
+	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 public:
 	HRESULT Add_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, const _tchar* pComponentTag, class CComponent** ppOut, void* pArg = nullptr);

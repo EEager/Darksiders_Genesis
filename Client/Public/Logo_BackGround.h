@@ -11,18 +11,20 @@ END
 
 BEGIN(Client)
 
-class CBackGround final : public CGameObject
+class CLogo_BackGround final : public CGameObject
 {
 private:
-	explicit CBackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
-	explicit CBackGround(const CBackGround& rhs);
-	virtual ~CBackGround() = default;
+	explicit CLogo_BackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	explicit CLogo_BackGround(const CLogo_BackGround& rhs);
+	virtual ~CLogo_BackGround() = default;
 public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
+	HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
+
 
 private:
 	CTexture*					m_pTextureCom = nullptr;
@@ -38,7 +40,7 @@ private:
 	HRESULT SetUp_ConstantTable();
 
 public:	
-	static CBackGround* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	static CLogo_BackGround* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -26,11 +26,11 @@ CVIBuffer::CVIBuffer(const CVIBuffer & rhs)
 	, m_iNumVertexBuffers(rhs.m_iNumVertexBuffers)
 	, m_pEffect(rhs.m_pEffect)
 {
-	for (auto& pPassDesc : m_PassesDesc)
+	/*for (auto& pPassDesc : m_PassesDesc)
 	{
 		Safe_AddRef(pPassDesc->pInputlayout);
 		Safe_AddRef(pPassDesc->pPass);
-	}
+	}*/
 
 	Safe_AddRef(m_pEffect);
 	Safe_AddRef(m_pVB);
@@ -71,7 +71,7 @@ HRESULT CVIBuffer::Render(_uint iPassIndex)
 	m_pDeviceContext->IASetPrimitiveTopology(m_ePrimitiveTopology);
 
 	/* 정점셰이더에 입력되는 정점의 구성정보. */
-	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout);
+	m_pDeviceContext->IASetInputLayout(m_PassesDesc[iPassIndex]->pInputlayout.Get());
 
 	if (FAILED(m_PassesDesc[iPassIndex]->pPass->Apply(0, m_pDeviceContext)))
 		return E_FAIL;
@@ -176,16 +176,10 @@ void CVIBuffer::Free()
 	if (false == m_isCloned) // if, onriginal 
 	{
 		for (auto& pPassDesc : m_PassesDesc)
-		{
-			Safe_Release(pPassDesc->pInputlayout);
-			Safe_Release(pPassDesc->pPass);
-		}
+			Safe_Delete(pPassDesc);
 
 		Safe_Delete_Array(m_pVertices);
 		Safe_Delete_Array(m_pPrimitiveIndices);
-
-		for (auto& pPassDesc : m_PassesDesc)
-			Safe_Delete(pPassDesc);
 	}	
 	m_PassesDesc.clear();
 

@@ -52,7 +52,7 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	CGameInstance*	pGameInstance = GET_INSTANCE(CGameInstance);
 
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, pLayerTag, TEXT("Prototype_GameObject_BackGround"))))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, pLayerTag, TEXT("Prototype_GameObject_Logo_BackGround"))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

@@ -51,6 +51,9 @@ private:
 public:
 	_float4 GetClearColor() { return _float4(clear_color.x, clear_color.y, clear_color.z, clear_color.w); }
 
+	void SetColor(ImVec4 color = { 0.5f, 0.55f, 0.60f, 1.00f }) {
+		clear_color = color;}
+
 	// =========================================
 	// Main Control Window
 private:

@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "..\Public\MainApp.h"
 #include "Level_Loading.h"
-#include "BackGround.h"
+#include "Logo_BackGround.h"
+#include "Loading_BackGround.h"
 #include "Camera_Fly.h"
 
 // ----------------------
@@ -76,7 +77,7 @@ HRESULT CMainApp::Clear()
 #if defined(USE_IMGUI)
 	m_pGameInstance->Clear_BackBuffer_View(CImguiManager::GetInstance()->GetClearColor());
 #else
-	m_pGameInstance->Clear_BackBuffer_View(_float4(0.4f, 0.4f, 0.4f, 1.f));
+	m_pGameInstance->Clear_BackBuffer_View(_float4(0.f, 0.f, 0.f, 1.f));
 #endif
 	m_pGameInstance->Clear_DepthStencil_View();
 
@@ -101,42 +102,12 @@ HRESULT CMainApp::PostRender()
 
 	RECT rect = { 0,0,300,300 };
 	m_spriteBatch->Begin();
-#ifdef USE_IMGUI
-	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
-#else
-	wstring str = DXString::Format(L"Font Test");
-#endif
-	const wchar_t* output = str.c_str();
-	
-	//auto origin = m_spriteFont->MeasureString(output) / 2.f;
-	auto origin = DirectX::g_XMZero;
 
-	_float2 tmpPos;
-	// Font Position
-	tmpPos = _float2(g_iWinCX/2.f, g_iWinCY/2.f); 
-	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
-
-	// Outline Effect
-	tmpPos = _float2(1.f, 1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(-1.f, 1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(-1.f, -1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-	tmpPos = _float2(1.f, -1.f);
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin);
-
-	// Origin Text
-	m_spriteFont->DrawString(m_spriteBatch.get(), output,
-		m_fontPos, Colors::White, 0.f, origin);
-	
+	m_pRenderer->PostDraw(m_spriteBatch, m_spriteFont); // Post Draw
 	m_spriteBatch->End();
 
 
+	// 암튼 다시 디폴트 설정해야한다는 뜻 ㅎ
 	/*
 		m_spriteBatch changes some render states...
 		https://shawnhargreaves.com/blog/spritebatch-and-renderstates.html
@@ -226,9 +197,18 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	/* For.Prototype_Component_VIBuffer_Rect */ 
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Rect.hlsl")))))
 		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Logo */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title1.png")))))
+		return E_FAIL;
 	
-	/* For.Prototype_Component_Texture_Default */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Default"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
+
+
+	/* For.Prototype_Component_Texture_Loading */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/DSG_Loading_Emblem.png")))))
+		return E_FAIL;
+	/* For.Prototype_Component_Texture_Loading_Circle */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Circle"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/UI_RuneRingOuter.png")))))
 		return E_FAIL;
 
 	return S_OK;
@@ -236,9 +216,13 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 
 HRESULT CMainApp::Ready_GameObject_Prototype()
 {
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BackGround"), CBackGround::Create(m_pDevice, m_pDeviceContext))))
+	// for.Prototype_GameObject_Logo_BackGround
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Logo_BackGround"), CLogo_BackGround::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
-
+	// for.Prototype_GameObject_Loading_BackGround
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Loading_BackGround"), CLoading_BackGround::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+	// for.Prototype_GameObject_Camera_Fly
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Camera_Fly"), CCamera_Fly::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 

@@ -127,9 +127,7 @@ HRESULT CWar::Render()
 	}
 
 	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
-	m_pDeviceContext->RSSetState(0);
-	m_pDeviceContext->OMSetDepthStencilState(0, 0);
-	//m_pDeviceContext->OMSetBlendState(0, 0, 0xffffffff);
+	m_pRendererCom->ClearRenderStates();
 
 
 	// --------------------------
@@ -155,8 +153,7 @@ HRESULT CWar::Render()
 	}
 
 	// Restore default states
-	m_pDeviceContext->RSSetState(0);
-	m_pDeviceContext->OMSetDepthStencilState(0, 0);
+	m_pRendererCom->ClearRenderStates();
 
 
 	return S_OK;

@@ -12,9 +12,8 @@ texture2D		g_DiffuseTexture;
 
 sampler DefaultSampler = sampler_state
 {
-	/*minfilter = linear;
-	mipfilter = linear;
-	magfilter = linaer*/
+	AddressU = wrap;
+	AddressV = wrap;
 
 	Filter = min_mag_mip_linear;
 	

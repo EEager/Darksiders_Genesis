@@ -58,8 +58,8 @@ namespace Engine
 
 	typedef struct tagPassDesc
 	{
-		ID3D11InputLayout*		pInputlayout = nullptr;
-		ID3DX11EffectPass*		pPass = nullptr;
+		ComPtr<ID3D11InputLayout>		pInputlayout = nullptr;
+		ComPtr<ID3DX11EffectPass>		pPass = nullptr;
 
 	}PASSDESC;
 
