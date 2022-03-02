@@ -112,6 +112,15 @@
     <Filter Include="01.Utility\04.Component\Components\Navigation\Cell">
       <UniqueIdentifier>{44a6ce8d-dcb1-48b3-aa0a-ef017c225c8d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\StatePattern">
+      <UniqueIdentifier>{7eaf29ad-9436-484f-90e4-426ecd79836f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\StatePattern\StateMachine">
+      <UniqueIdentifier>{ebabbba3-ea74-4960-84ee-cfcd7d746002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\StatePattern\State">
+      <UniqueIdentifier>{1494686c-7097-4bcc-ab33-7f7a3ef41aee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -225,6 +234,12 @@
     <ClInclude Include="..\Public\Cell.h">
       <Filter>01.Utility\04.Component\Components\Navigation\Cell</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\StateMachine.h">
+      <Filter>01.Utility\04.Component\Components\StatePattern\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\State.h">
+      <Filter>01.Utility\04.Component\Components\StatePattern\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -322,6 +337,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Navigation.cpp">
       <Filter>01.Utility\04.Component\Components\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\State.cpp">
+      <Filter>01.Utility\04.Component\Components\StatePattern\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\StateMachine.cpp">
+      <Filter>01.Utility\04.Component\Components\StatePattern\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

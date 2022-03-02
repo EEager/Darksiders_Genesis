@@ -7,6 +7,7 @@ BEGIN(Engine)
 class CRenderer;
 class CTransform;
 class CModel;
+class CStateMachine;
 END
 
 BEGIN(Client)
@@ -28,10 +29,11 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+
 private:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
-
+	CStateMachine*				m_pStateMachineCom = nullptr;
 
 	CModel*						m_pModelCom[MODELTYPE_END] = { 0, };
 

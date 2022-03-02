@@ -76,6 +76,9 @@
     <Filter Include="02.GameObjects\UIs\HpNWrathBar">
       <UniqueIdentifier>{f8c9a431-3632-4cd0-b741-08fcaff70cb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\War\State">
+      <UniqueIdentifier>{c01fa334-53fa-4160-b7be-5d17f69b8d24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -174,6 +177,9 @@
     <ClInclude Include="..\Public\UI_War_Skills.h">
       <Filter>02.GameObjects\UIs\Skills</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\State_War.h">
+      <Filter>02.GameObjects\War\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -253,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_War_Skills.cpp">
       <Filter>02.GameObjects\UIs\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\State_War.cpp">
+      <Filter>02.GameObjects\War\State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -192,6 +192,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	// ===========================================================================
 	/* Component Models  */
 	// ===========================================================================
+#ifndef ONLY_WAR
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Fiona"));
 	_matrix		PivotMatrix = XMMatrixIdentity();
 	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
@@ -206,6 +207,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
 		return E_FAIL;
+#endif
 
 	/* For.Prototype_Component_Model_War */
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_War"));

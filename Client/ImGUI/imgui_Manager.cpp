@@ -173,7 +173,6 @@ wstring CImguiManager::LoadFilePath()
 }
 
 
-_float ratio; // TEST_RATIO
 void CImguiManager::Tick(_float fTimeDelta)
 {
 	// Check Key First
@@ -202,6 +201,7 @@ void CImguiManager::Tick(_float fTimeDelta)
 
 	// ---------------------------------
 	// TEST_RATIO
+	// static _float ratio; 
 	//if (ratio < 1.0f)
 	//	ratio += 0.2f * fTimeDelta;
 	//else 

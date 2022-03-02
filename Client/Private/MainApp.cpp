@@ -197,6 +197,8 @@ HRESULT CMainApp::Open_Level(LEVEL eStartID)
 	return S_OK;
 }
 
+
+// STATIC Component Prototype 
 HRESULT CMainApp::Ready_Component_ForStatic()
 {
 	/* For.Prototype_Component_Renderer */
@@ -212,8 +214,13 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Rect.hlsl")))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_StateMachine */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), CStateMachine::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
 
 
+
+	// ======================================================================
 	// 여기서부턴 Textures
 	/* For.Prototype_Component_Texture_Logo */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title.dds")))))
@@ -233,7 +240,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	return S_OK;
 }
 
-// 로딩, 게임 전역에 사용될 만한 게임오브젝트 원형
+// STATIC GameObject Prototype 
 HRESULT CMainApp::Ready_GameObject_Prototype()
 {
 	// for.Prototype_GameObject_Logo_BackGround

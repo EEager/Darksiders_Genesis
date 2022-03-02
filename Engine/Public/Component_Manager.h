@@ -1,5 +1,8 @@
 #pragma once
 
+// ----------------------
+// Components Headers
+// ----------------------
 #include "Model.h"
 #include "Texture.h"
 #include "Renderer.h"
@@ -7,6 +10,7 @@
 #include "Transform.h"
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Terrain.h"
+#include "StateMachine.h"
 
 
 /* 컴포넌트들의 원형을 모아둔다. */

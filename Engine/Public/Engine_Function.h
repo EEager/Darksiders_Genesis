@@ -66,5 +66,4 @@ namespace Engine
 			return !lstrcmp(Pair.first, m_pTag);
 		}
 	};
-
 }

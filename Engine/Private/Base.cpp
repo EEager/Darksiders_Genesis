@@ -23,5 +23,5 @@ unsigned long Engine::CBase::Release()
 		return 0;
 	}
 	else
-		return m_dwRefCnt--;	
+		return m_dwRefCnt--;	// 감소하기전 refCnt를 반환한다
 }

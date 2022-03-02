@@ -44,3 +44,9 @@ static const unsigned int		g_iWinCY = 900;
 // -----------------------
 #include "Client_Extern.h" 
 
+
+
+// -------------------
+// For the Test
+// -------------------
+#define ONLY_WAR

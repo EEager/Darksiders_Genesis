@@ -51,6 +51,7 @@ public:
 
 public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop = true);
+	void SetUp_Animation(const char* pNameKey, _bool isLoop = true);
 	HRESULT Update_Animation(_float fTimeDelta);
 	HRESULT Bind_Shader(_uint iPassIndex);
 	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
@@ -78,6 +79,12 @@ private:
 private:
 	vector<class CAnimation*>						m_Animations;
 	typedef vector<class CAnimation*>				ANIMATIONS;
+
+	// Anim Name : "War_Mesh.ao|War_Idle"
+	map<string, _uint>				m_AniNameKey_IdxValue_Map;
+	typedef map<string, _uint>		ANIMATIONS_MAP;
+
+
 
 private:
 	_uint									m_iNumMeshes;

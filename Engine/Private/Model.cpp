@@ -21,6 +21,7 @@ CModel::CModel(const CModel & rhs)
 	, m_iNumMaterials(rhs.m_iNumMaterials)
 	, m_HierarchyNodes(rhs.m_HierarchyNodes)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
+	, m_AniNameKey_IdxValue_Map(rhs.m_AniNameKey_IdxValue_Map)
 	, m_iNumAnimation(rhs.m_iNumAnimation)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 {
@@ -211,7 +212,22 @@ void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
 
 	if (iAnimIndex < m_iNumAnimation)
 	{
-		//m_Animations[iAnimIndex]->SetBeginFirst();
+		m_Animations[iAnimIndex]->SetBeginFirst();
+		m_iCurrentAnimIndex = iAnimIndex;
+		m_isLoop = isLoop;
+	}
+}
+
+void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop) {
+
+	auto findIter = m_AniNameKey_IdxValue_Map.find(pNameKey);
+	if (findIter == m_AniNameKey_IdxValue_Map.end())
+		return;
+
+	_uint iAnimIndex = findIter->second;
+	if (iAnimIndex < m_iNumAnimation)
+	{
+		m_Animations[iAnimIndex]->SetBeginFirst();
 		m_iCurrentAnimIndex = iAnimIndex;
 		m_isLoop = isLoop;
 	}
@@ -553,6 +569,7 @@ HRESULT CModel::Create_Animation()
 			pAnimation->Add_Channels(pChannel); // 159개의 키프레임 정보가 담긴 채널을 애니메이션 객체에 push_back하여 넣어주자
 		}
 
+		m_AniNameKey_IdxValue_Map.emplace(pAnim->mName.data, (_int)m_Animations.size());
 		m_Animations.push_back(pAnimation); // Walk.ao 정보를 모델이 가지고 있게하자
 
 	}
@@ -592,6 +609,7 @@ void CModel::Free()
 	for (auto& pAnimation : m_Animations)
 		Safe_Release(pAnimation);
 	m_Animations.clear();
+	m_AniNameKey_IdxValue_Map.clear();
 
 	// m_HierarchyNodes
 	for (auto& hNode : m_HierarchyNodes)

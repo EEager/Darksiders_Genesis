@@ -3,6 +3,11 @@
 
 #include "GameInstance.h"
 
+#include "State_War.h"
+
+
+extern CStateMachine* g_pWar_State_Context; // State_War.cpp
+
 
 CWar::CWar(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
@@ -20,7 +25,6 @@ HRESULT CWar::NativeConstruct_Prototype()
 	return S_OK;
 }
 
-#define MAX_ANIM_NUM 97
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 	if (SetUp_Component())
@@ -28,21 +32,19 @@ HRESULT CWar::NativeConstruct(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
 
-	int randAnimationIdx = rand() % MAX_ANIM_NUM;
-
-	for (int i = 0; i < MODELTYPE_END; i++)
-		m_pModelCom[i]->SetUp_Animation(randAnimationIdx);
-
 	return S_OK;
 }
 
 
+#define MAX_ANIM_NUM 6 // jjlee 
 _int CWar::Tick(_float fTimeDelta)
 {
-	War_Key(fTimeDelta);
+	if (m_pStateMachineCom)
+		m_pStateMachineCom->Tick(fTimeDelta);
 
-	for (int i = 0; i < MODELTYPE_END; i++)
-		m_pModelCom[i]->Update_Animation(fTimeDelta);
+	//War_Key(fTimeDelta);
+
+	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
 
 	// ----------------------------
 	// For Test
@@ -69,8 +71,7 @@ _int CWar::Tick(_float fTimeDelta)
 	if (dirty)
 	{
 		cout << "animIdx : " << animIdx << endl;
-		for (int i = 0; i < MODELTYPE_END; i++)
-			m_pModelCom[i]->SetUp_Animation(animIdx);
+		m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
 	}
 	// ----------------------------
 
@@ -84,14 +85,14 @@ _int CWar::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	// SetHeight
 	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
 	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
 	if (nullptr == pTerrainBuff)
 		goto _EXIT;
-
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
 
+	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
 
@@ -163,29 +164,25 @@ void CWar::War_Key(_float fTimeDelta)
 {
 	if (CInput_Device::GetInstance()->Key_Pressing(DIK_RIGHT))
 	{
-		for (int i = 0; i < MODELTYPE_END; i++)
-			m_pModelCom[i]->SetUp_Animation(89);
+		m_pModelCom[0]->SetUp_Animation(3);
 		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 	}
 
 	if (CInput_Device::GetInstance()->Key_Pressing(DIK_LEFT))
 	{
-		for (int i = 0; i < MODELTYPE_END; i++)
-			m_pModelCom[i]->SetUp_Animation(89);
+		m_pModelCom[0]->SetUp_Animation(3);
 		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
 	}
 
 	if (CInput_Device::GetInstance()->Key_Pressing(DIK_UP))
 	{
-		for (int i = 0; i < MODELTYPE_END; i++)
-			m_pModelCom[i]->SetUp_Animation(89);
+		m_pModelCom[0]->SetUp_Animation(3);
 		m_pTransformCom->Go_Straight(fTimeDelta);
 	}
 
 	if (CInput_Device::GetInstance()->Key_Pressing(DIK_DOWN))
 	{
-		for (int i = 0; i < MODELTYPE_END; i++)
-			m_pModelCom[i]->SetUp_Animation(89);
+		m_pModelCom[0]->SetUp_Animation(3);
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}
 }
@@ -204,6 +201,9 @@ HRESULT CWar::SetUp_Component()
 	/* For.Com_Renderer*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
+
+
+
 
 	/* For.Com_Model_War */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"), TEXT("Com_Model_War"), (CComponent**)&m_pModelCom[MODELTYPE_WAR])))
@@ -224,7 +224,17 @@ HRESULT CWar::SetUp_Component()
 	tagModelWarWeaponDesc.pHierarchyNode = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], &tagModelWarWeaponDesc)))
 		return E_FAIL;
-	
+
+
+
+
+	/* For.Com_StateMachine : Model 뒤에 해야한다. Model를 사용하기 때문. */
+	CStateMachine::STATEMACHINEDESC fsmDesc;
+	fsmDesc.pOwner = this;
+	fsmDesc.pInitState = CState_War_Idle::GetInstance();
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
+		return E_FAIL;
+	g_pWar_State_Context = m_pStateMachineCom;
 
 	return S_OK;
 }
@@ -321,7 +331,12 @@ void CWar::Free()
 
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pStateMachineCom);
 
 	for (auto& modelCom : m_pModelCom)
 		Safe_Release(modelCom);
+
+	// Destroy the State SingleTon : State_War.cpp 
+	CState_War_Idle::GetInstance()->DestroyInstance();
+	CState_War_Run::GetInstance()->DestroyInstance();
 }
