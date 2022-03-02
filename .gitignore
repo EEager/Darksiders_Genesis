@@ -34,3 +34,4 @@ FrameWork.VC.db
 /.vs/FrameWork/
 /.vs/FrameWork/project-colors.json
 *.blend
+/Client/Default/memory_leak_report.txt

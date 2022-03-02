@@ -57,6 +57,9 @@ HRESULT CMainApp::NativeConstruct()
 	if (FAILED(Ready_GameObject_Prototype()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Gara()))
+		return E_FAIL;
+
 	if (FAILED(Open_Level(LEVEL_LOGO)))
 		return E_FAIL;	
 
@@ -248,6 +251,46 @@ HRESULT CMainApp::Ready_GameObject_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pGameInstance->Add_GameObjectToLayer(LEVEL_STATIC, L"Layer_Mouse", TEXT("Prototype_GameObject_Mouse"))))
 		return E_FAIL;
+
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Gara()
+{
+	_ulong		dwByte = 0;
+	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.dat"), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	if (0 == hFile)
+		return E_FAIL;
+
+
+	_float3		vPoint[3];
+
+	ZeroMemory(vPoint, sizeof(_float3) * 3);
+	vPoint[0] = _float3(0.f, 0.f, 5.f);
+	vPoint[1] = _float3(5.f, 0.f, 0.f);
+	vPoint[2] = _float3(0.0f, 0.f, 0.f);
+	WriteFile(hFile, vPoint, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	ZeroMemory(vPoint, sizeof(_float3) * 3);
+	vPoint[0] = _float3(0.f, 0.f, 5.f);
+	vPoint[1] = _float3(5.f, 0.f, 5.0f);
+	vPoint[2] = _float3(5.0f, 0.f, 0.f);
+	WriteFile(hFile, vPoint, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	ZeroMemory(vPoint, sizeof(_float3) * 3);
+	vPoint[0] = _float3(0.f, 0.f, 10.f);
+	vPoint[1] = _float3(5.f, 0.f, 5.0f);
+	vPoint[2] = _float3(0.0f, 0.f, 5.0f);
+	WriteFile(hFile, vPoint, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	ZeroMemory(vPoint, sizeof(_float3) * 3);
+	vPoint[0] = _float3(5.0f, 0.f, 5.f);
+	vPoint[1] = _float3(10.f, 0.f, 0.f);
+	vPoint[2] = _float3(5.0f, 0.f, 0.f);
+	WriteFile(hFile, vPoint, sizeof(_float3) * 3, &dwByte, nullptr);
+
+	CloseHandle(hFile);
 
 
 	return S_OK;

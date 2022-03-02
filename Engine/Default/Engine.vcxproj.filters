@@ -106,6 +106,12 @@
     <Filter Include="01.Utility\04.Component\Components\Renderer\RendererStates">
       <UniqueIdentifier>{9af9c6da-e980-41cd-ac88-40711b1925f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\Navigation">
+      <UniqueIdentifier>{aca621c1-2f95-4d59-84c2-872bf0830467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\Navigation\Cell">
+      <UniqueIdentifier>{44a6ce8d-dcb1-48b3-aa0a-ef017c225c8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -213,6 +219,12 @@
     <ClInclude Include="..\Public\RendererStates.h">
       <Filter>01.Utility\04.Component\Components\Renderer\RendererStates</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Navigation.h">
+      <Filter>01.Utility\04.Component\Components\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Cell.h">
+      <Filter>01.Utility\04.Component\Components\Navigation\Cell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -304,6 +316,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\RendererStates.cpp">
       <Filter>01.Utility\04.Component\Components\Renderer\RendererStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Cell.cpp">
+      <Filter>01.Utility\04.Component\Components\Navigation\Cell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Navigation.cpp">
+      <Filter>01.Utility\04.Component\Components\Navigation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

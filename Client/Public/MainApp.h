@@ -42,6 +42,7 @@ private:
 
 	HRESULT Ready_Component_ForStatic();
 	HRESULT Ready_GameObject_Prototype();
+	HRESULT Ready_Gara();
 
 public:
 	static CMainApp* Create();
