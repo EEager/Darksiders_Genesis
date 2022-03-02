@@ -17,30 +17,30 @@ HRESULT CCell::NativeConstruct(_float3* pPoints, _uint iIndex)
 	return S_OK;
 }
 
-_bool CCell::Compare_Points(_fvector vSourPoint, _fvector vDestPoint)
+_bool CCell::Compare_Points(_fvector vDestPoint1, _fvector vDestPoint2)
 {
 	
-	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vSourPoint))
+	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vDestPoint1))
 	{
-		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vDestPoint))
+		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vDestPoint2))
 			return true;
-		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), vDestPoint))
+		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), vDestPoint2))
 			return true;
 	}
 
-	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vSourPoint))
+	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vDestPoint1))
 	{
-		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), vDestPoint))
+		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), vDestPoint2))
 			return true;
-		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vDestPoint))
+		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vDestPoint2))
 			return true;
 	}
 
-	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), vSourPoint))
+	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_C]), vDestPoint1))
 	{
-		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vDestPoint))
+		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vDestPoint2))
 			return true;
-		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vDestPoint))
+		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vDestPoint2))
 			return true;
 	}
 
