@@ -171,19 +171,37 @@ void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float f
 	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(vLookXZ, XMVectorSet(0.f, 0.f, 1.f, 0.f)) * (XMVectorGetX(vLook) < 0.f ? -1.f:1.f);
 	_float curAngle = XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
 
-	if (XMVectorGetX(vLook) < 0) // -0 ~ -180 => 360 ~ 180
+	if (XMVectorGetX(vLook) < 0) // 현재 각도 범위를 [0, 360] 으로
 		curAngle = 360 + curAngle;
 
-	_float dDegree = (fDegreeGoal == 0.f ? 360.f : fDegreeGoal) - curAngle;
-	if (fabs(dDegree) < fabs(m_TransformDesc.fRotationPerSec * fTimeDelta)) // 더이상 회전할 필요없으면 하지말자
+	if (curAngle > 180.f)
+		if (fDegreeGoal == 0.f) fDegreeGoal = 360.f;
+
+	_float goalToRotateDegree = fDegreeGoal - curAngle;
+	if (goalToRotateDegree > 180.f) // 시계방향보다는 반시계방향이 빠르다.
+		goalToRotateDegree -= 360.f;
+
+	if (goalToRotateDegree < -180.f) // 반시계 방향보다는 시계방향이 빠르다. 
+		goalToRotateDegree += 360.f;
+
+	if (fabs(goalToRotateDegree) < XMConvertToDegrees(0.1f)) // 더이상 회전할 필요없으면 하지말자
 		return; 
 
+	//cout << "curAngle : " << curAngle << endl;
+	//cout << "fDegreeGoal : " << fDegreeGoal << endl;
+	//cout << "goalToRotateDegree : " << goalToRotateDegree << endl;
+	//cout << "fabs(goalToRotateDegree) : " << fabs(goalToRotateDegree) << endl;
+	//cout << "m_TransformDesc.fRotationPerSec * fTimeDelta" << m_TransformDesc.fRotationPerSec * fTimeDelta << endl;
+	//cout << endl;
+	//cout << endl;
+	//cout << endl;
+
 	bool isClockWise = true;
-	if (dDegree > 180 || dDegree < 0)
+	if (goalToRotateDegree < 0)
 		isClockWise = false;
 
 	_matrix		RotationMatrix;
-	RotationMatrix = XMMatrixRotationAxis(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), m_TransformDesc.fRotationPerSec * (isClockWise == false? -fTimeDelta:fTimeDelta));
+	RotationMatrix = XMMatrixRotationAxis(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), m_TransformDesc.fRotationPerSec * (isClockWise == false? -fTimeDelta:fTimeDelta) );
 
 	_vector		vRight = Get_State(CTransform::STATE_RIGHT);
 	_vector		vUp = Get_State(CTransform::STATE_UP);
