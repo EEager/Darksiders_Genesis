@@ -53,6 +53,7 @@ public:
 	void Go_Right(_float fTimeDelta);
 	void Rotation(_fvector vAxis, _float fRadian);
 	void Turn(_fvector vAxis, _float fTimeDelta);
+	void TurnTo_AxisY_Degree(_float fDegreeGoal, _float fTimeDelta);
 	void LookAt(_fvector vTargetPos);
 
 private:

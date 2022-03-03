@@ -21,7 +21,17 @@ namespace Engine
 	typedef wchar_t					_tchar;
 
 	typedef XMFLOAT2				_float2;
-	typedef XMFLOAT3				_float3;
+	//typedef XMFLOAT3				_float3;
+
+	typedef struct tagFloat3_Derived : public XMFLOAT3
+	{
+		tagFloat3_Derived() { }
+		tagFloat3_Derived(_float _x, _float _y, _float _z)
+			: XMFLOAT3(_x, _y, _z)
+		{
+
+		}
+	}_float3;
 
 
 	typedef struct tagFloat4_Derived : public XMFLOAT4

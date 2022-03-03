@@ -161,6 +161,42 @@ void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 	Set_State(CTransform::STATE_LOOK, vLook);
 }
 
+
+void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float fTimeDelta /*Always Plus*/)
+{
+	// angleDegreesYaw 
+	_vector		vLook = Get_State(CTransform::STATE_LOOK);
+	vLook = XMVector3Normalize(vLook);
+	_vector vLookXZ = XMVector3Normalize(XMVectorSet(XMVectorGetX(vLook), 0.f, XMVectorGetZ(vLook), 0.f));
+	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(vLookXZ, XMVectorSet(0.f, 0.f, 1.f, 0.f)) * (XMVectorGetX(vLook) < 0.f ? -1.f:1.f);
+	_float curAngle = XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
+
+	if (XMVectorGetX(vLook) < 0) // -0 ~ -180 => 360 ~ 180
+		curAngle = 360 + curAngle;
+
+	_float dDegree = (fDegreeGoal == 0.f ? 360.f : fDegreeGoal) - curAngle;
+	if (fabs(dDegree) < fabs(m_TransformDesc.fRotationPerSec * fTimeDelta)) // 더이상 회전할 필요없으면 하지말자
+		return; 
+
+	bool isClockWise = true;
+	if (dDegree > 180 || dDegree < 0)
+		isClockWise = false;
+
+	_matrix		RotationMatrix;
+	RotationMatrix = XMMatrixRotationAxis(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), m_TransformDesc.fRotationPerSec * (isClockWise == false? -fTimeDelta:fTimeDelta));
+
+	_vector		vRight = Get_State(CTransform::STATE_RIGHT);
+	_vector		vUp = Get_State(CTransform::STATE_UP);
+
+	vRight = XMVector3TransformNormal(vRight, RotationMatrix);
+	vUp = XMVector3TransformNormal(vUp, RotationMatrix);
+	vLook = XMVector3TransformNormal(vLook, RotationMatrix);
+
+	Set_State(CTransform::STATE_RIGHT, vRight);
+	Set_State(CTransform::STATE_UP, vUp);
+	Set_State(CTransform::STATE_LOOK, vLook);
+}
+
 void CTransform::LookAt(_fvector vTargetPos)
 {
 	_vector		vPosition = Get_State(CTransform::STATE_POSITION);

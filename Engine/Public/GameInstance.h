@@ -56,7 +56,7 @@ public: /* For.Component_Manager */
 	CComponent* Clone_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, void* pArg);
 
 public: /* For.Input_Device */
-	_byte Get_DIKeyState(_byte eKeyID);
+	_ubyte Get_DIKeyState(_ubyte eKeyID);
 	_long Get_DIMouseMoveState(CInput_Device::MOUSEMOVESTATE eMouseMoveState);
 	_byte Get_DIMouseButtonState(CInput_Device::MOUSEBUTTONSTATE eMouseButtonState);
 

@@ -219,7 +219,7 @@ CComponent * CGameInstance::Clone_Component(_uint iLevelIndex, const _tchar * pP
 	return m_pComponent_Manager->Clone_Component(iLevelIndex, pPrototypeTag, pArg);
 }
 
-_byte CGameInstance::Get_DIKeyState(_byte eKeyID)
+_ubyte CGameInstance::Get_DIKeyState(_ubyte eKeyID)
 {
 	if (nullptr == m_pInput_Device)
 		return 0;
