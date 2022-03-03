@@ -162,6 +162,7 @@ void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 }
 
 
+// 현재 각도에서 fDegreeGoal까지 회전한다
 void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float fTimeDelta /*Always Plus*/)
 {
 	// angleDegreesYaw 
@@ -196,6 +197,7 @@ void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float f
 	//cout << endl;
 	//cout << endl;
 
+	// 시계방향, 반시계방향 set
 	bool isClockWise = true;
 	if (goalToRotateDegree < 0)
 		isClockWise = false;
