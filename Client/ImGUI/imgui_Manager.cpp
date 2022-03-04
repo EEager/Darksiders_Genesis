@@ -438,7 +438,7 @@ void CImguiManager::ShowCameraControlWindow()
 	}
 
 	// Camera Mode
-	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Mode :  %s\n", pCamera->Get_Type() == CCamera_Fly::MODE_FREE ? "FREE" : "WAR");
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Mode('V') :  %s\n", pCamera->Get_Type() == CCamera_Fly::MODE_FREE ? "FREE" : "WAR");
 
 	ImGui::Text("Load And Save");
 	if (ImGui::Button("Save Camera Data"))
