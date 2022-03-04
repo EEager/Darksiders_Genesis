@@ -8,9 +8,16 @@ BEGIN(Engine)
 
 class CLayer final : public CBase
 {
-private:
+public:
 	CLayer();
 	virtual ~CLayer() = default;
+
+public:
+	class CGameObject* operator[] (int idx)  // list라서 그냥 Front만 반환하자
+	{
+		return m_Objects.front();
+	}
+
 public:
 	class CComponent* Get_ComponentPtr(const _tchar* pComponentTag, _uint iIndex);
 

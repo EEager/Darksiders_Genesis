@@ -132,6 +132,32 @@ HRESULT CObject_Manager::Clear_LevelLayers(_uint iLevelIndex)
 	return S_OK;
 }
 
+// For.Client
+CGameObject* CObject_Manager::Get_War(int iLevelIndex)
+{
+	// iLevelIndex == -1 인 경우, 레벨 전부 순회하며 pLayerTag에 해당하는 CLayer의 List를 리턴한다. 
+	if (iLevelIndex == -1)
+	{
+		for (_uint i = 0; i < m_iNumLevels; i++)
+		{
+			auto	iterFind = find_if(m_pLayers[i].begin(), m_pLayers[i].end(), CTagFinder(L"Layer_War"));
+			if (iterFind != m_pLayers[i].end())
+			{
+				return (*iterFind->second)[0];
+			}
+		}
+	}
+	else
+	{
+		auto	iterFind = find_if(m_pLayers[iLevelIndex].begin(), m_pLayers[iLevelIndex].end(), CTagFinder(L"Layer_War"));
+		if (iterFind != m_pLayers[iLevelIndex].end())
+		{
+			return (*iterFind->second)[0];
+		}
+	}
+	return nullptr;
+}
+
 list<CGameObject*>* CObject_Manager::Get_GameObject_CloneList(const _tchar* pLayerTag, int iLevelIndex)
 {
 	if (iLevelIndex >= (int)m_iNumLevels)

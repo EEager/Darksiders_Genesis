@@ -26,6 +26,9 @@ public:
 	_int LateTick(_float fTimeDelta);
 	HRESULT Clear_LevelLayers(_uint iLevelIndex);
 
+public:
+	class CGameObject* Get_War(int iLevelIndex = -1); // For.Client
+
 public: // Used in ImGUI
 	list<CGameObject*>* Get_GameObject_CloneList(const _tchar* pLayerTag, int iLevelIndex = -1);
 	unordered_map<const _tchar*, class CGameObject*>* Get_GameObject_PrototypeUMap();

@@ -42,6 +42,7 @@ public: /* For.Timer_Manager*/
 	_double Compute_TimeDelta(const _tchar* pTimerTag);
 
 public: /* For.Object_Manager */
+	class CGameObject* Get_War(int iLevelIndex = -1);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pPrototypeTag, void* pArg = nullptr);	
 	class CComponent* Get_ComponentPtr(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pComponentTag, _uint iIndex = 0);

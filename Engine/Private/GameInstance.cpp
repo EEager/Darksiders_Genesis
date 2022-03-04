@@ -155,6 +155,14 @@ _double CGameInstance::Compute_TimeDelta(const _tchar * pTimerTag)
 	return m_pTimer_Manager->Compute_TimeDelta(pTimerTag);
 }
 
+class CGameObject* CGameInstance::Get_War(int iLevelIndex)
+{
+	if (nullptr == m_pObject_Manager)
+		return nullptr;
+
+	return m_pObject_Manager->Get_War(iLevelIndex);
+}
+
 HRESULT CGameInstance::Add_Prototype(const _tchar * pPrototypeTag, CGameObject * pPrototype)
 {
 	if (nullptr == m_pObject_Manager)

@@ -225,12 +225,23 @@ void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop) {
 		return;
 
 	_uint iAnimIndex = findIter->second;
-	if (iAnimIndex < m_iNumAnimation)
-	{
-		m_Animations[iAnimIndex]->SetBeginFirst();
-		m_iCurrentAnimIndex = iAnimIndex;
-		m_isLoop = isLoop;
-	}
+	if (iAnimIndex >= m_iNumAnimation)
+		return;
+
+	m_Animations[iAnimIndex]->SetBeginFirst();
+	m_iCurrentAnimIndex = iAnimIndex;
+	m_isLoop = isLoop;
+}
+
+_bool CModel::Get_Animation_isFinished(const char* pNameKey)
+{
+	auto findIter = m_AniNameKey_IdxValue_Map.find(pNameKey);
+	assert(findIter != m_AniNameKey_IdxValue_Map.end());
+
+	_uint iAnimIndex = findIter->second;
+	assert(iAnimIndex < m_iNumAnimation);
+	
+	return m_Animations[iAnimIndex]->Get_isFinished();
 }
 
 HRESULT CModel::Update_Animation(_float fTimeDelta)

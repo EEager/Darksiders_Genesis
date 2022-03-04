@@ -52,6 +52,7 @@ public:
 public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop = true);
 	void SetUp_Animation(const char* pNameKey, _bool isLoop = true);
+	_bool Get_Animation_isFinished(const char* pNameKey);
 	HRESULT Update_Animation(_float fTimeDelta);
 	HRESULT Bind_Shader(_uint iPassIndex);
 	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
@@ -63,10 +64,13 @@ public:
 public:
 	class CHierarchyNode* Find_HierarchyNode(const char* pNodeName);
 
-
 private:
-	const aiScene*		m_pScene = nullptr;
-	Assimp::Importer	m_Importer;
+	HRESULT Create_MeshContainers();
+	HRESULT Create_Materials(const char* pModelFilePath);
+	HRESULT Compile_Shader(const _tchar* pShaderFilePath);
+	HRESULT Create_VertexIndexBuffers();
+	HRESULT Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent = nullptr, _uint iDepth = 0);
+	HRESULT Create_Animation();
 
 private:
 	vector<vector<class CMeshContainer*>>			m_MeshContainers;
@@ -81,10 +85,12 @@ private:
 	typedef vector<class CAnimation*>				ANIMATIONS;
 
 	// Anim Name : "War_Mesh.ao|War_Idle"
-	map<string, _uint>				m_AniNameKey_IdxValue_Map;
-	typedef map<string, _uint>		ANIMATIONS_MAP;
+	unordered_map<string, _uint>				m_AniNameKey_IdxValue_Map;
+	typedef unordered_map<string, _uint>		ANIMATIONS_MAP;
 
-
+private:
+	const aiScene*		m_pScene = nullptr;
+	Assimp::Importer	m_Importer;
 
 private:
 	_uint									m_iNumMeshes;
@@ -100,21 +106,9 @@ private:
 	_uint									m_iCurrentAnimIndex = 0;
 	_bool									m_isLoop = true;
 
-
 private:
 	ID3DX11Effect*							m_pEffect = nullptr;
 	vector<PASSDESC*>						m_PassesDesc;
-
-private:
-	HRESULT Create_MeshContainers();
-	HRESULT Create_Materials(const char* pModelFilePath);
-	HRESULT Compile_Shader(const _tchar* pShaderFilePath);
-	HRESULT Create_VertexIndexBuffers();
-	HRESULT Create_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent = nullptr, _uint iDepth = 0);
-	HRESULT Create_Animation();
-	
-
-
 
 public:
 	static CModel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);

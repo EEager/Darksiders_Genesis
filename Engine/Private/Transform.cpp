@@ -192,16 +192,14 @@ void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float f
 	if (goalToRotateDegree < -180.f) // 반시계 방향보다는 시계방향이 빠르다. 
 		goalToRotateDegree += 360.f;
 
-	if (fabs(goalToRotateDegree) < XMConvertToDegrees(0.1f)) // 더이상 회전할 필요없으면 하지말자
+	if (fabs(goalToRotateDegree) < XMConvertToDegrees(m_TransformDesc.fRotationPerSec * fTimeDelta/2.f)) // 더이상 회전할 필요없으면 하지말자
 		return; 
 
 	//cout << "curAngle : " << curAngle << endl;
 	//cout << "fDegreeGoal : " << fDegreeGoal << endl;
 	//cout << "goalToRotateDegree : " << goalToRotateDegree << endl;
 	//cout << "fabs(goalToRotateDegree) : " << fabs(goalToRotateDegree) << endl;
-	//cout << "m_TransformDesc.fRotationPerSec * fTimeDelta" << m_TransformDesc.fRotationPerSec * fTimeDelta << endl;
-	//cout << endl;
-	//cout << endl;
+	//cout << "m_TransformDesc.fRotationPerSec * fTimeDelta : " << m_TransformDesc.fRotationPerSec * fTimeDelta << endl;
 	//cout << endl;
 
 	// 시계방향, 반시계방향 set
@@ -235,7 +233,20 @@ void CTransform::LookAt(_fvector vTargetPos)
 	Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(vRight) * Get_Scale(CTransform::STATE_RIGHT));
 	Set_State(CTransform::STATE_UP, XMVector3Normalize(vUp) * Get_Scale(CTransform::STATE_UP));
 	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * Get_Scale(CTransform::STATE_LOOK));
+}
 
+void CTransform::LookAt_Lerp(_fvector vTargetPos, _float fRatio)
+{
+	_vector		vPosition = Get_State(CTransform::STATE_POSITION);
+	_vector		vLookCur = Get_State(CTransform::STATE_LOOK);
+
+	_vector		vLookTo = XMVectorLerp(vLookCur, vTargetPos - vPosition, fRatio);
+	_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLookTo);
+	_vector		vUp = XMVector3Cross(vLookTo, vRight);
+
+	Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(vRight) * Get_Scale(CTransform::STATE_RIGHT));
+	Set_State(CTransform::STATE_UP, XMVector3Normalize(vUp) * Get_Scale(CTransform::STATE_UP));
+	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLookTo) * Get_Scale(CTransform::STATE_LOOK));
 }
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)

@@ -36,47 +36,16 @@ HRESULT CCamera_Fly::NativeConstruct(void * pArg)
 
 _int CCamera_Fly::Tick(_float fTimeDelta)
 {
-
-	auto pInput_Device = CInput_Device::GetInstance();
-#if defined(USE_IMGUI)
-	if (CImguiManager::GetInstance()->GetCursorEnable() == false)
+	if (!m_bSetTargetOnce)
 	{
-		/* 카메라의 움직임을 주면서 카메라 월드행렬을 갱신한다. */
-#define CONST_TIME_DELTA_F 0.016f
-		if (pInput_Device->Key_Pressing(DIK_UP))
-		{
-			m_pTransform->Go_Straight(CONST_TIME_DELTA_F);
-		}
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-		if (pInput_Device->Key_Pressing(DIK_DOWN))
-		{
-			m_pTransform->Go_Backward(CONST_TIME_DELTA_F);
-		}
-		
-		if (pInput_Device->Key_Pressing(DIK_LEFT))
-		{
-			m_pTransform->Go_Left(CONST_TIME_DELTA_F);
-		}
-		
-		if (pInput_Device->Key_Pressing(DIK_RIGHT))
-		{
-			m_pTransform->Go_Right(CONST_TIME_DELTA_F);
-		}
-
-		_long	MouseMove = 0;
-
-		if (MouseMove = pInput_Device->Get_DIMouseMoveState(CInput_Device::DIMM_X))
-		{
-			m_pTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), CONST_TIME_DELTA_F * MouseMove * 0.1f);
-		}
-
-		if (MouseMove = pInput_Device->Get_DIMouseMoveState(CInput_Device::DIMM_Y))
-		{
-			m_pTransform->Turn(m_pTransform->Get_State(CTransform::STATE_RIGHT), CONST_TIME_DELTA_F * MouseMove * 0.1f);
-		}
+		m_pWar = static_cast<CWar*>(pGameInstance->Get_War(LEVEL_GAMEPLAY));
+		m_bSetTargetOnce = true;
+		RELEASE_INSTANCE(CGameInstance);
 	}
-#endif
-
+	CameraFly_Key(fTimeDelta);
+	
 	return __super::Tick(fTimeDelta);
 }
 
@@ -88,6 +57,97 @@ _int CCamera_Fly::LateTick(_float fTimeDelta)
 HRESULT CCamera_Fly::Render()
 {
 	return S_OK;
+}
+
+void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
+{
+	auto pInput_Device = CInput_Device::GetInstance();
+
+	// 디버그 모드일 때는 FreeMode로 동작하자. 키보드, 마우스로 카메라를 움직이자
+#define CONST_TIME_DELTA_F 0.016f
+#if defined(USE_IMGUI)
+	if (CImguiManager::GetInstance()->GetCursorEnable() == true) // 디버그 모드일때는 움직이지말자
+	{
+		return;
+	}
+#endif
+
+	if (CInput_Device::GetInstance()->Key_Down(DIK_V))
+	{
+		m_eType = (TYPE_MODE)!(bool)m_eType;
+	}
+
+	// 카메라 프리 모드일때는 움직여 다니자.
+	if (m_eType == MODE_FREE)
+	{
+		if (pInput_Device->Key_Pressing(DIK_UP))
+		{
+			m_pTransform->Go_Straight(CONST_TIME_DELTA_F);
+		}
+
+		if (pInput_Device->Key_Pressing(DIK_DOWN))
+		{
+			m_pTransform->Go_Backward(CONST_TIME_DELTA_F);
+		}
+
+		if (pInput_Device->Key_Pressing(DIK_LEFT))
+		{
+			m_pTransform->Go_Left(CONST_TIME_DELTA_F);
+		}
+
+		if (pInput_Device->Key_Pressing(DIK_RIGHT))
+		{
+			m_pTransform->Go_Right(CONST_TIME_DELTA_F);
+		}
+
+		_long	MouseMove = 0;
+		if (MouseMove = pInput_Device->Get_DIMouseMoveState(CInput_Device::DIMM_X))
+		{
+			m_pTransform->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), CONST_TIME_DELTA_F * MouseMove * 0.1f);
+		}
+
+		if (MouseMove = pInput_Device->Get_DIMouseMoveState(CInput_Device::DIMM_Y))
+		{
+			m_pTransform->Turn(m_pTransform->Get_State(CTransform::STATE_RIGHT), CONST_TIME_DELTA_F * MouseMove * 0.1f);
+		}
+	}
+	else if (m_eType == MODE_WAR)// 인게임에서는 카메라는 War 타겟팅
+	{
+		/* 카메라의 움직임을 주면서 카메라 월드행렬을 갱신한다. */
+		if (pInput_Device->Key_Pressing(DIK_UP))
+		{
+			m_fRadius += 6.f * CONST_TIME_DELTA_F;
+		}
+
+		if (pInput_Device->Key_Pressing(DIK_DOWN))
+		{
+			m_fRadius -= 6.f * CONST_TIME_DELTA_F;
+		}
+
+		if (pInput_Device->Key_Pressing(DIK_LEFT))
+		{
+			m_fRadian -= 2.f * CONST_TIME_DELTA_F;
+			if (m_fRadian < 0)
+				m_fRadian = 2 * XM_PI;
+		}
+
+		if (pInput_Device->Key_Pressing(DIK_RIGHT))
+		{
+			m_fRadian += 2.f * CONST_TIME_DELTA_F;
+			if (m_fRadian >= 2 * XM_PI)
+				m_fRadian = 0.f;
+		}
+
+		// 카메라 룩백 Lerp 하게 
+		_vector vWarPos = m_pWar->Get_War_Pos();
+		m_pTransform->LookAt_Lerp(vWarPos, 0.05f);
+
+		// 위치 러프하게 
+		_float posX = m_fRadius * cosf(m_fRadian) + XMVectorGetX(vWarPos);
+		_float posY = m_fHeight + XMVectorGetY(vWarPos);
+		_float posZ = m_fRadius * sinf(m_fRadian) + XMVectorGetZ(vWarPos);
+		m_pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(posX, posY, posZ, 1.f));
+	}
 }
 
 CCamera_Fly * CCamera_Fly::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

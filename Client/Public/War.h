@@ -30,6 +30,9 @@ public:
 	virtual HRESULT Render();
 
 
+public:
+	_vector Get_War_Pos();
+
 private:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
@@ -41,6 +44,8 @@ private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;
 
 private:
+	_float GetDegree(_ubyte downedKey);
+	_bool KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit);
 	void War_Key(_float fTimeDelta);
 
 private:

@@ -1,7 +1,7 @@
-{length=20 data=0x0000018904384474 "War_Mesh.ao|War_Idle" }
-{length=27 data=0x0000018907f039c4 "War_Mesh.ao|War_Idle_Combat" }
-{length=35 data=0x00000189082d02b4 "War_Mesh.ao|War_Idle_Combat_to_Idle" }
-{length=35 data=0x0000018908550704 "War_Mesh.ao|War_Idle_to_Idle_Combat" }
-{length=21 data=0x00000189088a4954 "War_Mesh.ao|War_Run_F" }
-{length=28 data=0x0000018908a9bd54 "War_Mesh.ao|War_Run_F_Combat" }
+"War_Mesh.ao|War_Idle"
+"War_Mesh.ao|War_Idle_Combat"
+"War_Mesh.ao|War_Idle_Combat_to_Idle"
+"War_Mesh.ao|War_Idle_to_Idle_Combat"
+"War_Mesh.ao|War_Run_F"
+"War_Mesh.ao|War_Run_F_Combat"
 

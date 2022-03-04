@@ -29,6 +29,17 @@ public:
 
 	HRESULT Update_TransformationMatrix(_float fTimeDelta, _bool isLoop);
 
+public:
+	// 애니메이션은 시작 키프레임부터 시작하자
+	void SetBeginFirst(_bool b = true) { m_isBeginFirst = b; }
+	// 해당 애니메이션이 끝나었느냐? 
+	_bool Get_isFinished() { return m_isFinished; }
+
+private:
+	/* 현재 애니메이션에 영향르 주는 뼈들. */
+	vector<class CChannel*>			m_Channels;
+	typedef vector<class CChannel*>	CHANNELS;
+
 private:
 	char			m_szName[MAX_PATH] = "";
 	_double			m_Duration = 0.0; /* 애니메이션을 재생하는데 걸리는 총 시간. */
@@ -36,15 +47,8 @@ private:
 	_bool			m_isFinished = false;
 	_float			m_fTimeAcc = 0.0f;
 
-public:
-	void SetBeginFirst(_bool b = true) { m_isBeginFirst = b; }
 private:
 	_bool m_isBeginFirst = true; // 애니메이션 인덱스바뀌면 키프레임 처음부터 출력하자.
-
-private:
-	/* 현재 애니메이션에 영향르 주는 뼈들. */
-	vector<class CChannel*>			m_Channels;	
-	typedef vector<class CChannel*>	CHANNELS;
 
 public:
 	static CAnimation* Create(char* pName, _double Duration, _double TickPerSecond);

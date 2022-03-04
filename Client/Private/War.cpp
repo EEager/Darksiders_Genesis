@@ -2,11 +2,17 @@
 #include "..\public\War.h"
 
 #include "GameInstance.h"
+#include "PipeLine.h"
 
+
+
+// In State_War.cpp
+extern CStateMachine* g_pWar_State_Context;
+extern CModel* g_pWar_Model_Context;
+extern CTransform* g_pWar_Transform_Context;
 #include "State_War.h"
 
 
-extern CStateMachine* g_pWar_State_Context; // State_War.cpp
 
 
 CWar::CWar(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -30,6 +36,9 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;	
 
+
+
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
 
 	return S_OK;
@@ -39,12 +48,24 @@ HRESULT CWar::NativeConstruct(void * pArg)
 #define MAX_ANIM_NUM 6 // jjlee 
 _int CWar::Tick(_float fTimeDelta)
 {
+	// 1. War 애니메이션 키프레임 변환
+	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
+
+	// 2. War 애니메이션 인덱스 변환 : FSM 머신으로 관리
+	// In m_pStateMachineCom, almost Changes states...
 	if (m_pStateMachineCom)
 		m_pStateMachineCom->Tick(fTimeDelta);
 
-	//War_Key(fTimeDelta);
+	// 3. 방향키 입력받아 회전,이동 처리
+	War_Key(fTimeDelta);
 
-	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
+
+
+
+
+
+
+
 
 	// ----------------------------
 	// For Test
@@ -160,31 +181,98 @@ HRESULT CWar::Render()
 	return S_OK;
 }
 
+_vector CWar::Get_War_Pos()
+{
+	return m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
+}
+
+_float CWar::GetDegree(_ubyte downedKey)
+{
+	_float retDegree = 0.f;//12 Default는 정면을 바라보게하자.
+
+	// 카메라가 바라보는 위치에 따라 오프셋을 다르게 주어야한다. 
+	// 카메라 각도는 +Z축이 0, 시계방향으로 + 이다. 
+	_vector CameraToWar_Look = m_pTransformCom->Get_State(CTransform::STATE_POSITION) - CPipeLine::GetInstance()->Get_CamPosition();
+	_vector CameraToWar_Look_XZ = XMVectorSet(XMVectorGetX(CameraToWar_Look), 0.f, XMVectorGetZ(CameraToWar_Look), 0.f);
+	CameraToWar_Look_XZ = XMVector2Normalize(CameraToWar_Look_XZ);
+
+	_vector vecCameraFromZ = XMVector3AngleBetweenVectors(CameraToWar_Look_XZ, XMVectorSet(0.f, 0.f, 1.f, 0.f)) * (XMVectorGetX(CameraToWar_Look_XZ) < 0.f ? -1.f : 1.f)/* 만약 xz 룩벡터가 -x쪽을 보면 -1.f를 곱하자.*/;
+	_float degreeCameraFromZ = XMConvertToDegrees(XMVectorGetX(vecCameraFromZ));
+
+	//cout << degreeCameraFromZ << endl;
+
+	// 왼위오아
+	if (downedKey == 0b0001)//6
+		retDegree = 180.f;
+	else if (downedKey == 0b0011)//4
+		retDegree = 135.f;
+	else if (downedKey == 0b0010)//3
+		retDegree = 90.f;
+	else if (downedKey == 0b0110)//2
+		retDegree = 45.f;
+	else if (downedKey == 0b0100)//12
+		retDegree = 0.f;
+	else if (downedKey == 0b1100)//11
+		retDegree = 315.f;
+	else if (downedKey == 0b1000)//9
+		retDegree = 270.f;
+	else if (downedKey == 0b1001)//7
+		retDegree = 225.f;
+
+	return retDegree + degreeCameraFromZ;
+
+}
+
+_bool CWar::KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit)
+{
+	if (CInput_Device::GetInstance()->Key_Pressing(key))
+	{
+		_ubyte dirBit = 0b0; // 왼위오아
+		switch (key)
+		{
+		case DIK_A:
+			dirBit = 0b1000;
+			break;
+		case DIK_W:
+			dirBit = 0b0100;
+			break;
+		case DIK_D:
+			dirBit = 0b0010;
+			break;
+		case DIK_S:
+			dirBit = 0b0001;
+			break;
+		default:
+			break;
+		}
+
+		keyDownCheckBit |= dirBit;
+		return true;
+	}
+
+	return false;
+}
+
 void CWar::War_Key(_float fTimeDelta)
 {
-	if (CInput_Device::GetInstance()->Key_Pressing(DIK_RIGHT))
-	{
-		m_pModelCom[0]->SetUp_Animation(3);
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-	}
+	unsigned char keyDownCheckBit = 0b0;
+	bool isKeyDown = false;
+	auto const dirtyCheck = [&isKeyDown, &keyDownCheckBit](_bool b) { isKeyDown |= b; };
+	dirtyCheck(KeyCheck(DIK_A, keyDownCheckBit));
+	dirtyCheck(KeyCheck(DIK_W, keyDownCheckBit));
+	dirtyCheck(KeyCheck(DIK_D, keyDownCheckBit));
+	dirtyCheck(KeyCheck(DIK_S, keyDownCheckBit));
 
-	if (CInput_Device::GetInstance()->Key_Pressing(DIK_LEFT))
-	{
-		m_pModelCom[0]->SetUp_Animation(3);
-		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
-	}
+	if (isKeyDown == false)
+		return;
 
-	if (CInput_Device::GetInstance()->Key_Pressing(DIK_UP))
-	{
-		m_pModelCom[0]->SetUp_Animation(3);
-		m_pTransformCom->Go_Straight(fTimeDelta);
-	}
+	// 누른 키에 맞게 움직이자.
+	// 1) 회전
+	//m_pTransform->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(GetDegree(keyDownCheckBit)));
+	m_pTransformCom->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fTimeDelta * 10);
 
-	if (CInput_Device::GetInstance()->Key_Pressing(DIK_DOWN))
-	{
-		m_pModelCom[0]->SetUp_Animation(3);
-		m_pTransformCom->Go_Backward(fTimeDelta);
-	}
+	// 2) 전진.
+	m_pTransformCom->Go_Straight(fTimeDelta);
 }
 
 HRESULT CWar::SetUp_Component()
@@ -203,11 +291,10 @@ HRESULT CWar::SetUp_Component()
 		return E_FAIL;
 
 
-
-
 	/* For.Com_Model_War */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"), TEXT("Com_Model_War"), (CComponent**)&m_pModelCom[MODELTYPE_WAR])))
 		return E_FAIL;
+	m_pModelCom[MODELTYPE_WAR]->SetUp_Animation("War_Mesh.ao|War_Idle");
 
 	/* For.Com_Model_War_Gauntlet */
 	// 애니메이션은 Com_Model_War를 복사하자
@@ -228,16 +315,25 @@ HRESULT CWar::SetUp_Component()
 
 
 
+
+	// ------------------------
 	/* For.Com_StateMachine : Model 뒤에 해야한다. Model를 사용하기 때문. */
+	g_pWar_Model_Context = m_pModelCom[MODELTYPE_WAR];
+	g_pWar_Transform_Context = m_pTransformCom;
 	CStateMachine::STATEMACHINEDESC fsmDesc;
 	fsmDesc.pOwner = this;
 	fsmDesc.pInitState = CState_War_Idle::GetInstance();
+
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
 		return E_FAIL;
 	g_pWar_State_Context = m_pStateMachineCom;
+	// ------------------------
+
 
 	return S_OK;
 }
+
+
 
 HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 {
@@ -325,9 +421,7 @@ CGameObject * CWar::Clone(void* pArg)
 
 void CWar::Free()
 {
-
 	__super::Free();
-
 
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
@@ -339,4 +433,8 @@ void CWar::Free()
 	// Destroy the State SingleTon : State_War.cpp 
 	CState_War_Idle::GetInstance()->DestroyInstance();
 	CState_War_Run::GetInstance()->DestroyInstance();
+	CState_War_Idle_to_Idle_Combat::GetInstance()->DestroyInstance();
+	g_pWar_State_Context = nullptr;
+	g_pWar_Model_Context = nullptr;
+	g_pWar_Transform_Context = nullptr;
 }

@@ -12,14 +12,17 @@
 
 
 // =====================
-// Global War State Machine
+// Global War State Machine in 
 // =====================
 CStateMachine* g_pWar_State_Context;
+CModel* g_pWar_Model_Context;
+CTransform* g_pWar_Transform_Context;
 
 
-// ---------------------
+// -------------------------------------------------
 // CState_War_Idle
-// ---------------------
+// Desc : 무기 안들고 가만히 서있는 상태
+// -------------------------------------------------
 IMPLEMENT_SINGLETON(CState_War_Idle)
 
 CState_War_Idle::CState_War_Idle()
@@ -27,22 +30,34 @@ CState_War_Idle::CState_War_Idle()
 }
 
 void CState_War_Idle::Enter(CGameObject* pOwner, _float fDeltaTime)
-{
+{	
 	// 애니메이션 Idx
-	CModel* pModel = (CModel*)pOwner->Get_ComponentPtr(TEXT("Com_Model_War"));
-	assert(pModel);
-	pModel->SetUp_Animation("War_Mesh.ao|War_Idle");
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Idle");
 }
 
 void CState_War_Idle::Execute(CGameObject* pOwner, _float fDeltaTime)
 {
+	// ----------------------------------
+	// Idle -> Idle_to_Idle_Combat 
+	// #1. 공격시 
+	if (CInput_Device::GetInstance()->Mouse_Down(CInput_Device::MOUSEBUTTONSTATE::DIMB_LBUTTON))
+	{
+		
+	}
+	
+	
+	// ----------------------------------
+	// Idle -> Idle_Run
 	bool dirty = false;
 	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
 	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
 	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
 	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
 	if (dirty)
+	{
 		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
 }
 
 void CState_War_Idle::Exit(CGameObject* pOwner, _float fDeltaTime)
@@ -55,9 +70,11 @@ void CState_War_Idle::Free()
 }
 
 
-// ---------------------
+
+// -------------------------------------------------
 // CState_War_Run
-// ---------------------
+// Desc : 무기 안들꼬 뛰는 상태 
+// -------------------------------------------------
 IMPLEMENT_SINGLETON(CState_War_Run)
 
 CState_War_Run::CState_War_Run()
@@ -67,54 +84,33 @@ CState_War_Run::CState_War_Run()
 void CState_War_Run::Enter(CGameObject* pOwner, _float fDeltaTime)
 {
 	// 애니메이션 Idx
-	m_pModel = (CModel*)pOwner->Get_ComponentPtr(TEXT("Com_Model_War"));
-	assert(m_pModel);
-	Safe_AddRef(m_pModel);
-	m_pModel->SetUp_Animation("War_Mesh.ao|War_Run_F");
-
-	// War Transform
-	m_pTransform = (CTransform*)pOwner->Get_ComponentPtr(TEXT("Com_Transform"));
-	assert(m_pTransform);
-	Safe_AddRef(m_pTransform);
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Run_F");
 }
 
 void CState_War_Run::Execute(CGameObject* pOwner, _float fDeltaTime)
 {
-	unsigned char keyDownCheckBit = 0b0; 
-	bool isKeyDown = false; 
-	auto const dirtyCheck = [&isKeyDown, &keyDownCheckBit](_bool b) { isKeyDown |= b; };
-	dirtyCheck(KeyCheck(DIK_A, keyDownCheckBit));
-	dirtyCheck(KeyCheck(DIK_W, keyDownCheckBit));
-	dirtyCheck(KeyCheck(DIK_D, keyDownCheckBit));
-	dirtyCheck(KeyCheck(DIK_S, keyDownCheckBit));
+	
+	bool isKeyDown = false;
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
 
-	// 키4개 중 하나라도 눌러져있어야한다. 아니면 상태 IDLE로.
+	// Idle_Run -> Idle (키 하나라도 눌러져있어야한다)
 	if (isKeyDown == false) 
 	{
 		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
 		return;
 	}
-
-	// 누른 키에 맞게 움직이자.
-	// 1) 회전
-	//m_pTransform->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(GetDegree(keyDownCheckBit)));
-	m_pTransform->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fDeltaTime*10);
-	
-	// 2) 전진.
-	m_pTransform->Go_Straight(fDeltaTime);
 }
 
 void CState_War_Run::Exit(CGameObject* pOwner, _float fDeltaTime)
 {
-	Safe_Release(m_pModel);
-	Safe_Release(m_pTransform);
 }
-
 
 _float CState_War_Run::GetDegree(_ubyte downedKey)
 {
 	_float retDegree = 0.f;//12 Default는 정면을 바라보게하자.
-	//_float offsetDegree = 90.f;
 
 	// 왼위오아
 	if (downedKey == 0b0001)//6
@@ -134,9 +130,10 @@ _float CState_War_Run::GetDegree(_ubyte downedKey)
 	else if (downedKey == 0b1001)//7
 		retDegree =	225.f;
 
-	return retDegree;// + offsetDegree;
+	return retDegree;
 
 }
+
 _bool CState_War_Run::KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit)
 {
 	if (CInput_Device::GetInstance()->Key_Pressing(key))
@@ -169,6 +166,38 @@ _bool CState_War_Run::KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit)
 
 
 void CState_War_Run::Free()
+{
+	Exit();
+}
+
+
+// -------------------------------------------------
+// CState_War_Idle_to_Idle_Combat
+// Desc : Idle 에서 Idle_Combat 까지 중간 단계 
+// -------------------------------------------------
+IMPLEMENT_SINGLETON(CState_War_Idle_to_Idle_Combat)
+
+CState_War_Idle_to_Idle_Combat::CState_War_Idle_to_Idle_Combat()
+{
+}
+
+void CState_War_Idle_to_Idle_Combat::Enter(CGameObject* pOwner, _float fDeltaTime)
+{
+	// 애니메이션 Idx
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Idle_to_Idle_Combat");
+}
+
+void CState_War_Idle_to_Idle_Combat::Execute(CGameObject* pOwner, _float fDeltaTime)
+{
+	// Idle_to_Idle_Combat -> Idle_Combat (키 하나라도 눌러져있어야한다)
+	
+}
+
+void CState_War_Idle_to_Idle_Combat::Exit(CGameObject* pOwner, _float fDeltaTime)
+{
+}
+
+void CState_War_Idle_to_Idle_Combat::Free()
 {
 	Exit();
 }
