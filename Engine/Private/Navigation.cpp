@@ -1,15 +1,20 @@
 #include "..\Public\Navigation.h"
 #include "Cell.h"
 
+_float4x4* CNavigation::m_pWorldMatrixPtr = nullptr;
 
 CNavigation::CNavigation(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
 {
 }
 
-CNavigation::CNavigation(const CNavigation & rhs)
+CNavigation::CNavigation(const CNavigation& rhs)
 	: CComponent(rhs)
+	, m_Cells(rhs.m_Cells)
+	, m_iCurrentIndex(rhs.m_iCurrentIndex)
 {
+	for (auto& pCell : m_Cells)
+		Safe_AddRef(pCell);
 }
 
 HRESULT CNavigation::NativeConstruct_Prototype(const _tchar * pNavigationDataFile)
@@ -47,10 +52,41 @@ HRESULT CNavigation::NativeConstruct_Prototype(const _tchar * pNavigationDataFil
 	return S_OK;
 }
 
-HRESULT CNavigation::NativeConstruct(void * pArg)
+HRESULT CNavigation::NativeConstruct(void* pArg)
 {
+	if (nullptr != pArg)
+		m_pWorldMatrixPtr = (_float4x4*)pArg;
+
 	return S_OK;
 }
+
+_bool CNavigation::isMove(_fvector vPosition)
+{
+	CCell* pNeighbor = nullptr;
+
+	if (false == m_Cells[m_iCurrentIndex]->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor))
+	{
+		if (nullptr == pNeighbor)
+			return false;
+		else
+		{
+			m_iCurrentIndex = pNeighbor->Get_Index();
+			return true;
+		}
+	}
+
+	return true;
+}
+
+HRESULT CNavigation::Render()
+{
+	for (auto& pCell : m_Cells)
+	{
+		pCell->Render(m_pWorldMatrixPtr);
+	}
+	return S_OK;
+}
+
 
 HRESULT CNavigation::SetUp_Neighbor()
 {

@@ -20,7 +20,12 @@ FrameWork.VC.db
 
 /Client/Default/imgui.ini
 
-/Engine/Bin/
+/Engine/Bin/*.dll
+/Engine/Bin/*.exp
+/Engine/Bin/*.lib
+/Engine/Bin/*.pdb
+/Engine/Bin/*.cso
+
 /Engine/Bin/Default/x64/Debug
 /Engine/Reference
 /Engine/Default/x64/Debug

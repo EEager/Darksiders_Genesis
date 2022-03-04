@@ -7,6 +7,7 @@ BEGIN(Engine)
 class CTexture;
 class CRenderer;
 class CTransform;
+class CNavigation;
 class CVIBuffer_Terrain;
 END
 
@@ -32,6 +33,7 @@ private:
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
 	CVIBuffer_Terrain*			m_pVIBufferCom = nullptr;
+	CNavigation*				m_pNaviCom = nullptr;
 
 private:
 	ID3D11ShaderResourceView*	m_pFilter_SRV = nullptr;

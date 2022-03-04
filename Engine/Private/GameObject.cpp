@@ -68,8 +68,7 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const _tchar * pPrototypeT
 	if (nullptr == pComponent)
 		return E_FAIL;
 
-	if (NULL == Find_Component(pComponentTag))
-		m_Components.insert(COMPONENTS::value_type(pComponentTag, pComponent));
+	m_Components.insert(COMPONENTS::value_type(pComponentTag, pComponent));
 
 	*ppOut = pComponent;
 

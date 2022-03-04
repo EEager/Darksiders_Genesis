@@ -6,6 +6,7 @@
 BEGIN(Engine)
 class CRenderer;
 class CTransform;
+class CNavigation;
 class CModel;
 END
 
@@ -30,6 +31,7 @@ private:
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
 	CModel*						m_pModelCom = nullptr;
+	CNavigation*				m_pNaviCom = nullptr;
 
 private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;

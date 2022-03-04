@@ -121,6 +121,9 @@
     <Filter Include="01.Utility\04.Component\Components\StatePattern\State">
       <UniqueIdentifier>{1494686c-7097-4bcc-ab33-7f7a3ef41aee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Line">
+      <UniqueIdentifier>{db673c34-a1fe-4179-a12d-5b4065280af4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -240,6 +243,9 @@
     <ClInclude Include="..\Public\State.h">
       <Filter>01.Utility\04.Component\Components\StatePattern\State</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Line.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -344,5 +350,13 @@
     <ClCompile Include="..\Private\StateMachine.cpp">
       <Filter>01.Utility\04.Component\Components\StatePattern\StateMachine</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Line.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Line.hlsl">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

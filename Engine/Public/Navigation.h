@@ -15,9 +15,16 @@ public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pNavigationDataFile);
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
+public:
+	_bool isMove(_fvector vPosition);
+	HRESULT Render();
+
 private:
 	vector<class CCell*>					m_Cells;
 	typedef vector<class CCell*>			CELLS;
+
+private:
+	static _float4x4* m_pWorldMatrixPtr;
 
 private:
 	_uint			m_iCurrentIndex = 0;

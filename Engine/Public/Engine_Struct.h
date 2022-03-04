@@ -77,6 +77,12 @@ namespace Engine
 		XMFLOAT4			vBlendWeight;
 	}VTXMESH_ANIM;
 
+	typedef struct tagVertex_Color
+	{
+		XMFLOAT3			vPosition;
+		XMFLOAT4			vColor;
+	} VTXCOL;
+
 	typedef struct tagVertex_Texture
 	{
 		XMFLOAT3			vPosition;

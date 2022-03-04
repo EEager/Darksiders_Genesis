@@ -35,11 +35,32 @@ HRESULT CPlayer::NativeConstruct(void * pArg)
 
 _int CPlayer::Tick(_float fTimeDelta)
 {
-	//if (GetKeyState(VK_UP) & 0x8000)
-	//	m_pModelCom->SetUp_Animation(4);
-	//
-	//if (GetKeyState(VK_DOWN) & 0x8000)
-	//	m_pModelCom->SetUp_Animation(3);
+	if (GetKeyState('L') & 0x8000)
+	{
+		m_pModelCom->SetUp_Animation(4);
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+	}
+
+	if (GetKeyState('J') & 0x8000)
+	{
+		m_pModelCom->SetUp_Animation(4);
+		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * -1.f);
+	}
+
+	if (GetKeyState('K') & 0x8000)
+	{
+		m_pModelCom->SetUp_Animation(4);
+		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+
+	if (GetKeyState('I') & 0x8000)
+	{
+		m_pModelCom->SetUp_Animation(4);
+		m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+	}
+	else
+		m_pModelCom->SetUp_Animation(3);
+
 
 	m_pModelCom->Update_Animation(fTimeDelta);
 
@@ -59,7 +80,7 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == pTerrainBuff)
 		return 0;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
@@ -84,6 +105,10 @@ HRESULT CPlayer::Render()
 		m_pModelCom->Render(i, 0);
 	}
 
+#ifdef _DEBUG
+	m_pNaviCom->Render();
+#endif
+
 	
 
 	return S_OK;
@@ -92,7 +117,13 @@ HRESULT CPlayer::Render()
 HRESULT CPlayer::SetUp_Component()
 {
 	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	CTransform::TRANSFORMDESC		TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+
+	TransformDesc.fSpeedPerSec = 7.f;
+	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
 
 	/* For.Com_Renderer*/
@@ -102,6 +133,11 @@ HRESULT CPlayer::SetUp_Component()
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+	/* For.Com_Navi */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
+		return E_FAIL;
+
 	
 
 	return S_OK;
@@ -167,7 +203,7 @@ void CPlayer::Free()
 
 	__super::Free();
 
-
+	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);

@@ -71,7 +71,11 @@ HRESULT CTerrain::Render()
 HRESULT CTerrain::SetUp_Component()
 {
 	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	CTransform::TRANSFORMDESC TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(TransformDesc));
+
+	TransformDesc.fRotationPerSec = XMConvertToRadians(90.f);
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
 
 	/* For.Com_Renderer*/
@@ -92,6 +96,10 @@ HRESULT CTerrain::SetUp_Component()
 
 	/* For.Com_Brush*/
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Brush"), TEXT("Com_Brush"), (CComponent**)&m_pTextureCom[TYPE_BRUSH])))
+		return E_FAIL;
+
+	/* For.Com_Navi */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom, m_pTransformCom->Get_WorldFloat4x4Ptr())))
 		return E_FAIL;
 
 	
@@ -258,6 +266,7 @@ void CTerrain::Free()
 	for (_uint i = 0; i < TYPE_END; ++i)
 		Safe_Release(m_pTextureCom[i]);
 
+	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pFilter_SRV);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);

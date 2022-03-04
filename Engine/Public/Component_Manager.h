@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "RendererStates.h"
 #include "Transform.h"
+#include "Navigation.h"
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Terrain.h"
 #include "StateMachine.h"
