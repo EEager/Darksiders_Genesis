@@ -31,12 +31,6 @@ public:
 		return XMLoadFloat4x4(&m_TransformationMatrix);
 	}
 
-	_matrix Get_Latest_TransformationMatrix() {
-		return XMLoadFloat4x4(&m_LatestTransformationMat);
-	}
-
-
-
 public:
 	HRESULT NativeConstruct(const char* pName);
 
@@ -50,18 +44,13 @@ public:
 		XMStoreFloat4x4(&m_TransformationMatrix, TransformationMatrix);
 	}
 
-	void Set_Latest_TransformationMatrix(_fmatrix lastestTransform) {
-		XMStoreFloat4x4(&m_LatestTransformationMat, lastestTransform);
-	}
-
 	void Set_KeyFrameIndex(_uint iKeyFrameIndex) {
 		m_iCurrentKeyFrameIndex = iKeyFrameIndex;
 	}
 
 private:
 	char					m_szName[MAX_PATH] = "";
-	_float4x4				m_TransformationMatrix;
-	_float4x4				m_LatestTransformationMat; // 이전 키프레임 행렬저장.
+	_float4x4				m_TransformationMatrix; // m_KeyFrames간, 구면보간을 통해 행렬로 저장한다. 
 	_uint					m_iCurrentKeyFrameIndex = 0;
 
 	_bool					m_isClone = false;

@@ -210,12 +210,14 @@ HRESULT CModel::NativeConstruct(void * pArg)
 
 void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
 
-	if (iAnimIndex < m_iNumAnimation)
-	{
-		m_Animations[iAnimIndex]->SetBeginFirst();
-		m_iCurrentAnimIndex = iAnimIndex;
-		m_isLoop = isLoop;
-	}
+	if (iAnimIndex >= m_iNumAnimation)
+		return;
+
+	// 다음 애니메이션에 이전 채널정보를 넘겨준다.
+	m_Animations[iAnimIndex]->Set_Latest_Channels(m_Animations[m_iCurrentAnimIndex]->Get_Channels());
+	m_Animations[iAnimIndex]->SetBeginFirst();
+	m_iCurrentAnimIndex = iAnimIndex;
+	m_isLoop = isLoop;
 }
 
 void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop) {
@@ -228,6 +230,7 @@ void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop) {
 	if (iAnimIndex >= m_iNumAnimation)
 		return;
 
+	m_Animations[iAnimIndex]->Set_Latest_Channels(m_Animations[m_iCurrentAnimIndex]->Get_Channels());
 	m_Animations[iAnimIndex]->SetBeginFirst();
 	m_iCurrentAnimIndex = iAnimIndex;
 	m_isLoop = isLoop;

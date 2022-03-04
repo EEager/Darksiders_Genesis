@@ -18,8 +18,7 @@ CChannel::CChannel(const CChannel& rhs)
 HRESULT CChannel::NativeConstruct(const char* pName)
 {
 	strcpy_s(m_szName, pName);
-
-	XMStoreFloat4x4(&m_LatestTransformationMat, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixIdentity());
 
 	return S_OK;
 }

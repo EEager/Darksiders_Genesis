@@ -38,6 +38,8 @@ void CHierarchyNode::Update_CombinedTransformationMatrix()
 
 void CHierarchyNode::Update_CombinedTransformationMatrix(_uint iCurrentAnimIndex)
 {
+	// m_Channels에서 iCurrentAnimIndex의 애니메이션에 해당하는 뼈행렬 정보를 가지고 있다. 
+	// 이 채널들은 Model 사본만들때 Model이 넣어준다. 
 	if (iCurrentAnimIndex >= m_Channels.size())
 		return;
 
