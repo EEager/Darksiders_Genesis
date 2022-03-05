@@ -23,9 +23,21 @@ void CTransform::Set_State(STATE eState, _fvector vState)
 	memcpy(&m_WorldMatrix.m[eState], &vTmp, sizeof(_float4));
 }
 
+void CTransform::Set_State_Lerp(STATE eState, _fvector vDst, _float fRatio)
+{
+	_float4		vTmp;
+	XMStoreFloat4(&vTmp, XMVectorLerp((FXMVECTOR)Get_State(eState), (FXMVECTOR)vDst, fRatio));
+	memcpy(&m_WorldMatrix.m[eState], &vTmp, sizeof(_float4));
+}
+
 void CTransform::Set_TransformDesc(const TRANSFORMDESC & TransformDesc)
 {
 	m_TransformDesc = TransformDesc;
+}
+
+_vector CTransform::Get_State(STATE eState)
+{
+	return Get_State_Vec(eState);
 }
 
 _vector CTransform::Get_State_Vec(STATE eState)

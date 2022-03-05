@@ -25,6 +25,11 @@
 #include "DirectXTex.h"
 using namespace DirectX;
 
+
+// 물방울책
+#include <DirectXPackedVector.h>
+using namespace DirectX::PackedVector;
+
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 

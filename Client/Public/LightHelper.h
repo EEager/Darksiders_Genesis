@@ -9,12 +9,6 @@
 
 #include "Base.h"
 
-#include <Windows.h>
-#include <DirectXmath.h>
-#include <DirectXPackedVector.h>
-using namespace DirectX;
-using namespace DirectX::PackedVector;
-
 // Note: Make sure structure alignment agrees with HLSL structure padding rules. 
 //   Elements are packed into 4D vectors with the restriction that an element
 //   cannot straddle a 4D vector boundary.

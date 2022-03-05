@@ -305,7 +305,7 @@ CState_War_Run_Combat::CState_War_Run_Combat()
 void CState_War_Run_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Enter();
-	// ¡Ú¡Ú Loop ¡Ú¡Ú
+	// Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Run_F_Combat");
 }
 

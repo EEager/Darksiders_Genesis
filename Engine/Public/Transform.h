@@ -22,12 +22,9 @@ private:
 
 public:
 	void Set_State(STATE eState, _fvector vState);
+	void Set_State_Lerp(STATE eState, _fvector vState, _float fRatio);
 	void Set_TransformDesc(const TRANSFORMDESC& TransformDesc);
-	_vector Get_State(STATE eState)
-	{
-		return Get_State_Vec(eState);
-	}
-
+	_vector Get_State(STATE eState);
 	_vector Get_State_Vec(STATE eState);
 	_float4 Get_State_Flt(STATE eState);
 	_float Get_Scale(STATE eState) {

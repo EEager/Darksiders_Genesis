@@ -13,9 +13,6 @@ BEGIN(Engine)
 #ifndef MATHHELPER_H
 #define MATHHELPER_H
 
-#include <DirectXPackedVector.h>
-using namespace DirectX::PackedVector;
-
 class ENGINE_DLL MathHelper final
 {
 public:
