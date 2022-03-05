@@ -246,6 +246,9 @@
     <ClInclude Include="..\Public\VIBuffer_Line.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MathHelper.h">
+      <Filter>02.DirectUtil</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -352,6 +355,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Line.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MathHelpher.cpp">
+      <Filter>02.DirectUtil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

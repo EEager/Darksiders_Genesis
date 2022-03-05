@@ -14,6 +14,7 @@
 
 // DirectX Utils
 #include "DXString.h"
+#include "MathHelper.h"
 
 
 BEGIN(Engine)

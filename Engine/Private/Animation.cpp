@@ -1,4 +1,5 @@
 #include "..\Public\Animation.h"
+#include "MathHelper.h"
 
 
 
@@ -47,6 +48,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 	{
 		m_fTimeAcc = 0;
 		m_bOnceFinished = false;
+		m_isFinished = false;
 	}
 
 	m_fTimeAcc += m_TickPerSecond * fTimeDelta;
@@ -56,6 +58,9 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 		m_isFinished = true;
 		m_bOnceFinished = true;
 		m_fTimeAcc = 0.f;
+
+		if (isLoop == false)
+			return S_OK;
 	}
 
 	_vector		vScale;
@@ -111,6 +116,10 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 				// Ratio : a ~ b 사이 보간 : (x-a)/(b-a) : x가 a면 0, x가b면 1
 				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
 					(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
+				
+#ifdef _DEBUG
+				fRatio = MathHelper::Saturate<_float>(1.4f * fRatio);
+#endif
 
 				_vector vLatest_Scale;
 				_vector vLatest_Rotate;
@@ -161,10 +170,10 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 	 if (!m_bOnceStart)
 		 m_bOnceStart = true;
 
-	// 이거는 조금 손보자 ㅎㅎ 
-	if (true == m_isFinished)
+	// 전체 애니메이션 duration 넘긴경우
+	if (m_isFinished)
 	{
-		if (true == isLoop)
+		if (isLoop) // 반복동작이면 다시 애니메이팅하도록
 			m_isFinished = false;
 	}
 

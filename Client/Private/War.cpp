@@ -48,25 +48,20 @@ HRESULT CWar::NativeConstruct(void * pArg)
 #define MAX_ANIM_NUM 6 // jjlee 
 _int CWar::Tick(_float fTimeDelta)
 {
-	// 1. War 애니메이션 키프레임 변환
+	// War 애니메이션 키프레임 변환
 	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
 
-	// 2. War 애니메이션 인덱스 변환 : FSM 머신으로 관리
-	// In m_pStateMachineCom, almost Changes states...
+	// War 애니메이션 인덱스 변환 - FSM 머신으로 관리
 	if (m_pStateMachineCom)
 		m_pStateMachineCom->Tick(fTimeDelta);
 
-	// 3. 방향키 입력받아 회전,이동 처리
+	// 방향키 입력받아 회전,이동 처리
 	War_Key(fTimeDelta);
 
 
-
-
-
-
-
-
-
+	// ----------------------------
+	// ----------------------------
+	// ----------------------------
 	// ----------------------------
 	// For Test
 	static int animIdx = 0; 
@@ -94,6 +89,9 @@ _int CWar::Tick(_float fTimeDelta)
 		cout << "animIdx : " << animIdx << endl;
 		m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
 	}
+	// ----------------------------
+	// ----------------------------
+	// ----------------------------
 	// ----------------------------
 
 	return _int();
@@ -124,9 +122,9 @@ _EXIT:
 
 HRESULT CWar::Render()
 {
-	// --------------------------
+	// 
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
-	// --------------------------
+	// 
 	m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
 
 
@@ -152,9 +150,9 @@ HRESULT CWar::Render()
 	m_pRendererCom->ClearRenderStates();
 
 
-	// --------------------------
+	// 
 	// 2. (스텐실버퍼가 0인경우에) War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
-	// --------------------------
+	// 
 	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
 
 	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
@@ -268,8 +266,8 @@ void CWar::War_Key(_float fTimeDelta)
 
 	// 누른 키에 맞게 움직이자.
 	// 1) 회전
-	//m_pTransform->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(GetDegree(keyDownCheckBit)));
-	m_pTransformCom->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fTimeDelta * 10);
+	//m_pTransform->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(GetDegree(keyDownCheckBit))); // 고정
+	m_pTransformCom->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fTimeDelta * 10); // 서서히 회전
 
 	// 2) 전진.
 	m_pTransformCom->Go_Straight(fTimeDelta);
@@ -289,7 +287,6 @@ HRESULT CWar::SetUp_Component()
 	/* For.Com_Renderer*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
-
 
 	/* For.Com_Model_War */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"), TEXT("Com_Model_War"), (CComponent**)&m_pModelCom[MODELTYPE_WAR])))
@@ -312,11 +309,6 @@ HRESULT CWar::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], &tagModelWarWeaponDesc)))
 		return E_FAIL;
 
-
-
-
-
-	// ------------------------
 	/* For.Com_StateMachine : Model 뒤에 해야한다. Model를 사용하기 때문. */
 	g_pWar_Model_Context = m_pModelCom[MODELTYPE_WAR];
 	g_pWar_Transform_Context = m_pTransformCom;
@@ -327,7 +319,6 @@ HRESULT CWar::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
 		return E_FAIL;
 	g_pWar_State_Context = m_pStateMachineCom;
-	// ------------------------
 
 
 	return S_OK;
@@ -431,9 +422,6 @@ void CWar::Free()
 		Safe_Release(modelCom);
 
 	// Destroy the State SingleTon : State_War.cpp 
-	CState_War_Idle::GetInstance()->DestroyInstance();
-	CState_War_Run::GetInstance()->DestroyInstance();
-	CState_War_Idle_to_Idle_Combat::GetInstance()->DestroyInstance();
 	g_pWar_State_Context = nullptr;
 	g_pWar_Model_Context = nullptr;
 	g_pWar_Transform_Context = nullptr;

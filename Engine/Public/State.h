@@ -15,6 +15,10 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float dt = 0.f) = 0;
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float dt = 0.f) = 0;
 
+protected:
+	const char* m_pStateName = nullptr;
+	_float m_fExecuteTime = 0.f;
+
 public:
 	// CBase을(를) 통해 상속됨
 	virtual void Free() override;
