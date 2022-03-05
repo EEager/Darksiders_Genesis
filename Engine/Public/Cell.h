@@ -33,7 +33,7 @@ public:
 
 #ifdef _DEBUG
 public:
-	HRESULT Render(_float4x4* pWorldMatrix);
+	HRESULT Render(_float4x4* pWorldMatrix, _uint iCurrentIndex);
 
 #endif // _DEBUG
 

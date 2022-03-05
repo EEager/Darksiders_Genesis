@@ -17,7 +17,11 @@ public:
 
 public:
 	_bool isMove(_fvector vPosition);
+
+#ifdef _DEBUG
+public:
 	HRESULT Render();
+#endif
 
 private:
 	vector<class CCell*>					m_Cells;

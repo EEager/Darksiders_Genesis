@@ -18,6 +18,7 @@
 #include <typeinfo>
 
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 #include <d3dx11effect.h>
 #include <d3dcompiler.h>
 
@@ -33,18 +34,21 @@ using namespace DirectX::PackedVector;
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
+// -------------------
 // DirectXTK
+// -------------------
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTKd.lib")
 #else
 #pragma comment(lib, "DirectXTK.lib")
 #endif
+#include <DirectXTK\PrimitiveBatch.h>
+#include <DirectXTK/VertexTypes.h>
+#include <DirectXTK/Effects.h>
 
-// -----------------------
 // Font
-// -----------------------
-#include "DirectXTK\SpriteBatch.h"
-#include "DirectXTK\SpriteFont.h"
+#include <DirectXTK\SpriteBatch.h>
+#include <DirectXTK\SpriteFont.h>
 
 // -----------------------
 // Library

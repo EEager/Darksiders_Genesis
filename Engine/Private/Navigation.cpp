@@ -67,25 +67,37 @@ _bool CNavigation::isMove(_fvector vPosition)
 	if (false == m_Cells[m_iCurrentIndex]->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor))
 	{
 		if (nullptr == pNeighbor)
+		{
+			// 모서리 이동하려면 여기서 
 			return false;
+		}
 		else
 		{
-			m_iCurrentIndex = pNeighbor->Get_Index();
-			return true;
+			while (true) // vPosition 위치에 Cell이 있는지 계속 체크하기 위함. 
+			{
+				if (true == pNeighbor->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor))
+				{
+					m_iCurrentIndex = pNeighbor->Get_Index();
+					return true;
+				}
+			}
 		}
 	}
 
 	return true;
 }
 
+
+#ifdef _DEBUG
 HRESULT CNavigation::Render()
 {
 	for (auto& pCell : m_Cells)
 	{
-		pCell->Render(m_pWorldMatrixPtr);
+		pCell->Render(m_pWorldMatrixPtr, m_iCurrentIndex);
 	}
 	return S_OK;
 }
+#endif // _DEBUG
 
 
 HRESULT CNavigation::SetUp_Neighbor()

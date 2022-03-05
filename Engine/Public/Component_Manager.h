@@ -6,6 +6,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "Renderer.h"
+#include "Collider.h"
 #include "RendererStates.h"
 #include "Transform.h"
 #include "Navigation.h"

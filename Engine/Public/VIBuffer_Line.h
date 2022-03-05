@@ -18,7 +18,7 @@ public:
 public:
 
 public:
-	static CVIBuffer_Line* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _float3* pPoints, _uint iNumVertices, const _tchar* pShaderFilePath = TEXT("../Bin/ShaderFiles/shader_Line.hlsl"));
+	static CVIBuffer_Line* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _float3* pPoints, _uint iNumVertices, const _tchar* pShaderFilePath = TEXT("../Bin/ShaderFiles/Shader_Line.hlsl"));
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

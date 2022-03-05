@@ -61,6 +61,8 @@ _int CPlayer::Tick(_float fTimeDelta)
 	else
 		m_pModelCom->SetUp_Animation(3);
 
+	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+
 
 	m_pModelCom->Update_Animation(fTimeDelta);
 
@@ -107,6 +109,7 @@ HRESULT CPlayer::Render()
 
 #ifdef _DEBUG
 	m_pNaviCom->Render();
+	m_pAABBCom->Render(m_pTransformCom->Get_WorldMatrix());
 #endif
 
 	
@@ -136,6 +139,13 @@ HRESULT CPlayer::SetUp_Component()
 
 	/* For.Com_Navi */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
+		return E_FAIL;
+
+	/* For.Com_AABB */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, 0.7f, 0.f);
+	ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
 		return E_FAIL;
 
 	
@@ -177,7 +187,7 @@ CPlayer * CPlayer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceCon
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
-		MSG_BOX("Failed to Created CFork");
+		MSG_BOX("Failed to Created CPlayer");
 		Safe_Release(pInstance);
 	}
 
@@ -191,7 +201,7 @@ CGameObject * CPlayer::Clone(void* pArg)
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{
-		MSG_BOX("Failed to Created CFork");
+		MSG_BOX("Failed to Created CPlayer");
 		Safe_Release(pInstance);
 	}
 
@@ -203,6 +213,7 @@ void CPlayer::Free()
 
 	__super::Free();
 
+	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);

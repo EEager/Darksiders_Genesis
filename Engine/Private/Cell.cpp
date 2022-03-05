@@ -65,39 +65,43 @@ _bool CCell::isIn(_fvector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor)
 {
 	for (_uint i = 0; i < LINE_END; ++i)
 	{
-		_vector		vDir = vPoint - XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix));
-		_vector		vNormal = XMVectorSet(m_vLine[i].z * -1, 0.f, m_vLine[i].x, 0.f);
+		_vector		vDirW = vPoint - XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix));
+		_vector		vNormalW = XMVectorSet(m_vLine[i].z * -1, 0.f, m_vLine[i].x, 0.f);
 
-		vNormal = XMVector3TransformNormal(vNormal, XMLoadFloat4x4(pWorldMatrix));
+		vNormalW = XMVector3TransformNormal(vNormalW, XMLoadFloat4x4(pWorldMatrix));
 
-		if (0 < XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDir), XMVector3Normalize(vNormal))))
+		if (0 < XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDirW), XMVector3Normalize(vNormalW))))
 		{
 			*ppNeighbor = m_Neighbors[i];
 			return false;
 		}
 	}
 
-	*ppNeighbor = nullptr;
+	*ppNeighbor = this;
 	return true;
 }
 
 #ifdef _DEBUG
-HRESULT CCell::Render(_float4x4* pWorldMatrix)
+HRESULT CCell::Render(_float4x4* pWorldMatrix, _uint iCurrentIndex)
 {
 	if (nullptr == m_pVIBuffer)
 		return E_FAIL;
+
+	_float4		vColor = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (m_iIndex == iCurrentIndex)
+		vColor = _float4(1.f, 0.f, 0.f, 1.f);
 
 	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
 
 	m_pVIBuffer->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMLoadFloat4x4(pWorldMatrix)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
-
+	m_pVIBuffer->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
 
 	m_pVIBuffer->Render(0);
 
 	RELEASE_INSTANCE(CPipeLine);
-
 
 	return S_OK;
 }
