@@ -16,6 +16,35 @@ public:											\
 		return &m_pInstance;					\
 	}											\
 
+
+/* ------------------------------------------------------------------------------
+* 
+*	Finite State Machine
+* 
+[#]	[State]							[Event]							[ToState]
+= = = = = = == = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+1	CState_War_Idle					공격,근처적,대쉬				CState_War_Idle_to_Idle_Combat
+									방향키 하나라도 누름			CState_War_Run
+	
+2	CState_War_Run					방향키 하나도 안 누름			CState_War_Idle
+	
+3	CState_War_Idle_to_Idle_Combat  애니메이션 종료					CState_War_Idle_Combat
+									방향키 하나라도 누름			CState_War_Run_Combat
+
+	
+4	CState_War_Idle_Combat			방향키 하나라도 누름			CState_War_Run_Combat
+									4초간 이벤트없음				CState_War_Idle_Combat_to_Idle
+	
+5	CState_War_Idle_Combat_to_Idle  애니메이션 종료					CState_War_Idle
+									방향키 하나라도 누름			CState_War_Run_Combat
+
+	
+6	CState_War_Run_Combat			방향키 하나도 안 누름			CState_War_Idle_Combat
+
+-----------------------------------------------------------------------------------*/
+
+
+
 // -------------------------------------------------
 // #1
 // [State] CState_War_Idle
@@ -120,6 +149,28 @@ class CState_War_Idle_Combat_to_Idle final : public CState
 public:
 	CState_War_Idle_Combat_to_Idle();
 	virtual ~CState_War_Idle_Combat_to_Idle() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #6
+// [State] CState_War_Run_Combat
+// [Infom] 칼들고 뛰는 상태
+// -------------------------------------------------
+class CState_War_Run_Combat final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Run_Combat)
+
+public:
+	CState_War_Run_Combat();
+	virtual ~CState_War_Run_Combat() {}
 
 public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
