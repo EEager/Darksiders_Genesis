@@ -45,7 +45,6 @@ HRESULT CWar::NativeConstruct(void * pArg)
 }
 
 
-#define MAX_ANIM_NUM 6 // jjlee 
 _int CWar::Tick(_float fTimeDelta)
 {
 	// War 애니메이션 키프레임 변환
@@ -64,18 +63,19 @@ _int CWar::Tick(_float fTimeDelta)
 	// ----------------------------
 	// ----------------------------
 	// For Test
+	const int CONST_MAX_ANIM_NUM = 72;
 	static int animIdx = 0; 
 	bool dirty = false;
-	const auto dirtyF = [&dirty](bool PlusOrMinus) {
+	const auto dirtyF = [&dirty, &CONST_MAX_ANIM_NUM](bool PlusOrMinus) {
 		if (!PlusOrMinus)
 		{
 			animIdx = animIdx - 1;
 			if (animIdx < 0)
-				animIdx = MAX_ANIM_NUM-1;
+				animIdx = CONST_MAX_ANIM_NUM -1;
 		}
 		else
 		{
-			animIdx = (animIdx + 1) % (MAX_ANIM_NUM);
+			animIdx = (animIdx + 1) % (CONST_MAX_ANIM_NUM);
 		}
 		dirty = true;
 	};
