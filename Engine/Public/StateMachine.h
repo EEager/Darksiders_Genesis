@@ -25,6 +25,9 @@ public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
+public:
+	HRESULT Set_GlobalState(class CState* pState);
+
 private:
 	class CGameObject* m_pOwner = nullptr;
 	class CState* m_pCurrentState = nullptr;

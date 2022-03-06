@@ -34,7 +34,10 @@ public:
 		return m_MouseState.rgbButtons[eMouseButtonState];
 	}
 
+	bool Mouse_Pressing(MOUSEBUTTONSTATE eState);
 	bool Mouse_Down(MOUSEBUTTONSTATE eState);
+	bool Mouse_Up(MOUSEBUTTONSTATE eState);
+
 public:
 	HRESULT Ready(HINSTANCE hInst, HWND hWnd);
 	HRESULT Update();

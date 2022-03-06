@@ -31,6 +31,12 @@ HRESULT CStateMachine::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
+HRESULT CStateMachine::Set_GlobalState(CState* pState)
+{
+	m_pGlobalState = pState;
+	return S_OK;
+}
+
 
 HRESULT CStateMachine::Tick(_float fDeltaTime)
 {

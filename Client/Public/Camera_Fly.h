@@ -35,7 +35,7 @@ private: // 타겟팅
 	CWar* m_pWar = nullptr; // War 타겟포인터
 	_float m_fRadius = 13.1f; // 타겟간의 거리 
 	_float m_fRadian = XMConvertToRadians(250.f); // +x가 0도임. 반시계방향...
-	_float m_fHeight = 12.f;
+	_float m_fHeight = 15.f;
 
 public:
 	static CCamera_Fly* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

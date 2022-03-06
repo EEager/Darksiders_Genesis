@@ -16,6 +16,13 @@ bool CInput_Device::Key_Pressing(_ubyte eKeyID)
 	return false;
 }
 
+bool CInput_Device::Mouse_Pressing(MOUSEBUTTONSTATE eState)
+{
+	if (m_MouseState.rgbButtons[eState])
+		return true;
+	return false;
+}
+
 bool CInput_Device::Key_Down(_ubyte eKeyID)
 {
 	if (!m_bState[eKeyID] && (Get_DIKeyState(eKeyID) & 0x80))
@@ -39,6 +46,20 @@ bool CInput_Device::Mouse_Down(MOUSEBUTTONSTATE eState)
 
 	if (m_bMouseState[eState] && !(m_MouseState.rgbButtons[eState]))
 		m_bMouseState[eState] = false;
+
+	return false;
+}
+
+bool CInput_Device::Mouse_Up(MOUSEBUTTONSTATE eState)
+{
+	if (m_bMouseState[eState] && !(m_MouseState.rgbButtons[eState]))
+	{
+		m_bMouseState[eState] = !m_bMouseState[eState];
+		return true;
+	}
+
+	if (!m_bState[eState] && (m_MouseState.rgbButtons[eState]))
+		m_bMouseState[eState] = !m_bMouseState[eState];
 
 	return false;
 }

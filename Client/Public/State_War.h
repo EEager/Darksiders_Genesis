@@ -19,15 +19,70 @@ public:											\
 
 /* ------------------------------------------------------------------------------
 *
-*	Global FSM
+*	Global FSM  :  어느 상태에서나 발생할 수 있는 이벤트에 의한 동작하는 FSM
 * 
-[#]	[State]							[Event]							[ToState]
-1									피격시							넉백 또는 이건 랜덤하게? 
+[#]	[State]						[Event]							[ToState]
+1	CGlobal_State_War			죽었다 							CState_War_Death
+
+2	CState_War_Death			애니메이션종료					CState_War_Idle
+
+*------------------------------------------------------------------------------*/
+
+// -------------------------------------------------
+// #1
+// [State] CGlobal_State_War
+// [Infom] 더블점프 
+// -------------------------------------------------
+class CGlobal_State_War final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CGlobal_State_War)
+
+public:
+	CGlobal_State_War();
+	virtual ~CGlobal_State_War() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #2
+// [State] CState_War_Death
+// [Infom] 죽었다 
+// -------------------------------------------------
+class CState_War_Death final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Death)
+
+public:
+	CState_War_Death();
+	virtual ~CState_War_Death() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
 
 
 
 
 
+
+
+
+
+/* ------------------------------------------------------------------------------
 * 
 *	Finite State Machine
 * 
@@ -37,92 +92,146 @@ public:											\
 1	CState_War_Idle					근처적,R,대쉬					CState_War_Idle_to_Idle_Combat
 									방향키 하나라도 누름			CState_War_Run
 									마우스 왼쪽(약공)				CState_War_Atk_Light_01
-									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 ToDo
+									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
+									스페이스 (점프)					CState_War_Jump
+									1번 스킬						CState_War_Wrath_BladeGeyser
 
 	
 2	CState_War_Run					방향키 하나도 안 누름			CState_War_Idle
 									마우스 왼쪽(약공)				CState_War_Atk_Light_01
-									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 ToDo
+									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01
+									스페이스 (점프)					CState_War_Jump
+									1번 스킬						CState_War_Wrath_BladeGeyser
 
 	
 3	CState_War_Idle_to_Idle_Combat  애니메이션 종료					CState_War_Idle_Combat
 									방향키 하나라도 누름			CState_War_Run_Combat
 									마우스 왼쪽(약공)				CState_War_Atk_Light_01
-									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 ToDo
+									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
+									스페이스 (점프)					CState_War_Jump_Combat
+									1번 스킬						CState_War_Wrath_BladeGeyser
 
 	
 4	CState_War_Idle_Combat			방향키 하나라도 누름			CState_War_Run_Combat
 									4초간 이벤트없음				CState_War_Idle_Combat_to_Idle
 									R버튼							CState_War_Idle_Combat_to_Idle
 									마우스 왼쪽(약공)				CState_War_Atk_Light_01
-									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 ToDo
+									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
+									스페이스 (점프)					CState_War_Jump_Combat
+									1번 스킬						CState_War_Wrath_BladeGeyser
 
 5	CState_War_Idle_Combat_to_Idle  애니메이션 종료					CState_War_Idle
 									방향키 하나라도 누름			CState_War_Run_Combat
 									마우스 왼쪽(약공)				CState_War_Atk_Light_01 
-									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 ToDo
+									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
+									스페이스 (점프)					CState_War_Jump_Combat
+									1번 스킬						CState_War_Wrath_BladeGeyser
 
 	
 6	CState_War_Run_Combat			방향키 하나도 안 누름			CState_War_Idle_Combat
 									마우스 왼쪽(약공)				CState_War_Atk_Light_01
-									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 ToDo
+									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
+									스페이스 (점프)					CState_War_Jump_Combat
+									1번 스킬						CState_War_Wrath_BladeGeyser
 
 
-// 약공
+// 약공 
 7	CState_War_Atk_Light_01			애니메이션 종료					CState_War_Idle_Combat
 									마우스 왼쪽(약공)				CState_War_Atk_Light_02
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 8	CState_War_Atk_Light_02			애니메이션 종료					CState_War_Idle_Combat
 									마우스 왼쪽(약공)				CState_War_Atk_Light_02
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 9	CState_War_Atk_Light_03			애니메이션 종료					CState_War_Idle_Combat
 									마우스 왼쪽(약공)				CState_War_Atk_Light_04
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 10	CState_War_Atk_Light_04			애니메이션 종료					CState_War_Idle_Combat
 									마우스 오른쪽(강공)				G스킬  ToDo
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 
 // 강공
 11	CState_War_Atk_Heavy_01			애니메이션 종료					CState_War_Idle_Combat
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_02
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 12	CState_War_Atk_Heavy_02			애니메이션 종료					CState_War_Idle_Combat
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_03
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 13	CState_War_Atk_Heavy_03			애니메이션 종료					CState_War_Idle_Combat
+									방향키 하나라도 누름			CState_War_Run_Combat
 									마우스 오른쪽(강공)				G스킬
+
+
+
 
 // 일반 점프
 14	CState_War_Jump					애니메이션 종료					CState_War_Jump_Fall
 									스페이스(점프)					CState_War_Jump_Double
+									마우스 오른쪽(강공)				CState_War_Atk_Air_Light_03_NoImpulse
 
-15	CState_War_Jump_Double			애니메이션 종료					CState_War_Jump_Fall
-
-16	CState_War_Jump_Fall			땅에 닿으면1					CState_War_Jump_Land
-									땅에 닿으면2					CState_War_Jump_Land_Heavy
-									땅에 닿으면서 달리기			CState_War_Jump_Land_Run
-
-17	CState_War_Jump_Land			애니메이션 종료					CState_War_Idle
-18	CState_War_Jump_Land_Heavy		애니메이션 종료					CState_War_Idle
-19	CState_War_Jump_Land_Run		애니메이션 종료					CState_War_Idle
+15	CState_War_Jump_Fall			착지시1							CState_War_Jump_Land
+									착지시2							CState_War_Jump_Land_Heavy
+									착지시 + 달리기					CState_War_Jump_Land_Run
+									스페이스(점프)					CState_War_Jump_Double
+									마우스 오른쪽(강공)				CState_War_Atk_Air_Light_03_NoImpulse
 
 
+16	CState_War_Jump_Land			애니메이션 종료					CState_War_Idle
+									방향키 하나라도 누름			CState_War_Run
+17	CState_War_Jump_Land_Heavy		애니메이션 종료					CState_War_Idle
+									방향키 하나라도 누름			CState_War_Run
 
+18	CState_War_Jump_Land_Run		애니메이션 종료					CState_War_Run
 
 
 // Combat 점프
-20	CState_War_Jump_Combat			애니메이션 종료					CState_War_Jump_Fall_Combat
-21	CState_War_Jump_Fall_Combat		땅에 닿으면						CState_War_Jump_Combat_Land
-22	
+19	CState_War_Jump_Combat			애니메이션 종료					CState_War_Jump_Fall_Combat
+									스페이스(점프)					CState_War_Jump_Double
+									마우스 오른쪽(강공)				CState_War_Atk_Air_Light_03_NoImpulse
+
+20	CState_War_Jump_Fall_Combat		착지시							CState_War_Jump_Combat_Land
+									착지시 + 방향					CState_War_Jump_Combat_Land_Run
+									스페이스(점프)					CState_War_Jump_Double
+									마우스 오른쪽(강공)				CState_War_Atk_Air_Light_03_NoImpulse
+
+21	CState_War_Jump_Combat_Land		애니메이션 종료					CState_War_Idle_Combat
+									방향키 하나라도 누름			CState_War_Run_Combat
+
+22	CState_War_Jump_Combat_Land_Run	애니메이션 종료					CState_War_Run_Combat
+
+
+// 더블점프
+23	CState_War_Jump_Double			애니메이션 종료					CState_War_Jump_Fall
 
 
 
-// 점공 
+// 점프 중 강공격 - War_Atk_Air_Light_03_NoImpulse 만하자
+24	CState_War_Atk_Air_Light_03_NoImpulse	애니메이션 종료			CState_War_Atk_Air_Light_03_Fall
+
+25	CState_War_Atk_Air_Light_03_Fall		착지시					CState_War_Atk_Air_Land
+
+26	CState_War_Atk_Air_Land			애니메이션 종료					CState_War_Idle_Combat
+									방향키 하나라도 누름			CState_War_Run_Combat
 
 
-// G스킬
-??	CState_War_Atk_EarthSplitter_Level1			애니메이션 종료					CState_War_Idle_Combat
-												마우스 오른쪽(강공)				CState_War_Atk_EarthSplitter_Level1
+// 1스킬 
+27	CState_War_Wrath_BladeGeyser	애니메이션 종료					CState_War_Idle_Combat
+									방향키 하나라도 누름			CState_War_Run_Combat
+
+
+
+
+
+// 콤보 스킬
+28	CState_War_Atk_EarthSplitter_Charge_Start		애니메이션 종료		CState_War_Atk_EarthSplitter_Charge_Loop	
+29	CState_War_Atk_EarthSplitter_Charge_Loop		마우스 오른쪽떼면	CState_War_Atk_EarthSplitter_Level1
+29	CState_War_Atk_EarthSplitter_Level1				애니메이션 종료		CState_War_Idle_Combat
+
 									
 
 -----------------------------------------------------------------------------------*/
@@ -371,6 +480,10 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	_float m_fBntPressTime = 0.f;
+	_bool m_bChargeStart = false;
+
 public:
 	virtual void Free() final;
 };
@@ -411,6 +524,391 @@ class CState_War_Atk_Heavy_03 final : public CState
 public:
 	CState_War_Atk_Heavy_03();
 	virtual ~CState_War_Atk_Heavy_03() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #14
+// [State] CState_War_Jump
+// [Infom] 무기안들고 점프
+// -------------------------------------------------
+class CState_War_Jump final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump)
+
+public:
+	CState_War_Jump();
+	virtual ~CState_War_Jump() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #15
+// [State] CState_War_Jump_Fall
+// [Infom] 무기안들고 점프중
+// -------------------------------------------------
+class CState_War_Jump_Fall final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Fall)
+
+public:
+	CState_War_Jump_Fall();
+	virtual ~CState_War_Jump_Fall() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	_float m_fFlightTime = 0.f;
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #16
+// [State] CState_War_Jump_Land
+// [Infom] 땋닿1
+// -------------------------------------------------
+class CState_War_Jump_Land final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Land)
+
+public:
+	CState_War_Jump_Land();
+	virtual ~CState_War_Jump_Land() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #17
+// [State] CState_War_Jump_Land_Heavy
+// [Infom] 땋닿2
+// -------------------------------------------------
+class CState_War_Jump_Land_Heavy final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Land_Heavy)
+
+public:
+	CState_War_Jump_Land_Heavy();
+	virtual ~CState_War_Jump_Land_Heavy() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+// -------------------------------------------------
+// #18
+// [State] CState_War_Jump_Land_Run
+// [Infom] 땋닿뛰
+// -------------------------------------------------
+class CState_War_Jump_Land_Run final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Land_Run)
+
+public:
+	CState_War_Jump_Land_Run();
+	virtual ~CState_War_Jump_Land_Run() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #19
+// [State] CState_War_Jump_Combat
+// [Infom] 칼들고 점프
+// -------------------------------------------------
+class CState_War_Jump_Combat final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Combat)
+
+public:
+	CState_War_Jump_Combat();
+	virtual ~CState_War_Jump_Combat() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #20
+// [State] CState_War_Jump_Fall_Combat
+// [Infom] 칼들고 점프중
+// -------------------------------------------------
+class CState_War_Jump_Fall_Combat final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Fall_Combat)
+
+public:
+	CState_War_Jump_Fall_Combat();
+	virtual ~CState_War_Jump_Fall_Combat() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+// -------------------------------------------------
+// #21
+// [State] CState_War_Jump_Combat_Land
+// [Infom] 칼들고 착지
+// -------------------------------------------------
+class CState_War_Jump_Combat_Land final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Combat_Land)
+
+public:
+	CState_War_Jump_Combat_Land();
+	virtual ~CState_War_Jump_Combat_Land() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #22
+// [State] CState_War_Jump_Combat_Land_Run
+// [Infom] 칼들고 착지하면서 뛰기
+// -------------------------------------------------
+class CState_War_Jump_Combat_Land_Run final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Combat_Land_Run)
+
+public:
+	CState_War_Jump_Combat_Land_Run();
+	virtual ~CState_War_Jump_Combat_Land_Run() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+// -------------------------------------------------
+// #23
+// [State] CState_War_Jump_Double
+// [Infom] 더블점프 
+// -------------------------------------------------
+class CState_War_Jump_Double final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Jump_Double)
+
+public:
+	CState_War_Jump_Double();
+	virtual ~CState_War_Jump_Double() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+// -------------------------------------------------
+// #24
+// [State] CState_War_Atk_Air_Light_03_NoImpulse
+// [Infom] 점프중 강공격
+// -------------------------------------------------
+class CState_War_Atk_Air_Light_03_NoImpulse final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Atk_Air_Light_03_NoImpulse)
+
+public:
+	CState_War_Atk_Air_Light_03_NoImpulse();
+	virtual ~CState_War_Atk_Air_Light_03_NoImpulse() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #25
+// [State] CState_War_Atk_Air_Light_03_Fall
+// [Infom] 점프 공격 중
+// -------------------------------------------------
+class CState_War_Atk_Air_Light_03_Fall final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Atk_Air_Light_03_Fall)
+
+public:
+	CState_War_Atk_Air_Light_03_Fall();
+	virtual ~CState_War_Atk_Air_Light_03_Fall() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #26
+// [State] CState_War_Atk_Air_Land
+// [Infom] 점프 공격후 착지
+// -------------------------------------------------
+class CState_War_Atk_Air_Land final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Atk_Air_Land)
+
+public:
+	CState_War_Atk_Air_Land();
+	virtual ~CState_War_Atk_Air_Land() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #27
+// [State] CState_War_Wrath_BladeGeyser
+// [Infom] 1번 스킬
+// -------------------------------------------------
+class CState_War_Wrath_BladeGeyser final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Wrath_BladeGeyser)
+
+public:
+	CState_War_Wrath_BladeGeyser();
+	virtual ~CState_War_Wrath_BladeGeyser() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #28
+// [State] CState_War_Atk_EarthSplitter_Charge_Start
+// [Infom] G스킬 - 땅 기모으기 시작
+// -------------------------------------------------
+class CState_War_Atk_EarthSplitter_Charge_Start final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Atk_EarthSplitter_Charge_Start)
+
+public:
+	CState_War_Atk_EarthSplitter_Charge_Start();
+	virtual ~CState_War_Atk_EarthSplitter_Charge_Start() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #29
+// [State] CState_War_Atk_EarthSplitter_Charge_Loop
+// [Infom] G스킬 - 땅 기모으는 중
+// -------------------------------------------------
+class CState_War_Atk_EarthSplitter_Charge_Loop final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Atk_EarthSplitter_Charge_Loop)
+
+public:
+	CState_War_Atk_EarthSplitter_Charge_Loop();
+	virtual ~CState_War_Atk_EarthSplitter_Charge_Loop() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #30
+// [State] CState_War_Atk_EarthSplitter_Level1
+// [Infom] G스킬 - 땅 기모으기 끝. 발사 
+// -------------------------------------------------
+class CState_War_Atk_EarthSplitter_Level1 final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Atk_EarthSplitter_Level1)
+
+public:
+	CState_War_Atk_EarthSplitter_Level1();
+	virtual ~CState_War_Atk_EarthSplitter_Level1() {}
 
 public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);

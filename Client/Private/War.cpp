@@ -58,41 +58,41 @@ _int CWar::Tick(_float fTimeDelta)
 	War_Key(fTimeDelta);
 
 
-	// ----------------------------
-	// ----------------------------
-	// ----------------------------
-	// ----------------------------
-	// For Test
-	const int CONST_MAX_ANIM_NUM = 72;
-	static int animIdx = 0; 
-	bool dirty = false;
-	const auto dirtyF = [&dirty, &CONST_MAX_ANIM_NUM](bool PlusOrMinus) {
-		if (!PlusOrMinus)
-		{
-			animIdx = animIdx - 1;
-			if (animIdx < 0)
-				animIdx = CONST_MAX_ANIM_NUM -1;
-		}
-		else
-		{
-			animIdx = (animIdx + 1) % (CONST_MAX_ANIM_NUM);
-		}
-		dirty = true;
-	};
-	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS)) // '-'
-		dirtyF(false);
-	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS)) // '+'
-		dirtyF(true);
+	//// ----------------------------
+	//// ----------------------------
+	//// ----------------------------
+	//// ----------------------------
+	//// For Test
+	//const int CONST_MAX_ANIM_NUM = 72;
+	//static int animIdx = 0; 
+	//bool dirty = false;
+	//const auto dirtyF = [&dirty, &CONST_MAX_ANIM_NUM](bool PlusOrMinus) {
+	//	if (!PlusOrMinus)
+	//	{
+	//		animIdx = animIdx - 1;
+	//		if (animIdx < 0)
+	//			animIdx = CONST_MAX_ANIM_NUM -1;
+	//	}
+	//	else
+	//	{
+	//		animIdx = (animIdx + 1) % (CONST_MAX_ANIM_NUM);
+	//	}
+	//	dirty = true;
+	//};
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS)) // '-'
+	//	dirtyF(false);
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS)) // '+'
+	//	dirtyF(true);
 
-	if (dirty)
-	{
-		cout << "animIdx : " << animIdx << endl;
-		m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
-	}
-	// ----------------------------
-	// ----------------------------
-	// ----------------------------
-	// ----------------------------
+	//if (dirty)
+	//{
+	//	cout << "animIdx : " << animIdx << endl;
+	//	m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
+	//}
+	//// ----------------------------
+	//// ----------------------------
+	//// ----------------------------
+	//// ----------------------------
 
 	return _int();
 }
@@ -279,7 +279,7 @@ HRESULT CWar::SetUp_Component()
 	CTransform::TRANSFORMDESC		TransformDesc;
 	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
 
-	TransformDesc.fSpeedPerSec = 4.3f;
+	TransformDesc.fSpeedPerSec = 3.f;
 	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
@@ -318,8 +318,11 @@ HRESULT CWar::SetUp_Component()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
 		return E_FAIL;
-	g_pWar_State_Context = m_pStateMachineCom;
 
+	// 글로벌 상태는 여기서 설정하자
+	static_cast<CStateMachine*>(m_pStateMachineCom)->Set_GlobalState(CGlobal_State_War::GetInstance());
+
+	g_pWar_State_Context = m_pStateMachineCom;
 
 	return S_OK;
 }
