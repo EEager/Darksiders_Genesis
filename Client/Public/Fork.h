@@ -4,6 +4,7 @@
 #include "GameObject.h"
 
 BEGIN(Engine)
+class CCollider;
 class CRenderer;
 class CTransform;
 class CModel;
@@ -30,6 +31,8 @@ private:
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
 	CModel*						m_pModelCom = nullptr;
+	CCollider*					m_pAABBCom = nullptr;
+	CCollider*					m_pOBBCom = nullptr;
 
 private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;

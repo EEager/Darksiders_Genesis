@@ -34,6 +34,7 @@ private:
 	CModel*						m_pModelCom = nullptr;
 	CNavigation*				m_pNaviCom = nullptr;
 	CCollider*					m_pAABBCom = nullptr;
+	CCollider*					m_pOBBCom = nullptr;
 
 private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;

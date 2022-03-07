@@ -140,13 +140,13 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 
 		// 카메라 룩백 Lerp 하게 
 		_vector vWarPos = m_pWar->Get_War_Pos();
-		m_pTransform->LookAt_Lerp(vWarPos, 0.04f);
+		m_pTransform->LookAt_Lerp(vWarPos, 0.03f);
 
 		// 위치 러프하게 
 		_float posX = m_fRadius * cosf(m_fRadian) + XMVectorGetX(vWarPos);
 		_float posY = m_fHeight + XMVectorGetY(vWarPos);
 		_float posZ = m_fRadius * sinf(m_fRadian) + XMVectorGetZ(vWarPos);
-		m_pTransform->Set_State_Lerp(CTransform::STATE_POSITION, XMVectorSet(posX, posY, posZ, 1.f), 0.07f);
+		m_pTransform->Set_State_Lerp(CTransform::STATE_POSITION, XMVectorSet(posX, posY, posZ, 1.f), 0.04f);
 	}
 }
 

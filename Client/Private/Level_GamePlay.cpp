@@ -154,9 +154,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 			return E_FAIL;
 
 #ifndef ONLY_WAR
-	/* For.Layer_Fiona*/
+	/* For.Layer_Player*/
 	for (int i = 0; i < 2; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Fiona", TEXT("Prototype_GameObject_Player"))))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player", TEXT("Prototype_GameObject_Player"))))
 			return E_FAIL;
 
 	/* For.Layer_Fork*/

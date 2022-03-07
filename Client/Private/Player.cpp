@@ -66,6 +66,9 @@ _int CPlayer::Tick(_float fTimeDelta)
 
 	m_pModelCom->Update_Animation(fTimeDelta);
 
+	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+
 	return _int();
 }
 
@@ -82,7 +85,8 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	if (nullptr == pTerrainBuff)
 		return 0;
 
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
+	// Player를 지형위에 태우자
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
@@ -109,7 +113,8 @@ HRESULT CPlayer::Render()
 
 #ifdef _DEBUG
 	m_pNaviCom->Render();
-	m_pAABBCom->Render(m_pTransformCom->Get_WorldMatrix());
+	m_pAABBCom->Render();
+	m_pOBBCom->Render();
 #endif
 
 	
@@ -143,9 +148,17 @@ HRESULT CPlayer::SetUp_Component()
 
 	/* For.Com_AABB */
 	CCollider::COLLIDERDESC		ColliderDesc;
-	ColliderDesc.vPivot = _float3(0.f, 0.7f, 0.f);
+	ColliderDesc.vPivot = _float3(0.f, 0.5f, 0.f);
 	ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+		return E_FAIL;
+
+	/* For.Com_OBB */
+	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
+	ColliderDesc.vSize = _float3(0.8f, 1.5f, 0.8f);
+	//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
+	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
 
 	
@@ -213,6 +226,7 @@ void CPlayer::Free()
 
 	__super::Free();
 
+	Safe_Release(m_pOBBCom);
 	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pTransformCom);	

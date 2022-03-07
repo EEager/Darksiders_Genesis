@@ -78,8 +78,8 @@ public:
 	//static XMVECTOR RandUnitVec3();
 	//static XMVECTOR RandHemisphereUnitVec3(XMVECTOR n);
 
-	//static const float Infinity;
-	//static const float Pi;
+	static const float Infinity;
+	static const float Pi;
 
 
 };

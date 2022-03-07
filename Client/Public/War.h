@@ -8,6 +8,7 @@ class CRenderer;
 class CTransform;
 class CModel;
 class CStateMachine;
+class CCollider;
 END
 
 BEGIN(Client)
@@ -37,7 +38,8 @@ private:
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
 	CStateMachine*				m_pStateMachineCom = nullptr;
-
+	CCollider*					m_pAABBCom = nullptr;
+	CCollider*					m_pOBBCom = nullptr;
 	CModel*						m_pModelCom[MODELTYPE_END] = { 0, };
 
 private:

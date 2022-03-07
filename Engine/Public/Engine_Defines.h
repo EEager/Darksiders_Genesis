@@ -112,3 +112,6 @@ using namespace Microsoft::WRL;
 namespace Engine { }
 
 using namespace Engine;
+
+
+#include "MathHelper.h"

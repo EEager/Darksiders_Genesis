@@ -56,6 +56,10 @@ _int CWar::Tick(_float fTimeDelta)
 	// 방향키 입력받아 회전,이동 처리
 	War_Key(fTimeDelta);
 
+	// OBB, AABB
+	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+
 
 	//// ----------------------------
 	//// ----------------------------
@@ -114,6 +118,18 @@ _int CWar::LateTick(_float fTimeDelta)
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
 
+	/*CCollider*	pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_AABB"));
+	if (nullptr == pTerrainBuff)
+		return 0;
+	
+	m_pAABBCom->Collision_AABB(pTargetColllider);*/
+
+	CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_OBB"));
+	if (nullptr == pTargetColllider)
+		goto _EXIT;
+
+	m_pOBBCom->Collision_OBB(pTargetColllider);
+
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
@@ -170,6 +186,13 @@ HRESULT CWar::Render()
 			m_pModelCom[modelIdx]->Render(i, 0);
 		}
 	}
+
+
+	// Collider Debug Rendering
+#ifdef _DEBUG
+	m_pAABBCom->Render();
+	m_pOBBCom->Render();
+#endif // _DEBUG
 
 	// Restore default states
 	m_pRendererCom->ClearRenderStates();
@@ -323,6 +346,27 @@ HRESULT CWar::SetUp_Component()
 
 	g_pWar_State_Context = m_pStateMachineCom;
 
+
+
+	/* For.Com_AABB */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
+	ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
+
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+		return E_FAIL;
+
+
+	
+
+	/* For.Com_OBB */
+	ColliderDesc.vPivot = _float3(0.f, 1.f, 0.f);
+	ColliderDesc.vSize = _float3(1.f, 2.f, 1.f);
+	//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
+	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -416,6 +460,9 @@ void CWar::Free()
 {
 	__super::Free();
 
+
+	Safe_Release(m_pOBBCom);
+	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pStateMachineCom);

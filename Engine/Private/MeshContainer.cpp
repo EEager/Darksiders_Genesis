@@ -17,11 +17,11 @@ CMeshContainer::CMeshContainer(const CMeshContainer& rhs)
 
 }
 
-HRESULT CMeshContainer::NativeConstruct_Prototype(CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix)
+HRESULT CMeshContainer::NativeConstruct_Prototype(CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix, OUT XMVECTOR* pMin, OUT XMVECTOR* pMax)
 {
 	m_pAIMesh = pMesh;
 
-	if (FAILED(SetUp_VerticesDesc(pModel, pMesh, PivotMatrix)))
+	if (FAILED(SetUp_VerticesDesc(pModel, pMesh, PivotMatrix, pMin, pMax)))
 		return E_FAIL;
 
 	if (FAILED(SetUp_IndicesDesc(pMesh)))
@@ -88,7 +88,7 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 	return S_OK;
 }
 
-HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix)
+HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix, OUT XMVECTOR* pMin, OUT XMVECTOR* pMax)
 {
 	m_iNumVertices = pMesh->mNumVertices;	
 	m_iNumVertexBuffers = 1;
@@ -120,7 +120,6 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 	m_VBDesc.MiscFlags = 0;
 	m_VBDesc.StructureByteStride = m_iStride;
 
-
 	/* 노말 texUV Tangent */
 	for (_uint i = 0; i < m_iNumVertices; ++i)
 	{
@@ -128,15 +127,34 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 
 		memcpy(&pVertices->vPosition, &pMesh->mVertices[i], sizeof(_float3));
 
-		XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix));
+		// For.Collider
+		XMVECTOR P;
+		if (CModel::TYPE_NONANIM == eMeshType) // 애니메이션없는경우
+		{
+			XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix));
+			P = XMLoadFloat3(&pVertices->vPosition);
+		}
+		else
+		{
+			XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), XMMatrixIdentity()));
+			P = XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix);
+		}
+
+		*pMin = XMVectorMin(*pMin, P);
+		*pMax = XMVectorMax(*pMax, P);
+
 
 		memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));
 		memcpy(&pVertices->vTexUV, &pMesh->mTextureCoords[0][i], sizeof(_float2));
 		memcpy(&pVertices->vTangent, &pMesh->mTangents[i], sizeof(_float3));
 	}
 
+	_float4 tmpMin, tmpMax;
+	XMStoreFloat4(&tmpMin, *pMin);
+	XMStoreFloat4(&tmpMax, *pMax);
 
-
+	printf("tmpMin : %lf, %lf, %lf\n", tmpMin.x, tmpMin.y, tmpMin.z);
+	printf("tmpMax : %lf, %lf, %lf\n", tmpMax.x, tmpMax.y, tmpMax.z);
 
 	m_VBSubresourceData.pSysMem = m_pVertices;
 
@@ -268,11 +286,11 @@ HRESULT CMeshContainer::SetUp_SkinnedDesc(CModel* pModel, aiMesh* pMesh)
 	return S_OK;
 }
 
-CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix) 
+CMeshContainer* CMeshContainer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, CModel* pModel, aiMesh* pMesh, _fmatrix PivotMatrix, OUT XMVECTOR* pMin, OUT XMVECTOR* pMax)
 {
 	CMeshContainer*	pInstance = new CMeshContainer(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(pModel, pMesh, PivotMatrix)))
+	if (FAILED(pInstance->NativeConstruct_Prototype(pModel, pMesh, PivotMatrix, pMin, pMax)))
 	{
 		MSG_BOX("Failed To Creating CMeshContainer");
 		Safe_Release(pInstance);

@@ -17,6 +17,13 @@ public:
 		_float3		vSize;
 	}COLLIDERDESC;
 
+	typedef struct OBBDesc
+	{
+		_float3		vCenter;
+		_float3		vExtentDirs[3];
+		_float3		vAlignAxis[3];
+	}OBBDESC;
+
 private:
 	explicit CCollider(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	explicit CCollider(const CCollider& rhs);
@@ -27,12 +34,24 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
 public:
-	virtual HRESULT Render(_fmatrix TransformMatrix);
+	virtual HRESULT Render();
+
+public:
+	void Update(_fmatrix TransformMatrix);
+	_bool Collision_AABB(class CCollider* pTargetCollider);
+	_bool Collision_OBB(class CCollider* pTargetCollider);
+
+private:
+	_matrix Remove_Rotation(_fmatrix TransformMatrix);
+
+	OBBDESC Compute_OBBDesc();
 
 private:
 	BoundingBox*			m_pAABB = nullptr;
 	BoundingOrientedBox*	m_pOBB = nullptr;
 	BoundingSphere*			m_pSphere = nullptr;
+
+	_bool					m_isCollision = false;
 
 	COLLIDERDESC			m_ColliderDesc;
 
@@ -41,9 +60,6 @@ private:
 	BasicEffect*			m_pEffect = nullptr;
 	PrimitiveBatch<DirectX::VertexPositionColor>*	m_pBatch = nullptr;
 	ID3D11InputLayout*		m_pInputLayout = nullptr;
-
-
-
 
 public:
 	static CCollider* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, TYPE eType);

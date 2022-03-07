@@ -240,6 +240,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_AABB))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Colllider_OBB */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
+		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_OBB))))
+		return E_FAIL;
+
 
 
 	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY Load Completed!"));

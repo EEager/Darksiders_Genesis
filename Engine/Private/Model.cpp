@@ -24,6 +24,8 @@ CModel::CModel(const CModel & rhs)
 	, m_AniNameKey_IdxValue_Map(rhs.m_AniNameKey_IdxValue_Map)
 	, m_iNumAnimation(rhs.m_iNumAnimation)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
+	, m_Center(rhs.m_Center)
+	, m_Extents(rhs.m_Extents)
 {
 	for (auto& MaterialDesc : m_Materials)
 	{
@@ -355,6 +357,14 @@ HRESULT CModel::Create_MeshContainers()
 
 	m_iNumMeshes = m_pScene->mNumMeshes;
 
+	// For.Collider
+	// Model 한테 Center, Extents를 채워주자. Collider용 Pivot과 Size를 계산하기 쉽게 해주자
+	XMFLOAT3 vMinf3(+MathHelper::Infinity, +MathHelper::Infinity, +MathHelper::Infinity);
+	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
+
+	XMVECTOR vMin = XMLoadFloat3(&vMinf3);
+	XMVECTOR vMax = XMLoadFloat3(&vMaxf3);
+
 	for (_uint i = 0; i < m_iNumMeshes; ++i)
 	{
 		aiMesh*		pMesh = m_pScene->mMeshes[i];
@@ -362,12 +372,16 @@ HRESULT CModel::Create_MeshContainers()
 			return E_FAIL;
 
 		/* 파일로 읽어온 정점과인덱스의 정보들을 저장한다.  */
-		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, pMesh, TYPE_NONANIM == m_eType ? XMLoadFloat4x4(&m_PivotMatrix) : XMMatrixIdentity());
+		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, pMesh, XMLoadFloat4x4(&m_PivotMatrix), &vMin, &vMax);
 		if (nullptr == pMeshContainer)
 			return E_FAIL;
 
 		m_MeshContainers[pMesh->mMaterialIndex].push_back(pMeshContainer);
 	}
+
+	// For.Collider
+	Set_Center(0.5f * (vMin + vMax));
+	Set_Extents((vMax - vMin));
 
 	return S_OK;
 }

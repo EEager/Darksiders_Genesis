@@ -27,11 +27,16 @@ HRESULT CFork::NativeConstruct(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 50, 0.f, rand() % 50, 1.f));
 
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), rand() % 360);
+
 	return S_OK;
 }
 
 _int CFork::Tick(_float fTimeDelta)
 {
+	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+
 	return _int();
 }
 
@@ -46,15 +51,27 @@ _int CFork::LateTick(_float fTimeDelta)
 
 	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
 	if (nullptr == pTerrainBuff)
-		return 0;
+		goto _EXIT;
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
 
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+	/*CCollider*	pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_AABB"));
+	if (nullptr == pTerrainBuff)
 		return 0;
-
-	RELEASE_INSTANCE(CGameInstance);
 	
+	m_pAABBCom->Collision_AABB(pTargetColllider);*/
+
+	CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_OBB"));
+	if (nullptr == pTargetColllider)
+		goto _EXIT;
+
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		goto _EXIT;
+
+	m_pOBBCom->Collision_OBB(pTargetColllider);
+
+_EXIT:
+	RELEASE_INSTANCE(CGameInstance);
 	return _int();
 }
 
@@ -67,21 +84,25 @@ HRESULT CFork::Render()
 	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
 
 	
-
 	for (_uint i = 0; i < iNumMeshContainer; ++i)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		
-
 		m_pModelCom->Render(i, 0);
 	}
+
+
+#ifdef _DEBUG
+	m_pAABBCom->Render();
+	m_pOBBCom->Render();
+#endif // _DEBUG
+
+
 
 	// restore default states, as the SkyFX changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 
-	
 
 	return S_OK;
 }
@@ -98,6 +119,22 @@ HRESULT CFork::SetUp_Component()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_AABB */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, 2.5f, 0.f);
+	ColliderDesc.vSize = _float3(2.f, 5.0f, 5.0f);
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+		return E_FAIL;
+
+
+	/* For.Com_OBB */
+	ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
+	ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
+	/*ColliderDesc.vPivot = _float3(0.f, 3.0f, 0.f);
+	ColliderDesc.vSize = _float3(1.8f, 6.0f, 4.8f);*/
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
 	
 
@@ -165,7 +202,8 @@ void CFork::Free()
 
 	__super::Free();
 
-
+	Safe_Release(m_pOBBCom);
+	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);

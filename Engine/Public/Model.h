@@ -106,6 +106,30 @@ private:
 	_uint									m_iCurrentAnimIndex = 0;
 	_bool									m_isLoop = true;
 
+
+
+	// For.Collider
+public:
+	void Set_Center(_fvector vCenter) {
+		XMStoreFloat3(&m_Center, vCenter);
+	}
+	void Set_Extents(_fvector vExtents) {
+		XMStoreFloat3(&m_Extents, vExtents);
+	}
+
+	_float3 Get_Center() {
+		return m_Center;
+		
+	}
+	_float3 Get_Extents() {
+		return m_Extents;
+	}
+
+private: 
+	_float3	m_Center; // Center of the box.
+	_float3	m_Extents; // Distance from the center to each side.
+
+
 private:
 	ID3DX11Effect*							m_pEffect = nullptr;
 	vector<PASSDESC*>						m_PassesDesc;
