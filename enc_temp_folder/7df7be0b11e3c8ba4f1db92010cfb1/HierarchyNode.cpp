@@ -58,7 +58,7 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 					if (XMVectorGetX(XMVector4Length(XMLoadFloat4(&offsetPos))) < 3.f) // 오프셋을 Air_Land 같은것은 첫번째 키프레임인데 앞ㅈ으로 나간다.. 시발.. 
 						m_prevOffsetPos = _float4(0.f, 0.f, 0.f, 1.f);
 					else
-						 int debug = 0.f;
+						int debug = 0.f;
 				}
 				else
 				{

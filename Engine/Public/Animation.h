@@ -58,7 +58,7 @@ private:
 	_bool			m_isFinished = false;
 	_float			m_fTimeAcc = 0.0f;
 	_bool			m_bOnceFinished = false;
-	_bool			m_bOnceStart = false;
+	_bool			m_bFistBegan = false;
 
 
 private:
