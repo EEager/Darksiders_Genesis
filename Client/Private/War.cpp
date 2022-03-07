@@ -47,8 +47,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 
 _int CWar::Tick(_float fTimeDelta)
 {
-	// War 애니메이션 키프레임 변환
-	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
+	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4());
 
 	// War 애니메이션 인덱스 변환 - FSM 머신으로 관리
 	if (m_pStateMachineCom)
@@ -279,7 +278,7 @@ HRESULT CWar::SetUp_Component()
 	CTransform::TRANSFORMDESC		TransformDesc;
 	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
 
-	TransformDesc.fSpeedPerSec = 3.f;
+	TransformDesc.fSpeedPerSec = 4.f;
 	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;

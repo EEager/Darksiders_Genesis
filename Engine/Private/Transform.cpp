@@ -30,6 +30,11 @@ void CTransform::Set_State_Lerp(STATE eState, _fvector vDst, _float fRatio)
 	memcpy(&m_WorldMatrix.m[eState], &vTmp, sizeof(_float4));
 }
 
+void CTransform::Set_WorldMatrix(_fmatrix fMat)
+{
+	XMStoreFloat4x4(&m_WorldMatrix, fMat);
+}
+
 void CTransform::Set_TransformDesc(const TRANSFORMDESC & TransformDesc)
 {
 	m_TransformDesc = TransformDesc;

@@ -31,6 +31,10 @@ public:
 		return XMLoadFloat4x4(&m_TransformationMatrix);
 	}
 
+	_float4x4* Get_TransformationMatrix_4x4() {
+		return &m_TransformationMatrix;
+	}
+
 public:
 	HRESULT NativeConstruct(const char* pName);
 

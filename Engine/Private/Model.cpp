@@ -247,7 +247,7 @@ _bool CModel::Get_Animation_isFinished(const char* pNameKey)
 	return m_Animations[iAnimIndex]->Get_isFinished();
 }
 
-HRESULT CModel::Update_Animation(_float fTimeDelta)
+HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW)
 {
 	if (TYPE_ANIM != m_eType) // TYPE_NONANIM, TYPE_ANIM_USE_OTHER 인경우에는 Update안한다. TYPE_ANIM_USE_OTHER 경우 Update 하면 2번 업데이트된다. 
 		return S_OK;
@@ -261,7 +261,7 @@ HRESULT CModel::Update_Animation(_float fTimeDelta)
 	/* 노드들을 순회하면서 노드에 컴바인트 트랜스포메이션 행려을 만든다. */
 	for (auto& pHierarchyNode : m_HierarchyNodes)
 	{
-		pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex);
+		pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex, pMatW);
 	}
 
 

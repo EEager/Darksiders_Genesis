@@ -48,6 +48,17 @@ namespace Engine
 		{ 
 
 		}
+
+#define FLOAT_EPSILON 0.00001
+		_bool operator==(const tagFloat4_Derived& v)
+		{
+			return fabs(x - v.x) <= FLOAT_EPSILON && fabs(y - v.y) <= FLOAT_EPSILON && fabs(z - v.z) <= FLOAT_EPSILON && fabs(w - v.w) <= FLOAT_EPSILON;
+		}
+
+		_bool operator!=(const tagFloat4_Derived& v)
+		{
+			return fabs(x - v.x) > FLOAT_EPSILON || fabs(y - v.y) > FLOAT_EPSILON || fabs(z - v.z) > FLOAT_EPSILON || fabs(w - v.w) > FLOAT_EPSILON;
+		}
 	}_float4;
 	
 	typedef XMVECTOR				_vector;

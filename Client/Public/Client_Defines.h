@@ -49,4 +49,4 @@ static const unsigned int		g_iWinCY = 900;
 // -------------------
 // For the Test
 // -------------------
-//#define ONLY_WAR
+#define ONLY_WAR

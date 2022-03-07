@@ -43,8 +43,8 @@ public:
 public:
 	HRESULT NativeConstruct(const char* pName, _fmatrix TransformationMatrix, CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Reserve_Channels(_uint iNumAnimation);
-	void Update_CombinedTransformationMatrix();
-	void Update_CombinedTransformationMatrix(_uint iCurrentAnimIndex);
+	void Update_CombinedTransformationMatrix(); // 뼈없는경우
+	void Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW = nullptr); // 일반적인경우
 
 
 private:
@@ -56,6 +56,10 @@ private:
 	_float4x4				m_CombinedTransformationMatrix; // 아 이거 조금 헷갈리네 시발것
 	CHierarchyNode*			m_pParent = nullptr;
 	_uint					m_iDepth = 0;
+
+private:
+	// 애니메이션 오프셋을 월드행렬에 적용하기 위한 이전애니메이션 위치값.
+	_float4 m_prevOffsetPos = _float4(0.f, 0.f, 0.f, 1.f); // init zero
 
 private:
 	vector<class CChannel*>			m_Channels;

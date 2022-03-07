@@ -79,8 +79,8 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 	// 현재 정점에 영향을 주고 있는 뼈들을 순회를 도는데...이거보니 사실상 134개 모두 다 도네 ㅎㅎ 
 	for (auto& pHierarchyNode : m_Bones)
 	{
-		_matrix		OffsetMatrix = pHierarchyNode->Get_OffsetMatix();
-		_matrix		CombinedTransformationMatrix = pHierarchyNode->Get_CombinedMatix();
+		_matrix		OffsetMatrix = pHierarchyNode->Get_OffsetMatix(); // 뼈->정점
+		_matrix		CombinedTransformationMatrix = pHierarchyNode->Get_CombinedMatix(); // 루트->뼈
 
 		XMStoreFloat4x4(&pBoneMatrices[iBoneIndex++], XMMatrixTranspose(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix));
 	}

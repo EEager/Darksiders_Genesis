@@ -22,8 +22,10 @@ private:
 
 public:
 	void Set_State(STATE eState, _fvector vState);
+	void Set_WorldMatrix(_fmatrix fMat);
 	void Set_State_Lerp(STATE eState, _fvector vState, _float fRatio);
 	void Set_TransformDesc(const TRANSFORMDESC& TransformDesc);
+
 	_vector Get_State(STATE eState);
 	_vector Get_State_Vec(STATE eState);
 	_float4 Get_State_Flt(STATE eState);
@@ -40,6 +42,10 @@ public:
 
 	_matrix Get_WorldMatrix() {
 		return XMLoadFloat4x4(&m_WorldMatrix);
+	}
+
+	_float4x4* Get_WorldMatrix_4x4() {
+		return &m_WorldMatrix;
 	}
 
 public:
