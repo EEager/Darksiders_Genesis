@@ -51,6 +51,8 @@ private:
 public:
 	void Set_Jump(_bool warJump = true, _bool clearJump = true);
 	_bool Get_Jump() { return m_bJump; }
+
+	void Set_Dont_Key(_bool _b) { m_bDont_Key = _b; }
 	void Set_DontMove_OnlyTurn(_bool _b) { m_bDontMove_OnlyTurn = _b; }
 	void Set_DontTurn_OnlyMove(_bool _b) { m_bDontTurn_OnlyMove = _b; }
 
@@ -61,6 +63,7 @@ public:
 
 private:
 	_bool	m_bJump = false; // 점프했는지 안했느지 판단
+	_bool	m_bDont_Key = false; // War_Key 타지말자
 	_bool	m_bDontMove_OnlyTurn = false; // 땅 콤보 스킬 사용할때는 움직이면 안된다.
 	_bool	m_bDontTurn_OnlyMove = false; // 불 콤보 스킬 사용할때는 회전하면 안된다
 	_bool	m_War_Key_Lock = false; // 일부 FSM에서는 움직이지말아야한다. 하지만 이건 detail 작업이므로 나중에 넣자.

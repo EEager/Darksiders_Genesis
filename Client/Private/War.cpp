@@ -277,6 +277,9 @@ _bool CWar::KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit)
 
 void CWar::War_Key(_float fTimeDelta)
 {
+	if (m_bDont_Key == true)
+		return;
+
 	// 
 	// G ½ºÅ³
 	// 

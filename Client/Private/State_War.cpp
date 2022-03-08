@@ -234,7 +234,7 @@ void CState_War_Run::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Run_F");
 
 	m_fPrevSpeed = static_cast<CWar*>(pOwner)->Get_Speed();
-	static_cast<CWar*>(pOwner)->Set_Speed(5.f);
+	static_cast<CWar*>(pOwner)->Set_Speed(5.5f);
 }
 
 void CState_War_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1781,6 +1781,7 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Enter(CGameObject* pOwner, _float fT
 
 	// 잠시 공중에서 멈추자
 	g_pWar_Transform_Context->Set_JumpDy(+9.5f);
+	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(true);
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1810,6 +1811,7 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float 
 void CState_War_Atk_Air_Light_03_NoImpulse::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Free()
@@ -1833,6 +1835,8 @@ void CState_War_Atk_Air_Light_03_Fall::Enter(CGameObject* pOwner, _float fTimeDe
 	// Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Air_Light_03_Fall");
 
+	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(true);
+
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1853,6 +1857,8 @@ void CState_War_Atk_Air_Light_03_Fall::Execute(CGameObject* pOwner, _float fTime
 void CState_War_Atk_Air_Light_03_Fall::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
+
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Free()
@@ -1875,24 +1881,26 @@ void CState_War_Atk_Air_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Air_Land", false);
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+	
 }
 
 void CState_War_Atk_Air_Land::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
-	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
-	}
+	//// [Event] 방향키 하나라도 누르게된다면
+	//// [State]  -> CState_War_Run_Combat
+	//bool dirty = false;
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	//if (dirty)
+	//{
+	//	g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+	//	return;
+	//}
 
 	// [Event] 애니메이션 종료
 	// [State]  -> CState_War_Idle_Combat
@@ -1907,6 +1915,7 @@ void CState_War_Atk_Air_Land::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Air_Land::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 }
 
 void CState_War_Atk_Air_Land::Free()
@@ -2207,6 +2216,7 @@ void CState_War_Atk_Flamebrand_End::Enter(CGameObject* pOwner, _float fTimeDelta
 {
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand_End", false);//Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Atk_Flamebrand_End::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2220,25 +2230,12 @@ void CState_War_Atk_Flamebrand_End::Execute(CGameObject* pOwner, _float fTimeDel
 		g_pWar_State_Context->ChangeState(CState_War_Idle_Combat::GetInstance());
 		return;
 	}
-
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
-	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
-	}
-
 }
 
 void CState_War_Atk_Flamebrand_End::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 }
 
 void CState_War_Atk_Flamebrand_End::Free()
