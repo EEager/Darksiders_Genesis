@@ -2,6 +2,7 @@
 #include "..\public\UI_War_Skills.h"
 
 #include "GameInstance.h"
+#include "War.h"
 
 
 CUI_War_Skills::CUI_War_Skills(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -27,6 +28,13 @@ HRESULT CUI_War_Skills::NativeConstruct(void * pArg)
 
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(g_iWinCX, g_iWinCY, 0.f, 1.f)));	
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	// War 없으면?
+	if (m_pWar = static_cast<CWar*>(pGameInstance->Get_War()))
+		Safe_AddRef(m_pWar);
+
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
@@ -68,7 +76,13 @@ HRESULT CUI_War_Skills::Render()
 	m_pVIBufferCom->Render(0);
 
 	// 3. Enhancement 출력
-	if (FAILED(SetUp_ConstantTable_Enhancement(m_pTextureCom_Fire.Get())))
+	CTexture* pEnhance_Texture;
+	if (m_pWar == nullptr || 
+		m_pWar->Get_GType() == CWar::G_TYPE_FIRE)
+		pEnhance_Texture = m_pTextureCom_Fire.Get();
+	else
+		pEnhance_Texture = m_pTextureCom_Leaf.Get();
+	if (FAILED(SetUp_ConstantTable_Enhancement(pEnhance_Texture)))
 		return E_FAIL;
 	m_pVIBufferCom->Render(0);
 
@@ -300,7 +314,7 @@ void CUI_War_Skills::Free()
 {
 
 	__super::Free();
-
+	Safe_Release(m_pWar);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pVIBufferCom);
 }

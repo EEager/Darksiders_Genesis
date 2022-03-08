@@ -1937,24 +1937,26 @@ void CState_War_Wrath_BladeGeyser::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Wrath_BladeGeyser", false);
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
 }
 
 void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
-	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
-	}
+	//// [Event] 방향키 하나라도 누르게된다면
+	//// [State]  -> CState_War_Run_Combat
+	//bool dirty = false;
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	//if (dirty)
+	//{
+	//	g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+	//	return;
+	//}
 
 	// [Event] 애니메이션 종료
 	// [State]  -> CState_War_Idle_Combat
@@ -1969,6 +1971,8 @@ void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelt
 void CState_War_Wrath_BladeGeyser::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
 }
 
 void CState_War_Wrath_BladeGeyser::Free()
@@ -2077,6 +2081,8 @@ void CState_War_Atk_EarthSplitter_Level1::Enter(CGameObject* pOwner, _float fTim
 {
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_EarthSplitter_Level1", false);// Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2091,24 +2097,26 @@ void CState_War_Atk_EarthSplitter_Level1::Execute(CGameObject* pOwner, _float fT
 		return;
 	}
 
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
-	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
-	}
+	//// [Event] 방향키 하나라도 누르게된다면
+	//// [State]  -> CState_War_Run_Combat
+	//bool dirty = false;
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	//if (dirty)
+	//{
+	//	g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+	//	return;
+	//}
 
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Free()

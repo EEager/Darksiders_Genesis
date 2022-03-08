@@ -150,7 +150,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 
 	/* For.Layer_War*/
 	for (int i = 0; i < 1; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_War"))))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_War", TEXT("Prototype_GameObject_War"))))
 			return E_FAIL;
 
 #ifndef ONLY_WAR
