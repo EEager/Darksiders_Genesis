@@ -2,6 +2,7 @@
 #include "VIBuffer.h"
 #include "Model.h"
 #include "Navigation.h"
+#include "PipeLine.h"
 
 CTransform::CTransform(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
@@ -40,6 +41,17 @@ void CTransform::Set_TransformDesc(const TRANSFORMDESC & TransformDesc)
 	m_TransformDesc = TransformDesc;
 }
 
+void CTransform::Set_TransformDesc_Speed(const _float& fSpeed)
+{
+	m_TransformDesc.fSpeedPerSec = fSpeed;
+}
+
+CTransform::TRANSFORMDESC* CTransform::Get_TransformDesc_Ptr()
+{
+	return &m_TransformDesc;
+}
+
+
 _vector CTransform::Get_State(STATE eState)
 {
 	return Get_State_Vec(eState);
@@ -49,6 +61,7 @@ _vector CTransform::Get_State_Vec(STATE eState)
 {
 	return XMLoadFloat4((_float4*)&m_WorldMatrix.m[eState]);
 }
+
 
 _float4 CTransform::Get_State_Flt(STATE eState)
 {
@@ -146,6 +159,48 @@ void CTransform::Go_Right(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
+void CTransform::Go_Straight_OnCamera(_float fTimeDelta, CNavigation* pNaviCom)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+	_vector		vCamLook = CPipeLine::GetInstance()->Get_CamLook();
+	vPosition += XMVector3Normalize(XMVectorSetY(vCamLook, 0.f)) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+
+	if (nullptr != pNaviCom)
+	{
+		if (false == pNaviCom->isMove(vPosition))
+			return;
+	}
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Backward_OnCamera(_float fTimeDelta)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+	_vector		vCamLook = CPipeLine::GetInstance()->Get_CamLook();
+	vPosition -= XMVector3Normalize(XMVectorSetY(vCamLook, 0.f)) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Left_OnCamera(_float fTimeDelta)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+	_vector		vCameRight = XMVector3Cross(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), CPipeLine::GetInstance()->Get_CamLook());
+	vPosition -= XMVector3Normalize(vCameRight) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
+void CTransform::Go_Right_OnCamera(_float fTimeDelta)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+	_vector		vCameRight = XMVector3Cross(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), CPipeLine::GetInstance()->Get_CamLook());
+	vPosition += XMVector3Normalize(vCameRight) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
 void CTransform::Rotation(_fvector vAxis, _float fRadian)
 {
 	_matrix		RotationMatrix;
@@ -212,12 +267,14 @@ void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float f
 	if (fabs(goalToRotateDegree) < XMConvertToDegrees(m_TransformDesc.fRotationPerSec * fTimeDelta/2.f)) // 더이상 회전할 필요없으면 하지말자
 		return; 
 
+#ifdef _DEBUG
 	//cout << "curAngle : " << curAngle << endl;
 	//cout << "fDegreeGoal : " << fDegreeGoal << endl;
 	//cout << "goalToRotateDegree : " << goalToRotateDegree << endl;
 	//cout << "fabs(goalToRotateDegree) : " << fabs(goalToRotateDegree) << endl;
 	//cout << "m_TransformDesc.fRotationPerSec * fTimeDelta : " << m_TransformDesc.fRotationPerSec * fTimeDelta << endl;
 	//cout << endl;
+#endif
 
 	// 시계방향, 반시계방향 set
 	bool isClockWise = true;
@@ -266,13 +323,23 @@ void CTransform::LookAt_Lerp(_fvector vTargetPos, _float fRatio)
 	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLookTo) * Get_Scale(CTransform::STATE_LOOK));
 }
 
-// 얘는 그냥 중력만 작용하면되는거 아닌가요? 
-void CTransform::Gravity(_float fTimeDelta)
+void CTransform::JumpY(_float fTimeDelta)
 {
+	_vector		vPosition = Get_State(STATE_POSITION);
+	_vector		vToSky = XMLoadFloat4(&m_vJumpDir);
 
+	vPosition += XMVector3Normalize(vToSky) * m_fJumpDy * fTimeDelta;
+
+	m_fJumpDy = max(-9.8f, m_fJumpDy - GRAVITY * fTimeDelta);
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-// 
+void CTransform::ClearJumpVar()
+{
+	m_fJumpDy = INIT_JUMP_DY;
+}
+
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 {
@@ -304,3 +371,5 @@ void CTransform::Free()
 {
 	__super::Free();
 }
+
+

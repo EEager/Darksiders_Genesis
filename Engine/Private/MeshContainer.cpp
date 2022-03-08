@@ -156,8 +156,8 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 	XMStoreFloat4(&tmpMin, *pMin);
 	XMStoreFloat4(&tmpMax, *pMax);
 
-	printf("tmpMin : %lf, %lf, %lf\n", tmpMin.x, tmpMin.y, tmpMin.z);
-	printf("tmpMax : %lf, %lf, %lf\n", tmpMax.x, tmpMax.y, tmpMax.z);
+	//printf("tmpMin : %lf, %lf, %lf\n", tmpMin.x, tmpMin.y, tmpMin.z);
+	//printf("tmpMax : %lf, %lf, %lf\n", tmpMax.x, tmpMax.y, tmpMax.z);
 
 	m_VBSubresourceData.pSysMem = m_pVertices;
 

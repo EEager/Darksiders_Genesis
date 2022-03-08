@@ -25,6 +25,8 @@ public:
 	void Set_WorldMatrix(_fmatrix fMat);
 	void Set_State_Lerp(STATE eState, _fvector vState, _float fRatio);
 	void Set_TransformDesc(const TRANSFORMDESC& TransformDesc);
+	void Set_TransformDesc_Speed(const _float& fSpeed);
+	TRANSFORMDESC* Get_TransformDesc_Ptr();
 
 	_vector Get_State(STATE eState);
 	_vector Get_State_Vec(STATE eState);
@@ -62,6 +64,13 @@ public:
 	void Go_Backward(_float fTimeDelta);
 	void Go_Left(_float fTimeDelta);
 	void Go_Right(_float fTimeDelta);
+
+	void Go_Straight_OnCamera(_float fTimeDelta, class CNavigation* pNaviCom = nullptr);
+	void Go_Backward_OnCamera(_float fTimeDelta);
+	void Go_Left_OnCamera(_float fTimeDelta);
+	void Go_Right_OnCamera(_float fTimeDelta);
+
+
 	void Rotation(_fvector vAxis, _float fRadian);
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void TurnTo_AxisY_Degree(_float fDegreeGoal, _float fTimeDelta);
@@ -72,14 +81,16 @@ private:
 	_float4x4		m_WorldMatrix;
 	TRANSFORMDESC	m_TransformDesc;
 
-
-	// Momentum : 가속도 ㅎ 
 public:
-	void Gravity(_float fTimeDelta);
+	void JumpY(_float fTimeDelta);
+	void ClearJumpVar();
+	void Set_JumpDy(_float _dy) { m_fJumpDy = _dy; }
 
 private:
-	_float4			m_MomentumMatrix;
-	_float			m_MomentumPower = 0.f;
+#define INIT_JUMP_DY 13.5f
+#define GRAVITY 34.f
+	_float4			m_vJumpDir = { 0.f, 1.f, 0.f, 0.f }; // 하늘방향
+	_float			m_fJumpDy = INIT_JUMP_DY;
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

@@ -37,8 +37,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 		return E_FAIL;	
 
 
-
-
+	// 초기 위치
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
 
 	return S_OK;
@@ -53,51 +52,16 @@ _int CWar::Tick(_float fTimeDelta)
 	if (m_pStateMachineCom)
 		m_pStateMachineCom->Tick(fTimeDelta);
 
-	// 방향키 입력받아 회전,이동 처리
-	War_Key(fTimeDelta);
-
 	// OBB, AABB
 	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
 	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
 
-	// 점프면 위로
-	if (true == m_bJump) // 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
+	// 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
+	if (true == m_bJump) 
 	{
-		//m_pTransformCom->Go_Jump_Y(fTimeDelta);
+		// 점프했다가 중력적용받아 떨어진다
+		m_pTransformCom->JumpY(fTimeDelta);
 	}
-
-
-	/*
-	// ----------------------------
-	// For Test
-	const int CONST_MAX_ANIM_NUM = 72;
-	static int animIdx = 0; 
-	bool dirty = false;
-	const auto dirtyF = [&dirty, &CONST_MAX_ANIM_NUM](bool PlusOrMinus) {
-		if (!PlusOrMinus)
-		{
-			animIdx = animIdx - 1;
-			if (animIdx < 0)
-				animIdx = CONST_MAX_ANIM_NUM -1;
-		}
-		else
-		{
-			animIdx = (animIdx + 1) % (CONST_MAX_ANIM_NUM);
-		}
-		dirty = true;
-	};
-	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS)) // '-'
-		dirtyF(false);
-	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS)) // '+'
-		dirtyF(true);
-
-	if (dirty)
-	{
-		cout << "animIdx : " << animIdx << endl;
-		m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
-	}
-	*/
-
 
 	return _int();
 }
@@ -117,11 +81,9 @@ _int CWar::LateTick(_float fTimeDelta)
 
 
 	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition);
-	// Jumping
-	if (m_bJump)
+	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
 	{
-		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-		if (XMVectorGetY(vPos) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
+		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
 		{
 			m_bJump = false;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
@@ -224,6 +186,28 @@ _vector CWar::Get_War_Pos()
 	return m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
 }
 
+void CWar::Set_Jump(_bool warJump, _bool clearJump)
+{
+	m_bJump = warJump;
+	if (clearJump)
+		m_pTransformCom->ClearJumpVar();
+}
+
+
+_float CWar::Get_Speed()
+{
+	assert(m_pTransformCom);
+	CTransform::TRANSFORMDESC* pDesc = m_pTransformCom->Get_TransformDesc_Ptr();
+	return pDesc->fSpeedPerSec;
+}
+
+
+void CWar::Set_Speed(const _float& fSpeed)
+{
+	assert(m_pTransformCom);
+	m_pTransformCom->Set_TransformDesc_Speed(fSpeed);
+}
+
 _float CWar::GetDegree(_ubyte downedKey)
 {
 	_float retDegree = 0.f;//12 Default는 정면을 바라보게하자.
@@ -293,24 +277,64 @@ _bool CWar::KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit)
 
 void CWar::War_Key(_float fTimeDelta)
 {
-	unsigned char keyDownCheckBit = 0b0;
-	bool isKeyDown = false;
-	auto const dirtyCheck = [&isKeyDown, &keyDownCheckBit](_bool b) { isKeyDown |= b; };
-	dirtyCheck(KeyCheck(DIK_A, keyDownCheckBit));
-	dirtyCheck(KeyCheck(DIK_W, keyDownCheckBit));
-	dirtyCheck(KeyCheck(DIK_D, keyDownCheckBit));
-	dirtyCheck(KeyCheck(DIK_S, keyDownCheckBit));
+	// 
+	// G 스킬
+	// 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_G))
+	{
+		int debug = 0;
+		if (m_eGType == G_TYPE_FIRE)
+			m_eGType = G_TYPE_EARTH;
+		else if (m_eGType == G_TYPE_EARTH)
+			m_eGType = G_TYPE_FIRE;
+	}
 
-	if (isKeyDown == false)
-		return;
+	// 불 콤보 스킬은 카메라 기준 앞뒤좌우로 움직여야한다.
+	if (m_bDontTurn_OnlyMove)
+	{
+		CInput_Device* pinputDevice = GET_INSTANCE(CInput_Device);
+		if (pinputDevice->Key_Pressing(DIK_A))
+		{
+			m_pTransformCom->Go_Left_OnCamera(fTimeDelta);
+		}
+		if (pinputDevice->Key_Pressing(DIK_D))
+		{
+			m_pTransformCom->Go_Right_OnCamera(fTimeDelta);
+		}
+		if (pinputDevice->Key_Pressing(DIK_W))
+		{
+			m_pTransformCom->Go_Straight_OnCamera(fTimeDelta);
+		}
+		if (pinputDevice->Key_Pressing(DIK_S))
+		{
+			m_pTransformCom->Go_Backward_OnCamera(fTimeDelta);
+		}
+		RELEASE_INSTANCE(CInput_Device);
+	}
+	else
+	{
+		// 
+		// 이동 + 회전 
+		//
+		unsigned char keyDownCheckBit = 0b0;
+		bool isKeyDown = false;
+		auto const dirtyCheck = [&isKeyDown, &keyDownCheckBit](_bool b) { isKeyDown |= b; };
+		dirtyCheck(KeyCheck(DIK_A, keyDownCheckBit));
+		dirtyCheck(KeyCheck(DIK_W, keyDownCheckBit));
+		dirtyCheck(KeyCheck(DIK_D, keyDownCheckBit));
+		dirtyCheck(KeyCheck(DIK_S, keyDownCheckBit));
 
-	// 누른 키에 맞게 움직이자.
-	// 1) 회전
-	//m_pTransform->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(GetDegree(keyDownCheckBit))); // 고정
-	m_pTransformCom->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fTimeDelta * 10); // 서서히 회전
+		if (isKeyDown == false)
+			return;
 
-	// 2) 전진.
-	m_pTransformCom->Go_Straight(fTimeDelta);
+		// War 서서히 회전시키자
+		m_pTransformCom->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fTimeDelta * 10); 
+
+		// 전진
+		if (m_bDontMove_OnlyTurn == false)
+			m_pTransformCom->Go_Straight(fTimeDelta);
+	}
+
 }
 
 HRESULT CWar::SetUp_Component()
@@ -319,7 +343,7 @@ HRESULT CWar::SetUp_Component()
 	CTransform::TRANSFORMDESC		TransformDesc;
 	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
 
-	TransformDesc.fSpeedPerSec = 4.f;
+	TransformDesc.fSpeedPerSec = 3.7f;
 	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;

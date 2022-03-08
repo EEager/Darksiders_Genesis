@@ -9,6 +9,7 @@
 #include "Model.h"
 #include "..\Public\State_War.h"
 #include "War.h"
+#include "PipeLine.h"
 
 
 // 
@@ -25,11 +26,10 @@ CTransform* g_pWar_Transform_Context;
 * 
 ----------------------------------------------------------------------------------*/
 
-
 // -------------------------------------------------
 // Global #1
 // [State] CGlobal_State_War
-// [Infom] 글로벌 이벤트 체크
+// [Infom]  War_Key, 죽음 체크
 // -------------------------------------------------
 CGlobal_State_War::CGlobal_State_War()
 {
@@ -52,6 +52,18 @@ void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar_State_Context->ChangeState(CState_War_Death::GetInstance());
 		return;
 	}
+
+	// [Event] 대쉬
+	// [State]  -> CState_War_DashTo_F
+	if (CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_DashTo_F::GetInstance());
+		return;
+	}
+
+
+	// War_Key
+	static_cast<CWar*>(pOwner)->War_Key(fTimeDelta);
 }
 
 void CGlobal_State_War::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -220,6 +232,9 @@ void CState_War_Run::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Run_F");
+
+	m_fPrevSpeed = static_cast<CWar*>(pOwner)->Get_Speed();
+	static_cast<CWar*>(pOwner)->Set_Speed(5.f);
 }
 
 void CState_War_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -277,6 +292,7 @@ void CState_War_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Run::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Speed(m_fPrevSpeed);
 }
 
 void CState_War_Run::Free()
@@ -917,6 +933,8 @@ void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)
 
 	if (m_bChargeStart)
 	{
+		// [Event] 오른쪽 마우스 1초 이상 차징하면 콤보 스킬로
+		// [State]  -> CState_War_Atk_EarthSplitter_Charge_Start
 		// 누르고 있는 경우
 		if (CInput_Device::GetInstance()->Mouse_Pressing(CInput_Device::MOUSEBUTTONSTATE::DIMB_RBUTTON))
 		{
@@ -924,16 +942,20 @@ void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)
 #ifdef _DEBUG
 			printf("m_fBntPressTime(%lf)\n", m_fBntPressTime);
 #endif
-			if (m_fBntPressTime > .5f) // 1초 이상 차징하면 G스킬로
+			if (m_fBntPressTime > .5f) // 1초 이상 차징하면 콤보 스킬로
 			{
-				g_pWar_State_Context->ChangeState(CState_War_Atk_EarthSplitter_Charge_Start::GetInstance());
+				if (static_cast<CWar*>(pOwner)->Get_GType() == CWar::G_TYPE_FIRE)
+					g_pWar_State_Context->ChangeState(CState_War_Atk_Flamebrand_Start::GetInstance());
+				else
+					g_pWar_State_Context->ChangeState(CState_War_Atk_EarthSplitter_Charge_Start::GetInstance());
 				return;
 			}
 		}
-		// 뗀 경우
+		// [Event] 오른쪽 마우스
+		// [State]  -> CState_War_Atk_Heavy_02
 		else
 		{
-			if (m_fBntPressTime < 0.5f) // 바로 뗀다면 콤보 스킬로
+			if (m_fBntPressTime < 0.5f) // 바로 뗀다면 다음 구분 동작
 			{
 				g_pWar_State_Context->ChangeState(CState_War_Atk_Heavy_02::GetInstance());
 				return;
@@ -1097,6 +1119,10 @@ void CState_War_Jump::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump", false);
+
+
+	// 점프 셋팅
+	static_cast<CWar*>(pOwner)->Set_Jump();
 }
 
 void CState_War_Jump::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1123,6 +1149,28 @@ void CState_War_Jump::Execute(CGameObject* pOwner, _float fTimeDelta)
 	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Jump"))
 	{
 		g_pWar_State_Context->ChangeState(CState_War_Jump_Fall::GetInstance());
+		return;
+	}
+
+	// 땅에 닿았다
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
+	{
+		// [Event] 땋에 닿으면서 방향키 누르고 있는경우 
+		// [State]  -> CState_War_Jump_Land_Run
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Jump_Land_Run::GetInstance());
+			return;
+		}
+
+		// [Event] 땅닿1
+		// [State]  -> CState_War_Jump_Land
+		g_pWar_State_Context->ChangeState(CState_War_Jump_Land::GetInstance());
 		return;
 	}
 }
@@ -1164,8 +1212,8 @@ void CState_War_Jump_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
 		return;
 	}
 
-	m_fFlightTime += fTimeDelta;
 
+	m_fFlightTime += fTimeDelta;
 	// [Event] 스페이스 (점프)
 	// [State]  -> CState_War_Jump_Double
 	if (CInput_Device::GetInstance()->Key_Down(DIK_SPACE))
@@ -1174,11 +1222,17 @@ void CState_War_Jump_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
 		return;
 	}
 
-	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	// 땅에 닿았다
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
 	{
 		// [Event] 땋에 닿으면서 방향키 누르고 있는경우 
 		// [State]  -> CState_War_Jump_Land_Run
-		if (0)
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
 		{
 			g_pWar_State_Context->ChangeState(CState_War_Jump_Land_Run::GetInstance());
 			return;
@@ -1343,6 +1397,19 @@ void CState_War_Jump_Land_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
 		return;
 	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
 }
 
 void CState_War_Jump_Land_Run::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -1370,6 +1437,9 @@ void CState_War_Jump_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not, Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Combat", false);
+
+	// 점프 셋팅
+	static_cast<CWar*>(pOwner)->Set_Jump();
 }
 
 void CState_War_Jump_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1398,6 +1468,28 @@ void CState_War_Jump_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar_State_Context->ChangeState(CState_War_Jump_Fall_Combat::GetInstance());
 		return;
 	}
+
+
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
+	{
+		// [Event] 땋에 닿으면서 방향키 누르고 있는경우 
+		// [State]  -> CState_War_Jump_Combat_Land_Run
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Jump_Combat_Land_Run::GetInstance());
+			return;
+		}
+
+		// [Event] 땅닿
+		// [State]  -> CState_War_Jump_Combat_Land
+		g_pWar_State_Context->ChangeState(CState_War_Jump_Combat_Land::GetInstance());
+		return;
+	}
 }
 
 void CState_War_Jump_Combat::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -1412,7 +1504,7 @@ void CState_War_Jump_Combat::Free()
 // -------------------------------------------------
 // #20
 // [State] CState_War_Jump_Fall_Combat
-// [Infom] 칼들고 점프중
+// [Infom] 칼들고 점프한 뒤 떨어지는중
 // -------------------------------------------------
 CState_War_Jump_Fall_Combat::CState_War_Jump_Fall_Combat()
 {
@@ -1445,11 +1537,17 @@ void CState_War_Jump_Fall_Combat::Execute(CGameObject* pOwner, _float fTimeDelta
 		return;
 	}
 
-	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
 	{
 		// [Event] 땋에 닿으면서 방향키 누르고 있는경우 
 		// [State]  -> CState_War_Jump_Combat_Land_Run
-		if (0)
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
 		{
 			g_pWar_State_Context->ChangeState(CState_War_Jump_Combat_Land_Run::GetInstance());
 			return;
@@ -1545,6 +1643,19 @@ void CState_War_Jump_Combat_Land_Run::Execute(CGameObject* pOwner, _float fTimeD
 {
 	CState::Execute(pOwner, fTimeDelta);
 
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run_Combat
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+		return;
+	}
+
 	// [Event] 애니메이션 종료
 	// [State]  -> CState_War_Run_Combat
 	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Jump_Combat_Land_Run"))
@@ -1580,11 +1691,22 @@ void CState_War_Jump_Double::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not, Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Double", false);
+
+	// 점프 셋팅
+	static_cast<CWar*>(pOwner)->Set_Jump();
 }
 
 void CState_War_Jump_Double::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 마우스 오른쪽(강공)
+	// [State]  -> CState_War_Atk_Air_Light_03_NoImpulse
+	if (CInput_Device::GetInstance()->Mouse_Down(CInput_Device::MOUSEBUTTONSTATE::DIMB_RBUTTON))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Atk_Air_Light_03_NoImpulse::GetInstance());
+		return;
+	}
 
 	// [Event] 애니메이션 종료
 	// [State]  -> CState_War_Jump_Fall
@@ -1594,11 +1716,46 @@ void CState_War_Jump_Double::Execute(CGameObject* pOwner, _float fTimeDelta)
 		return;
 	}
 
+
+	m_fFlightTime += fTimeDelta;
+	// 땅에 닿았다
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
+	{
+		// [Event] 땋에 닿으면서 방향키 누르고 있는경우 
+		// [State]  -> CState_War_Jump_Land_Run
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Jump_Land_Run::GetInstance());
+			return;
+		}
+
+		if (m_fFlightTime <= 2.f)
+		{
+			// [Event] 땅닿1
+			// [State]  -> CState_War_Jump_Land
+			g_pWar_State_Context->ChangeState(CState_War_Jump_Land::GetInstance());
+			return;
+		}
+		else
+		{
+			// [Event] 땅닿2 - 일정높이 이상되면 땋닿2임 
+			// [State]  -> CState_War_Jump_Land
+			g_pWar_State_Context->ChangeState(CState_War_Jump_Land_Heavy::GetInstance());
+			return;
+		}
+	}
+
 }
 
 void CState_War_Jump_Double::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	m_fFlightTime = 0.f;
 }
 
 void CState_War_Jump_Double::Free()
@@ -1621,6 +1778,9 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Enter(CGameObject* pOwner, _float fT
 	CState::Enter();
 	// Not, Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Air_Light_03_NoImpulse", false);
+
+	// 잠시 공중에서 멈추자
+	g_pWar_Transform_Context->Set_JumpDy(+9.5f);
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1632,6 +1792,16 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float 
 	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Atk_Air_Light_03_NoImpulse"))
 	{
 		g_pWar_State_Context->ChangeState(CState_War_Atk_Air_Light_03_Fall::GetInstance());
+		return;
+	}
+
+
+	// [Event] 착지시
+	// [State]  -> CState_War_Atk_Air_Land
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
+	{
+
+		g_pWar_State_Context->ChangeState(CState_War_Atk_Air_Land::GetInstance());
 		return;
 	}
 
@@ -1662,16 +1832,18 @@ void CState_War_Atk_Air_Light_03_Fall::Enter(CGameObject* pOwner, _float fTimeDe
 	CState::Enter();
 	// Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Air_Light_03_Fall");
+
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	// [Event] 착지시
+	// [State]  -> CState_War_Atk_Air_Land
+	if (static_cast<CWar*>(pOwner)->Get_Jump() == false)
 	{
-		// [Event] 착지시
-		// [State]  -> CState_War_Atk_Air_Land
+
 		g_pWar_State_Context->ChangeState(CState_War_Atk_Air_Land::GetInstance());
 		return;
 	}
@@ -1813,6 +1985,7 @@ void CState_War_Atk_EarthSplitter_Charge_Start::Enter(CGameObject* pOwner, _floa
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_EarthSplitter_Charge_Start", false);
+	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(true);
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1832,6 +2005,8 @@ void CState_War_Atk_EarthSplitter_Charge_Start::Execute(CGameObject* pOwner, _fl
 void CState_War_Atk_EarthSplitter_Charge_Start::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(false);
+
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Start::Free()
@@ -1853,6 +2028,7 @@ void CState_War_Atk_EarthSplitter_Charge_Loop::Enter(CGameObject* pOwner, _float
 {
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_EarthSplitter_Charge_Loop");// Loop
+	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(true);
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Loop::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1871,6 +2047,7 @@ void CState_War_Atk_EarthSplitter_Charge_Loop::Execute(CGameObject* pOwner, _flo
 void CState_War_Atk_EarthSplitter_Charge_Loop::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(false);
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Loop::Free()
@@ -1905,6 +2082,19 @@ void CState_War_Atk_EarthSplitter_Level1::Execute(CGameObject* pOwner, _float fT
 		return;
 	}
 
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run_Combat
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+		return;
+	}
+
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -1913,5 +2103,186 @@ void CState_War_Atk_EarthSplitter_Level1::Exit(CGameObject* pOwner, _float fTime
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Free()
+{
+}
+
+// -------------------------------------------------
+// #31
+// [State] CState_War_Atk_Flamebrand_Start
+// [Infom] G스킬 - 불풍차 돌리기
+// -------------------------------------------------
+CState_War_Atk_Flamebrand_Start::CState_War_Atk_Flamebrand_Start()
+{
+	m_pStateName = "CState_War_Atk_Flamebrand_Start";
+}
+
+void CState_War_Atk_Flamebrand_Start::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand_Start", false);// Not Loop
+}
+
+void CState_War_Atk_Flamebrand_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Atk_Flamebrand
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Atk_Flamebrand_Start"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Atk_Flamebrand::GetInstance());
+		return;
+	}
+
+}
+
+void CState_War_Atk_Flamebrand_Start::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Atk_Flamebrand_Start::Free()
+{
+}
+
+// -------------------------------------------------
+// #32
+// [State] CState_War_Atk_Flamebrand
+// [Infom] G스킬 - 불풍차 돌리는 중
+// -------------------------------------------------
+CState_War_Atk_Flamebrand::CState_War_Atk_Flamebrand()
+{
+	m_pStateName = "CState_War_Atk_Flamebrand";
+}
+
+void CState_War_Atk_Flamebrand::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand");// Loop
+	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(true);
+
+}
+
+void CState_War_Atk_Flamebrand::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	m_fSpinningTimeAcc += fTimeDelta;
+
+	// [Event] 오른쪽 마우스 떼거나 m_fSpinningTimeAcc 3초 이상 지나면 
+	// [State]  -> CState_War_Atk_Flamebrand
+	if (m_fSpinningTimeAcc > 5.f || CInput_Device::GetInstance()->Mouse_Pressing(CInput_Device::MOUSEBUTTONSTATE::DIMB_RBUTTON) == false)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Atk_Flamebrand_End::GetInstance());
+		return;
+	}
+
+}
+
+void CState_War_Atk_Flamebrand::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	m_fSpinningTimeAcc = 0.f;
+	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
+
+}
+
+void CState_War_Atk_Flamebrand::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #33
+// [State] CState_War_Atk_Flamebrand_End
+// [Infom] G스킬 - 불풍차 돌리기 끝
+// -------------------------------------------------
+CState_War_Atk_Flamebrand_End::CState_War_Atk_Flamebrand_End()
+{
+	m_pStateName = "CState_War_Atk_Flamebrand_End";
+}
+
+void CState_War_Atk_Flamebrand_End::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand_End", false);//Not Loop
+}
+
+void CState_War_Atk_Flamebrand_End::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle_Combat
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Atk_Flamebrand_End"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle_Combat::GetInstance());
+		return;
+	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run_Combat
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+		return;
+	}
+
+}
+
+void CState_War_Atk_Flamebrand_End::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Atk_Flamebrand_End::Free()
+{
+}
+
+
+// -------------------------------------------------
+// #34
+// [State] CState_War_DashTo_F
+// [Infom] 대쉬
+// -------------------------------------------------
+CState_War_DashTo_F::CState_War_DashTo_F()
+{
+	m_pStateName = "CState_War_DashTo_F";
+}
+
+void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_DashTo_F", false);//Not Loop
+
+	// 무적판정 넣거나.
+	// 잔상 애니메이션 효과 시작하는 변수 넣거나
+}
+
+void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle_Combat
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_DashTo_F"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle_Combat::GetInstance());
+		return;
+	}
+}
+
+void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_DashTo_F::Free()
 {
 }
