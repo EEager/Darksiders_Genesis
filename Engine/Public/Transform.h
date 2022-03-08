@@ -72,6 +72,15 @@ private:
 	_float4x4		m_WorldMatrix;
 	TRANSFORMDESC	m_TransformDesc;
 
+
+	// Momentum : °¡¼Óµµ ¤¾ 
+public:
+	void Gravity(_float fTimeDelta);
+
+private:
+	_float4			m_MomentumMatrix;
+	_float			m_MomentumPower = 0.f;
+
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CComponent* Clone(void* pArg) override;

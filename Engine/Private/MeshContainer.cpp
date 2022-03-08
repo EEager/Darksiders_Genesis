@@ -82,7 +82,10 @@ HRESULT CMeshContainer::SetUp_BoneMatrices(_float4x4* pBoneMatrices, _fmatrix Pi
 		_matrix		OffsetMatrix = pHierarchyNode->Get_OffsetMatix(); // 뼈->정점
 		_matrix		CombinedTransformationMatrix = pHierarchyNode->Get_CombinedMatix(); // 루트->뼈
 
-		XMStoreFloat4x4(&pBoneMatrices[iBoneIndex++], XMMatrixTranspose(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix));
+
+		// 최종적으로 셰이더에 던지는 값 = 오프셋 * 컴바인드 * 피봇 
+		XMStoreFloat4x4(&pBoneMatrices[iBoneIndex++], 
+			XMMatrixTranspose(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix));
 	}
 
 	return S_OK;

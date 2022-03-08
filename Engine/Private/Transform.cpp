@@ -266,6 +266,14 @@ void CTransform::LookAt_Lerp(_fvector vTargetPos, _float fRatio)
 	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLookTo) * Get_Scale(CTransform::STATE_LOOK));
 }
 
+// 얘는 그냥 중력만 작용하면되는거 아닌가요? 
+void CTransform::Gravity(_float fTimeDelta)
+{
+
+}
+
+// 
+
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 {
 	CTransform*		pInstance = new CTransform(pDevice, pDeviceContext);

@@ -45,6 +45,10 @@ private:
 private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;
 
+
+private:
+	_bool	m_bJump = false;
+
 private:
 	_float GetDegree(_ubyte downedKey);
 	_bool KeyCheck(IN _ubyte key, OUT _ubyte& keyDownCheckBit);

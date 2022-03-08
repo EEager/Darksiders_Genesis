@@ -60,42 +60,44 @@ _int CWar::Tick(_float fTimeDelta)
 	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
 	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
 
+	// 점프면 위로
+	if (true == m_bJump) // 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
+	{
+		//m_pTransformCom->Go_Jump_Y(fTimeDelta);
+	}
 
-	//// ----------------------------
-	//// ----------------------------
-	//// ----------------------------
-	//// ----------------------------
-	//// For Test
-	//const int CONST_MAX_ANIM_NUM = 72;
-	//static int animIdx = 0; 
-	//bool dirty = false;
-	//const auto dirtyF = [&dirty, &CONST_MAX_ANIM_NUM](bool PlusOrMinus) {
-	//	if (!PlusOrMinus)
-	//	{
-	//		animIdx = animIdx - 1;
-	//		if (animIdx < 0)
-	//			animIdx = CONST_MAX_ANIM_NUM -1;
-	//	}
-	//	else
-	//	{
-	//		animIdx = (animIdx + 1) % (CONST_MAX_ANIM_NUM);
-	//	}
-	//	dirty = true;
-	//};
-	//if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS)) // '-'
-	//	dirtyF(false);
-	//if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS)) // '+'
-	//	dirtyF(true);
 
-	//if (dirty)
-	//{
-	//	cout << "animIdx : " << animIdx << endl;
-	//	m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
-	//}
-	//// ----------------------------
-	//// ----------------------------
-	//// ----------------------------
-	//// ----------------------------
+	/*
+	// ----------------------------
+	// For Test
+	const int CONST_MAX_ANIM_NUM = 72;
+	static int animIdx = 0; 
+	bool dirty = false;
+	const auto dirtyF = [&dirty, &CONST_MAX_ANIM_NUM](bool PlusOrMinus) {
+		if (!PlusOrMinus)
+		{
+			animIdx = animIdx - 1;
+			if (animIdx < 0)
+				animIdx = CONST_MAX_ANIM_NUM -1;
+		}
+		else
+		{
+			animIdx = (animIdx + 1) % (CONST_MAX_ANIM_NUM);
+		}
+		dirty = true;
+	};
+	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS)) // '-'
+		dirtyF(false);
+	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS)) // '+'
+		dirtyF(true);
+
+	if (dirty)
+	{
+		cout << "animIdx : " << animIdx << endl;
+		m_pModelCom[MODELTYPE_WAR]->SetUp_Animation(animIdx);
+	}
+	*/
+
 
 	return _int();
 }
@@ -112,7 +114,23 @@ _int CWar::LateTick(_float fTimeDelta)
 	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
 	if (nullptr == pTerrainBuff)
 		goto _EXIT;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
+
+
+	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition);
+	// Jumping
+	if (m_bJump)
+	{
+		_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		if (XMVectorGetY(vPos) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
+		{
+			m_bJump = false;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+		}
+	}
+	else // 점프중이 아니라면 계속 땅위에 서게 하자 
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	}
 
 	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
