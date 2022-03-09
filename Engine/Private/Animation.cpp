@@ -120,9 +120,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
 					(KeyFrames[iCurrentKeyFrameIndex + 1]->Time - KeyFrames[iCurrentKeyFrameIndex]->Time);
 				
-#ifdef _DEBUG // 뼈를 보다 빠르게 움직이자
 				fRatio = MathHelper::Saturate<_float>(1.5f * fRatio);
-#endif
 
 				_vector vLatest_Scale;
 				_vector vLatest_Rotate;

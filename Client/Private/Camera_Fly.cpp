@@ -3,7 +3,9 @@
 
 #include "GameInstance.h"
 
+#ifdef _DEBUG
 #include "imgui_Manager.h"
+#endif
 
 
 CCamera_Fly::CCamera_Fly(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
