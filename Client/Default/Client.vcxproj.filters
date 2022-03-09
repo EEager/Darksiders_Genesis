@@ -79,6 +79,9 @@
     <Filter Include="02.GameObjects\War\State">
       <UniqueIdentifier>{c01fa334-53fa-4160-b7be-5d17f69b8d24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Player\Sword">
+      <UniqueIdentifier>{4345b78b-db16-441d-90c7-ed0d810d28a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -180,6 +183,9 @@
     <ClInclude Include="..\Public\State_War.h">
       <Filter>02.GameObjects\War\State</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Sword.h">
+      <Filter>02.GameObjects\Player\Sword</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -262,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\State_War.cpp">
       <Filter>02.GameObjects\War\State</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sword.cpp">
+      <Filter>02.GameObjects\Player\Sword</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,7 @@ public:
 	{
 		_float3		vPivot;
 		_float3		vSize;
+		_float		fRadius;
 	}COLLIDERDESC;
 
 	typedef struct OBBDesc

@@ -9,6 +9,7 @@
 #include "Terrain.h"
 #include "Fork.h"
 #include "Player.h"
+#include "Sword.h"
 #include "War.h"
 #include "UI_War_Hp_n_Wrath_Bar.h"
 #include "UI_War_Skills.h"
@@ -94,6 +95,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
 		CPlayer::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
+
+	/* For.Prototype_GameObject_Sword */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sword"),
+		CSword::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 	
 	/* For.Prototype_GameObject_War */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_War"),
@@ -250,6 +257,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
 		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_OBB))))
 		return E_FAIL;
+
+	/* For.Prototype_Component_Collider_Sphere */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"),
+		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_SPHERE))))
+		return E_FAIL;
+
 
 
 

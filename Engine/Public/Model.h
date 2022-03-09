@@ -45,6 +45,20 @@ public:
 		return &m_Animations;
 	}
 
+	 _float4x4* Get_CombinedMatrixPtr(const char* pBoneName);
+	 _float4x4 Get_OffsetMatrix(const char* pBoneName);
+	 _float4x4 Get_PivotMatrix_Bones() {
+		 return m_PivotMatrix;
+	 }
+
+	_fmatrix Get_PivotMatrix() {
+		return XMLoadFloat4x4(&m_PivotMatrix);
+	}
+	void Set_PivotMatrix(_fmatrix vMat) {
+		XMStoreFloat4x4(&m_PivotMatrix, vMat);
+	}
+
+
 public:
 	virtual HRESULT NativeConstruct_Prototype(TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix);
 	virtual HRESULT NativeConstruct(void* pArg);
@@ -100,14 +114,6 @@ private:
 	_uint									m_iNumMaterials;
 
 	TYPE									m_eType = TYPE_END;
-
-public:
-	_fmatrix Get_PivotMatrix() {
-		return XMLoadFloat4x4(&m_PivotMatrix);
-	}
-	void Set_PivotMatrix(_fmatrix vMat) {
-		XMStoreFloat4x4(&m_PivotMatrix, vMat);
-	}
 
 private:
 	_float4x4								m_PivotMatrix; // ¸ðµ¨ÀÚÃ¼ ÇÇº¿

@@ -29,6 +29,9 @@ public:
 	_matrix Get_CombinedMatix() {
 		return XMLoadFloat4x4(&m_CombinedTransformationMatrix);
 	}
+	_float4x4* Get_CombinedMatixPtr() {
+		return &m_CombinedTransformationMatrix;
+	}
 
 	void Set_OffsetMatrix(_fmatrix OffsetMatrix) {
 		XMStoreFloat4x4(&m_OffsetMatrix, OffsetMatrix);

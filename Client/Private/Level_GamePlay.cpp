@@ -159,6 +159,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player", TEXT("Prototype_GameObject_Player"))))
 			return E_FAIL;
 
+	/* For.Layer_Player's Sword*/
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player_Sword", TEXT("Prototype_GameObject_Sword"))))
+		return E_FAIL;
+
 	/* For.Layer_Fork*/
 	for (_uint i = 0; i < 3; ++i)
 	{

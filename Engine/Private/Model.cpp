@@ -74,6 +74,28 @@ CModel::CModel(const CModel & rhs)
 
 }
 
+_float4x4* CModel::Get_CombinedMatrixPtr(const char* pBoneName)
+{
+	CHierarchyNode* pNode = Find_HierarchyNode(pBoneName);
+	if (nullptr == pNode)
+		return nullptr;
+
+	return pNode->Get_CombinedMatixPtr();
+}
+
+_float4x4 CModel::Get_OffsetMatrix(const char* pBoneName)
+{
+	_float4x4		OffsetMatrix;
+
+	CHierarchyNode* pNode = Find_HierarchyNode(pBoneName);
+	if (nullptr == pNode)
+		XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
+	else
+		XMStoreFloat4x4(&OffsetMatrix, pNode->Get_OffsetMatix());
+
+	return OffsetMatrix;
+}
+
 HRESULT CModel::NativeConstruct_Prototype(TYPE eType, const _tchar* pShaderFilePath, const char* pModelFilePath, const char* pModelFileName, _fmatrix PivotMatrix)
 {
 	char		szModelPath[MAX_PATH] = "";

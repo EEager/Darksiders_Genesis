@@ -54,7 +54,7 @@ HRESULT CCollider::NativeConstruct(void* pArg)
 		m_pOBB = new BoundingOrientedBox(_float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float4(0.f, 0.f, 0.f, 0.f));
 		break;
 	case CCollider::TYPE_SPHERE:
-		m_pSphere = new BoundingSphere(_float3(0.f, 0.f, 0.f), 0.5f);
+		m_pSphere = new BoundingSphere(m_ColliderDesc.vPivot, m_ColliderDesc.fRadius);
 		break;
 	}
 
@@ -81,6 +81,8 @@ HRESULT CCollider::Render()
 		DX::Draw(m_pBatch, *m_pAABB, vColor);
 	if (TYPE_OBB == m_eType)
 		DX::Draw(m_pBatch, *m_pOBB, vColor);
+	if (TYPE_SPHERE == m_eType)
+		DX::Draw(m_pBatch, *m_pSphere, vColor);
 
 
 	m_pBatch->End();
@@ -108,6 +110,14 @@ void CCollider::Update(_fmatrix TransformMatrix)
 		m_pOBB->Orientation = _float4(0.f, 0.f, 0.f, 1.f);
 
 		m_pOBB->Transform(*m_pOBB, TransformMatrix);
+	}
+
+	if (TYPE_SPHERE == m_eType)
+	{
+		m_pSphere->Center = m_ColliderDesc.vPivot;
+		m_pSphere->Radius = m_ColliderDesc.fRadius;
+
+		m_pSphere->Transform(*m_pSphere, TransformMatrix);
 	}
 }
 
@@ -193,32 +203,27 @@ _matrix CCollider::Remove_Rotation(_fmatrix TransformMatrix)
 
 CCollider::OBBDESC CCollider::Compute_OBBDesc()
 {
-	//m_pOBB->GetCorners();
+	_float3		vCorner[8];
+	m_pOBB->GetCorners(vCorner);
 
+	_vector		vPoints[8];
 
-	_vector		vPoints[8] = {
-		XMVectorSet(m_pOBB->Center.x - m_pOBB->Extents.x, m_pOBB->Center.y + m_pOBB->Extents.y, m_pOBB->Center.z - m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x + m_pOBB->Extents.x, m_pOBB->Center.y + m_pOBB->Extents.y, m_pOBB->Center.z - m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x + m_pOBB->Extents.x, m_pOBB->Center.y - m_pOBB->Extents.y, m_pOBB->Center.z - m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x - m_pOBB->Extents.x, m_pOBB->Center.y - m_pOBB->Extents.y, m_pOBB->Center.z - m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x - m_pOBB->Extents.x, m_pOBB->Center.y + m_pOBB->Extents.y, m_pOBB->Center.z + m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x + m_pOBB->Extents.x, m_pOBB->Center.y + m_pOBB->Extents.y, m_pOBB->Center.z + m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x + m_pOBB->Extents.x, m_pOBB->Center.y - m_pOBB->Extents.y, m_pOBB->Center.z + m_pOBB->Extents.z, 1.f),
-		XMVectorSet(m_pOBB->Center.x - m_pOBB->Extents.x, m_pOBB->Center.y - m_pOBB->Extents.y, m_pOBB->Center.z + m_pOBB->Extents.z, 1.f)
-	};
+	for (_uint i = 0; i < 8; ++i)
+	{
+		vPoints[i] = XMLoadFloat3(&vCorner[i]);
+	}
 
 	OBBDESC		OBBDesc;
 	ZeroMemory(&OBBDesc, sizeof(OBBDESC));
 
-	(XMFLOAT3)OBBDesc.vCenter = m_pOBB->Center;
+	XMStoreFloat3(&OBBDesc.vCenter, XMLoadFloat3(&m_pOBB->Center));
+	XMStoreFloat3(&OBBDesc.vExtentDirs[0], (vPoints[2] + vPoints[5]) * 0.5f - XMLoadFloat3(&OBBDesc.vCenter));
+	XMStoreFloat3(&OBBDesc.vExtentDirs[1], (vPoints[2] + vPoints[7]) * 0.5f - XMLoadFloat3(&OBBDesc.vCenter));
+	XMStoreFloat3(&OBBDesc.vExtentDirs[2], (vPoints[2] + vPoints[0]) * 0.5f - XMLoadFloat3(&OBBDesc.vCenter));
 
-	XMStoreFloat3(&OBBDesc.vExtentDirs[0], (vPoints[5] + vPoints[2]) * 0.5f - XMLoadFloat3(&OBBDesc.vCenter));
-	XMStoreFloat3(&OBBDesc.vExtentDirs[1], (vPoints[5] + vPoints[0]) * 0.5f - XMLoadFloat3(&OBBDesc.vCenter));
-	XMStoreFloat3(&OBBDesc.vExtentDirs[2], (vPoints[5] + vPoints[7]) * 0.5f - XMLoadFloat3(&OBBDesc.vCenter));
-
-	XMStoreFloat3(&OBBDesc.vAlignAxis[0], XMVector3Normalize(vPoints[5] - vPoints[4]));
-	XMStoreFloat3(&OBBDesc.vAlignAxis[1], XMVector3Normalize(vPoints[5] - vPoints[6]));
-	XMStoreFloat3(&OBBDesc.vAlignAxis[2], XMVector3Normalize(vPoints[5] - vPoints[1]));
+	XMStoreFloat3(&OBBDesc.vAlignAxis[0], XMVector3Normalize(vPoints[2] - vPoints[3]));
+	XMStoreFloat3(&OBBDesc.vAlignAxis[1], XMVector3Normalize(vPoints[2] - vPoints[1]));
+	XMStoreFloat3(&OBBDesc.vAlignAxis[2], XMVector3Normalize(vPoints[2] - vPoints[6]));
 
 	return OBBDesc;
 }

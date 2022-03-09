@@ -121,11 +121,23 @@ _int CWar::LateTick(_float fTimeDelta)
 	
 	m_pAABBCom->Collision_AABB(pTargetColllider);*/
 
-	CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_OBB"));
-	if (nullptr == pTargetColllider)
-		goto _EXIT;
+	// Player와 충돌
+	for (int i = 0; i < 1; i++)
+	{
+		CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_OBB"), i);
+		if (nullptr == pTargetColllider)
+			goto _EXIT;
+		m_pOBBCom->Collision_OBB(pTargetColllider);
+	}
 
-	m_pOBBCom->Collision_OBB(pTargetColllider);
+	// fork랑 충돌하자
+	for (int i = 0; i < 1; i++)
+	{
+		CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Fork"), TEXT("Com_OBB"), i);
+		if (nullptr == pTargetColllider)
+			goto _EXIT;
+		m_pOBBCom->Collision_OBB(pTargetColllider);
+	}
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
@@ -458,8 +470,8 @@ HRESULT CWar::SetUp_Component()
 
 
 	/* For.Com_OBB */
-	ColliderDesc.vPivot = _float3(0.f, 1.f, 0.f);
-	ColliderDesc.vSize = _float3(1.f, 2.f, 1.f);
+	ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
+	ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
 	//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
 	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
