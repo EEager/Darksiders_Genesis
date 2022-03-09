@@ -56,7 +56,9 @@ public:
 	void Set_Dont_Key(_bool _b) { m_bDont_Key = _b; }
 	void Set_DontMove_OnlyTurn(_bool _b) { m_bDontMove_OnlyTurn = _b; }
 	void Set_DontTurn_OnlyMove(_bool _b) { m_bDontTurn_OnlyMove = _b; }
-
+	void Set_War_On_Ruin_State(_bool _b) { m_War_On_Ruin_State = _b; }
+	_bool Get_War_On_Ruin_State() { return m_War_On_Ruin_State; }
+	
 	_float Get_Speed();
 	void Set_Speed(const _float& fSpeed);
 
@@ -68,8 +70,19 @@ private:
 	_bool	m_bDontMove_OnlyTurn = false; // 땅 콤보 스킬 사용할때는 움직이면 안된다.
 	_bool	m_bDontTurn_OnlyMove = false; // 불 콤보 스킬 사용할때는 회전하면 안된다
 	_bool	m_War_Key_Lock = false; // 일부 FSM에서는 움직이지말아야한다. 하지만 이건 detail 작업이므로 나중에 넣자.
+	_bool	m_War_On_Ruin_State = false; // 말타고 있는 상태.
 
 	WAR_G_TYPE m_eGType = G_TYPE_EARTH;
+
+
+public:
+	_matrix		Get_WarPivot() { return XMLoadFloat4x4(&m_WarPivotMat); }  // 말타기 상태가 아닐때, War Model 피봇 매트릭스를 이걸로. 참고로 War_Ruin_Model은 ㄱㅊ
+	_matrix		Get_WarRuinPivot() { return XMLoadFloat4x4(&m_WarRuinPivotMat); }// 말타기 상태일 때, War Model한테 이거를 셋해줘야한다. 참고로 War_Ruin_Model은 ㄱㅊ
+
+private:
+	_float4x4	m_WarPivotMat; // 말안타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님
+	_float4x4	m_WarRuinPivotMat; // 말타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님
+
 	// -----------------------------------------------------------------
 	// 아래 3개는 War 키 입력에 사용
 private:

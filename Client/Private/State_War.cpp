@@ -17,6 +17,9 @@
 // 
 CStateMachine* g_pWar_State_Context;
 CModel* g_pWar_Model_Context;
+CModel* g_pWar_Model_Gauntlet_Context;
+CModel* g_pWar_Model_Ruin_Context;
+CModel* g_pWar_Model_Sword_Context;
 CTransform* g_pWar_Transform_Context;
 
 
@@ -45,37 +48,47 @@ void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	// [Event] 죽었다 
+	// [Event] 죽었다
 	// [State]  -> CState_War_Death
-	if (CInput_Device::GetInstance()->Key_Down(DIK_B))
+	if (CInput_Device::GetInstance()->Key_Down(DIK_B)) // TEST
 	{
 		g_pWar_State_Context->ChangeState(CState_War_Death::GetInstance());
 		return;
 	}
 
-	// [Event] 대쉬
-	// [State]  -> CState_War_DashTo_F
-	if (m_bShiftLockTimeAccStart)
+
+	if (static_cast<CWar*>(pOwner)->Get_War_On_Ruin_State() == false) // 말타고 있지 않을때 SHIFT는 대쉬이다
 	{
-		m_fShiftLockTimeAcc += fTimeDelta;
-		if (m_fShiftLockTimeAcc > SHIFT_LOCK_TIME) // 이전에 shift했으면 SHIFT_LOCK_TIME까지는 하지못하게 하자
+		// [Event] 대쉬
+		// [State]  -> CState_War_DashTo_F
+		if (m_bShiftLockTimeAccStart)
 		{
-			m_bShiftLockTimeAccStart = false;
-			m_fShiftLockTimeAcc = 0.f;
+			m_fShiftLockTimeAcc += fTimeDelta;
+			if (m_fShiftLockTimeAcc > SHIFT_LOCK_TIME) // 이전에 shift했으면 SHIFT_LOCK_TIME까지는 하지못하게 하자
+			{
+				m_bShiftLockTimeAccStart = false;
+				m_fShiftLockTimeAcc = 0.f;
+			}
 		}
-	}
 
-	if (m_bShiftLockTimeAccStart == false && CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
+		if (m_bShiftLockTimeAccStart == false && CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
+		{
+			m_bShiftLockTimeAccStart = true;
+			m_fShiftLockTimeAcc = 0.f;
+			g_pWar_State_Context->ChangeState(CState_War_DashTo_F::GetInstance());
+			return;
+		}
+
+		// Global War_Key
+		static_cast<CWar*>(pOwner)->War_Key(fTimeDelta);
+	}
+	else // 말타고 있는 경우
 	{
-		m_bShiftLockTimeAccStart = true;
-		m_fShiftLockTimeAcc = 0.f;
-		g_pWar_State_Context->ChangeState(CState_War_DashTo_F::GetInstance());
-		return;
+		// Global War_Key
+		static_cast<CWar*>(pOwner)->War_Key(fTimeDelta);
 	}
 
 
-	// Global War_Key
-	static_cast<CWar*>(pOwner)->War_Key(fTimeDelta);
 }
 
 void CGlobal_State_War::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -158,6 +171,14 @@ void CState_War_Idle::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Idle::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Standing 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Standing::GetInstance());
+		return;
+	}
 
 	// [Event] 1번 스킬
 	// [State]  -> CState_War_Wrath_BladeGeyser 
@@ -245,13 +266,20 @@ void CState_War_Run::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Run_F");
 
-	m_fPrevSpeed = static_cast<CWar*>(pOwner)->Get_Speed();
-	static_cast<CWar*>(pOwner)->Set_Speed(5.5f);
+	static_cast<CWar*>(pOwner)->Set_Speed(WAR_NO_WEAPON_SPEED);
 }
 
 void CState_War_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Running 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Running::GetInstance());
+		return;
+	}
 	// [Event] 1번 스킬
 	// [State]  -> CState_War_Wrath_BladeGeyser 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_1))
@@ -304,7 +332,7 @@ void CState_War_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Run::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
-	static_cast<CWar*>(pOwner)->Set_Speed(m_fPrevSpeed);
+	static_cast<CWar*>(pOwner)->Set_Speed(WAR_SPEED);
 }
 
 void CState_War_Run::Free()
@@ -334,6 +362,15 @@ void CState_War_Idle_to_Idle_Combat::Enter(CGameObject* pOwner, _float fTimeDelt
 void CState_War_Idle_to_Idle_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Standing 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Standing::GetInstance());
+		return;
+	}
+
 	// [Event] 1번 스킬
 	// [State]  -> CState_War_Wrath_BladeGeyser 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_1))
@@ -421,6 +458,14 @@ void CState_War_Idle_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Idle_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Standing 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Standing::GetInstance());
+		return;
+	}
+
 	// [Event] 1번 스킬
 	// [State]  -> CState_War_Wrath_BladeGeyser 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_1))
@@ -526,6 +571,14 @@ void CState_War_Idle_Combat_to_Idle::Execute(CGameObject* pOwner, _float fTimeDe
 {
 	CState::Execute(pOwner, fTimeDelta);
 
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Standing 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Standing::GetInstance());
+		return;
+	}
+
 	// [Event] 1번 스킬
 	// [State]  -> CState_War_Wrath_BladeGeyser 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_1))
@@ -611,6 +664,15 @@ void CState_War_Run_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Run_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Running 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Running::GetInstance());
+		return;
+	}
+
 	// [Event] 1번 스킬
 	// [State]  -> CState_War_Wrath_BladeGeyser 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_1))
@@ -1712,6 +1774,14 @@ void CState_War_Jump_Double::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
+	// [Event] H (말타기)	
+	// [State]  -> CState_War_Horse_Mount_Running 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Mount_Running::GetInstance());
+		return;
+	}
+
 	// [Event] 마우스 오른쪽(강공)
 	// [State]  -> CState_War_Atk_Air_Light_03_NoImpulse
 	if (CInput_Device::GetInstance()->Mouse_Down(CInput_Device::MOUSEBUTTONSTATE::DIMB_RBUTTON))
@@ -2325,5 +2395,499 @@ void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 }
 
 void CState_War_DashTo_F::Free()
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ------------------------------------------------------------------------------
+*
+*	War n Horse Finite State Machine
+*
+--------------------------------------------------------------------------------*/
+
+
+// -------------------------------------------------
+// #Horse1
+// [State] CState_War_Horse_Mount_Standing
+// [Infom] 서있는 상태에서 말타기 시작 
+// -------------------------------------------------
+CState_War_Horse_Mount_Standing::CState_War_Horse_Mount_Standing()
+{
+	m_pStateName = "CState_War_Horse_Mount_Standing";
+}
+
+void CState_War_Horse_Mount_Standing::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	static_cast<CWar*>(pOwner)->Set_War_On_Ruin_State(true);
+	// 말타기(Ruin) 상태일때는 이걸로 적용해야한다
+	g_pWar_Model_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarRuinPivot());
+	g_pWar_Model_Gauntlet_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarRuinPivot());
+	g_pWar_Model_Sword_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarRuinPivot());
+
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Mount_Standing", false);//Not Loop
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Mount_Standing", false, false);//Not Loop
+
+	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SPEED);
+
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 움직이지마!
+}
+
+void CState_War_Horse_Mount_Standing::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle_Combat
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Horse_Mount_Standing"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Idle::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Horse_Mount_Standing::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false); // 내가 모든 키를 위임할꼬야
+}
+
+void CState_War_Horse_Mount_Standing::Free()
+{
+}
+
+// -------------------------------------------------
+// #Horse2
+// [State] CState_War_Horse_Mount_Running
+// [Infom] 달리는 상태에서 말타기 버튼 누름
+// -------------------------------------------------
+
+CState_War_Horse_Mount_Running::CState_War_Horse_Mount_Running()
+{
+	m_pStateName = "CState_War_Horse_Mount_Running";
+}
+
+void CState_War_Horse_Mount_Running::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	static_cast<CWar*>(pOwner)->Set_War_On_Ruin_State(true);
+	// 말타기(Ruin) 상태일때, 모델, 건틀렛, 검 오프셋은 변화시켜야한다
+	g_pWar_Model_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarRuinPivot());
+	g_pWar_Model_Gauntlet_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarRuinPivot());
+	g_pWar_Model_Sword_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarRuinPivot());
+
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Mount_Running", false);//Not Loop
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Mount_Running", false, false);//Not Loop
+
+	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SPEED);
+}
+
+void CState_War_Horse_Mount_Running::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Horse_Gallop
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Horse_Mount_Running"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Gallop::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Horse_Mount_Running::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Horse_Mount_Running::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #Horse3
+// [State] CState_War_Horse_Dismount
+// [Infom] 말타기 종료
+// -------------------------------------------------
+CState_War_Horse_Dismount::CState_War_Horse_Dismount()
+{
+	m_pStateName = "CState_War_Horse_Dismount";
+}
+
+void CState_War_Horse_Dismount::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Dismount", false);// Not Loop
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Dismount", false);// Not loop
+
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 움직이지마!
+
+}
+
+void CState_War_Horse_Dismount::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Jump_Land_Heavy
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Horse_Dismount"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Jump_Land_Heavy::GetInstance());
+		return;
+	}
+
+}
+
+void CState_War_Horse_Dismount::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_War_On_Ruin_State(false);
+	// 말타기 종료되면 기존 WarPivot을 사용하자
+	g_pWar_Model_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarPivot());
+	g_pWar_Model_Gauntlet_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarPivot());
+	g_pWar_Model_Sword_Context->Set_PivotMatrix(static_cast<CWar*>(pOwner)->Get_WarPivot());
+
+	static_cast<CWar*>(pOwner)->Set_Speed(WAR_SPEED);
+
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false); // 움직이지마!
+
+}
+
+void CState_War_Horse_Dismount::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #Horse4
+// [State] CState_War_Horse_Idle
+// [Infom] 기본 상태
+// -------------------------------------------------
+CState_War_Horse_Idle::CState_War_Horse_Idle()
+{
+	m_pStateName = "CState_War_Horse_Idle";
+}
+
+void CState_War_Horse_Idle::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Idle");// Loop
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Idle");// Loop
+}
+
+void CState_War_Horse_Idle::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] H 버튼	
+	// [State]  -> CState_War_Horse_Dismount
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H)) 
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Dismount::GetInstance()); 
+		return;
+	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Horse_Gallop	
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Gallop::GetInstance()); 
+		return;
+	}
+
+}
+
+void CState_War_Horse_Idle::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Horse_Idle::Free()
+{
+}
+
+
+// -------------------------------------------------
+// #Horse5
+// [State] CState_War_Horse_Gallop
+// [Infom] 달리는 상태
+// -------------------------------------------------
+
+CState_War_Horse_Gallop::CState_War_Horse_Gallop()
+{
+	m_pStateName = "CState_War_Horse_Gallop";
+}
+
+void CState_War_Horse_Gallop::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Gallop");// Loop
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop");// Loop
+}
+
+void CState_War_Horse_Gallop::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+	// [Event] H 버튼	
+	// [State]  -> CState_War_Horse_Dismount
+	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Dismount::GetInstance());
+		return;
+	}
+
+	// [Event] 방향키 하나라도 안누르게된다면
+	// [State]  -> CState_War_Horse_Stop
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty == false)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Idle::GetInstance()); 
+		return;
+	}
+
+
+	// [Event] LSHIFT 누르면
+	// [State]  -> CState_War_Horse_Gallop_Fast_Start
+	if (CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Gallop_Fast_Start::GetInstance());
+		return;
+	}
+
+
+}
+
+void CState_War_Horse_Gallop::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Horse_Gallop::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #Horse6
+// [State] CState_War_Horse_Gallop_Fast_Start
+// [Infom] LSHIFT 달리기 시작
+// -------------------------------------------------
+CState_War_Horse_Gallop_Fast_Start::CState_War_Horse_Gallop_Fast_Start()
+{
+	m_pStateName = "CState_War_Horse_Gallop_Fast_Start";
+}
+
+void CState_War_Horse_Gallop_Fast_Start::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Gallop_Fast_Start", false);
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop_Fast_Start", false);
+
+	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SHIFT_SPEED);
+
+}
+
+void CState_War_Horse_Gallop_Fast_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Horse_Gallop_Fast
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Horse_Gallop_Fast_Start"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Gallop_Fast::GetInstance());
+		return;
+	}
+
+}
+
+void CState_War_Horse_Gallop_Fast_Start::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Horse_Gallop_Fast_Start::Free()
+{
+}
+
+
+// -------------------------------------------------
+// #Horse7
+// [State] CState_War_Horse_Gallop_Fast
+// [Infom] LSHIFT 달리기
+// -------------------------------------------------
+CState_War_Horse_Gallop_Fast::CState_War_Horse_Gallop_Fast()
+{
+	m_pStateName = "CState_War_Horse_Gallop_Fast";
+}
+
+void CState_War_Horse_Gallop_Fast::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Gallop_Fast");
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop_Fast");
+
+
+
+}
+
+void CState_War_Horse_Gallop_Fast::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+
+	// [Event] LSHIFT 뗀경우	
+	// [State]  -> CState_War_Horse_Gallop
+	if (CInput_Device::GetInstance()->Key_Pressing(DIK_LSHIFT) == false)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Gallop::GetInstance());
+		return;
+	}
+
+
+	// [Event] 방향키하나라도안누르면
+	// [State] -> CState_War_Horse_Stop ()
+	bool isKeyDown = false;
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	isKeyDown |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+
+	if (isKeyDown == false)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Stop::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Horse_Gallop_Fast::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+
+	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SPEED);
+}
+
+void CState_War_Horse_Gallop_Fast::Free()
+{
+}
+
+
+// -------------------------------------------------
+// #Horse8
+// [State] CState_War_Horse_Stop
+// [Infom] LSHIFT 달리기다가 멈추는 동작
+// -------------------------------------------------
+CState_War_Horse_Stop::CState_War_Horse_Stop()
+{
+	m_pStateName = "CState_War_Horse_Stop";
+}
+
+void CState_War_Horse_Stop::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Stop", false);
+	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Stop", false);
+}
+
+void CState_War_Horse_Stop::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Horse_Idle
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Horse_Stop"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Horse_Idle::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Horse_Stop::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Horse_Stop::Free()
+{
+}
+
+
+// -------------------------------------------------
+// #Horse9
+// [State] CState_War_Horse_Jump_Land_Heavy
+// [Infom] (War만) 말내리기 이후 착지
+// -------------------------------------------------
+CState_War_Horse_Jump_Land_Heavy::CState_War_Horse_Jump_Land_Heavy()
+{
+	m_pStateName = "CState_War_Horse_Jump_Land_Heavy";
+}
+
+void CState_War_Horse_Jump_Land_Heavy::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Land_Heavy", false, false); // Loop 아니고, 보간하지말자
+	//g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Land_Heavy", false);
+}
+
+void CState_War_Horse_Jump_Land_Heavy::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
+
+	// [Event] 애니메이션 끝나면
+	// [State]  -> CState_War_Idle
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Jump_Land_Heavy"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Horse_Jump_Land_Heavy::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+}
+
+void CState_War_Horse_Jump_Land_Heavy::Free()
 {
 }

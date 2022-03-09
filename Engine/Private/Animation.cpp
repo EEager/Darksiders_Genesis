@@ -35,8 +35,8 @@ HRESULT CAnimation::NativeConstruct(char * pName, _double Duration, _double Tick
 - m_bOnceFinished : 
 	(마지막프레임)->(다음 첫 프레임) 사이 프레임하나가 하나가 튄다. 한번 loop이 끝나면 이전상태 것이 아니라. 0부터 시작하자. 
 
-- m_bFistBegan :
-	맨 처음 시작할 때, matLatestTransform은 이전 상태것이 아니기에, 애니메이션이 이상하다. 맨처음 애니메이팅은 0부터 시작하자.
+- m_bOnceAnimated :
+	맨~~ 처음 시작할 때, matLatestTransform은 이전 상태것이 아니기에, 애니메이션이 이상하다. 맨처음 애니메이팅은 0부터 시작하자.
 	
 - m_isBeginFirst :
 	State변경되면 채널들의 첫 키프레임부터 시작하도록하자.
@@ -78,7 +78,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 
 		_matrix matLatestTransform = XMMatrixIdentity();
 		if (m_LatestChannels)
-			matLatestTransform = ((*m_LatestChannels)[idx])->Get_TransformationMatrix();
+			matLatestTransform = ((*m_LatestChannels)[idx])->Get_TransformationMatrix(); // 이전 애니메이션과 보간하자
 
 		_uint		iCurrentKeyFrameIndex = m_Channels[idx]->Get_KeyFrameIndex();
 
@@ -114,7 +114,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 				m_Channels[idx]->Set_KeyFrameIndex(++iCurrentKeyFrameIndex);
 
 			// 처음 키프레임 인덱스이면 이전 키프레임의 최근위치와 1번째 키프레임을 비교하여 보간한다. 
- 			if (m_LatestChannels && iCurrentKeyFrameIndex == 0 && !m_bOnceFinished && m_bFistBegan)
+ 			if (m_LatestChannels && iCurrentKeyFrameIndex == 0 && !m_bOnceFinished && m_bOnceAnimated)
 			{
 				// Ratio : a ~ b 사이 보간 : (x-a)/(b-a) : x가 a면 0, x가b면 1
 				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /
@@ -170,8 +170,8 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 	if (m_isBeginFirst) 
 		m_isBeginFirst = false;
 
-	 if (!m_bFistBegan)
-		 m_bFistBegan = true;
+	 if (!m_bOnceAnimated)
+		 m_bOnceAnimated = true;
 
 	// 전체 애니메이션 duration 넘긴경우
 	if (m_isFinished)

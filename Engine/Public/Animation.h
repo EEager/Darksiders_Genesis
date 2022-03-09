@@ -53,7 +53,7 @@ private:
 
 	/* 애니메이션에 영향을 주는 가장 최근 뼈들. 
 	   모델 SetUp_Animation에서 넣어주자. */
-	vector<class CChannel*>*			m_LatestChannels;
+	vector<class CChannel*>* m_LatestChannels = nullptr;
 	typedef vector<class CChannel*>	LATEST_CHANNELS;
 
 private:
@@ -63,7 +63,7 @@ private:
 	_bool			m_isFinished = false;
 	_float			m_fTimeAcc = 0.0f;
 	_bool			m_bOnceFinished = false;
-	_bool			m_bFistBegan = false;
+	_bool			m_bOnceAnimated = false; // 애니메이션 가장~ 처음 것은 이전과 보간하지말자
 
 
 private:

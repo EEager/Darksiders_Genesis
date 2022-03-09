@@ -36,7 +36,7 @@ void CHierarchyNode::Update_CombinedTransformationMatrix()
 			XMLoadFloat4x4(&m_TransformationMatrix));
 }
 
-void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW)
+void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, const char* pRootNodeName)
 {
 	// m_Channels에서 iCurrentAnimIndex의 애니메이션에 해당하는 뼈행렬 정보를 가지고 있다. 
 	// 이 채널들은 Model 사본만들때 Model이 넣어준다. 
@@ -45,7 +45,8 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 
 	if (nullptr != m_Channels[iCurrentAnimIndex]) // iCurrentAnimIndex의 보간한 행렬을 가져온다.
 	{
-		if (!strcmp(m_szName, "Bone_War_Root") && pMatW) 
+		// pMatW 받아서 로컬 애니메이션 움직인거리 만큼 월드행렬에 반영하고 싶다
+		if (pMatW && pRootNodeName && !strcmp(m_szName, pRootNodeName))
 		{
 			// 1. Bone_War_Root 이동값만 가져오자 -> Get_TransformationMatrix_4x4()->m[3] 
 			_float4 offsetPos;

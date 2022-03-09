@@ -51,9 +51,9 @@ public:
 
 public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop = true);
-	void SetUp_Animation(const char* pNameKey, _bool isLoop = true);
+	void SetUp_Animation(const char* pNameKey, _bool isLoop = true, _bool useLatestLerp = true);
 	_bool Get_Animation_isFinished(const char* pNameKey);
-	HRESULT Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW = nullptr);
+	HRESULT Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW = nullptr, const char* pRootNodeName = nullptr);
 	HRESULT Bind_Shader(_uint iPassIndex);
 	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
 
@@ -100,7 +100,17 @@ private:
 	_uint									m_iNumMaterials;
 
 	TYPE									m_eType = TYPE_END;
-	_float4x4								m_PivotMatrix;
+
+public:
+	_fmatrix Get_PivotMatrix() {
+		return XMLoadFloat4x4(&m_PivotMatrix);
+	}
+	void Set_PivotMatrix(_fmatrix vMat) {
+		XMStoreFloat4x4(&m_PivotMatrix, vMat);
+	}
+
+private:
+	_float4x4								m_PivotMatrix; // ¸ðµ¨ÀÚÃ¼ ÇÇº¿
 
 	_uint									m_iNumAnimation;
 	_uint									m_iCurrentAnimIndex = 0;

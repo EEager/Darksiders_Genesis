@@ -23,6 +23,7 @@ public:											\
 * 
 [#]	[State]						[Event]							[ToState]
 1	CGlobal_State_War			죽었다 							CState_War_Death
+								LShift							CState_War_DashTo_F
 
 2	CState_War_Death			애니메이션종료					CState_War_Idle
 
@@ -89,7 +90,7 @@ public:
 
 /* ------------------------------------------------------------------------------
 * 
-*	Finite State Machine
+*	War Finite State Machine
 * 
 [#]	[State]							[Event]							[ToState]
 = = = = = = == = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -100,6 +101,7 @@ public:
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
 									스페이스 (점프)					CState_War_Jump
 									1번 스킬						CState_War_Wrath_BladeGeyser
+									H (말타기)						CState_War_Horse_Mount_Standing
 
 	
 2	CState_War_Run					방향키 하나도 안 누름			CState_War_Idle
@@ -107,6 +109,7 @@ public:
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01
 									스페이스 (점프)					CState_War_Jump
 									1번 스킬						CState_War_Wrath_BladeGeyser
+									H (말타기)						CState_War_Horse_Mount_Running
 
 	
 3	CState_War_Idle_to_Idle_Combat  애니메이션 종료					CState_War_Idle_Combat
@@ -115,6 +118,7 @@ public:
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
 									스페이스 (점프)					CState_War_Jump_Combat
 									1번 스킬						CState_War_Wrath_BladeGeyser
+									H (말타기)						CState_War_Horse_Mount_Standing
 
 	
 4	CState_War_Idle_Combat			방향키 하나라도 누름			CState_War_Run_Combat
@@ -124,6 +128,7 @@ public:
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
 									스페이스 (점프)					CState_War_Jump_Combat
 									1번 스킬						CState_War_Wrath_BladeGeyser
+									H (말타기)						CState_War_Horse_Mount_Standing
 
 5	CState_War_Idle_Combat_to_Idle  애니메이션 종료					CState_War_Idle
 									방향키 하나라도 누름			CState_War_Run_Combat
@@ -131,6 +136,7 @@ public:
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
 									스페이스 (점프)					CState_War_Jump_Combat
 									1번 스킬						CState_War_Wrath_BladeGeyser
+									H (말타기)						CState_War_Horse_Mount_Standing
 
 	
 6	CState_War_Run_Combat			방향키 하나도 안 누름			CState_War_Idle_Combat
@@ -138,6 +144,7 @@ public:
 									마우스 오른쪽(강공)				CState_War_Atk_Heavy_01 
 									스페이스 (점프)					CState_War_Jump_Combat
 									1번 스킬						CState_War_Wrath_BladeGeyser
+									H (말타기)						CState_War_Horse_Mount_Running
 
 
 // 약공 
@@ -225,6 +232,7 @@ public:
 									착지시1							CState_War_Jump_Land
 									착지시2							CState_War_Jump_Land_Heavy
 									착지시 + 달리기					CState_War_Jump_Land_Run
+									H 버튼							CState_War_Horse_Mount_Running
 
 
 // 점프 중 강공격 - War_Atk_Air_Light_03_NoImpulse 만하자
@@ -305,9 +313,6 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
-
-private:
-	_float m_fPrevSpeed;
 
 public:
 	virtual void Free() final;
@@ -1044,6 +1049,264 @@ public:
 
 private:
 	_float m_fMoveLockTimeAcc = 0.f;
+
+public:
+	virtual void Free() final;
+};
+
+
+
+/* ------------------------------------------------------------------------------
+*
+*	War n Horse Finite State Machine
+*
+[#]	[State]								[Event]						[ToState]
+= = = = = = == = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// 말타기, 말내리기
+1	CState_War_Horse_Mount_Standing		애니메이션 종료				CState_War_Horse_Idle
+
+2	CState_War_Horse_Mount_Running		애니메이션 종료				CState_War_Horse_Gallop
+
+3	CState_War_Horse_Dismount			애니메이션 종료				CState_War_Horse_Jump_Land_Heavy
+
+
+// 아이들
+4	CState_War_Horse_Idle				H 버튼						CState_War_Horse_Dismount
+										방향키하나라도				CState_War_Horse_Gallop
+// 달리기
+5	CState_War_Horse_Gallop				방향키하나라도안누르면		CState_War_Horse_Idle	
+										LSHIFT						CState_War_Horse_Gallop_Fast_Start
+										H 버튼						CState_War_Horse_Dismount
+
+6	CState_War_Horse_Gallop_Fast_Start	애니메이션 종료				CState_War_Horse_Gallop_Fast
+
+7	CState_War_Horse_Gallop_Fast		LSHIFT 뗀경우				CState_War_Horse_Gallop
+										방향키하나라도안누르면		CState_War_Horse_Stop
+
+8	CState_War_Horse_Stop				애니메이션 종료				CState_War_Horse_Idle
+
+9	CState_War_Horse_Jump_Land_Heavy	애니메이션 종료				CState_War_Idle
+										방향키 하나라도 누름		CState_War_Run
+
+										
+
+--------------------------------------------------------------------------------*/
+
+
+#define WAR_SPEED 3.7f
+#define WAR_NO_WEAPON_SPEED 5.5f
+#define RUIN_SPEED 7.f
+#define RUIN_SHIFT_SPEED 14.f
+
+// -------------------------------------------------
+// #Horse1
+// [State] CState_War_Horse_Mount_Standing
+// [Infom] 서있는 상태에서 말타기 시작 
+// -------------------------------------------------
+class CState_War_Horse_Mount_Standing final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Mount_Standing)
+
+public:
+	CState_War_Horse_Mount_Standing();
+	virtual ~CState_War_Horse_Mount_Standing() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+// -------------------------------------------------
+// #Horse2
+// [State] CState_War_Horse_Mount_Running
+// [Infom] 달리는 상태에서 말타기 버튼 누름
+// -------------------------------------------------
+class CState_War_Horse_Mount_Running final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Mount_Running)
+
+public:
+	CState_War_Horse_Mount_Running();
+	virtual ~CState_War_Horse_Mount_Running() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #Horse3
+// [State] CState_War_Horse_Dismount
+// [Infom] 말타기 종료
+// -------------------------------------------------
+class CState_War_Horse_Dismount final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Dismount)
+
+public:
+	CState_War_Horse_Dismount();
+	virtual ~CState_War_Horse_Dismount() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+
+// -------------------------------------------------
+// #Horse4
+// [State] CState_War_Horse_Idle
+// [Infom] 기본 상태
+// -------------------------------------------------
+class CState_War_Horse_Idle final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Idle)
+
+public:
+	CState_War_Horse_Idle();
+	virtual ~CState_War_Horse_Idle() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #Horse5
+// [State] CState_War_Horse_Gallop
+// [Infom] 기본 달리기 
+// -------------------------------------------------
+class CState_War_Horse_Gallop final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Gallop)
+
+public:
+	CState_War_Horse_Gallop();
+	virtual ~CState_War_Horse_Gallop() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+
+// -------------------------------------------------
+// #Horse6
+// [State] CState_War_Horse_Gallop_Fast_Start
+// [Infom] LSHIFT 달리기 시작 
+// -------------------------------------------------
+class CState_War_Horse_Gallop_Fast_Start final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Gallop_Fast_Start)
+
+public:
+	CState_War_Horse_Gallop_Fast_Start();
+	virtual ~CState_War_Horse_Gallop_Fast_Start() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #Horse7
+// [State] CState_War_Horse_Gallop_Fast
+// [Infom] LSHIFT 달리기
+// -------------------------------------------------
+class CState_War_Horse_Gallop_Fast final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Gallop_Fast)
+
+public:
+	CState_War_Horse_Gallop_Fast();
+	virtual ~CState_War_Horse_Gallop_Fast() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+// -------------------------------------------------
+// #Horse8
+// [State] CState_War_Horse_Stop
+// [Infom] LSHIFT 달리기다가 멈추는 동작
+// -------------------------------------------------
+class CState_War_Horse_Stop final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Stop)
+
+public:
+	CState_War_Horse_Stop();
+	virtual ~CState_War_Horse_Stop() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+
+
+// -------------------------------------------------
+// #Horse9
+// [State] CState_War_Horse_Jump_Land_Heavy
+// [Infom] 말내리기 이후 착지
+// -------------------------------------------------
+class CState_War_Horse_Jump_Land_Heavy final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Horse_Jump_Land_Heavy)
+
+public:
+	CState_War_Horse_Jump_Land_Heavy();
+	virtual ~CState_War_Horse_Jump_Land_Heavy() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
 public:
 	virtual void Free() final;

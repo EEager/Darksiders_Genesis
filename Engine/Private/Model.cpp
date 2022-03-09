@@ -222,7 +222,7 @@ void CModel::SetUp_Animation(_uint iAnimIndex, _bool isLoop) {
 	m_isLoop = isLoop;
 }
 
-void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop) {
+void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop, _bool useLatestLerp) {
 
 	auto findIter = m_AniNameKey_IdxValue_Map.find(pNameKey);
 	if (findIter == m_AniNameKey_IdxValue_Map.end())
@@ -232,7 +232,11 @@ void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop) {
 	if (iAnimIndex >= m_iNumAnimation)
 		return;
 
-	m_Animations[iAnimIndex]->Set_Latest_Channels(m_Animations[m_iCurrentAnimIndex]->Get_Channels());
+	if (useLatestLerp)
+		m_Animations[iAnimIndex]->Set_Latest_Channels(m_Animations[m_iCurrentAnimIndex]->Get_Channels());
+	else
+		m_Animations[iAnimIndex]->Set_Latest_Channels(nullptr);
+
 	m_Animations[iAnimIndex]->SetBeginFirst();
 	m_iCurrentAnimIndex = iAnimIndex;
 	m_isLoop = isLoop;
@@ -249,7 +253,7 @@ _bool CModel::Get_Animation_isFinished(const char* pNameKey)
 	return m_Animations[iAnimIndex]->Get_isFinished();
 }
 
-HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW)
+HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW, const char* pRootNodeName)
 {
 	if (TYPE_ANIM != m_eType) // TYPE_NONANIM, TYPE_ANIM_USE_OTHER 인경우에는 Update안한다. TYPE_ANIM_USE_OTHER 경우 Update 하면 2번 업데이트된다. 
 		return S_OK;
@@ -263,7 +267,7 @@ HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW)
 	/* 노드들을 순회하면서 노드에 컴바인트 트랜스포메이션 행려을 만든다. */
 	for (auto& pHierarchyNode : m_HierarchyNodes)
 	{
-		pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex, pMatW);
+		pHierarchyNode->Update_CombinedTransformationMatrix(m_iCurrentAnimIndex, pMatW, pRootNodeName);
 	}
 
 

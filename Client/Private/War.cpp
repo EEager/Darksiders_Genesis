@@ -7,10 +7,13 @@
 
 
 // In State_War.cpp
+#include "State_War.h"
 extern CStateMachine* g_pWar_State_Context;
 extern CModel* g_pWar_Model_Context;
+extern CModel* g_pWar_Model_Gauntlet_Context;
+extern CModel* g_pWar_Model_Ruin_Context;
+extern CModel* g_pWar_Model_Sword_Context;
 extern CTransform* g_pWar_Transform_Context;
-#include "State_War.h"
 
 
 
@@ -36,6 +39,8 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;	
 
+	XMStoreFloat4x4(&m_WarPivotMat, XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(-90.f)));
+	XMStoreFloat4x4(&m_WarRuinPivotMat, XMMatrixScaling(0.01f, 0.01f, 0.01f));
 
 	// 초기 위치
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
@@ -43,22 +48,26 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-bool onceSetup = false; // TEST
 _int CWar::Tick(_float fTimeDelta)
 {
-	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4());
-
-	if (!onceSetup) // TEST
-	{
-		m_pModelCom_Ruin->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop");
-		onceSetup = true;
-	}
-
-	m_pModelCom_Ruin->Update_Animation(fTimeDelta);
-
 	// War 애니메이션 인덱스 변환 - FSM 머신으로 관리
 	if (m_pStateMachineCom)
 		m_pStateMachineCom->Tick(fTimeDelta);
+
+	// War Ruin
+	if (m_War_On_Ruin_State)
+	{
+		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
+		_float4x4 forDontMoveInLocal;
+		XMStoreFloat4x4(&forDontMoveInLocal, XMMatrixIdentity());
+		m_pModelCom_Ruin->Update_Animation(fTimeDelta, &forDontMoveInLocal, "_Master");
+	}
+	else // War 기본
+	{
+		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root");
+	}
+
+
 
 	// OBB, AABB
 	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
@@ -67,7 +76,7 @@ _int CWar::Tick(_float fTimeDelta)
 	// 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
 	if (true == m_bJump) 
 	{
-		// 점프했다가 중력적용받아 떨어진다
+		// 점프 상태이면, 잠시 위로 올라갔다가 중력적용받아 떨어진다
 		m_pTransformCom->JumpY(fTimeDelta);
 	}
 
@@ -153,15 +162,18 @@ HRESULT CWar::Render()
 	//
 	// 말 렌더링
 	//
-	if (FAILED(SetUp_Ruin_ConstantTable(false)))
-		return E_FAIL;
-	auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
-	for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+	if (m_War_On_Ruin_State)
 	{
-		m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-		m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-		m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-		m_pModelCom_Ruin->Render(i, 0);
+		if (FAILED(SetUp_Ruin_ConstantTable(false)))
+			return E_FAIL;
+		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+		{
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+			m_pModelCom_Ruin->Render(i, 0);
+		}
 	}
 
 	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
@@ -193,14 +205,18 @@ HRESULT CWar::Render()
 	//
 	// 말 외곽선 렌더링
 	//
-	if (FAILED(SetUp_Ruin_ConstantTable(true)))
-		return E_FAIL;
-	for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+	if (m_War_On_Ruin_State)
 	{
-		m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-		m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-		m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-		m_pModelCom_Ruin->Render(i, 0);
+		if (FAILED(SetUp_Ruin_ConstantTable(true)))
+			return E_FAIL;
+		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+		{
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+			m_pModelCom_Ruin->Render(i, 0);
+		}
 	}
 
 	// Collider Debug Rendering
@@ -381,7 +397,7 @@ HRESULT CWar::SetUp_Component()
 	CTransform::TRANSFORMDESC		TransformDesc;
 	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
 
-	TransformDesc.fSpeedPerSec = 3.7f;
+	TransformDesc.fSpeedPerSec = WAR_SPEED;
 	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
@@ -398,38 +414,38 @@ HRESULT CWar::SetUp_Component()
 	/* For.Com_Model_War_Ruin */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Ruin"), TEXT("Com_Model_War_Ruin"), (CComponent**)&m_pModelCom_Ruin)))
 		return E_FAIL;
+	m_pModelCom_Ruin->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Mount_Running", false, false);//Not Loop
+
 
 	/* For.Com_Model_War_Gauntlet */
-	// 애니메이션은 Com_Model_War를 복사하자
+		// 애니메이션은 Com_Model_War를 복사하자
 	CModel::MODELDESC	tagModelWarGauntletDesc;
 	tagModelWarGauntletDesc.pHierarchyNodes = m_pModelCom[MODELTYPE_WAR]->Get_HierarchyNodes();
 	tagModelWarGauntletDesc.pAnimations = m_pModelCom[MODELTYPE_WAR]->Get_Animations();
-
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"), TEXT("Com_Model_War_Gauntlet"), (CComponent**)&m_pModelCom[MODELTYPE_GAUNTLET], &tagModelWarGauntletDesc)))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Model_War_Weapon */
-	// Model_War가 갖고 있는 뼈중 이름이 "Bone_War_Weapon_Sword" 인것을 찾아 넣어주자.
+		// Model_War가 갖고 있는 뼈중 이름이 "Bone_War_Weapon_Sword" 인것을 찾아 넣어주자.
 	CModel::MODELDESC	tagModelWarWeaponDesc;
 	tagModelWarWeaponDesc.pHierarchyNode = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], &tagModelWarWeaponDesc)))
 		return E_FAIL;
 
-	/* For.Com_StateMachine : Model 뒤에 해야한다. Model를 사용하기 때문. */
+	/* For.Com_StateMachine : Model 뒤에 해야한다. State Ready에서 Model를 사용하기 때문. */
 	g_pWar_Model_Context = m_pModelCom[MODELTYPE_WAR];
+	g_pWar_Model_Gauntlet_Context = m_pModelCom[MODELTYPE_GAUNTLET];
+	g_pWar_Model_Sword_Context = m_pModelCom[MODELTYPE_WEAPON];
+	g_pWar_Model_Ruin_Context = m_pModelCom_Ruin;
 	g_pWar_Transform_Context = m_pTransformCom;
 	CStateMachine::STATEMACHINEDESC fsmDesc;
 	fsmDesc.pOwner = this;
 	fsmDesc.pInitState = CState_War_Idle::GetInstance();
-
+		// For.Com_StateMachine
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
 		return E_FAIL;
-
-	// 글로벌 상태는 여기서 설정하자
 	static_cast<CStateMachine*>(m_pStateMachineCom)->Set_GlobalState(CGlobal_State_War::GetInstance());
-
 	g_pWar_State_Context = m_pStateMachineCom;
-
 
 
 	/* For.Com_AABB */
@@ -603,6 +619,10 @@ void CWar::Free()
 
 	// Destroy the State SingleTon : State_War.cpp 
 	g_pWar_State_Context = nullptr;
+
 	g_pWar_Model_Context = nullptr;
+	g_pWar_Model_Gauntlet_Context = nullptr;
+	g_pWar_Model_Ruin_Context = nullptr;
+
 	g_pWar_Transform_Context = nullptr;
 }

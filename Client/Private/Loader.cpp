@@ -226,7 +226,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* Prototype_Component_Model_War_Ruin */
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_War_Ruin"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Ruin"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Ruin/", "War_Ruin_WithOut_War_Bones.fbx", War_PivotMat))))
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Ruin/", "War_Ruin.fbx", War_PivotMat))))
 		return E_FAIL;
 
 	/* Prototype_Component_Model_War_Weapon */ 
