@@ -75,7 +75,10 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 	for (int idx = 0; idx < m_Channels.size(); idx++)
 	{
 		vector<KEYFRAME*>	KeyFrames = *m_Channels[idx]->Get_KeyFrames();
-		_matrix	 matLatestTransform = ((*m_LatestChannels)[idx])->Get_TransformationMatrix();
+
+		_matrix matLatestTransform = XMMatrixIdentity();
+		if (m_LatestChannels)
+			matLatestTransform = ((*m_LatestChannels)[idx])->Get_TransformationMatrix();
 
 		_uint		iCurrentKeyFrameIndex = m_Channels[idx]->Get_KeyFrameIndex();
 
@@ -111,7 +114,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 				m_Channels[idx]->Set_KeyFrameIndex(++iCurrentKeyFrameIndex);
 
 			// 처음 키프레임 인덱스이면 이전 키프레임의 최근위치와 1번째 키프레임을 비교하여 보간한다. 
- 			if (iCurrentKeyFrameIndex == 0 && !m_bOnceFinished && m_bFistBegan)
+ 			if (m_LatestChannels && iCurrentKeyFrameIndex == 0 && !m_bOnceFinished && m_bFistBegan)
 			{
 				// Ratio : a ~ b 사이 보간 : (x-a)/(b-a) : x가 a면 0, x가b면 1
 				_float		fRatio = (m_fTimeAcc - KeyFrames[iCurrentKeyFrameIndex]->Time) /

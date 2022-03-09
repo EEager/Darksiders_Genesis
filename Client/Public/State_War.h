@@ -46,6 +46,11 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+#define SHIFT_LOCK_TIME 0.5f
+	_float m_fShiftLockTimeAcc = 0.f; // Shift 간에 간격은 0.5초
+	_bool	m_bShiftLockTimeAccStart = false; 
+
 public:
 	virtual void Free() final;
 };
@@ -1036,6 +1041,9 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	_float m_fMoveLockTimeAcc = 0.f;
 
 public:
 	virtual void Free() final;

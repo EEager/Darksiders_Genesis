@@ -42,6 +42,7 @@ private:
 	CCollider* m_pAABBCom = nullptr;
 	CCollider* m_pOBBCom = nullptr;
 	CModel* m_pModelCom[MODELTYPE_END] = { 0, };
+	CModel* m_pModelCom_Ruin = nullptr;
 
 private:
 	ID3D11ShaderResourceView* pSRV = nullptr;
@@ -80,6 +81,7 @@ public:
 private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);
+	HRESULT SetUp_Ruin_ConstantTable();
 
 public:
 	static CWar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

@@ -7,7 +7,7 @@ BEGIN(Engine)
 class ENGINE_DLL CModel final : public CComponent
 {	
 public:
-	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_ANIM_USE_OTHER, TYPE_END };
+	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_ANIM_USE_OTHER, TYPE_ANIM_NEED_CONTINUE_BONES, TYPE_END };
 
 	typedef struct tagModelDesc
 	{

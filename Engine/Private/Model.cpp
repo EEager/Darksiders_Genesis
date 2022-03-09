@@ -157,7 +157,7 @@ HRESULT CModel::NativeConstruct(void * pArg)
 			}
 		}
 	}
-	else // 3. TYPE_ANIM
+	else // if (TYPE_ANIM == m_eType) and if (TYPE_ANIM_need_continue == m_eType)
 	{
 		// m_HierarchyNodes를 채운다.
 		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
@@ -289,7 +289,7 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 	{
 		if (TYPE_NONANIM != m_eType) // 2. TYPE_ANIM_USE_OTHER, TYPE_ANIM 모델인경우 메쉬에 뼈들 최종 행렬 곱해줘야한다. 
 		{
-#define MAX_BONE_NUM 192
+#define MAX_BONE_NUM 256
 			_float4x4		BoneMatrices[MAX_BONE_NUM];
 			ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
 

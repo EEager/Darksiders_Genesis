@@ -52,7 +52,7 @@ HRESULT CStateMachine::Tick(_float fDeltaTime)
 
 HRESULT CStateMachine::ChangeState(CState* pNewState)
 {
-	if (m_pCurrentState == m_pPreviousState)
+	if (m_pCurrentState == pNewState)
 		return S_OK;
 
 	assert(m_pCurrentState && pNewState);

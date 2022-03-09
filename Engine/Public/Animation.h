@@ -36,7 +36,12 @@ public:
 
 public:
 	// 애니메이션은 시작 키프레임부터 시작하자
-	void SetBeginFirst(_bool b = true) { m_isBeginFirst = b; }
+	void SetBeginFirst(_bool b = true){
+		m_isBeginFirst = b; 
+		m_fTimeAcc = 0;
+		m_bOnceFinished = false;
+		m_isFinished = false;
+	}
 	// 해당 애니메이션이 끝나었느냐? 
 	_bool Get_isFinished() { return m_isFinished; int debug = 0;
 	}

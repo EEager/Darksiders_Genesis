@@ -55,14 +55,26 @@ void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 
 	// [Event] 대쉬
 	// [State]  -> CState_War_DashTo_F
-	if (CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
+	if (m_bShiftLockTimeAccStart)
 	{
+		m_fShiftLockTimeAcc += fTimeDelta;
+		if (m_fShiftLockTimeAcc > SHIFT_LOCK_TIME) // 이전에 shift했으면 SHIFT_LOCK_TIME까지는 하지못하게 하자
+		{
+			m_bShiftLockTimeAccStart = false;
+			m_fShiftLockTimeAcc = 0.f;
+		}
+	}
+
+	if (m_bShiftLockTimeAccStart == false && CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
+	{
+		m_bShiftLockTimeAccStart = true;
+		m_fShiftLockTimeAcc = 0.f;
 		g_pWar_State_Context->ChangeState(CState_War_DashTo_F::GetInstance());
 		return;
 	}
 
 
-	// War_Key
+	// Global War_Key
 	static_cast<CWar*>(pOwner)->War_Key(fTimeDelta);
 }
 
@@ -2268,11 +2280,14 @@ void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 무적판정 넣거나.
 	// 잔상 애니메이션 효과 시작하는 변수 넣거나
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 내가 모든 키를 위임할꼬야
+
 }
 
 void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
 
 	// [Event] 애니메이션 종료
 	// [State]  -> CState_War_Idle_Combat
@@ -2281,11 +2296,32 @@ void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar_State_Context->ChangeState(CState_War_Idle_Combat::GetInstance());
 		return;
 	}
+	
+	m_fMoveLockTimeAcc += fTimeDelta;
+
+	if (m_fMoveLockTimeAcc < 1.f) // 1초 동안은 키입력되게 하지말자
+		return;
+	
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run_Combat
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+		return;
+	}
+
 }
 
 void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	m_fMoveLockTimeAcc = 0.f;
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false); // 내가 모든 키를 위임할꼬야
 }
 
 void CState_War_DashTo_F::Free()

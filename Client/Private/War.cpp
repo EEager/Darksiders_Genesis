@@ -43,10 +43,18 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-
+bool onceSetup = false; // TEST
 _int CWar::Tick(_float fTimeDelta)
 {
 	m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4());
+
+	if (!onceSetup) // TEST
+	{
+		m_pModelCom_Ruin->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop");
+		onceSetup = true;
+	}
+
+	m_pModelCom_Ruin->Update_Animation(fTimeDelta);
 
 	// War 애니메이션 인덱스 변환 - FSM 머신으로 관리
 	if (m_pStateMachineCom)
@@ -141,12 +149,26 @@ HRESULT CWar::Render()
 		}
 	}
 
+
+	//
+	// 말 렌더링
+	//
+	if (FAILED(SetUp_Ruin_ConstantTable()))
+		return E_FAIL;
+	auto iNumMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+	for (_uint i = 0; i < iNumMaterials; ++i)
+	{
+		m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+		m_pModelCom_Ruin->Render(i, 0);
+	}
+
 	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
 	m_pRendererCom->ClearRenderStates();
 
-
 	// 
-	// 2. (스텐실버퍼가 0인경우에) War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
+	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
 	// 
 	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
 
@@ -360,6 +382,10 @@ HRESULT CWar::SetUp_Component()
 		return E_FAIL;
 	m_pModelCom[MODELTYPE_WAR]->SetUp_Animation("War_Mesh.ao|War_Idle");
 
+	/* For.Com_Model_War_Ruin */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Ruin"), TEXT("Com_Model_War_Ruin"), (CComponent**)&m_pModelCom_Ruin)))
+		return E_FAIL;
+
 	/* For.Com_Model_War_Gauntlet */
 	// 애니메이션은 Com_Model_War를 복사하자
 	CModel::MODELDESC	tagModelWarGauntletDesc;
@@ -402,8 +428,6 @@ HRESULT CWar::SetUp_Component()
 		return E_FAIL;
 
 
-	
-
 	/* For.Com_OBB */
 	ColliderDesc.vPivot = _float3(0.f, 1.f, 0.f);
 	ColliderDesc.vSize = _float3(1.f, 2.f, 1.f);
@@ -411,6 +435,52 @@ HRESULT CWar::SetUp_Component()
 	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+
+
+HRESULT CWar::SetUp_Ruin_ConstantTable()
+{
+	if (nullptr == m_pModelCom_Ruin)
+		return E_FAIL;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Directional Light
+	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
+	DirectionalLight mDirLight;
+	mDirLight.Ambient = dirLightDesc.vAmbient;
+	mDirLight.Diffuse = dirLightDesc.vDiffuse;
+	mDirLight.Specular = dirLightDesc.vSpecular;
+	mDirLight.Direction = dirLightDesc.vDirection;
+	m_pModelCom_Ruin->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+
+	// Bind Material
+	m_pModelCom_Ruin->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+	// Bind Transform
+	m_pTransformCom->Bind_OnShader(m_pModelCom_Ruin, "g_WorldMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW,m_pModelCom_Ruin, "g_ViewMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ,m_pModelCom_Ruin, "g_ProjMatrix");
+
+	// Bind Position
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	m_pModelCom_Ruin->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+	bool tmpFalse = false;
+	bool tmpTrue = true;
+	// Branch to Use Normal Mapping 
+	// 노멀맵할지 말지 선택을 여기서 하자
+	m_pModelCom_Ruin->Set_RawValue("g_UseNormalMap", &tmpTrue, sizeof(bool));
+	m_pModelCom_Ruin->Set_RawValue("g_UseEmissiveMap", &tmpTrue, sizeof(bool));
+
+	// Outline 원형은 그리지않는다.
+	m_pModelCom_Ruin->Set_RawValue("g_DrawOutLine", &tmpFalse, sizeof(bool));
+
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
@@ -511,6 +581,9 @@ void CWar::Free()
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pStateMachineCom);
+
+
+	Safe_Release(m_pModelCom_Ruin);
 
 	for (auto& modelCom : m_pModelCom)
 		Safe_Release(modelCom);

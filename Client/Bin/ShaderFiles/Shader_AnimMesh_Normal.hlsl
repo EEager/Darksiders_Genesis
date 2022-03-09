@@ -31,7 +31,7 @@ cbuffer CameraDesc
 
 struct tagBoneMatrixArray
 {
-	matrix		Bones[192];
+	matrix		Bones[256];
 };
 
 cbuffer BoneMatrices
