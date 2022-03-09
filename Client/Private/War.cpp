@@ -153,10 +153,10 @@ HRESULT CWar::Render()
 	//
 	// 말 렌더링
 	//
-	if (FAILED(SetUp_Ruin_ConstantTable()))
+	if (FAILED(SetUp_Ruin_ConstantTable(false)))
 		return E_FAIL;
-	auto iNumMaterials = m_pModelCom_Ruin->Get_NumMaterials();
-	for (_uint i = 0; i < iNumMaterials; ++i)
+	auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+	for (_uint i = 0; i < iNum_RuinMaterials; ++i)
 	{
 		m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
@@ -168,7 +168,8 @@ HRESULT CWar::Render()
 	m_pRendererCom->ClearRenderStates();
 
 	// 
-	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
+	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) 
+	// War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
 	// 
 	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
 
@@ -189,6 +190,18 @@ HRESULT CWar::Render()
 		}
 	}
 
+	//
+	// 말 외곽선 렌더링
+	//
+	if (FAILED(SetUp_Ruin_ConstantTable(true)))
+		return E_FAIL;
+	for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+	{
+		m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+		m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+		m_pModelCom_Ruin->Render(i, 0);
+	}
 
 	// Collider Debug Rendering
 #ifdef _DEBUG
@@ -441,7 +454,7 @@ HRESULT CWar::SetUp_Component()
 
 
 
-HRESULT CWar::SetUp_Ruin_ConstantTable()
+HRESULT CWar::SetUp_Ruin_ConstantTable(bool drawOutLine)
 {
 	if (nullptr == m_pModelCom_Ruin)
 		return E_FAIL;
@@ -477,8 +490,8 @@ HRESULT CWar::SetUp_Ruin_ConstantTable()
 	m_pModelCom_Ruin->Set_RawValue("g_UseNormalMap", &tmpTrue, sizeof(bool));
 	m_pModelCom_Ruin->Set_RawValue("g_UseEmissiveMap", &tmpTrue, sizeof(bool));
 
-	// Outline 원형은 그리지않는다.
-	m_pModelCom_Ruin->Set_RawValue("g_DrawOutLine", &tmpFalse, sizeof(bool));
+	// 해당 변수 set 되면 Outline만 그린다.
+	m_pModelCom_Ruin->Set_RawValue("g_DrawOutLine", &drawOutLine, sizeof(bool));
 
 	RELEASE_INSTANCE(CGameInstance);
 
