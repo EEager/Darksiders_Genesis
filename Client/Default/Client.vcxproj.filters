@@ -82,6 +82,15 @@
     <Filter Include="02.GameObjects\Player\Sword">
       <UniqueIdentifier>{4345b78b-db16-441d-90c7-ed0d810d28a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Effect">
+      <UniqueIdentifier>{8ab00eb3-cb38-4f73-a9d2-8da21cf68f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Effect\Point">
+      <UniqueIdentifier>{68d35e64-2e62-4223-bf7d-33f056ab533d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Effect\Rect">
+      <UniqueIdentifier>{4567ec7a-cef9-4d32-b390-67c8f3985087}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -186,6 +195,9 @@
     <ClInclude Include="..\Public\Sword.h">
       <Filter>02.GameObjects\Player\Sword</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\RectEffect.h">
+      <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -272,6 +284,9 @@
     <ClCompile Include="..\Private\Sword.cpp">
       <Filter>02.GameObjects\Player\Sword</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\RectEffect.cpp">
+      <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -309,6 +324,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_RectInstance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

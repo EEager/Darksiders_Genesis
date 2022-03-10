@@ -13,6 +13,7 @@
 #include "War.h"
 #include "UI_War_Hp_n_Wrath_Bar.h"
 #include "UI_War_Skills.h"
+#include "RectEffect.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -101,7 +102,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CSword::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	
+	/* For.Prototype_GameObject_RectEffect */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RectEffect"),
+		CRectEffect::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_War */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_War"),
 		CWar::Create(m_pDevice, m_pDeviceContext))))
@@ -129,6 +134,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_VIBuffer_RectInstance */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_RectInstance"),
+		CVIBuffer_RectInstance::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_RectInstance.hlsl"), 20))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_Texture_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), 
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
@@ -142,6 +152,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_Component_Texture_Brush */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Brush"),
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Terrain/Brush.png")))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Snow */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Snow"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
 		return E_FAIL;
 
 

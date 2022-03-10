@@ -13,7 +13,7 @@
 #include "VIBuffer_Rect.h"
 #include "VIBuffer_Terrain.h"
 #include "StateMachine.h"
-
+#include "VIBuffer_RectInstance.h"
 
 /* 컴포넌트들의 원형을 모아둔다. */
 

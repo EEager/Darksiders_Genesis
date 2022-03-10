@@ -23,7 +23,6 @@ public:
 
 protected:
 	ID3D11Buffer*				m_pVB = nullptr;
-	ID3D11Buffer*				m_pVBInst = nullptr;
 	D3D11_BUFFER_DESC			m_VBDesc;
 	D3D11_SUBRESOURCE_DATA		m_VBSubresourceData;
 	_uint						m_iNumVertexBuffers = 0;

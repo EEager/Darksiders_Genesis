@@ -63,6 +63,14 @@ namespace Engine
 
 	}PASSDESC;
 
+	typedef struct tagVertex_Matrix
+	{
+		XMFLOAT4			vRight;
+		XMFLOAT4			vUp;
+		XMFLOAT4			vLook;
+		XMFLOAT4			vPosition;
+	}VTXMATRIX;
+
 	typedef struct tagVertex_Mesh
 	{
 		XMFLOAT3			vPosition;
