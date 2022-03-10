@@ -261,6 +261,9 @@
     <ClInclude Include="..\Public\DebugDraw.h">
       <Filter>01.Utility\07.DebugDraw</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\EasingLerp.h">
+      <Filter>02.DirectUtil</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -376,6 +379,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\DebugDraw.cpp">
       <Filter>01.Utility\07.DebugDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EasingLerp.cpp">
+      <Filter>02.DirectUtil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

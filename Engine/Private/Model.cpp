@@ -4,6 +4,7 @@
 #include "HierarchyNode.h"
 #include "Animation.h"
 #include "Channel.h"
+#include "GameInstance.h"
 
 CModel::CModel(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)

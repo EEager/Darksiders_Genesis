@@ -377,6 +377,7 @@ void CWar::War_Key(_float fTimeDelta)
 		}
 		RELEASE_INSTANCE(CInput_Device);
 	}
+	// 기본적인 이동
 	else
 	{
 		// 

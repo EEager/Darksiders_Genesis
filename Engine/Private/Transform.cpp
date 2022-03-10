@@ -24,10 +24,24 @@ void CTransform::Set_State(STATE eState, _fvector vState)
 	memcpy(&m_WorldMatrix.m[eState], &vTmp, sizeof(_float4));
 }
 
-void CTransform::Set_State_Lerp(STATE eState, _fvector vDst, _float fRatio)
+void CTransform::Set_State_Lerp(STATE eState, _fvector vDst, _float fRatio, EasingLerp::EaseType eEaseType)
 {
 	_float4		vTmp;
-	XMStoreFloat4(&vTmp, XMVectorLerp((FXMVECTOR)Get_State(eState), (FXMVECTOR)vDst, fRatio));
+	
+	_vector srcPos = Get_State(eState);
+	_float srcX = XMVectorGetX(srcPos);
+	_float srcY = XMVectorGetY(srcPos);
+	_float srcZ = XMVectorGetZ(srcPos);
+
+	_float dstX = XMVectorGetX(vDst);
+	_float dstY = XMVectorGetY(vDst);
+	_float dstZ = XMVectorGetZ(vDst);
+
+	srcX = EasingLerp::Lerp(srcX, dstX, fRatio, eEaseType);
+	srcY = EasingLerp::Lerp(srcY, dstY, fRatio, eEaseType);
+	srcZ = EasingLerp::Lerp(srcZ, dstZ, fRatio, eEaseType);
+
+	XMStoreFloat4(&vTmp, XMLoadFloat4(&_float4(srcX, srcY, srcZ, 1.f)));
 	memcpy(&m_WorldMatrix.m[eState], &vTmp, sizeof(_float4));
 }
 

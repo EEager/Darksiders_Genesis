@@ -15,6 +15,7 @@
 // DirectX Utils
 #include "DXString.h"
 #include "MathHelper.h"
+#include "EasingLerp.h"
 
 
 BEGIN(Engine)

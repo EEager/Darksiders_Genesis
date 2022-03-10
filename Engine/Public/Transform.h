@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "EasingLerp.h"
 
 BEGIN(Engine)
 
@@ -23,7 +24,7 @@ private:
 public:
 	void Set_State(STATE eState, _fvector vState);
 	void Set_WorldMatrix(_fmatrix fMat);
-	void Set_State_Lerp(STATE eState, _fvector vState, _float fRatio);
+	void Set_State_Lerp(STATE eState, _fvector vDst, _float fRatio, EasingLerp::EaseType eEaseType = EasingLerp::EaseType::easeLiner);
 	void Set_TransformDesc(const TRANSFORMDESC& TransformDesc);
 	void Set_TransformDesc_Speed(const _float& fSpeed);
 	TRANSFORMDESC* Get_TransformDesc_Ptr();
