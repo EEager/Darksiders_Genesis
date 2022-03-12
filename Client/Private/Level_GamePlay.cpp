@@ -117,7 +117,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
 	CameraDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraDesc.fAspect = (_float)g_iWinCX / g_iWinCY;
 	CameraDesc.fNear = 0.2f;
-	CameraDesc.fFar = 600.0f;
+	CameraDesc.fFar = 700.0f;
 
 	CameraDesc.TransformDesc.fSpeedPerSec = 15.f;
 	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
@@ -140,6 +140,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
 
 	/* For.Prototype_GameObject_RectEffect */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_RectEffect"))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Sky */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Sky"))))
 		return E_FAIL;
 
 
@@ -168,7 +172,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 		return E_FAIL;
 
 	/* For.Layer_Fork*/
-	for (_uint i = 0; i < 3; ++i)
+	for (_uint i = 0; i < 1; ++i)
 	{
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Fork", TEXT("Prototype_GameObject_Fork"))))
 			return E_FAIL;

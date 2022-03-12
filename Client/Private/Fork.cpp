@@ -17,6 +17,13 @@ CFork::CFork(const CFork & rhs)
 HRESULT CFork::NativeConstruct_Prototype()
 {	
 
+	// Material Init
+	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
+	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 16.0f };
+	m_tMtrlDesc.vMtrlEmissive = { 1.f, 1.f, 1.f, 1.f };
+	m_tMtrlDesc.fMtrlPower = 20.f;
+
 	return S_OK;
 }
 
@@ -25,9 +32,7 @@ HRESULT CFork::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 50, 0.f, rand() % 50, 1.f));
-
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), rand() % 360);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(129.f/2.f, 0.f, 129.f/2.f, 1.f));
 
 	return S_OK;
 }
@@ -87,6 +92,7 @@ HRESULT CFork::Render()
 	for (_uint i = 0; i < iNumMeshContainer; ++i)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 
 		m_pModelCom->Render(i, 0);
 	}
@@ -148,21 +154,30 @@ HRESULT CFork::SetUp_ConstantTable()
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
+	// Bind Directional Light
+	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
+	DirectionalLight mDirLight;
+	mDirLight.Ambient = dirLightDesc.vAmbient;
+	mDirLight.Diffuse = dirLightDesc.vDiffuse;
+	mDirLight.Specular = dirLightDesc.vSpecular;
+	mDirLight.Direction = dirLightDesc.vDirection;
+	m_pModelCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+
+	// Bind Material
+	m_pModelCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
-	/*LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0); 
-	* m_pModelCom->Set_RawValue 만들어야함 시방...
-	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightSpecular", &LightDesc.vSpecular, sizeof(_float4));
-
-	_float4			vCamPosition;	
+	// Bind Position
+	_float4			vCamPosition;
 	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));*/
-	
+	m_pModelCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+	// 노멀맵할지 말지 선택을 여기서 하자
+	m_pModelCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
 
 	RELEASE_INSTANCE(CGameInstance);
 

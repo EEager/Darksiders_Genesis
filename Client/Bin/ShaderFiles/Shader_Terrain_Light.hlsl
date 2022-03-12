@@ -43,14 +43,6 @@ texture2D		g_DestTexture;
 texture2D		g_FilterTexture;
 texture2D		g_BrushTexture;
 
-sampler DefaultSampler = sampler_state
-{
-	AddressU = wrap;
-	AddressV = wrap;
-
-	Filter = min_mag_mip_linear;
-};
-
 // --------------------
 // VS
 // --------------------
@@ -194,7 +186,7 @@ PS_OUT PS(PS_IN In)
 	//if (gFogEnabled)
 	{
 		// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
-		float fogLerp = saturate((distToEye - 15.0f) / 50.f);
+		float fogLerp = saturate((distToEye - 15.0f) / 100.f);
 
 		// Blend the fog color and the lit color.
 		Out.vColor = lerp(Out.vColor, vector(0.75f, 0.75f, 0.75f, 1.0f), fogLerp);

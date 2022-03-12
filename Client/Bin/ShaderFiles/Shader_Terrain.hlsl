@@ -34,14 +34,6 @@ texture2D		g_DestTexture;
 texture2D		g_FilterTexture;
 texture2D		g_BrushTexture;
 
-sampler DefaultSampler = sampler_state
-{
-	AddressU = wrap;
-	AddressV = wrap;
-
-	Filter = min_mag_mip_linear;
-	
-};
 
 struct VS_IN
 {

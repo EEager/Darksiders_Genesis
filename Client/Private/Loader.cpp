@@ -14,6 +14,7 @@
 #include "UI_War_Hp_n_Wrath_Bar.h"
 #include "UI_War_Skills.h"
 #include "RectEffect.h"
+#include "Sky.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -107,6 +108,13 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CRectEffect::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_RectEffect */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
+		CSky::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+
+
 	/* For.Prototype_GameObject_War */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_War"),
 		CWar::Create(m_pDevice, m_pDeviceContext))))
@@ -139,6 +147,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CVIBuffer_RectInstance::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_RectInstance.hlsl"), 20))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_VIBuffer_Cube */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
+		CVIBuffer_Cube::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Cube.hlsl")))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_Texture_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), 
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
@@ -157,6 +170,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_Component_Texture_Snow */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Snow"),
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Sky */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Sky"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/SkyBox/burger3.dds")))))
 		return E_FAIL;
 
 
@@ -225,9 +243,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	/* For.Prototype_Component_Model_Fork*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Fork"));
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	PivotMatrix = XMMatrixScaling(0.002f, 0.002f, 0.002f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
+		//CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/BackGround/", "BackGround.fbx", PivotMatrix))))
 		return E_FAIL;
 #endif
 
@@ -256,6 +275,8 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Weapon/", "War_Weapon.fbx", War_PivotMat))))
 		return E_FAIL;
+
+
 
 
 	/* For.Prototype_Component_Navigation */

@@ -91,6 +91,12 @@ namespace Engine
 		XMFLOAT4			vColor;
 	} VTXCOL;
 
+	typedef struct tagVertexCubeTexture
+	{
+		XMFLOAT3		vPosition;
+		XMFLOAT3		vTexUV;
+	} VTXCUBETEX;
+
 	typedef struct tagVertex_Texture
 	{
 		XMFLOAT3			vPosition;

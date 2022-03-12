@@ -10,15 +10,6 @@ cbuffer Matrices
 
 texture2D		g_DiffuseTexture;
 
-sampler DefaultSampler = sampler_state
-{
-	AddressU = wrap;
-	AddressV = wrap;
-
-	Filter = min_mag_mip_linear;
-	
-};
-
 struct VS_IN
 {
 	float3		vPosition : POSITION;

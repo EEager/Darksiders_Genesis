@@ -41,7 +41,7 @@ HRESULT CTexture::NativeConstruct_Prototype(const _tchar* pTextureFilePath, _uin
 		if (!lstrcmp(szExt, TEXT(".dds")))		
 			DirectX::LoadFromDDSFile(szFullPath, DDS_FLAGS_NONE, nullptr, Image);
 
-		else if (!lstrcmp(szExt, TEXT(".tga")))
+		else if (!lstrcmp(szExt, TEXT(".tga")) || !lstrcmp(szExt, TEXT(".TGA")))
 			DirectX::LoadFromTGAFile(szFullPath, nullptr, Image);
 		else
 			DirectX::LoadFromWICFile(szFullPath, WIC_FLAGS_NONE, nullptr, Image);

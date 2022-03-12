@@ -28,35 +28,14 @@
     <Filter Include="97.ShaderFiles">
       <UniqueIdentifier>{086678cc-7e84-483a-b006-ffbfcff7958a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\Terrain">
-      <UniqueIdentifier>{204c8264-365e-4a8b-a9c1-f2e7bea1d81a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Camera">
       <UniqueIdentifier>{9f950e22-1222-4d61-a4b6-91e9d7e63ceb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Fork">
-      <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
     <Filter Include="97.ShaderFiles\Header">
       <UniqueIdentifier>{1f28af27-a403-4abe-8414-dbf3c2416300}</UniqueIdentifier>
     </Filter>
     <Filter Include="97.ShaderFiles\App">
       <UniqueIdentifier>{4fa29561-5dee-487e-a939-55b8dfacffd7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\War">
-      <UniqueIdentifier>{f88cba2e-3e6e-44ce-b1c2-9c037c1a04b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Player">
-      <UniqueIdentifier>{362d310c-032a-4cd9-8ee2-969b9462314f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Loading">
-      <UniqueIdentifier>{40f65736-d5ec-4866-bc7a-5fcdca6b20e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Logo">
-      <UniqueIdentifier>{f82d7855-fa3d-4c00-94e8-11cd6d42e4de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Mouse">
-      <UniqueIdentifier>{7c20b023-f3ff-4441-9319-491ae7df8716}</UniqueIdentifier>
     </Filter>
     <Filter Include="96.ImGUI">
       <UniqueIdentifier>{ef296e70-b85a-4179-a8e5-32e98a863054}</UniqueIdentifier>
@@ -67,21 +46,6 @@
     <Filter Include="96.ImGUI\Misc">
       <UniqueIdentifier>{6917045b-5f6d-4227-9ae0-c9935aca7462}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\UIs">
-      <UniqueIdentifier>{7e34e849-0b73-4734-935f-9365445d891b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\UIs\Skills">
-      <UniqueIdentifier>{790b5223-21bd-4e92-9130-fe390c9a826f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\UIs\HpNWrathBar">
-      <UniqueIdentifier>{f8c9a431-3632-4cd0-b741-08fcaff70cb7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\War\State">
-      <UniqueIdentifier>{c01fa334-53fa-4160-b7be-5d17f69b8d24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Player\Sword">
-      <UniqueIdentifier>{4345b78b-db16-441d-90c7-ed0d810d28a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\Effect">
       <UniqueIdentifier>{8ab00eb3-cb38-4f73-a9d2-8da21cf68f3a}</UniqueIdentifier>
     </Filter>
@@ -90,6 +54,54 @@
     </Filter>
     <Filter Include="02.GameObjects\Effect\Rect">
       <UniqueIdentifier>{4567ec7a-cef9-4d32-b390-67c8f3985087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\BackGround">
+      <UniqueIdentifier>{200f47cb-f1cb-4e83-80ce-d19086330117}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\BackGround\Sky">
+      <UniqueIdentifier>{b6c18cdc-745b-4bf7-ab44-d71635ff09be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\BackGround\Terrain">
+      <UniqueIdentifier>{204c8264-365e-4a8b-a9c1-f2e7bea1d81a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UI">
+      <UniqueIdentifier>{a371ffd3-1db7-4273-ad1f-2852fecf46e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UI\HpNWrathBar">
+      <UniqueIdentifier>{f8c9a431-3632-4cd0-b741-08fcaff70cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UI\Skills">
+      <UniqueIdentifier>{790b5223-21bd-4e92-9130-fe390c9a826f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player">
+      <UniqueIdentifier>{677c8103-75d5-473c-9a67-2430b19bf57e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player\Fiona">
+      <UniqueIdentifier>{362d310c-032a-4cd9-8ee2-969b9462314f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player\Fiona\Sword">
+      <UniqueIdentifier>{4345b78b-db16-441d-90c7-ed0d810d28a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player\War">
+      <UniqueIdentifier>{f88cba2e-3e6e-44ce-b1c2-9c037c1a04b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Player\War\State">
+      <UniqueIdentifier>{c01fa334-53fa-4160-b7be-5d17f69b8d24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UI\Mouse">
+      <UniqueIdentifier>{7c20b023-f3ff-4441-9319-491ae7df8716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\UI\Logo">
+      <UniqueIdentifier>{f82d7855-fa3d-4c00-94e8-11cd6d42e4de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\BackGround\Loading">
+      <UniqueIdentifier>{40f65736-d5ec-4866-bc7a-5fcdca6b20e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Object">
+      <UniqueIdentifier>{5d49c096-dcb1-4be9-a98f-88f2c201b71a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Object\Fork">
+      <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -121,10 +133,10 @@
       <Filter>01.Levels\Loader</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Logo_BackGround.h">
-      <Filter>02.GameObjects\Logo</Filter>
+      <Filter>02.GameObjects\UI\Logo</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
-      <Filter>02.GameObjects\Terrain</Filter>
+      <Filter>02.GameObjects\BackGround\Terrain</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Fly.h">
       <Filter>02.GameObjects\Camera</Filter>
@@ -160,7 +172,7 @@
       <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Fork.h">
-      <Filter>02.GameObjects\Fork</Filter>
+      <Filter>02.GameObjects\Object\Fork</Filter>
     </ClInclude>
     <ClInclude Include="..\Bin\ShaderFiles\Shader_Defines.hlsl">
       <Filter>97.ShaderFiles\Header</Filter>
@@ -172,31 +184,34 @@
       <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\War.h">
-      <Filter>02.GameObjects\War</Filter>
+      <Filter>02.GameObjects\Player\War</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObjects\Player</Filter>
+      <Filter>02.GameObjects\Player\Fiona</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Loading_BackGround.h">
-      <Filter>02.GameObjects\Loading</Filter>
+      <Filter>02.GameObjects\BackGround\Loading</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Mouse.h">
-      <Filter>02.GameObjects\Mouse</Filter>
+      <Filter>02.GameObjects\UI\Mouse</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_War_Hp_n_Wrath_Bar.h">
-      <Filter>02.GameObjects\UIs\HpNWrathBar</Filter>
+      <Filter>02.GameObjects\UI\HpNWrathBar</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_War_Skills.h">
-      <Filter>02.GameObjects\UIs\Skills</Filter>
+      <Filter>02.GameObjects\UI\Skills</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\State_War.h">
-      <Filter>02.GameObjects\War\State</Filter>
+      <Filter>02.GameObjects\Player\War\State</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sword.h">
-      <Filter>02.GameObjects\Player\Sword</Filter>
+      <Filter>02.GameObjects\Player\Fiona\Sword</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RectEffect.h">
       <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky.h">
+      <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -222,10 +237,10 @@
       <Filter>01.Levels\Loader</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Logo_BackGround.cpp">
-      <Filter>02.GameObjects\Logo</Filter>
+      <Filter>02.GameObjects\UI\Logo</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
-      <Filter>02.GameObjects\Terrain</Filter>
+      <Filter>02.GameObjects\BackGround\Terrain</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Fly.cpp">
       <Filter>02.GameObjects\Camera</Filter>
@@ -255,37 +270,40 @@
       <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Fork.cpp">
-      <Filter>02.GameObjects\Fork</Filter>
+      <Filter>02.GameObjects\Object\Fork</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LightHelper.cpp">
       <Filter>97.ShaderFiles\App</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\War.cpp">
-      <Filter>02.GameObjects\War</Filter>
+      <Filter>02.GameObjects\Player\War</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Player.cpp">
-      <Filter>02.GameObjects\Player</Filter>
+      <Filter>02.GameObjects\Player\Fiona</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Loading_BackGround.cpp">
-      <Filter>02.GameObjects\Loading</Filter>
+      <Filter>02.GameObjects\BackGround\Loading</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Mouse.cpp">
-      <Filter>02.GameObjects\Mouse</Filter>
+      <Filter>02.GameObjects\UI\Mouse</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_War_Hp_n_Wrath_Bar.cpp">
-      <Filter>02.GameObjects\UIs\HpNWrathBar</Filter>
+      <Filter>02.GameObjects\UI\HpNWrathBar</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_War_Skills.cpp">
-      <Filter>02.GameObjects\UIs\Skills</Filter>
+      <Filter>02.GameObjects\UI\Skills</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\State_War.cpp">
-      <Filter>02.GameObjects\War\State</Filter>
+      <Filter>02.GameObjects\Player\War\State</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sword.cpp">
-      <Filter>02.GameObjects\Player\Sword</Filter>
+      <Filter>02.GameObjects\Player\Fiona\Sword</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\RectEffect.cpp">
       <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp">
+      <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -327,6 +345,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_RectInstance.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Cube.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

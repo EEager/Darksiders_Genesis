@@ -133,6 +133,9 @@
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Rect_Instance">
       <UniqueIdentifier>{697a55b3-991b-49df-b05c-70aee61327aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Cube">
+      <UniqueIdentifier>{484ee4af-ab8d-48eb-942f-86ce0c65149a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -270,6 +273,9 @@
     <ClInclude Include="..\Public\VIBuffer_RectInstance.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Rect_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Cube.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Cube</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -391,6 +397,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_RectInstance.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Rect_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Cube.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Cube</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

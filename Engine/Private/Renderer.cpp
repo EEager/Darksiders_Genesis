@@ -95,7 +95,10 @@ HRESULT CRenderer::ClearRenderStates()
 
 HRESULT CRenderer::Render_Priority()
 {
+	// Disable z-Buffer
+	m_pDeviceContext->OMSetDepthStencilState(RenderStates::noDepthState.Get(), 0);
 
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_PRIORITY])
 	{
@@ -109,6 +112,9 @@ HRESULT CRenderer::Render_Priority()
 	}
 
 	m_RenderObjects[RENDER_PRIORITY].clear();
+
+	// Restore default blend state
+	ClearRenderStates();
 
 
 	return S_OK;
@@ -203,7 +209,6 @@ HRESULT CRenderer::Render_Alpha()
 
 	// Restore default blend state
 	ClearRenderStates();
-	//m_pDeviceContext->OMSetBlendState(0, blendFactor, 0xffffffff);
 
 
 
@@ -215,6 +220,7 @@ HRESULT CRenderer::Render_UI()
 	// Disable z-Buffer
 	m_pDeviceContext->OMSetDepthStencilState(RenderStates::noDepthState.Get(), 0);
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	// Blending
 	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS.Get(), blendFactor, 0xffffffff);
 
 	/* 리스트 순회 */

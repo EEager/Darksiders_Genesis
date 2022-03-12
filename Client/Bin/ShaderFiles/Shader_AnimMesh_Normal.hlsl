@@ -48,43 +48,6 @@ texture2D		g_EmissiveTexture; // Emissive Map
 
 bool		g_DrawOutLine = false;
 
-
-// --------------------
-// sampler_state
-// --------------------
-sampler DefaultSampler = sampler_state
-{
-	AddressU = wrap;
-	AddressV = wrap;
-
-	Filter = min_mag_mip_linear;
-	
-};
-
-SamplerState samAnisotropic
-{
-	Filter = ANISOTROPIC;
-	MaxAnisotropy = 4;
-
-	AddressU = WRAP;
-	AddressV = WRAP;
-};
-
-SamplerState samLinear
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = WRAP;
-	AddressV = WRAP;
-};
-
-SamplerState samPoint
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = WRAP;
-	AddressV = WRAP;
-};
-
-
 // --------------------
 // VS
 // --------------------
@@ -242,9 +205,6 @@ PS_OUT PS_MAIN(PS_IN In)
 	}
 
 
-
-
-
 	// --------------------------
 	// Fogging 마지막에 하자
 	// --------------------------
@@ -252,7 +212,9 @@ PS_OUT PS_MAIN(PS_IN In)
 	//if (gFogEnabled)
 	{
 		// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
-		float fogLerp = saturate((distToEye - 15.0f) / 50.f);
+		// gFogRange : 크면 시야가 더 잘보인다
+		// gFogStart : 안개 적용시킬 시야 시작 지점.
+		float fogLerp = saturate((distToEye - 15.0f) / 100.f);
 
 		// Blend the fog color and the lit color.
 		Out.vColor = lerp(Out.vColor, vector(0.75f, 0.75f, 0.75f, 1.0f), fogLerp);
@@ -265,20 +227,15 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
-RasterizerState NoCull
-{
-	CullMode = None;
-};
-
 
 technique11	DefaultTechnique
 {
 	pass DefaultPass
 	{			
+		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
-		SetRasterizerState(NoCull);
 	}
 
 }

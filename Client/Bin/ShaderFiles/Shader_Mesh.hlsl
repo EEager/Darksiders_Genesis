@@ -10,16 +10,6 @@ cbuffer Matrices
 
 texture2D		g_DiffuseTexture;
 
-sampler DefaultSampler = sampler_state
-{
-	/*minfilter = linear;
-	mipfilter = linear;
-	magfilter = linaer*/
-
-	Filter = min_mag_mip_linear;
-
-};
-
 //--------------
 // VS
 // -------------
@@ -81,11 +71,6 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	return Out;
 }
-
-RasterizerState NoCull
-{
-	CullMode = None;
-};
 
 
 technique11	DefaultTechnique

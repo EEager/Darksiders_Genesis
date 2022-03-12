@@ -10,16 +10,6 @@ cbuffer Matrices
 
 texture2D		g_DiffuseTexture;
 
-sampler DefaultSampler = sampler_state
-{
-	/*minfilter = linear;
-	mipfilter = linear;
-	magfilter = linaer*/
-
-	Filter = min_mag_mip_linear;
-	
-};
-
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -77,8 +67,8 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
-	if (Out.vColor.a < 0.1f)
-		discard;
+	//if (Out.vColor.a < 0.1f)
+	//	discard;
 
 	return Out;
 }
