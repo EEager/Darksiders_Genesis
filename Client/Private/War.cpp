@@ -43,7 +43,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	XMStoreFloat4x4(&m_WarRuinPivotMat, XMMatrixScaling(0.01f, 0.01f, 0.01f));
 
 	// 초기 위치
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 10, 0.f, rand() % 10, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-6.f, 0.f, 27.f, 1.f));
 
 	return S_OK;
 }
@@ -97,7 +97,7 @@ _int CWar::LateTick(_float fTimeDelta)
 		goto _EXIT;
 
 
-	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 30.f;
+	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 90.f -25.f;
 	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
 	{
 		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
