@@ -45,6 +45,7 @@ using namespace DirectX::PackedVector;
 #include <DirectXTK\PrimitiveBatch.h>
 #include <DirectXTK/VertexTypes.h>
 #include <DirectXTK/Effects.h>
+#include <DirectXTK\/SimpleMath.h>
 
 // Font
 #include <DirectXTK\SpriteBatch.h>

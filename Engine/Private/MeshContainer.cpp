@@ -96,6 +96,18 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 	m_iNumVertices = pMesh->mNumVertices;	
 	m_iNumVertexBuffers = 1;
 
+	// ----------
+	// Enviroment인경우. m_iNumVertices == 6짜리는 Always Enviroment의 기준점이 된다. 
+	// pModel 에게 Set해주자.
+	bool isEnviromentBase = false;
+	if (!strncmp(pMesh->mName.data, "Enviroment", strlen("Enviroment")) && m_iNumVertices == 6)
+	{
+		XMStoreFloat3(&pModel->m_vEnviromentBase, XMVector3TransformCoord(XMLoadFloat3(&_float3(pMesh->mVertices[0].x, pMesh->mVertices[0].y, pMesh->mVertices[0].z)), PivotMatrix));
+		isEnviromentBase = true;
+	}
+
+	// ----------
+
 	CModel::TYPE		eMeshType = pModel->Get_MeshType();
 
 	if (CModel::TYPE_NONANIM == eMeshType) // 애니메이션 없는 경우.
@@ -132,19 +144,22 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 
 		// For.Collider
 		XMVECTOR P;
-		if (CModel::TYPE_NONANIM == eMeshType) // 애니메이션없는경우
+		if (CModel::TYPE_NONANIM == eMeshType) // 애니메이션없는경우 피봇을 곱해주자.
 		{
 			XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix));
 			P = XMLoadFloat3(&pVertices->vPosition);
 		}
-		else
+		else // 애니메이션이 있으면 피봇은 나중에 Render하기 전에 곱하더라
 		{
 			XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), XMMatrixIdentity()));
 			P = XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix);
 		}
 
-		*pMin = XMVectorMin(*pMin, P);
-		*pMax = XMVectorMax(*pMax, P);
+		if (isEnviromentBase == false) // 환경 기준점인 경우 콜라이더 범위에 포함시키지말자
+		{
+			*pMin = XMVectorMin(*pMin, P);
+			*pMax = XMVectorMax(*pMax, P);
+		}
 
 
 		memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));

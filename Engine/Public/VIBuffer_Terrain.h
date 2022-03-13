@@ -12,6 +12,7 @@ protected:
 	virtual ~CVIBuffer_Terrain() = default;
 public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, const _tchar* pHeightMapFilePath);
+	HRESULT NativeConstruct_Prototype(const _tchar * pShaderFilePath, _uint iNumVerticesX, _uint iNumVerticesZ);
 	virtual HRESULT NativeConstruct(void* pArg);
 
 public:
@@ -23,6 +24,7 @@ private:
 
 public:
 	static CVIBuffer_Terrain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, const _tchar* pHeighMapFilePath);
+	static CVIBuffer_Terrain* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const _tchar * pShaderFilePath, _uint iNumVerticesX, _uint iNumVerticexZ);
 	virtual CComponent* Clone(void* pArg);
 	virtual void Free() override;
 };

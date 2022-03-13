@@ -27,6 +27,7 @@ CModel::CModel(const CModel & rhs)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 	, m_Center(rhs.m_Center)
 	, m_Extents(rhs.m_Extents)
+	, m_vEnviromentBase(rhs.m_vEnviromentBase)
 {
 	for (auto& MaterialDesc : m_Materials)
 	{
@@ -389,6 +390,7 @@ HRESULT CModel::Create_MeshContainers()
 	XMFLOAT3 vMinf3(+MathHelper::Infinity, +MathHelper::Infinity, +MathHelper::Infinity);
 	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
 
+	// AABB, OBB 등 콜라이더 박스를 구하자
 	XMVECTOR vMin = XMLoadFloat3(&vMinf3);
 	XMVECTOR vMax = XMLoadFloat3(&vMaxf3);
 

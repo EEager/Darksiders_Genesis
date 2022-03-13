@@ -35,6 +35,8 @@ HRESULT CTerrain::NativeConstruct(void * pArg)
 	if (FAILED(Create_FilterTexture()))
 		return E_FAIL;
 
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-100.f, 0.f, -750.f, 1.f));
 	
 
 	return S_OK;
@@ -58,12 +60,17 @@ _int CTerrain::LateTick(_float fTimeDelta)
 
 HRESULT CTerrain::Render()
 {
+	
+	m_pDeviceContext->RSSetState(RenderStates::WireframeRS.Get());
+
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 
 	m_pVIBufferCom->Render(0);
+
+	m_pRendererCom->ClearRenderStates();
 
 	return S_OK;
 }
@@ -86,8 +93,12 @@ HRESULT CTerrain::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 	
+	///* For.Com_Texture*/
+	//if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
+	//	return E_FAIL;
+
 	/* For.Com_Texture*/
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Black"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom[TYPE_DIFFUSE])))
 		return E_FAIL;
 
 	/* For.Com_Filter */

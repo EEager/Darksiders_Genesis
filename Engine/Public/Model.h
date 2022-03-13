@@ -123,6 +123,12 @@ private:
 	_bool									m_isLoop = true;
 
 
+	
+	// Enviroment 모델의 경우, 기준점이 되는 매쉬가 있다. (보통 plane vertices 6짜리.) 
+	// 해당 기준점이 되는 매쉬의 위치를 가져올 수 있도록 하자.
+public:
+	_float3	m_vEnviromentBase = {};
+
 
 	// For.Collider
 public:

@@ -17,6 +17,7 @@ public:
 
 public:
 	HRESULT Ready_LightDesc();
+	HRESULT Ready_Layer_Enviroment();
 	HRESULT Ready_Layer_Camera(const _tchar* pLayerTag);
 	HRESULT Ready_Layer_BackGround(const _tchar* pLayerTag);
 	HRESULT Ready_Layer_Player(const _tchar* pLayerTag);

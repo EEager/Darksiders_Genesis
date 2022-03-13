@@ -177,6 +177,7 @@
     <ClInclude Include="..\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="..\ImGUI\imstb_textedit.h" />
     <ClInclude Include="..\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="..\Public\Enviroment.h" />
     <ClInclude Include="..\Public\Logo_BackGround.h" />
     <ClInclude Include="..\Public\Camera_Fly.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="..\ImGUI\imgui_Manager.cpp" />
     <ClCompile Include="..\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="..\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="..\Private\Enviroment.cpp" />
     <ClCompile Include="..\Private\Logo_BackGround.cpp" />
     <ClCompile Include="..\Private\Camera_Fly.cpp" />
     <ClCompile Include="..\Private\Fork.cpp" />

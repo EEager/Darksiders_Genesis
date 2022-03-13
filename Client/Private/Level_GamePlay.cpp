@@ -34,6 +34,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	if (FAILED(Ready_LightDesc()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Enviroment()))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -103,6 +106,23 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	return S_OK;
 }
 
+
+HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	/* For.Prototype_GameObject_CEnviroment */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
+		return E_FAIL;
+	/* For.Prototype_GameObject_CEnviroment */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
 HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -145,7 +165,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
 	/* For.Prototype_GameObject_Sky */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Sky"))))
 		return E_FAIL;
-
 
 	RELEASE_INSTANCE(CGameInstance);
 

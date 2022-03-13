@@ -97,7 +97,7 @@ _int CWar::LateTick(_float fTimeDelta)
 		goto _EXIT;
 
 
-	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition);
+	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 30.f;
 	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
 	{
 		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 

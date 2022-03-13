@@ -103,6 +103,9 @@
     <Filter Include="02.GameObjects\Object\Fork">
       <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\BackGround\Enviroment">
+      <UniqueIdentifier>{7948bdb3-cdd1-4237-acc7-e65e41f1f6ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -213,6 +216,9 @@
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Enviroment.h">
+      <Filter>02.GameObjects\BackGround\Enviroment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -304,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObjects\BackGround\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Enviroment.cpp">
+      <Filter>02.GameObjects\BackGround\Enviroment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

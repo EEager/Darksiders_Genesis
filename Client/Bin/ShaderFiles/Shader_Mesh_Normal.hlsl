@@ -20,6 +20,7 @@ cbuffer cbPerObject
 	matrix		g_ProjMatrix;
 	Material	g_Material;
 	bool		g_UseNormalMap;
+	bool		g_UseEmissiveMap;
 };
 
 cbuffer CameraDesc
@@ -37,8 +38,11 @@ cbuffer BoneMatrices
 	tagBoneMatrixArray		g_BoneMatrices;
 };
 
+
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
+texture2D		g_EmissiveTexture; // Emissive Map
+
 
 // --------------------
 // VS
@@ -168,6 +172,12 @@ PS_OUT PS_MAIN(PS_IN In)
 
 		// Modulate with late add.
 		Out.vColor = texColor * (ambient + diffuse) + spec;
+
+		// --------------------------
+		//	Emissive mapping
+		// --------------------------
+		if (g_UseEmissiveMap)
+			Out.vColor += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
 	}
 
 
