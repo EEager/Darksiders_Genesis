@@ -150,25 +150,20 @@ PS_OUT PS_MAIN(PS_IN In)
 		if (g_UseNormalMap)
 			ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
 		else
-			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW, A, D, S);
+			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW.xyz, A, D, S);
 		ambient += A;
 		diffuse += D;
 		spec += S;
 
-		ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-		ambient += A;
-		diffuse += D;
-		spec += S;
+		//ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+		//ambient += A;
+		//diffuse += D;
+		//spec += S;
 
-		ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-		ambient += A;
-		diffuse += D;
-		spec += S;
-
-
-		ambient += A;
-		diffuse += D;
-		spec += S;
+		//ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+		//ambient += A;
+		//diffuse += D;
+		//spec += S;
 
 		// Modulate with late add.
 		Out.vColor = texColor * (ambient + diffuse) + spec;

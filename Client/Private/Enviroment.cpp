@@ -20,7 +20,7 @@ HRESULT CEnviroment::NativeConstruct_Prototype()
 	// Material Init
 	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
-	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 16.0f };
+	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 1.0f };
 	m_tMtrlDesc.vMtrlEmissive = { 1.f, 1.f, 1.f, 1.f };
 	m_tMtrlDesc.fMtrlPower = 20.f;
 

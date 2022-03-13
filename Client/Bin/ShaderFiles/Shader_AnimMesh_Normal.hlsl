@@ -178,7 +178,7 @@ PS_OUT PS_MAIN(PS_IN In)
 		if (g_UseNormalMap)
 			ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
 		else
-			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW, A, D, S);
+			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW.xyz, A, D, S);
 
 		ambient += A;
 		diffuse += D;
