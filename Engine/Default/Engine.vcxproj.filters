@@ -130,11 +130,20 @@
     <Filter Include="01.Utility\07.DebugDraw">
       <UniqueIdentifier>{97bdb356-9254-4347-8acd-123316cb0242}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Rect_Instance">
-      <UniqueIdentifier>{697a55b3-991b-49df-b05c-70aee61327aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Cube">
       <UniqueIdentifier>{484ee4af-ab8d-48eb-942f-86ce0c65149a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\08.Picking">
+      <UniqueIdentifier>{1772fbc1-8968-4d68-8198-9d920fb88439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance">
+      <UniqueIdentifier>{aaf7864f-02ee-470c-8b04-bb27863d75ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance\Rect_Instance">
+      <UniqueIdentifier>{697a55b3-991b-49df-b05c-70aee61327aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance">
+      <UniqueIdentifier>{4b31e997-46b8-45b0-8870-434756bdc8fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -271,10 +280,13 @@
       <Filter>02.DirectUtil</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_RectInstance.h">
-      <Filter>01.Utility\04.Component\Components\VIBuffer\Rect_Instance</Filter>
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Rect_Instance</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Cube.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Cube</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Picking.h">
+      <Filter>01.Utility\08.Picking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -396,10 +408,13 @@
       <Filter>02.DirectUtil</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_RectInstance.cpp">
-      <Filter>01.Utility\04.Component\Components\VIBuffer\Rect_Instance</Filter>
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Rect_Instance</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Cube</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Picking.cpp">
+      <Filter>01.Utility\08.Picking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -27,6 +27,7 @@ HRESULT CEnviroment::NativeConstruct_Prototype()
 	return S_OK;
 }
 
+
 HRESULT CEnviroment::NativeConstruct(void * pArg)
 {
 	if (pArg) // 모델 Com 객체의 프로토타입을 클론시 새롭게 받아오자
@@ -38,7 +39,7 @@ HRESULT CEnviroment::NativeConstruct(void * pArg)
 
 	// Enviroment 모델의 경우 기준점이 되는 메쉬가 존재한는데 거기에 맞춰 초기 위치를 설정하자
 	_float3 EnviromentBase = static_cast<CModel*>(m_pModelCom)->m_vEnviromentBase;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-EnviromentBase.x, -EnviromentBase.y, -EnviromentBase.z, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-EnviromentBase.x + ENVIROMENT_OFFSET_X, -EnviromentBase.y, -EnviromentBase.z + ENVIROMENT_OFFSET_Z, 1.f));
 
 	return S_OK;
 }

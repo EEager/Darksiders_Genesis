@@ -19,6 +19,10 @@ public:
 	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);
 	HRESULT	Set_ShaderResourceView(const char* pConstantName, ID3D11ShaderResourceView* pSRV);
 
+public:
+	_uint Get_NumPrimitive() {
+		return m_iNumPrimitive;
+	}
 
 
 protected:

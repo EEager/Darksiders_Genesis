@@ -50,3 +50,10 @@ static const unsigned int		g_iWinCY = 900;
 // For the Test
 // -------------------
 //#define ONLY_WAR
+
+
+// -----------------------
+// For VIBuffer_Terrain, Terrain
+// ------------------------
+#define Z_MAPSIZE 700
+#define X_MAPSIZE 760

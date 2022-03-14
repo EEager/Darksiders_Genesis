@@ -113,3 +113,9 @@ using namespace Microsoft::WRL;
 namespace Engine { }
 
 using namespace Engine;
+
+
+// -----------------------
+// For VIBuffer_Terrain
+// ------------------------
+
