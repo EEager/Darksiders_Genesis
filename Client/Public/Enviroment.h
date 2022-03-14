@@ -15,8 +15,7 @@ BEGIN(Client)
 class CEnviroment final : public CGameObject
 {
 
-#define ENVIROMENT_OFFSET_X 700
-#define ENVIROMENT_OFFSET_Z 100
+
 
 private:
 	explicit CEnviroment(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

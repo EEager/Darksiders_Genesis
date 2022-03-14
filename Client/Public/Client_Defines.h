@@ -53,7 +53,10 @@ static const unsigned int		g_iWinCY = 900;
 
 
 // -----------------------
-// For VIBuffer_Terrain, Terrain
+// For VIBuffer_Terrain, Terrain, CEnviroment
 // ------------------------
 #define Z_MAPSIZE 700
-#define X_MAPSIZE 760
+#define X_MAPSIZE 800
+
+#define ENVIROMENT_OFFSET_X 20
+#define ENVIROMENT_OFFSET_Z 400
