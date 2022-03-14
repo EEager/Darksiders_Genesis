@@ -92,11 +92,8 @@ HRESULT CFork::Render()
 	for (_uint i = 0; i < iNumMeshContainer; ++i)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-
 		m_pModelCom->Render(i, 0);
 	}
-
 
 #ifdef _DEBUG
 	m_pAABBCom->Render();
@@ -154,30 +151,10 @@ HRESULT CFork::SetUp_ConstantTable()
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
-	// Bind Directional Light
-	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
-	DirectionalLight mDirLight;
-	mDirLight.Ambient = dirLightDesc.vAmbient;
-	mDirLight.Diffuse = dirLightDesc.vDiffuse;
-	mDirLight.Specular = dirLightDesc.vSpecular;
-	mDirLight.Direction = dirLightDesc.vDirection;
-	m_pModelCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
-
-	// Bind Material
-	m_pModelCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
-
 	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
-
-	// Bind Position
-	_float4			vCamPosition;
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pModelCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
-
-	// 노멀맵할지 말지 선택을 여기서 하자
-	m_pModelCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
 
 	RELEASE_INSTANCE(CGameInstance);
 
