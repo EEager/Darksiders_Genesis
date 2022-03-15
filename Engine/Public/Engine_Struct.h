@@ -134,5 +134,22 @@ namespace Engine
 	} FACEINDICES32;
 
 
+	// ------------------
+	// For Magic Struct 
+	// ------------------
+	enum class MagicKeyType
+	{
+		MAGIC_TYPE_AUTOGENNAVI,
+	};
+
+	typedef struct tagMagicAutoGenNavi
+	{
+		tagMagicAutoGenNavi()
+			: eMagicKey(MagicKeyType::MAGIC_TYPE_AUTOGENNAVI) {}
+		MagicKeyType eMagicKey;
+		vector<_float> vecHeight;
+	} MAGIC_AUTOGENNAVI;
+
+
 
 }
