@@ -140,7 +140,7 @@ technique11	DefaultTechnique
 	{	
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
-		SetRasterizerState(DefaultRasterizerState);
+		SetRasterizerState(WireframeRasterizerState);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = compile gs_5_0 GS_MAIN();

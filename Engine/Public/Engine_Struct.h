@@ -125,6 +125,8 @@ namespace Engine
 			: vPosition(0.f, 0.f, 0.f) {}
 		tagVertex(_float3 pos)
 			: vPosition(pos) {}
+		tagVertex(float px, float py, float pz)
+			: vPosition(px, py, pz) {}
 		XMFLOAT3			vPosition;
 	} VTX;
 

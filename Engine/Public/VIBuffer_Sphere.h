@@ -15,9 +15,9 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg);
 
 private:
-	float radius;
-	UINT stackCount;
-	UINT sliceCount;
+	float m_radius;
+	UINT m_stackCount;
+	UINT m_sliceCount;
 
 public:
 	static CVIBuffer_Sphere* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, float radiust, _uint stackCount = 10, _uint sliceCount = 10);

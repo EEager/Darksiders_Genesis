@@ -233,16 +233,18 @@ void CImguiManager::Render()
 	if (!m_bImGUIEnable)
 		return;
 	
-	// Rendering
-	ImGui::EndFrame();
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
 	if (m_bshow_naviMesh_window) // Spherer Render를 여기서 하자
 	{
 		m_pSphereCom->Render();
 		m_pNaviCom->Render();
 	}
+
+	// Rendering
+	ImGui::EndFrame();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+
 }
 
 void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContext* pDeviceContext)
@@ -272,6 +274,9 @@ void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContex
 
 void CImguiManager::Release()
 {
+	Safe_Release(m_pNaviCom);
+	Safe_Release(m_pSphereCom);
+
 	// Cleanup
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -790,11 +795,14 @@ void CImguiManager::ShowNaviMeshControlWindow()
 		m_pSphereCom = static_cast<CCollider*>(
 			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"), &ColliderDesc)
 			);
+		//Safe_AddRef(m_pSphereCom);
 
 		/* For.Com_Navi */
 		m_pNaviCom = static_cast<CNavigation*>(
 			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), &ColliderDesc)
 			);
+		//Safe_AddRef(m_pNaviCom);
+
 
 
 		bSetColliderSphereOnce = true;

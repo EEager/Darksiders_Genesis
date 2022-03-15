@@ -15,12 +15,15 @@ HRESULT CVIBuffer_Sphere::NativeConstruct_Prototype(const _tchar* pShaderFilePat
 	if (FAILED(__super::NativeConstruct_Prototype()))
 		return E_FAIL;
 
-	vector<VTX> vertices;
+	vector<_float3> vertices;
+	m_radius = radiust;
+	m_stackCount = stackCount;
+	m_sliceCount = sliceCount;
 	//m_pVertices = &vertices
 
 	float phiStep = MathHelper::Pi / stackCount;
 	float thetaStep = 2.0f * MathHelper::Pi / sliceCount;
-	vertices.push_back(VTX(_float3(0.f, radius, 0.f)));
+	vertices.push_back(_float3(0.f, m_radius, 0.f)); // Top Vertex
 	for (UINT i = 1; i <= stackCount - 1; i++)
 	{
 		float phi = i * phiStep;
@@ -30,28 +33,16 @@ HRESULT CVIBuffer_Sphere::NativeConstruct_Prototype(const _tchar* pShaderFilePat
 			float theta = j * thetaStep;
 
 			_float3 p;
-			XMStoreFloat3(&p, XMVectorSet(
-				(radius * sinf(phi) * cosf(theta)),
-				(radius * cosf(phi)),
-				(radius * sinf(phi) * sinf(theta)),
-				1.f
-			));
+			p.x = m_radius * sinf(phi) * cosf(theta);
+			p.y = m_radius * cosf(phi);
+			p.z = m_radius * sinf(phi) * sinf(theta);
 
-			//_float3 t; // tangent
-			//XMStoreFloat3(&t, XMVector3Normalize(XMVectorSet(
-			//		-radius * sinf(phi) * sinf(theta),
-			//		0,
-			//		radius * sinf(phi) * cosf(theta),
-			//		1.f
-			//	)));
-			//D3DXVec3Normalize(&t, &t);
-
-			vertices.push_back(VTX(p));
+			vertices.push_back(p);
 		}
 	}
-	vertices.push_back(VTX(_float3(0.f, -radius, 0.f)));
+	vertices.push_back(_float3(0.f, -m_radius, 0.f)); // Bottom Vertex
 
-	m_iStride = sizeof(VTX);
+	m_iStride = sizeof(_float3);
 	m_iNumVertices = (_uint)vertices.size();
 	m_iNumVertexBuffers = 1;
 
@@ -64,18 +55,9 @@ HRESULT CVIBuffer_Sphere::NativeConstruct_Prototype(const _tchar* pShaderFilePat
 	m_VBDesc.StructureByteStride = m_iStride;
 
 	ZeroMemory(&m_VBSubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-	m_VBSubresourceData.pSysMem = &vertices;
-
-	/* 멤버변수 정점 버퍼 담는것은 생략하자
-		this->vertices = new VertexTextureNormalTangent[vertices.size()];
-	vertexCount = vertices.size();
-	copy(vertices.begin(), vertices.end(), stdext::checked_array_iterator<VertexTextureNormalTangent *>(this->vertices, vertexCount));
-
-	*/
-
+	m_VBSubresourceData.pSysMem = &vertices[0];
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
-
 
 	vector<UINT> indices;
 	for (UINT i = 1; i <= sliceCount; i++)
@@ -128,11 +110,15 @@ HRESULT CVIBuffer_Sphere::NativeConstruct_Prototype(const _tchar* pShaderFilePat
 	m_IBDesc.StructureByteStride = 0;
 
 	int indexCount = (_uint)indices.size();
-	m_pPrimitiveIndices = new UINT[indexCount];
-	copy(indices.begin(), indices.end(), stdext::checked_array_iterator<UINT*>((UINT*)m_pPrimitiveIndices, indexCount));
+	std::vector<_uint> indices32;
+	indices32.assign(indices.begin(), indices.end());
+	//m_pPrimitiveIndices = new UINT[indexCount];
+	//copy(indices.begin(), indices.end(), stdext::checked_array_iterator<UINT*>((UINT*)m_pPrimitiveIndices, indexCount));
+	//(UINT*)m_pPrimitiveIndices; // debug
 
 	ZeroMemory(&m_IBSubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-	m_IBSubresourceData.pSysMem = m_pPrimitiveIndices;
+	//m_IBSubresourceData.pSysMem = m_pPrimitiveIndices;
+	m_IBSubresourceData.pSysMem = &indices32[0];
 
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;

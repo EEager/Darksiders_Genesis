@@ -2,6 +2,7 @@
 #include "VIBuffer_Line.h"
 #include "PipeLine.h"
 #include "VIBuffer_Sphere.h"
+#include "Renderer.h"
 
 CCell::CCell(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: m_pDevice(pDevice)
@@ -97,18 +98,24 @@ HRESULT CCell::Render(_float4x4* pWorldMatrix, _uint iCurrentIndex)
 
 	//m_pVIBuffer->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMLoadFloat4x4(pWorldMatrix)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixIdentity()), sizeof(_float4x4));
-	
 	m_pVIBuffer->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
 	m_pVIBuffer->Render(0);
 
+
 	// 구매쉬 Render 
-	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixIdentity()), sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
-	m_pVIBufferSphere->Set_RawValue("g_vColor", &_float4(1.f, 1.f, 1.f, 1.f), sizeof(_float4));
+	m_pVIBufferSphere->Set_RawValue("g_vColor", &_float4(1.f, 0.f, 1.f, 1.f), sizeof(_float4));
+
+	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixTranslation(m_vPoints[0].x, m_vPoints[0].y, m_vPoints[0].z)), sizeof(_float4x4));
 	m_pVIBufferSphere->Render(0);
+	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixTranslation(m_vPoints[1].x, m_vPoints[1].y, m_vPoints[1].z)), sizeof(_float4x4));
+	m_pVIBufferSphere->Render(0);
+	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixTranslation(m_vPoints[2].x, m_vPoints[2].y, m_vPoints[2].z)), sizeof(_float4x4));
+	m_pVIBufferSphere->Render(0);
+
 
 	RELEASE_INSTANCE(CPipeLine);
 
@@ -133,7 +140,7 @@ HRESULT CCell::Ready_DebugBuffer()
 
 
 	// 구매쉬 등록
-	m_pVIBufferSphere = CVIBuffer_Sphere::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Sphere.hlsl"), 1.f);
+	m_pVIBufferSphere = CVIBuffer_Sphere::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Sphere.hlsl"), 0.1f);
 
 	return S_OK;
 }

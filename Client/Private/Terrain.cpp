@@ -274,7 +274,7 @@ void CTerrain::Free()
 	for (_uint i = 0; i < TYPE_END; ++i)
 		Safe_Release(m_pTextureCom[i]);
 
-	//Safe_Release(m_pNaviCom);
+	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pFilter_SRV);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
