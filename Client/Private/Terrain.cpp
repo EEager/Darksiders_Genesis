@@ -107,7 +107,7 @@ HRESULT CTerrain::SetUp_Component()
 		return E_FAIL;
 
 	/* For.Com_Navi */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom, m_pTransformCom->Get_WorldFloat4x4Ptr())))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
 		return E_FAIL;
 
 	
@@ -274,7 +274,7 @@ void CTerrain::Free()
 	for (_uint i = 0; i < TYPE_END; ++i)
 		Safe_Release(m_pTextureCom[i]);
 
-	Safe_Release(m_pNaviCom);
+	//Safe_Release(m_pNaviCom);
 	Safe_Release(m_pFilter_SRV);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);

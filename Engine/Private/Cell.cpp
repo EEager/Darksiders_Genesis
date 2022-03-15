@@ -1,6 +1,7 @@
 #include "..\Public\Cell.h"
 #include "VIBuffer_Line.h"
 #include "PipeLine.h"
+#include "VIBuffer_Sphere.h"
 
 CCell::CCell(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: m_pDevice(pDevice)
@@ -94,12 +95,20 @@ HRESULT CCell::Render(_float4x4* pWorldMatrix, _uint iCurrentIndex)
 
 	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
 
-	m_pVIBuffer->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMLoadFloat4x4(pWorldMatrix)), sizeof(_float4x4));
+	//m_pVIBuffer->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMLoadFloat4x4(pWorldMatrix)), sizeof(_float4x4));
+	m_pVIBuffer->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixIdentity()), sizeof(_float4x4));
+	
 	m_pVIBuffer->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
 	m_pVIBuffer->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
-
 	m_pVIBuffer->Render(0);
+
+	// 구매쉬 Render 
+	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixIdentity()), sizeof(_float4x4));
+	m_pVIBufferSphere->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
+	m_pVIBufferSphere->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
+	m_pVIBufferSphere->Set_RawValue("g_vColor", &_float4(1.f, 1.f, 1.f, 1.f), sizeof(_float4));
+	m_pVIBufferSphere->Render(0);
 
 	RELEASE_INSTANCE(CPipeLine);
 
@@ -123,6 +132,9 @@ HRESULT CCell::Ready_DebugBuffer()
 		return E_FAIL;
 
 
+	// 구매쉬 등록
+	m_pVIBufferSphere = CVIBuffer_Sphere::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Sphere.hlsl"), 1.f);
+
 	return S_OK;
 }
 #endif // _DEBUG
@@ -143,6 +155,7 @@ void CCell::Free()
 {
 #ifdef _DEBUG
 	Safe_Release(m_pVIBuffer);
+	Safe_Release(m_pVIBufferSphere);
 #endif // _DEBUG
 
 	Safe_Release(m_pDevice);

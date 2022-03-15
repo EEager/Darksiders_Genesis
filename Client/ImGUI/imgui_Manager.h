@@ -9,6 +9,8 @@
 
 BEGIN(Engine)
 class CGameInstance;
+class CCollider;
+class CNavigation;
 END
 
 class CImguiManager
@@ -67,6 +69,7 @@ private:
 	static bool m_bshow_gameobject_editor_window;
 	static bool m_bShow_Simulation_Speed;
 	static bool m_bshow_hlsl_window;
+	static bool m_bshow_naviMesh_window;
 	int m_iNextLevel = 0;
 
 
@@ -112,6 +115,23 @@ private:
 private:
 	wstring SaveFilePath();
 	wstring LoadFilePath();
+
+	// ================================================
+	// Navi Mesh Control Window
+private:
+	void ShowNaviMeshControlWindow();
+
+private:
+	_float3 m_vRay; // 레이 방향 
+	_float3 m_vRayPos; // 카메라 위치
+
+	_float m_xPickPos = 0.f;
+	_float m_yPickPos = 0.f;
+	_float m_zPickPos = 0.f;
+
+	CCollider* m_pSphereCom = nullptr;
+	CNavigation* m_pNaviCom = nullptr;
+
 };
 
 #endif

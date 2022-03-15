@@ -219,7 +219,6 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 		return E_FAIL;
 
 
-
 	// ======================================================================
 	// 여기서부턴 Textures
 	/* For.Prototype_Component_Texture_Logo */

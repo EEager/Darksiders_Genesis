@@ -21,30 +21,30 @@ HRESULT CNavigation::NativeConstruct_Prototype(const _tchar * pNavigationDataFil
 {
 	_ulong		dwByte = 0;
 
-	HANDLE		hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-	if (0 == hFile)
-		return E_FAIL;
+	//HANDLE		hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	//if (0 == hFile)
+	//	return E_FAIL;
 
-	_float3		vPoints[CCell::POINT_END];	
+	//_float3		vPoints[CCell::POINT_END];	
 
-	while (true)
-	{
-		ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
+	//while (true)
+	//{
+	//	ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
 
-		ReadFile(hFile, vPoints, sizeof(_float3) * CCell::POINT_END, &dwByte, nullptr);
+	//	ReadFile(hFile, vPoints, sizeof(_float3) * CCell::POINT_END, &dwByte, nullptr);
 
-		if (0 == dwByte)
-			break;
+	//	if (0 == dwByte)
+	//		break;
 
-		CCell*			pCell = CCell::Create(m_pDevice, m_pDeviceContext, vPoints, (_uint)m_Cells.size());
-		if (nullptr == pCell)
-			return E_FAIL;
+	//	CCell*			pCell = CCell::Create(m_pDevice, m_pDeviceContext, vPoints, (_uint)m_Cells.size());
+	//	if (nullptr == pCell)
+	//		return E_FAIL;
 
-		m_Cells.push_back(pCell);
+	//	m_Cells.push_back(pCell);
 
-	}
+	//}
 
-	CloseHandle(hFile);
+	//CloseHandle(hFile);
 
 	if (FAILED(SetUp_Neighbor()))
 		return E_FAIL;

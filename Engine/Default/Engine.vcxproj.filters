@@ -151,6 +151,9 @@
     <Filter Include="01.Utility\09.RenderTargets\Manager">
       <UniqueIdentifier>{1c12b250-3624-46d3-80af-9e46079828e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Sphere">
+      <UniqueIdentifier>{ce97aa57-bc4d-4013-ade6-1c003cbd808a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -306,6 +309,9 @@
     <ClInclude Include="..\Public\Target_Manager.h">
       <Filter>01.Utility\09.RenderTargets\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Sphere.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Sphere</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -445,6 +451,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\RenderTarget.cpp">
       <Filter>01.Utility\09.RenderTargets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Sphere.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

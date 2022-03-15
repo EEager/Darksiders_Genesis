@@ -90,36 +90,30 @@ _int CWar::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	// SetHeight
-	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
-	if (nullptr == pTerrainBuff)
-		goto _EXIT;
+	//// SetHeight
+	//_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
+	//if (nullptr == pTerrainBuff)
+	//	goto _EXIT;
 
 
-	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 90.f - 10.f;
-	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
-	{
-		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
-		{
-			m_bJump = false;
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-		}
-	}
-	else // 점프중이 아니라면 계속 땅위에 서게 하자 
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-	}
+	//_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 90.f - 10.f;
+	//if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
+	//{
+	//	if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
+	//	{
+	//		m_bJump = false;
+	//		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	//	}
+	//}
+	//else // 점프중이 아니라면 계속 땅위에 서게 하자 
+	//{
+	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	//}
 
 	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
-
-	/*CCollider*	pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_AABB"));
-	if (nullptr == pTerrainBuff)
-		return 0;
-	
-	m_pAABBCom->Collision_AABB(pTargetColllider);*/
 
 	// Player와 충돌
 	for (int i = 0; i < 1; i++)

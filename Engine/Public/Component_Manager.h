@@ -16,12 +16,13 @@
 #include "VIBuffer_RectInstance.h"
 #include "VIBuffer_Cube.h"
 #include "VIBuffer_PointInstance.h"
+#include "VIBuffer_Sphere.h"
 
 /* 컴포넌트들의 원형을 모아둔다. */
 
 BEGIN(Engine)
 
-class CComponent_Manager final : public CBase
+class ENGINE_DLL CComponent_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CComponent_Manager)
 private:
@@ -38,7 +39,7 @@ private:
 private:
 	_uint			m_iNumLevels = 0;
 
-private:
+public:
 	CComponent* Find_Component(_uint iLevelIndex, const _tchar* pPrototypeTag);
 
 public:

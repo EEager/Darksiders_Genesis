@@ -79,14 +79,14 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
-	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
-	if (nullptr == pTerrainBuff)
-		return 0;
+	//CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
+	//if (nullptr == pTerrainBuff)
+	//	return 0;
 
-	// Player를 지형위에 태우자
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
+	//// Player를 지형위에 태우자
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;

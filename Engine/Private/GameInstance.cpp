@@ -12,6 +12,7 @@ CGameInstance::CGameInstance()
 	, m_pLevel_Manager(CLevel_Manager::GetInstance())
 	, m_pPipeLine(CPipeLine::GetInstance())
 	, m_pLight_Manager(CLight_Manager::GetInstance())
+	, m_pPicking(CPicking::GetInstance())
 
 {
 	Safe_AddRef(m_pLight_Manager);
@@ -43,7 +44,7 @@ HRESULT CGameInstance::Initialize_Engine(HINSTANCE hInst, _uint iNumLevels, CGra
 	if (FAILED(m_pObject_Manager->Reserve_Container(iNumLevels)))
 		return E_FAIL;
 
-	
+	m_pPicking->Set_WindowHandle(GraphicDesc.hWnd);
 
 	return S_OK;
 }
@@ -64,6 +65,7 @@ _int CGameInstance::Tick_Engine(_float fTimeDelta)
 		return -1;
 
 	m_pPipeLine->Tick();
+	m_pPicking->Transform_ToWorldSpace();
 
 	if (0 > (iProgress = m_pObject_Manager->LateTick(fTimeDelta)))
 		return -1;
@@ -328,6 +330,16 @@ HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel * pNextLevel)
 
 	return m_pLevel_Manager->Open_Level(iLevelIndex, pNextLevel);
 }
+
+HRESULT CGameInstance::Transform_WorldSpaceToLocalSpace(CTransform* pTransform)
+{
+	if (nullptr == m_pPicking)
+		return false;
+
+	return m_pPicking->Transform_WorldSpaceToLocalSpace(pTransform);
+}
+
+
 void CGameInstance::Release_Engine()
 {
 	if (0 != CGameInstance::GetInstance()->DestroyInstance())
@@ -362,6 +374,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pPipeLine);
 	Safe_Release(m_pInput_Device);

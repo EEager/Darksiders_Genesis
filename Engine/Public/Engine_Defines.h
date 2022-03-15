@@ -109,6 +109,11 @@ using namespace Microsoft::WRL;
 #include "Engine_Function.h"
 #include "Engine_Struct.h"
 
+// ------------------------
+// Utilities 
+// --------------------------
+#include "MathHelper.h"
+
 
 namespace Engine { }
 

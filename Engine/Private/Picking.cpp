@@ -9,7 +9,7 @@ CPicking::CPicking()
 {
 }
 
-HRESULT CPicking::Transform_ToWorldSpace()
+HRESULT ENGINE_DLL CPicking::Transform_ToWorldSpace()
 {
 	POINT	ptMouse;
 	GetCursorPos(&ptMouse);
@@ -31,7 +31,7 @@ HRESULT CPicking::Transform_ToWorldSpace()
 	_matrix		ProjMatrix = pPipeLine->Get_Transform(CPipeLine::TS_PROJ);
 
 	// 프로젝션의 역행렬을 구한다
-	XMMatrixInverse(nullptr, ProjMatrix); 
+	ProjMatrix = XMMatrixInverse(nullptr, ProjMatrix);
 	// 뷰포트 -> 투영 스페이스
 	XMStoreFloat3(&vMousePos, XMVector3TransformCoord(XMLoadFloat3(&vMousePos), ProjMatrix));
 
@@ -40,7 +40,7 @@ HRESULT CPicking::Transform_ToWorldSpace()
 
 	/* 월드스페이스로 */
 	_matrix		ViewMatrix = pPipeLine->Get_Transform(CPipeLine::TS_VIEW);
-	XMMatrixInverse(nullptr, ViewMatrix);
+	ViewMatrix = XMMatrixInverse(nullptr, ViewMatrix);
 
 	XMStoreFloat3(&m_vMouseRayPos, XMVector3TransformCoord(XMLoadFloat3(&m_vMouseRayPos), ViewMatrix));
 	XMStoreFloat3(&m_vMouseRay, XMVector2Normalize(XMVector3TransformNormal(XMLoadFloat3(&m_vMouseRay), ViewMatrix)));
@@ -64,7 +64,7 @@ _bool CPicking::Picking(CVIBuffer * pBuffer, _float3 * pPickPos)
 {
 	_uint		iNumFace = pBuffer->Get_NumPrimitive();
 
-	//_float3*	pVerticesPos = pBuffer->Get_VerticesPos();
+	_float3*	pVerticesPos = pBuffer->Get_VerticesPos();
 
 	//for (_uint i = 0; i < iNumFace; ++i)
 	//{

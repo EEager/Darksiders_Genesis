@@ -63,6 +63,9 @@ namespace Engine
 
 	}PASSDESC;
 
+	// ------------------
+	// Buffer Struct Types
+	// ------------------
 	typedef struct tagVertex_Matrix
 	{
 		XMFLOAT4			vRight;
@@ -115,6 +118,15 @@ namespace Engine
 		XMFLOAT3			vNormal;
 		XMFLOAT2			vTexUV;
 	} VTXNORTEX;
+
+	typedef struct tagVertex
+	{
+		tagVertex()
+			: vPosition(0.f, 0.f, 0.f) {}
+		tagVertex(_float3 pos)
+			: vPosition(pos) {}
+		XMFLOAT3			vPosition;
+	} VTX;
 
 	
 

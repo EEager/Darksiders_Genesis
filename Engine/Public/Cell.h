@@ -4,7 +4,7 @@
 
 BEGIN(Engine)
 
-class CCell final : public CBase
+class ENGINE_DLL CCell final : public CBase
 {
 public:
 	enum POINT { POINT_A, POINT_B, POINT_C, POINT_END };
@@ -50,6 +50,7 @@ private:
 #ifdef _DEBUG
 private:
 	class CVIBuffer_Line* m_pVIBuffer = nullptr;
+	class CVIBuffer_Sphere* m_pVIBufferSphere = nullptr;
 #endif // _DEBUG
 
 

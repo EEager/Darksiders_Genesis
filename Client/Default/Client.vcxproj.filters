@@ -106,6 +106,9 @@
     <Filter Include="02.GameObjects\BackGround\Enviroment">
       <UniqueIdentifier>{7948bdb3-cdd1-4237-acc7-e65e41f1f6ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.ShaderFiles\Shaders">
+      <UniqueIdentifier>{e211c7d6-11b9-4e14-8adb-2c719c94fcdd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -335,38 +338,41 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl">
       <Filter>97.ShaderFiles\Header</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh_Normal.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl">
-      <Filter>97.ShaderFiles</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_RectInstance.hlsl">
-      <Filter>97.ShaderFiles</Filter>
+      <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cube.hlsl">
-      <Filter>97.ShaderFiles</Filter>
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_PointInstance.hlsl">
-      <Filter>97.ShaderFiles</Filter>
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_RectInstance.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Sphere.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

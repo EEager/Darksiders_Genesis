@@ -24,6 +24,10 @@ public:
 		return m_iNumPrimitive;
 	}
 
+	_float3* Get_VerticesPos() {
+		return m_pVerticesPos;
+	}
+
 
 protected:
 	ID3D11Buffer*				m_pVB = nullptr;
@@ -34,6 +38,8 @@ protected:
 
 	_uint						m_iStride = 0;
 	_uint						m_iNumVertices = 0;
+
+	_float3* m_pVerticesPos = nullptr;
 
 
 	ID3D11Buffer*				m_pIB = nullptr;

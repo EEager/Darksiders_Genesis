@@ -11,6 +11,7 @@
 #include "Level_Manager.h"
 #include "PipeLine.h"
 #include "Light_Manager.h"
+#include "Picking.h"
 
 // DirectX Utils
 #include "DXString.h"
@@ -85,6 +86,9 @@ public: /* For.Level_Manager */
 	}
 	HRESULT Open_Level(_uint iLevelIndex, class CLevel* pNextLevel);
 
+public: /* For.Picking */
+	HRESULT Transform_WorldSpaceToLocalSpace(class CTransform* pTransform);
+
 private:
 	CGraphic_Device*			m_pGraphic_Device = nullptr;
 	CInput_Device*				m_pInput_Device = nullptr;
@@ -94,6 +98,8 @@ private:
 	CComponent_Manager*			m_pComponent_Manager  = nullptr;
 	CPipeLine*					m_pPipeLine = nullptr;
 	CLight_Manager*				m_pLight_Manager = nullptr;
+	CPicking*					m_pPicking = nullptr;
+
 public:
 	static void Release_Engine();
 	virtual void Free() override;

@@ -9,6 +9,8 @@
 #include "Level_Loading.h"
 #include "Camera_Fly.h"
 #include "Layer.h"
+#include "Collider.h"	
+#include "Cell.h"
 
 #include <shobjidl.h>  // Ifileopendialog 관련 cominterface 들어있는거
 #include <Shlwapi.h> // 초기 경로 얻어올때 사용하자
@@ -20,6 +22,7 @@ bool CImguiManager::m_bShow_Simulation_Speed = false;
 bool CImguiManager::m_bshow_gameobject_manager_window = false;
 bool CImguiManager::m_bshow_gameobject_editor_window = false;
 bool CImguiManager::m_bshow_hlsl_window = false;
+bool CImguiManager::m_bshow_naviMesh_window = false;
 
 //ImVec4 CImguiManager::clear_color = ImVec4(0.5f, 0.55f, 0.60f, 1.00f);
 ImVec4 CImguiManager::clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
@@ -220,6 +223,9 @@ void CImguiManager::Tick(_float fTimeDelta)
 	// HLSL Window
 	ShowHLSLControlWindow();
 
+	// NaviMesh Window
+	ShowNaviMeshControlWindow();
+
 }
 
 void CImguiManager::Render()
@@ -231,6 +237,12 @@ void CImguiManager::Render()
 	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	if (m_bshow_naviMesh_window) // Spherer Render를 여기서 하자
+	{
+		m_pSphereCom->Render();
+		m_pNaviCom->Render();
+	}
 }
 
 void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContext* pDeviceContext)
@@ -325,6 +337,7 @@ void CImguiManager::ShowMainControlWindow(_float fDeltaTime)
 	ImGui::Checkbox("GameObject Manager Window", &m_bshow_gameobject_manager_window);
 	ImGui::Checkbox("Editor Window", &m_bshow_gameobject_editor_window);
 	ImGui::Checkbox("HLSL Window", &m_bshow_hlsl_window);
+	ImGui::Checkbox("NaviMesh Window", &m_bshow_naviMesh_window);
 
 
 	ImGui::End();
@@ -756,5 +769,82 @@ void CImguiManager::ShowHLSLControlWindow()
 	ImGui::Checkbox("g_bUseEmissiveMap", &g_bUseEmissiveMap);
 	ImGui::End();
 }
+
+
+bool bSetColliderSphereOnce;
+int iNaviMeshPickCnt;
+vector<_float3>	vecCells;
+_float3		vPoints[CCell::POINT_END];
+void CImguiManager::ShowNaviMeshControlWindow()
+{
+	if (!m_bshow_naviMesh_window)
+		return;
+
+	if (!bSetColliderSphereOnce)
+	{
+		/* For.Com_Sphere */
+		CCollider::COLLIDERDESC		ColliderDesc;
+		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
+		ColliderDesc.fRadius = 1.f;
+		m_pSphereCom = static_cast<CCollider*>(
+			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"), &ColliderDesc)
+			);
+
+		/* For.Com_Navi */
+		m_pNaviCom = static_cast<CNavigation*>(
+			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), &ColliderDesc)
+			);
+
+
+		bSetColliderSphereOnce = true;
+	}
+
+	ImGui::Begin("NaviMesh Contorl Window", &m_bshow_hlsl_window);
+
+	// + 눌러서 위로 뛰우자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
+	{
+		m_yPickPos += 1.f;
+	}
+
+	// - 눌러서 아래로 보내자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
+	{
+		m_yPickPos -= 1.f;
+	}
+
+	m_vRay = CPicking::GetInstance()->Get_MouseRay();
+	m_vRayPos = CPicking::GetInstance()->Get_MouseRayPos();
+
+	// 피킹시 x좌표
+	m_xPickPos = (m_vRay.x / m_vRay.y) * (m_yPickPos - m_vRayPos.y) + m_vRayPos.x;
+
+	// 피킹시 z좌표
+	m_zPickPos = (m_vRay.z / m_vRay.y) * (m_yPickPos - m_vRayPos.y) + m_vRayPos.z;
+
+	// x, y, z 좌표로 이동시키자. 
+	m_pSphereCom->Update(XMMatrixTranslation(m_xPickPos, m_yPickPos, m_zPickPos));
+
+	// printf("m_Pos (%.3lf, %.3lf, %.3lf)\n", m_xPickPos, m_yPickPos, m_zPickPos);
+
+	// 마우스 왼쪽 정점을 찍자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_P))
+	{
+		vPoints[iNaviMeshPickCnt] = _float3(m_xPickPos, m_yPickPos, m_zPickPos);
+		iNaviMeshPickCnt++;
+		if (iNaviMeshPickCnt == 3)
+		{
+			m_pNaviCom->m_Cells.push_back(CCell::Create(m_pGraphic_Device, m_pDevice_Context, vPoints, (_uint)m_pNaviCom->m_Cells.size()));
+			m_pNaviCom->SetUp_Neighbor();
+			ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
+			iNaviMeshPickCnt = 0;
+		}
+	}
+	ImGui::Text("PickCnt : %d", iNaviMeshPickCnt);
+	ImGui::DragFloat("y Pos", &m_yPickPos);
+	ImGui::End();
+}
+
 
 #endif // USE_IMGUI

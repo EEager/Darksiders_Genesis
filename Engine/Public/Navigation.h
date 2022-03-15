@@ -23,7 +23,7 @@ public:
 	HRESULT Render();
 #endif
 
-private:
+public:
 	vector<class CCell*>					m_Cells;
 	typedef vector<class CCell*>			CELLS;
 
@@ -33,7 +33,7 @@ private:
 private:
 	_uint			m_iCurrentIndex = 0;
 
-private:
+public:
 	HRESULT SetUp_Neighbor();
 
 

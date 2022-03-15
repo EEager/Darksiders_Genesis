@@ -402,7 +402,7 @@ HRESULT CModel::Create_MeshContainers()
 
 		/* 파일로 읽어온 정점과인덱스의 정보들을 저장한다.  */
 		CMeshContainer* pMeshContainer = CMeshContainer::Create(m_pDevice, m_pDeviceContext, this, pMesh, XMLoadFloat4x4(&m_PivotMatrix), &vMin, &vMax);
-		if (nullptr == pMeshContainer)
+		if (nullptr == pMeshContainer) 
 			return E_FAIL;
 
 		m_MeshContainers[pMesh->mMaterialIndex].push_back(pMeshContainer);

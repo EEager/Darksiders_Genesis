@@ -162,7 +162,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	//	CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
 	//	return E_FAIL;
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), X_MAPSIZE, Z_MAPSIZE))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), 10, 10))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_RectInstance */
@@ -179,6 +179,17 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_PointInstance"),
 		CVIBuffer_PointInstance::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_PointInstance.hlsl"), 20))))
 		return E_FAIL;
+
+	///* For.Prototype_Component_VIBuffer_Sphere */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Sphere"),
+	//	CVIBuffer_Sphere::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Sphere.hlsl"), 10.f))))
+	//	return E_FAIL;
+
+
+
+
+
+
 
 	/* For.Prototype_Component_Texture_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), 
@@ -348,7 +359,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_OBB))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Collider_Sphere */
+	///* For.Prototype_Component_Collider_Sphere */ // -> Move to MainApp
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"),
 		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_SPHERE))))
 		return E_FAIL;

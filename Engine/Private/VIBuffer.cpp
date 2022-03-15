@@ -25,6 +25,7 @@ CVIBuffer::CVIBuffer(const CVIBuffer & rhs)
 	, m_PassesDesc(rhs.m_PassesDesc)
 	, m_iNumVertexBuffers(rhs.m_iNumVertexBuffers)
 	, m_pEffect(rhs.m_pEffect)
+	, m_pVerticesPos(rhs.m_pVerticesPos)
 {
 	/*for (auto& pPassDesc : m_PassesDesc)
 	{
@@ -65,7 +66,7 @@ HRESULT CVIBuffer::Render(_uint iPassIndex)
 		0
 	};
 
-	m_pDeviceContext->IASetVertexBuffers(m_iNumVertexBuffers - 1, m_iNumVertexBuffers, pBuffers, iStrides, iOffset);
+	m_pDeviceContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pBuffers, iStrides, iOffset);
 
 	m_pDeviceContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);	
 	m_pDeviceContext->IASetPrimitiveTopology(m_ePrimitiveTopology);
@@ -180,6 +181,7 @@ void CVIBuffer::Free()
 
 		Safe_Delete_Array(m_pVertices);
 		Safe_Delete_Array(m_pPrimitiveIndices);
+		Safe_Delete_Array(m_pVerticesPos);
 	}	
 	m_PassesDesc.clear();
 
