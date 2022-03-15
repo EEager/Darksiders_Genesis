@@ -15,6 +15,7 @@
 #include "StateMachine.h"
 #include "VIBuffer_RectInstance.h"
 #include "VIBuffer_Cube.h"
+#include "VIBuffer_PointInstance.h"
 
 /* 컴포넌트들의 원형을 모아둔다. */
 

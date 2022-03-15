@@ -161,10 +161,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _tchar* pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_RectEffect */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_RectEffect"))))
-		return E_FAIL;
-
 	/* For.Prototype_GameObject_Sky */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_Sky"))))
 		return E_FAIL;
@@ -210,7 +206,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar* pLayerTag)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_RectEffect"))))
+		return E_FAIL;
 
+
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_PointEffect"))))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

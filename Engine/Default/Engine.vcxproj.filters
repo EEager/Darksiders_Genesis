@@ -288,6 +288,12 @@
     <ClInclude Include="..\Public\Picking.h">
       <Filter>01.Utility\08.Picking</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Instance.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_PointInstance.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -415,6 +421,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Picking.cpp">
       <Filter>01.Utility\08.Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Instance.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_PointInstance.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

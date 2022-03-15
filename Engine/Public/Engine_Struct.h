@@ -91,6 +91,12 @@ namespace Engine
 		XMFLOAT4			vColor;
 	} VTXCOL;
 
+	typedef struct tagVertex_Point
+	{
+		XMFLOAT3			vPosition;
+		float				fPSize;
+	} VTXPOINT;
+
 	typedef struct tagVertexCubeTexture
 	{
 		XMFLOAT3		vPosition;

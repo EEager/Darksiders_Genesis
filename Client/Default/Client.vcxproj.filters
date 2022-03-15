@@ -219,6 +219,9 @@
     <ClInclude Include="..\Public\Enviroment.h">
       <Filter>02.GameObjects\BackGround\Enviroment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\PointEffect.h">
+      <Filter>02.GameObjects\Effect\Point</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -314,6 +317,9 @@
     <ClCompile Include="..\Private\Enviroment.cpp">
       <Filter>02.GameObjects\BackGround\Enviroment</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\PointEffect.cpp">
+      <Filter>02.GameObjects\Effect\Point</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -357,6 +363,9 @@
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cube.hlsl">
+      <Filter>97.ShaderFiles</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_PointInstance.hlsl">
       <Filter>97.ShaderFiles</Filter>
     </FxCompile>
   </ItemGroup>

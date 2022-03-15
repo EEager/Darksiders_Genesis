@@ -192,6 +192,7 @@
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\Public\Mouse.h" />
     <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\PointEffect.h" />
     <ClInclude Include="..\Public\RectEffect.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\State_War.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\Private\Mouse.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\PointEffect.cpp" />
     <ClCompile Include="..\Private\RectEffect.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\State_War.cpp" />
@@ -257,6 +259,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cube.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_PointInstance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_RectInstance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl" />

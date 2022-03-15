@@ -15,6 +15,7 @@
 #include "UI_War_Skills.h"
 #include "RectEffect.h"
 #include "Sky.h"
+#include "PointEffect.h"
 #include "Enviroment.h"
 
 
@@ -109,7 +110,13 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CRectEffect::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_RectEffect */
+
+	/* For.Prototype_GameObject_PointEffect */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PointEffect"),
+		CPointEffect::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Sky */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
 		CSky::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
@@ -160,6 +167,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_Component_VIBuffer_Cube */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"),
 		CVIBuffer_Cube::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Cube.hlsl")))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_VIBuffer_PointInstance */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_PointInstance"),
+		CVIBuffer_PointInstance::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_PointInstance.hlsl"), 20))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_Terrain */

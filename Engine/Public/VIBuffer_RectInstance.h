@@ -1,10 +1,10 @@
 #pragma once
 
-#include "VIBuffer.h"
+#include "VIBuffer_Instance.h"
 
 BEGIN(Engine)
 
-class ENGINE_DLL CVIBuffer_RectInstance final : public CVIBuffer
+class ENGINE_DLL CVIBuffer_RectInstance final : public CVIBuffer_Instance
 {
 protected:
 	CVIBuffer_RectInstance(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
@@ -13,17 +13,9 @@ protected:
 public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, _uint iNumInstance);
 	virtual HRESULT NativeConstruct(void* pArg);
-	virtual HRESULT Render(_uint iPassIndex);
 
 public:
 	void Update(_float fTimeDelta);
-
-private:	
-	ID3D11Buffer*				m_pVBInst = nullptr;
-	D3D11_BUFFER_DESC			m_VBInstDesc;
-	D3D11_SUBRESOURCE_DATA		m_VBInstSubresourceData;
-	_uint						m_iNumInstance = 0;
-	_float*						m_pInstanceSpeed = nullptr;
 
 public:
 	static CVIBuffer_RectInstance* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, _uint iNumInstance = 1);
