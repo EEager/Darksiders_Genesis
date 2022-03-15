@@ -151,6 +151,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	// ===========================================================================
 	wsprintf(m_szLoading, TEXT("Loading Components"));
 
+
+	// [Auto Navi Gen 기능을 위한 절차]
+	// 1. Enviroment Mesh를 Load할 때 Terrain 크기 만큼의 vector에 해당 정점들의 "최대" 높이를 저장해 놓는다
+	// 2. 
+
+
 	/* For.Prototype_Component_VIBuffer_Terrain */
 	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), 
 	//	CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))

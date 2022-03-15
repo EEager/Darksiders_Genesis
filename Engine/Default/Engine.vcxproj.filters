@@ -145,6 +145,12 @@
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance">
       <UniqueIdentifier>{4b31e997-46b8-45b0-8870-434756bdc8fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\09.RenderTargets">
+      <UniqueIdentifier>{bb8a113f-297d-4d7c-9600-496208f768c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\09.RenderTargets\Manager">
+      <UniqueIdentifier>{1c12b250-3624-46d3-80af-9e46079828e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -294,6 +300,12 @@
     <ClInclude Include="..\Public\VIBuffer_PointInstance.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\RenderTarget.h">
+      <Filter>01.Utility\09.RenderTargets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Target_Manager.h">
+      <Filter>01.Utility\09.RenderTargets\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -427,6 +439,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_PointInstance.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Target_Manager.cpp">
+      <Filter>01.Utility\09.RenderTargets\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RenderTarget.cpp">
+      <Filter>01.Utility\09.RenderTargets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
