@@ -6,6 +6,8 @@ _float4x4* CNavigation::m_pWorldMatrixPtr = nullptr;
 CNavigation::CNavigation(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
 {
+	m_pWorldMatrixPtr = new _float4x4;
+	XMStoreFloat4x4(m_pWorldMatrixPtr, XMMatrixIdentity());
 }
 
 CNavigation::CNavigation(const CNavigation& rhs)
@@ -57,10 +59,31 @@ HRESULT CNavigation::NativeConstruct_Prototype(const _tchar * pNavigationDataFil
 HRESULT CNavigation::NativeConstruct(void* pArg)
 {
 	if (nullptr != pArg)
+	{
+		Safe_Delete(m_pWorldMatrixPtr); // 다른 이가  m_pWorldMatrixPtr를 설정해주려고 한다면 기존것은 매너적으로 지워주자
 		m_pWorldMatrixPtr = (_float4x4*)pArg;
+	}
 
 	return S_OK;
 }
+
+void CNavigation::SetUp_CurrentIdx(_fvector vPos)
+{
+	// Cells 돌면서~ isIn 인지 검사하면되는거 아녀? 
+	CCell* pNeighbor = nullptr;
+
+	for (int i = 0;i < m_Cells.size();i++)
+	{
+		if (m_Cells[i]->isIn(vPos, m_pWorldMatrixPtr, &pNeighbor))
+		{
+			m_iCurrentIndex = i;
+			return;
+		}
+	}
+
+	return ;
+}
+
 _bool CNavigation::isMove(_fvector vPosition)
 {
 	CCell* pNeighbor = nullptr;
@@ -232,4 +255,6 @@ void CNavigation::Free()
 		Safe_Release(pCell);
 
 	m_Cells.clear();
+
+	Safe_Delete(m_pWorldMatrixPtr);
 }

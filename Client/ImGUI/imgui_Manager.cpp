@@ -236,7 +236,7 @@ void CImguiManager::Render()
 	if (m_bshow_naviMesh_window) // Spherer Render를 여기서 하자
 	{
 		m_pSphereCom->Render();
-		m_pNaviCom->Render();
+		//m_pNaviCom->Render();
 	}
 
 	// Rendering
@@ -799,7 +799,7 @@ void CImguiManager::ShowNaviMeshControlWindow()
 
 		/* For.Com_Navi */
 		m_pNaviCom = static_cast<CNavigation*>(
-			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), &ColliderDesc)
+			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), nullptr)
 			);
 		//Safe_AddRef(m_pNaviCom);
 

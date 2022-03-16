@@ -45,6 +45,9 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	// 초기 위치
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-6.f, 0.f, 27.f, 1.f));
 
+	// 처음 시작할때 위치 잡아주자
+	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
+
 	return S_OK;
 }
 
@@ -227,6 +230,7 @@ HRESULT CWar::Render()
 
 	// Collider Debug Rendering
 #ifdef _DEBUG
+	m_pNaviCom->Render();
 	m_pAABBCom->Render();
 	m_pOBBCom->Render();
 #endif // _DEBUG
@@ -398,6 +402,7 @@ void CWar::War_Key(_float fTimeDelta)
 
 }
 
+
 HRESULT CWar::SetUp_Component()
 {
 	/* For.Com_Transform */
@@ -472,12 +477,12 @@ HRESULT CWar::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
 
-
 	/* For.Com_Navi */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
 		return E_FAIL;
-	// 처음 시작할때 위치 잡아주자
-	m_pNaviCom->
+
+
+
 
 	return S_OK;
 }

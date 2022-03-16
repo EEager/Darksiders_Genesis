@@ -73,20 +73,27 @@ _bool CCell::Compare_Points(_fvector vDestPoint1, _fvector vDestPoint2)
 
 _bool CCell::isIn(_fvector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor)
 {
+	// 3개의 변을 돌면서 vPoint가 내부점에 있는지 확인해야한다
 	for (_uint i = 0; i < LINE_END; ++i)
 	{
 		_vector		vDirW = vPoint - XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix));
-		_vector		vNormalW = XMVectorSet(m_vLine[i].z * -1, 0.f, m_vLine[i].x, 0.f);
+		_vector		vNormalW = XMVectorSet(m_vLine[i].z * -1, m_vPoints[i].y, m_vLine[i].x, 0.f);
 
 		vNormalW = XMVector3TransformNormal(vNormalW, XMLoadFloat4x4(pWorldMatrix));
 
+		// vPoint이 cell 내부에 있는지 확인하자. Dot 연산이 0보다 작으면 90각 이상, 즉, 삼각형 밖에 있다.
 		if (0 < XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDirW), XMVector3Normalize(vNormalW))))
 		{
+			// 하나라도 밖에 있다면 이웃셀을 검사하도록, ppNeighbor를 다음 이웃셀 포인터를 반환해주자
+			if (m_Neighbors[i] == nullptr)
+				return false;
+
 			*ppNeighbor = m_Neighbors[i];
 			return false;
 		}
 	}
 
+	// 3개의 변을 전부 검사한 후 점이 안에 있다면 해당 Ccell 안에 있는것이다.
 	*ppNeighbor = this;
 	return true;
 }

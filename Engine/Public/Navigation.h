@@ -12,6 +12,9 @@ protected:
 	virtual ~CNavigation() = default;
 
 public:
+	void SetUp_CurrentIdx(_fvector fvector);
+
+public:
 	virtual HRESULT NativeConstruct_Prototype(const _tchar* pNavigationDataFile);
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
