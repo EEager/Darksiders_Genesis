@@ -93,27 +93,42 @@ _int CWar::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	//// SetHeight
-	//_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	//CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
-	//if (nullptr == pTerrainBuff)
-	//	goto _EXIT;
+#if 0 // 네비매쉬로 높이 태울것이다
+	
+	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
+	if (nullptr == pTerrainBuff)
+		goto _EXIT;
 
 
-	//_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 90.f - 10.f;
-	//if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
-	//{
-	//	if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
-	//	{
-	//		m_bJump = false;
-	//		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-	//	}
-	//}
-	//else // 점프중이 아니라면 계속 땅위에 서게 하자 
-	//{
-	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-	//}
-
+	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 90.f - 10.f;
+	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
+	{
+		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
+		{
+			m_bJump = false;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+		}
+	}
+	else // 점프중이 아니라면 계속 땅위에 서게 하자 
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	}
+#else
+	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
+	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
+	{
+		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
+		{
+			m_bJump = false;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+		}
+	}
+	else // 점프중이 아니라면 계속 땅위에 서게 하자 
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	}
+#endif
 	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;

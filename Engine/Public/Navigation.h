@@ -39,6 +39,7 @@ private:
 
 public:
 	HRESULT SetUp_Neighbor();
+	_float Compute_Height(_fvector vPos);
 
 
 public:

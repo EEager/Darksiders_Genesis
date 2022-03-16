@@ -176,6 +176,21 @@ HRESULT CNavigation::SetUp_Neighbor()
 	return S_OK;
 }
 
+_float CNavigation::Compute_Height(_fvector vPos)
+{
+	if (m_Cells[m_iCurrentIndex] == nullptr)
+		return 77.f;
+
+	_vector		vPlane;
+	vPlane = XMPlaneFromPoints(m_Cells[m_iCurrentIndex]->Get_Point(CCell::POINT::POINT_A),
+		m_Cells[m_iCurrentIndex]->Get_Point(CCell::POINT::POINT_B),
+		m_Cells[m_iCurrentIndex]->Get_Point(CCell::POINT::POINT_C));
+
+	return (XMVectorGetX(vPlane) * -1 * XMVectorGetX(vPos) // -ax
+		- XMVectorGetZ(vPlane) * XMVectorGetZ(vPos)
+		- XMVectorGetW(vPlane)) / XMVectorGetY(vPlane);
+}
+
 HRESULT CNavigation::Save_Cells()
 {
 	_ulong		dwByte = 0;

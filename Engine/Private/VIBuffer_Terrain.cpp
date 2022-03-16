@@ -332,7 +332,6 @@ _float CVIBuffer_Terrain::Compute_Height(_fvector vPosition)
 			XMLoadFloat3(&pVertices[iIndices[1]].vPosition),
 			XMLoadFloat3(&pVertices[iIndices[2]].vPosition));
 	}
-
 	else
 	{
 		vPlane = XMPlaneFromPoints(XMLoadFloat3(&pVertices[iIndices[0]].vPosition),
