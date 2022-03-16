@@ -17,6 +17,7 @@ public:
 
 public:
 	_bool isMove(_fvector vPosition);
+	_vector Get_Nearest_Point(_float3 vPickingPt);
 
 #ifdef _DEBUG
 public:
@@ -36,6 +37,10 @@ private:
 public:
 	HRESULT SetUp_Neighbor();
 
+
+public:
+	HRESULT Save_Cells();
+	HRESULT Load_Cells();
 
 public:
 	static CNavigation* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pNavigationDataFile);

@@ -8,8 +8,16 @@ CCell::CCell(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: m_pDevice(pDevice)
 	, m_pDeviceContext(pDeviceContext)
 {
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pDeviceContext);
+Safe_AddRef(m_pDevice);
+Safe_AddRef(m_pDeviceContext);
+}
+
+void CCell::Set_Constant_Shphere(_fmatrix fmatrix, _float4 vColor)
+{
+	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", (_float4x4*)&fmatrix, sizeof(_float4x4));
+	m_pVIBufferSphere->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
+	m_pVIBufferSphere->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
+	m_pVIBufferSphere->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
 }
 
 HRESULT CCell::NativeConstruct(_float3* pPoints, _uint iIndex)
@@ -35,7 +43,7 @@ HRESULT CCell::NativeConstruct(_float3* pPoints, _uint iIndex)
 
 _bool CCell::Compare_Points(_fvector vDestPoint1, _fvector vDestPoint2)
 {
-	
+
 	if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_A]), vDestPoint1))
 	{
 		if (XMVector3Equal(XMLoadFloat3(&m_vPoints[POINT_B]), vDestPoint2))
@@ -103,18 +111,16 @@ HRESULT CCell::Render(_float4x4* pWorldMatrix, _uint iCurrentIndex)
 	m_pVIBuffer->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
 	m_pVIBuffer->Render(0);
 
-
 	// 구매쉬 Render 
-	m_pVIBufferSphere->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
-	m_pVIBufferSphere->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(pPipeLine->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
-	m_pVIBufferSphere->Set_RawValue("g_vColor", &_float4(1.f, 0.f, 1.f, 1.f), sizeof(_float4));
-
-	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixTranslation(m_vPoints[0].x, m_vPoints[0].y, m_vPoints[0].z)), sizeof(_float4x4));
-	m_pVIBufferSphere->Render(0);
-	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixTranslation(m_vPoints[1].x, m_vPoints[1].y, m_vPoints[1].z)), sizeof(_float4x4));
-	m_pVIBufferSphere->Render(0);
-	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", &XMMatrixTranspose(XMMatrixTranslation(m_vPoints[2].x, m_vPoints[2].y, m_vPoints[2].z)), sizeof(_float4x4));
-	m_pVIBufferSphere->Render(0);
+	for (int i = 0; i < (int)POINT::POINT_END; i++)
+	{
+		if (i == (int)m_ePickingPoint) // 현재 선택된 포인트이면 핑크색으로
+			Set_Constant_Shphere(XMMatrixTranspose(XMMatrixTranslation(m_vPoints[i].x, m_vPoints[i].y, m_vPoints[i].z)), _float4(1.f, 0.f, 1.f, 1.f));
+		else
+			Set_Constant_Shphere(XMMatrixTranspose(XMMatrixTranslation(m_vPoints[i].x, m_vPoints[i].y, m_vPoints[i].z)), _float4(1.f, 1.f, 1.f, 1.f));
+		
+		m_pVIBufferSphere->Render(0);
+	}
 
 
 	RELEASE_INSTANCE(CPipeLine);

@@ -791,7 +791,7 @@ void CImguiManager::ShowNaviMeshControlWindow()
 		CCollider::COLLIDERDESC		ColliderDesc;
 		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
-		ColliderDesc.fRadius = 1.f;
+		ColliderDesc.fRadius = .5f;
 		m_pSphereCom = static_cast<CCollider*>(
 			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"), &ColliderDesc)
 			);
@@ -834,12 +834,13 @@ void CImguiManager::ShowNaviMeshControlWindow()
 	// x, y, z 좌표로 이동시키자. 
 	m_pSphereCom->Update(XMMatrixTranslation(m_xPickPos, m_yPickPos, m_zPickPos));
 
-	// printf("m_Pos (%.3lf, %.3lf, %.3lf)\n", m_xPickPos, m_yPickPos, m_zPickPos);
+	_float3 pickingPoint;
+	XMStoreFloat3(&pickingPoint, m_pNaviCom->Get_Nearest_Point(_float3(m_xPickPos, m_yPickPos, m_zPickPos)));
 
 	// 마우스 왼쪽 정점을 찍자
 	if (CInput_Device::GetInstance()->Key_Down(DIK_P))
 	{
-		vPoints[iNaviMeshPickCnt] = _float3(m_xPickPos, m_yPickPos, m_zPickPos);
+		vPoints[iNaviMeshPickCnt] = pickingPoint;
 		iNaviMeshPickCnt++;
 		if (iNaviMeshPickCnt == 3)
 		{
@@ -851,6 +852,17 @@ void CImguiManager::ShowNaviMeshControlWindow()
 	}
 	ImGui::Text("PickCnt : %d", iNaviMeshPickCnt);
 	ImGui::DragFloat("y Pos", &m_yPickPos);
+
+	if (ImGui::Button("Save Cells"))
+	{
+		m_pNaviCom->Save_Cells();
+	}
+
+	if (ImGui::Button("Load Cells"))
+	{
+		m_pNaviCom->Load_Cells();
+	}
+
 	ImGui::End();
 }
 

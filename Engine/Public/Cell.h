@@ -26,6 +26,13 @@ public:
 		m_Neighbors[eLine] = pNeighbor;
 	}
 
+	void Set_PickingPoint(POINT pt)
+	{
+		m_ePickingPoint = pt;
+	}
+
+	void Set_Constant_Shphere(_fmatrix fmatrix, _float4 vColor);
+
 public:
 	HRESULT NativeConstruct(_float3* pPoints, _uint iindex);
 	_bool Compare_Points(_fvector vSourPoint, _fvector vDestPoint);
@@ -46,6 +53,9 @@ private:
 	_float3					m_vPoints[POINT_END];
 	_float3					m_vLine[LINE_END];
 	CCell*					m_Neighbors[LINE_END];
+
+private:
+	enum POINT	m_ePickingPoint = POINT_END;
 
 #ifdef _DEBUG
 private:

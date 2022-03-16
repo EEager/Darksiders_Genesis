@@ -59,7 +59,6 @@ HRESULT CNavigation::NativeConstruct(void* pArg)
 
 	return S_OK;
 }
-
 _bool CNavigation::isMove(_fvector vPosition)
 {
 	CCell* pNeighbor = nullptr;
@@ -85,6 +84,27 @@ _bool CNavigation::isMove(_fvector vPosition)
 	}
 
 	return true;
+}
+
+// 현재 피킹된 점 범위 내에 Cell내의 점이 있다면 내가 정점을 return 아니면 인자값 그대로 리턴
+_vector CNavigation::Get_Nearest_Point(_float3 vPickingPt)
+{
+	_vector retVec = XMLoadFloat3(&vPickingPt);
+	for (auto& pCell : m_Cells)
+	{
+		pCell->Set_PickingPoint((CCell::POINT::POINT_END));
+
+		for (int i = 0; i < 3; i++)
+		{
+			if (XMVectorGetX(XMVector3Length(pCell->Get_Point((CCell::POINT)i) - XMLoadFloat3(&vPickingPt))) < 0.5f)
+			{
+				pCell->Set_PickingPoint((CCell::POINT)i);
+				retVec = pCell->Get_Point((CCell::POINT)i);
+			}
+		}
+	}
+
+	return retVec;
 }
 
 
@@ -119,6 +139,61 @@ HRESULT CNavigation::SetUp_Neighbor()
 				pSourCell->Set_Neighbor(CCell::LINE_CA, pDestCell);		
 		}
 	}
+
+	return S_OK;
+}
+
+HRESULT CNavigation::Save_Cells()
+{
+	_ulong		dwByte = 0;
+
+	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.txt"), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	if (0 == hFile)
+		return E_FAIL;
+
+	for (auto pCell : m_Cells)
+	{
+		_float3		vPoint[3];
+		ZeroMemory(vPoint, sizeof(_float3) * 3);
+		XMStoreFloat3(&vPoint[0], pCell->Get_Point(CCell::POINT::POINT_A));
+		XMStoreFloat3(&vPoint[1], pCell->Get_Point(CCell::POINT::POINT_B));
+		XMStoreFloat3(&vPoint[2], pCell->Get_Point(CCell::POINT::POINT_C));
+		WriteFile(hFile, vPoint, sizeof(_float3) * 3, &dwByte, nullptr);
+	}
+
+	CloseHandle(hFile);
+
+	return S_OK;
+}
+
+HRESULT CNavigation::Load_Cells()
+{
+	for (auto& pCell : m_Cells)
+		Safe_Release(pCell);
+
+	m_Cells.clear();
+
+	_ulong		dwByte = 0;
+	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.txt"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (0 == hFile)
+		return E_FAIL;
+
+	_float3		vPoints[CCell::POINT_END];	
+
+	while (true)
+	{
+		ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
+		ReadFile(hFile, vPoints, sizeof(_float3) * CCell::POINT_END, &dwByte, nullptr);
+		if (0 == dwByte)
+			break;
+		CCell*			pCell = CCell::Create(m_pDevice, m_pDeviceContext, vPoints, (_uint)m_Cells.size());
+		if (nullptr == pCell)
+			return E_FAIL;
+		m_Cells.push_back(pCell);
+	}
+	CloseHandle(hFile);
+	if (FAILED(SetUp_Neighbor()))
+		return E_FAIL;
 
 	return S_OK;
 }
