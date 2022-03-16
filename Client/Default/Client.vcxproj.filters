@@ -374,6 +374,9 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl">
       <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Shadow.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

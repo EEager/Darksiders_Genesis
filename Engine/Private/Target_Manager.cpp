@@ -69,6 +69,7 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _t
 		pRenderTargets[iIndex++] = pRenderTarget->Get_RTV();
 	}
 
+	// 장치에 여러개의 렌터타겟들을 바인드한다
 	pDeviceContext->OMSetRenderTargets(pMRTList->size(), pRenderTargets, m_pDepthStencilView);
 
 	return S_OK;
@@ -80,7 +81,7 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pDeviceContext)
 		nullptr == m_pDepthStencilView)
 		return E_FAIL;
 
-	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView, m_pDepthStencilView);
+	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView, m_pDepthStencilView); // 장치에 백버퍼를 바인드하여 원복한다
 
 	Safe_Release(m_pBackBufferView);
 	Safe_Release(m_pDepthStencilView);

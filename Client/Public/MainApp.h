@@ -44,6 +44,15 @@ private:
 	HRESULT Ready_GameObject_Prototype();
 	HRESULT Ready_Gara();
 
+
+	// ----------------------
+	// For.Test_ShadowMap
+private:
+	
+
+	// -----------------------
+
+
 public:
 	static CMainApp* Create();
 	virtual void Free() override;

@@ -58,7 +58,7 @@ _int CTerrain::LateTick(_float fTimeDelta)
 HRESULT CTerrain::Render()
 {
 	
-	m_pDeviceContext->RSSetState(RenderStates::WireframeRS.Get());
+	// m_pDeviceContext->RSSetState(RenderStates::WireframeRS.Get());
 
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;

@@ -265,6 +265,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Sphere.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Light.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Shadow.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
