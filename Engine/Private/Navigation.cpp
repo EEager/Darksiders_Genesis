@@ -81,7 +81,7 @@ void CNavigation::SetUp_CurrentIdx(_fvector vPos)
 		}
 	}
 
-	return ;
+	return;
 }
 
 _bool CNavigation::isMove(_fvector vPosition)
@@ -99,10 +99,18 @@ _bool CNavigation::isMove(_fvector vPosition)
 		{
 			while (true) // vPosition 위치에 Cell이 있는지 계속 체크하기 위함. 
 			{
-				if (true == pNeighbor->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor))
+				_bool ret = pNeighbor->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor);
+				if (ret == true)
 				{
 					m_iCurrentIndex = pNeighbor->Get_Index();
 					return true;
+				}
+				else
+				{
+					if (pNeighbor == nullptr) // 이웃셀쪽에 위치해 있는데 이웃 셀이없다. return false다 
+					{
+						return false;
+					}
 				}
 			}
 		}

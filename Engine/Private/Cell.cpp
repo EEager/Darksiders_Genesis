@@ -85,11 +85,8 @@ _bool CCell::isIn(_fvector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor)
 		if (0 < XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDirW), XMVector3Normalize(vNormalW))))
 		{
 			// 하나라도 밖에 있다면 이웃셀을 검사하도록, ppNeighbor를 다음 이웃셀 포인터를 반환해주자
-			if (m_Neighbors[i] == nullptr)
-				return false;
-
 			*ppNeighbor = m_Neighbors[i];
-			return false;
+			return false; 
 		}
 	}
 

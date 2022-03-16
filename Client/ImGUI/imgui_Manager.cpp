@@ -236,7 +236,7 @@ void CImguiManager::Render()
 	if (m_bshow_naviMesh_window) // Spherer Render를 여기서 하자
 	{
 		m_pSphereCom->Render();
-		//m_pNaviCom->Render();
+		//m_pNaviCom->Render(); Render는 플레이어에서 해주자
 	}
 
 	// Rendering
@@ -798,12 +798,12 @@ void CImguiManager::ShowNaviMeshControlWindow()
 		//Safe_AddRef(m_pSphereCom);
 
 		/* For.Com_Navi */
-		m_pNaviCom = static_cast<CNavigation*>(
-			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), nullptr)
-			);
-		//Safe_AddRef(m_pNaviCom);
-
-
+		//m_pNaviCom = static_cast<CNavigation*>(
+		//	CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), nullptr)
+		//	);
+		auto pWar = m_pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"))->front();
+		m_pNaviCom = static_cast<CNavigation*>(pWar->Get_ComponentPtr(L"Com_Navi"));
+		Safe_AddRef(m_pNaviCom);
 
 		bSetColliderSphereOnce = true;
 	}
