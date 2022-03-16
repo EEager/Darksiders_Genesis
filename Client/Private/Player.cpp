@@ -112,7 +112,7 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	m_pNaviCom->Render();
+	//m_pNaviCom->Render();
 	m_pAABBCom->Render();
 	m_pOBBCom->Render();
 #endif

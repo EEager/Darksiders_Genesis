@@ -9,6 +9,7 @@ class CTransform;
 class CModel;
 class CStateMachine;
 class CCollider;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -43,6 +44,7 @@ private:
 	CCollider* m_pOBBCom = nullptr;
 	CModel* m_pModelCom[MODELTYPE_END] = { 0, };
 	CModel* m_pModelCom_Ruin = nullptr;
+	CNavigation* m_pNaviCom = nullptr;
 
 private:
 	ID3D11ShaderResourceView* pSRV = nullptr;

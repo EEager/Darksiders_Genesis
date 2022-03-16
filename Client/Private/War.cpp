@@ -393,7 +393,7 @@ void CWar::War_Key(_float fTimeDelta)
 
 		// 전진
 		if (m_bDontMove_OnlyTurn == false)
-			m_pTransformCom->Go_Straight(fTimeDelta);
+			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
 	}
 
 }
@@ -471,6 +471,13 @@ HRESULT CWar::SetUp_Component()
 	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
+
+
+	/* For.Com_Navi */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
+		return E_FAIL;
+	// 처음 시작할때 위치 잡아주자
+	m_pNaviCom->
 
 	return S_OK;
 }
@@ -612,6 +619,7 @@ void CWar::Free()
 	__super::Free();
 
 
+	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pOBBCom);
 	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pTransformCom);	
@@ -626,10 +634,8 @@ void CWar::Free()
 
 	// Destroy the State SingleTon : State_War.cpp 
 	g_pWar_State_Context = nullptr;
-
 	g_pWar_Model_Context = nullptr;
 	g_pWar_Model_Gauntlet_Context = nullptr;
 	g_pWar_Model_Ruin_Context = nullptr;
-
 	g_pWar_Transform_Context = nullptr;
 }

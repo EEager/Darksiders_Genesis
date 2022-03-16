@@ -137,6 +137,9 @@ HRESULT CRenderer::Render_Priority_Terrain()
 
 	m_RenderObjects[RENDER_NONALPHA_TERRAIN].clear();
 
+	// Restore default blend state
+	ClearRenderStates();
+
 
 	return S_OK;
 }
@@ -158,6 +161,9 @@ HRESULT CRenderer::Render_NonAlpha()
 
 	m_RenderObjects[RENDER_NONALPHA].clear();
 
+	// Restore default blend state
+	ClearRenderStates();
+
 	return S_OK;
 }
 
@@ -177,6 +183,9 @@ HRESULT CRenderer::Render_NonAlpha_War()
 	}
 
 	m_RenderObjects[RENDER_NONALPHA_WAR].clear();
+
+	// Restore default blend state
+	ClearRenderStates();
 
 	return S_OK;
 }

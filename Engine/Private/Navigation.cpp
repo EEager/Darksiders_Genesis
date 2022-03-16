@@ -19,7 +19,9 @@ CNavigation::CNavigation(const CNavigation& rhs)
 
 HRESULT CNavigation::NativeConstruct_Prototype(const _tchar * pNavigationDataFile)
 {
-	_ulong		dwByte = 0;
+	Load_Cells();
+
+	//_ulong		dwByte = 0;
 
 	//HANDLE		hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	//if (0 == hFile)
