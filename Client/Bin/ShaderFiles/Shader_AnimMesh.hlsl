@@ -60,7 +60,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
 
 	Out.vPosition = mul(vPosition, matWVP);
-	
+	Out.vNormal = normalize(mul(vector(In.vNormal, 0.f), g_WorldMatrix)).xyz;
 	Out.vTexUV = In.vTexUV;
 
 	return Out;
@@ -92,6 +92,8 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	if (Out.vDiffuse.a < 0.1f)
 		discard;
+
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 
 	return Out;
 }

@@ -183,13 +183,15 @@ wstring DXString::Format(const wstring  format, ...)
 }
 const char* DXString::WideToChar(const _tchar* pWideChar)
 {
-	char retChar[MAX_TAG_LEN] = { 0, };
+	static char retChar[MAX_TAG_LEN] = { 0, };
+	ZeroMemory(retChar, MAX_TAG_LEN);
 	WideCharToMultiByte(CP_ACP, 0, pWideChar, MAX_TAG_LEN, retChar, MAX_TAG_LEN, NULL, NULL);
 	return retChar;
 }
 const _tchar* DXString::CharToWide(const char* pChar)
 {
-	_tchar retWideChar[MAX_TAG_LEN] = { 0, };
+	static _tchar retWideChar[MAX_TAG_LEN] = { 0, };
+	ZeroMemory(retWideChar, MAX_TAG_LEN);
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, pChar, MAX_TAG_LEN, retWideChar, MAX_TAG_LEN);
 	return retWideChar;
 }

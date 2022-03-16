@@ -12,6 +12,7 @@
 #include "PipeLine.h"
 #include "Light_Manager.h"
 #include "Picking.h"
+#include "Target_Manager.h"
 
 // DirectX Utils
 #include "DXString.h"
@@ -98,6 +99,7 @@ private:
 	CComponent_Manager*			m_pComponent_Manager  = nullptr;
 	CPipeLine*					m_pPipeLine = nullptr;
 	CLight_Manager*				m_pLight_Manager = nullptr;
+	CTarget_Manager*			m_pTarget_Manager = nullptr;
 	CPicking*					m_pPicking = nullptr;
 
 public:

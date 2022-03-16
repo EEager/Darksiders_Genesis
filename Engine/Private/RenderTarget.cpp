@@ -48,6 +48,24 @@ HRESULT CRenderTarget::NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT 
 	if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture, &RTVDesc, &m_pRTV)))
 		return E_FAIL;
 
+	m_vClearColor = vClearColor;
+
+	return S_OK;
+}
+
+HRESULT CRenderTarget::Clear()
+{
+	if (nullptr == m_pDeviceContext)
+		return E_FAIL;
+
+	//if(0.0f == m_vClearColor.y)
+	//	DirectX::SaveWICTextureToFile(m_pDeviceContext, m_pTexture, GUID_ContainerFormatPng, TEXT("../Bin/Diffuse.png"));
+	//else
+	//	DirectX::SaveWICTextureToFile(m_pDeviceContext, m_pTexture, GUID_ContainerFormatPng, TEXT("../Bin/Nromal.png"));
+
+
+	m_pDeviceContext->ClearRenderTargetView(m_pRTV, (_float*)&m_vClearColor);
+
 	return S_OK;
 }
 

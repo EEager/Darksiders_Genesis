@@ -13,8 +13,9 @@ CGameInstance::CGameInstance()
 	, m_pPipeLine(CPipeLine::GetInstance())
 	, m_pLight_Manager(CLight_Manager::GetInstance())
 	, m_pPicking(CPicking::GetInstance())
-
+	, m_pTarget_Manager(CTarget_Manager::GetInstance())
 {
+	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
 	Safe_AddRef(m_pInput_Device);
@@ -363,6 +364,9 @@ void CGameInstance::Release_Engine()
 	if (0 != CLight_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CLight_Manager ");
 
+	if (0 != CTarget_Manager::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CTarget_Manager ");
+
 	if (0 != CInput_Device::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CInput_Device ");
 
@@ -374,6 +378,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pPipeLine);

@@ -28,6 +28,12 @@ private:
 	typedef list<class CGameObject*>	RENDEROBJECT;
 
 	list<class CGameObject*>			m_PostRenderObjects;
+	typedef list<class CGameObject*>	POSTRENDEROBJECT;
+
+private:
+	class CTarget_Manager* m_pTarget_Manager = nullptr;
+
+
 private:
 	HRESULT Render_Priority();
 	

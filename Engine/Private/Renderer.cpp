@@ -1,15 +1,41 @@
 #include "..\public\Renderer.h"
 #include "RendererStates.h"
 #include "GameObject.h"
+#include "Target_Manager.h"
 
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
+	, m_pTarget_Manager(CTarget_Manager::GetInstance())
 {
-
+	Safe_AddRef(m_pTarget_Manager);
 }
 
 HRESULT CRenderer::NativeConstruct_Prototype()
 {
+	if (m_pTarget_Manager == nullptr)
+		return E_FAIL;
+
+	_uint iNumViewports = 1;
+	D3D11_VIEWPORT ViewportDesc;
+	ZeroMemory(&ViewportDesc, sizeof(D3D11_VIEWPORT));
+
+	m_pDeviceContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Diffuse"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Normal"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shade"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Normal"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
+		return E_FAIL;
+
+
 	if (FAILED(RenderStates::CreateRenderStates(m_pDevice)))
 		return E_FAIL;
 
@@ -146,6 +172,11 @@ HRESULT CRenderer::Render_Priority_Terrain()
 
 HRESULT CRenderer::Render_NonAlpha()
 {
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Deferred"))))
+		return E_FAIL;
 
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
@@ -160,6 +191,9 @@ HRESULT CRenderer::Render_NonAlpha()
 	}
 
 	m_RenderObjects[RENDER_NONALPHA].clear();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
 
 	// Restore default blend state
 	ClearRenderStates();
@@ -313,5 +347,7 @@ void CRenderer::Free()
 
 		ObjectList.clear();		
 	}
+
+	Safe_Release(m_pTarget_Manager);
 }
 

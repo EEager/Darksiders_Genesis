@@ -85,7 +85,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		TimerAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
 
-		if (TimerAcc > 1.f / 60.0f)
+#define MAX_FPS 180.f
+		if (TimerAcc > 1.f / MAX_FPS)
 		{
 			TimerAcc = 0.0;
 

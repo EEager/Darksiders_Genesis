@@ -46,6 +46,8 @@ using namespace DirectX::PackedVector;
 #include <DirectXTK/VertexTypes.h>
 #include <DirectXTK/Effects.h>
 #include <DirectXTK\/SimpleMath.h>
+#include <DirectXTK/ScreenGrab.h>
+#include <DirectXTK/WICTextureLoader.h>
 
 // Font
 #include <DirectXTK\SpriteBatch.h>
@@ -74,6 +76,12 @@ using namespace Microsoft::WRL;
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+
+
+// -----------------------
+// MRT
+// -----------------------
+#include <wincodec.h>
 
 
 
