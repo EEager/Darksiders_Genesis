@@ -32,7 +32,9 @@ HRESULT CFork::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(129.f/2.f, 0.f, 129.f/2.f, 1.f));
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(80.f+2.f, 5.f, 446.f, 1.f));
+
 
 	return S_OK;
 }
@@ -52,28 +54,14 @@ _int CFork::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
-	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
-	if (nullptr == pTerrainBuff)
-		goto _EXIT;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
-
-	/*CCollider*	pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_AABB"));
-	if (nullptr == pTerrainBuff)
-		return 0;
-	
-	m_pAABBCom->Collision_AABB(pTargetColllider);*/
-
-	CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_OBB"));
-	if (nullptr == pTargetColllider)
-		goto _EXIT;
+	// Height
+	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		goto _EXIT;
 
-	m_pOBBCom->Collision_OBB(pTargetColllider);
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
@@ -122,6 +110,10 @@ HRESULT CFork::SetUp_Component()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_Navi */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)m_pNaviCom.GetAddressOf())))
 		return E_FAIL;
 
 	/* For.Com_AABB */

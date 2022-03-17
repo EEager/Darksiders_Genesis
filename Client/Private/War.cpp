@@ -72,7 +72,6 @@ _int CWar::Tick(_float fTimeDelta)
 	}
 
 
-
 	// OBB, AABB
 	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
 	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
@@ -94,7 +93,7 @@ _int CWar::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-
+	// Height
 	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
@@ -110,32 +109,18 @@ _int CWar::LateTick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	}
 
+	//
 	// Renderer
+	// 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
-
-	// Player와 충돌
-	for (int i = 0; i < 1; i++)
-	{
-		CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Player"), TEXT("Com_OBB"), i);
-		if (nullptr == pTargetColllider)
-			goto _EXIT;
-		m_pOBBCom->Collision_OBB(pTargetColllider);
-	}
-
-	// fork랑 충돌하자
-	for (int i = 0; i < 1; i++)
-	{
-		CCollider* pTargetColllider = (CCollider*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_Fork"), TEXT("Com_OBB"), i);
-		if (nullptr == pTargetColllider)
-			goto _EXIT;
-		m_pOBBCom->Collision_OBB(pTargetColllider);
-	}
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
 }
+
+
 #ifdef _DEBUG
 #include "imgui_Manager.h"
 extern bool m_bshow_naviMesh_window; 
@@ -146,7 +131,6 @@ HRESULT CWar::Render()
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
 	// 
 	m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
-
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)

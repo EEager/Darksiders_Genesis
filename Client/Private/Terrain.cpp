@@ -57,7 +57,6 @@ _int CTerrain::LateTick(_float fTimeDelta)
 
 HRESULT CTerrain::Render()
 {
-	
 	// m_pDeviceContext->RSSetState(RenderStates::WireframeRS.Get());
 
 	if (FAILED(SetUp_ConstantTable()))
@@ -109,8 +108,6 @@ HRESULT CTerrain::SetUp_Component()
 	/* For.Com_Navi */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
 		return E_FAIL;
-
-	
 
 	return S_OK;
 }

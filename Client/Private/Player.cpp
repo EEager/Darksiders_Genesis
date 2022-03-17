@@ -26,7 +26,8 @@ HRESULT CPlayer::NativeConstruct(void * pArg)
 		return E_FAIL;	
 
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(rand() % 4, rand() % 2, rand() % 4, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(80.f + rand()%10, 0.f, 446.f + rand() % 10, 1.f));
+
 
 	m_pModelCom->SetUp_Animation(rand()%24);
 
@@ -79,14 +80,11 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	//_vector		vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	// Height
+	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 
-	//CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
-	//if (nullptr == pTerrainBuff)
-	//	return 0;
-
-	//// Player를 지형위에 태우자
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, pTerrainBuff->Compute_Height(vPosition)));
 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;

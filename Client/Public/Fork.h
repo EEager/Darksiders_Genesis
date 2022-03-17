@@ -8,6 +8,7 @@ class CCollider;
 class CRenderer;
 class CTransform;
 class CModel;
+class CNavigation;
 END
 
 BEGIN(Client)
@@ -33,6 +34,7 @@ private:
 	CModel*						m_pModelCom = nullptr;
 	CCollider*					m_pAABBCom = nullptr;
 	CCollider*					m_pOBBCom = nullptr;
+	ComPtr<CNavigation>			m_pNaviCom = nullptr; // ComPtr Test
 
 private:
 	ID3D11ShaderResourceView*	pSRV = nullptr;

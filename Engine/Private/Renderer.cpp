@@ -175,8 +175,8 @@ HRESULT CRenderer::Render_NonAlpha()
 	if (nullptr == m_pTarget_Manager)
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Deferred"))))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Deferred"))))
+	//	return E_FAIL;
 
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
@@ -192,8 +192,8 @@ HRESULT CRenderer::Render_NonAlpha()
 
 	m_RenderObjects[RENDER_NONALPHA].clear();
 
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+	//	return E_FAIL;
 
 	// Restore default blend state
 	ClearRenderStates();

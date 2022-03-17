@@ -302,7 +302,9 @@ void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float f
 	if (goalToRotateDegree < -180.f) // 반시계 방향보다는 시계방향이 빠르다. 
 		goalToRotateDegree += 360.f;
 
-	if (fabs(goalToRotateDegree) < XMConvertToDegrees(m_TransformDesc.fRotationPerSec * fTimeDelta/2.f)) // 더이상 회전할 필요없으면 하지말자
+
+	const float rotateBlank = 1.5f; // 이정도회전했으면 회전하지 않도록하자
+	if (fabs(goalToRotateDegree) < XMConvertToDegrees(m_TransformDesc.fRotationPerSec * fTimeDelta/rotateBlank)) // 더이상 회전할 필요없으면 하지말자
 		return; 
 
 #ifdef _DEBUG
