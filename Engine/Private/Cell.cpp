@@ -71,7 +71,8 @@ _bool CCell::Compare_Points(_fvector vDestPoint1, _fvector vDestPoint2)
 	return false;
 }
 
-_bool CCell::isIn(_fvector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor)
+// 모서리 이동 없음
+_bool CCell::isIn(_vector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor, OUT _vector* vDstPnt)
 {
 	// 3개의 변을 돌면서 vPoint가 내부점에 있는지 확인해야한다
 	for (_uint i = 0; i < LINE_END; ++i)
@@ -84,9 +85,17 @@ _bool CCell::isIn(_fvector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor)
 		// vPoint이 cell 내부에 있는지 확인하자. Dot 연산이 0보다 작으면 90각 이상, 즉, 삼각형 밖에 있다.
 		if (0 < XMVectorGetX(XMVector3Dot(XMVector3Normalize(vDirW), XMVector3Normalize(vNormalW))))
 		{
+			// 모서리 이동가능하도록 여기서 값을 반환해주자
+			// 모서리 이동 위치 : AB의 노말라이즈 벡터 X (A노말벡터 dot vDirW)
+			if (vDstPnt)
+			{
+				_vector lineDirNormal = XMVector3Normalize(XMLoadFloat3(&m_vPoints[(i + 1) % 3]) - XMLoadFloat3(&m_vPoints[i]));
+				*vDstPnt = XMLoadFloat3(&m_vPoints[i]) + lineDirNormal * XMVectorGetX(XMVector3Dot(vDirW, lineDirNormal));
+			}
+
 			// 하나라도 밖에 있다면 이웃셀을 검사하도록, ppNeighbor를 다음 이웃셀 포인터를 반환해주자
 			*ppNeighbor = m_Neighbors[i];
-			return false; 
+			return false;
 		}
 	}
 

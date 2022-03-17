@@ -1,4 +1,5 @@
 #include "..\Public\HierarchyNode.h"
+#include "Navigation.h"
 
 
 
@@ -36,7 +37,7 @@ void CHierarchyNode::Update_CombinedTransformationMatrix()
 			XMLoadFloat4x4(&m_TransformationMatrix));
 }
 
-void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, const char* pRootNodeName)
+void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, const char* pRootNodeName, CNavigation* pNaviCom)
 {
 	// m_Channels에서 iCurrentAnimIndex의 애니메이션에 해당하는 뼈행렬 정보를 가지고 있다. 
 	// 이 채널들은 Model 사본만들때 Model이 넣어준다. 
@@ -72,11 +73,19 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 					// War Look방향으로 offsetLength 곱하여, tmpOffset에 저장하자.
 					XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[2])) * offsetLength);
 
-					// 최종적으로 pMatW에 tmpOffset를 적용한다
-					XMStoreFloat4x4(pMatW, XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x, tmpOffset.y, tmpOffset.z));
+					// 최종적으로 pMatW에 tmpOffset를 적용한다.
+					// 그러나 네비매쉬위에 없다면? 적용하지말아야지
+					if (pNaviCom)
+					{
+						if (pNaviCom->isMove((XMLoadFloat4((_float4*)&pMatW->m[3]) + XMLoadFloat4(&tmpOffset))) == 1)
+						{
+							_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x, tmpOffset.y, tmpOffset.z);
+							XMStoreFloat4x4(pMatW, dstMat);
+							m_prevOffsetPos = offsetPos;
+						}
+					}
 
 					// 이전 오프셋위치를 저장한다. 
-					m_prevOffsetPos = offsetPos;
 				}
 			}
 

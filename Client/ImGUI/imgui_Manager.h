@@ -69,7 +69,7 @@ private:
 	static bool m_bshow_gameobject_editor_window;
 	static bool m_bShow_Simulation_Speed;
 	static bool m_bshow_hlsl_window;
-	static bool m_bshow_naviMesh_window;
+	//static bool m_bshow_naviMesh_window; °Á ±Û·Î¹ú º¯¼ö·Î »°À½
 	int m_iNextLevel = 0;
 
 

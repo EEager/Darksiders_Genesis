@@ -36,7 +36,7 @@ public:
 public:
 	HRESULT NativeConstruct(_float3* pPoints, _uint iindex);
 	_bool Compare_Points(_fvector vSourPoint, _fvector vDestPoint);
-	_bool isIn(_fvector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor);
+	_bool isIn(_vector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor, OUT _vector* vDstPnt = nullptr);
 
 #ifdef _DEBUG
 public:

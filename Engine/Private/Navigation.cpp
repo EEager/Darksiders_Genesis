@@ -84,40 +84,47 @@ void CNavigation::SetUp_CurrentIdx(_fvector vPos)
 	return;
 }
 
-_bool CNavigation::isMove(_fvector vPosition)
+// 네비매쉬 따라 움직일수 있는지 없는지 확인하는 함수
+int CNavigation::isMove(_vector vPosition, OUT _vector* vDstPnt)
 {
 	CCell* pNeighbor = nullptr;
+	int	loopCnt = 0;
+	int MAX_LOOP_CNT = (int)m_Cells.size();
 
-	if (false == m_Cells[m_iCurrentIndex]->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor))
+	// isIn에서 변경된 vPosition값을 반환받기위해서 포인터를 넘겨주자
+	if (false == m_Cells[m_iCurrentIndex]->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor, vDstPnt))
 	{
 		if (nullptr == pNeighbor)
 		{
 			// 모서리 이동하려면 여기서 
-			return false;
+			// return 1; 모서리 처리는 나중에...
+			return 0;
 		}
 		else
 		{
-			while (true) // vPosition 위치에 Cell이 있는지 계속 체크하기 위함. 
+			while (loopCnt++<MAX_LOOP_CNT) // vPosition 위치에 Cell이 있는지 계속 체크하기 위함. 
 			{
+				// isIn에서 vPosition 변경할 필요가 없기때문에 값을 넘겨주자
 				_bool ret = pNeighbor->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor);
 				if (ret == true)
 				{
 					m_iCurrentIndex = pNeighbor->Get_Index();
-					return true;
+					return 1;
 				}
 				else
 				{
 					if (pNeighbor == nullptr) // 이웃셀쪽에 위치해 있는데 이웃 셀이없다. return false다 
 					{
-						return false;
+						return 0;
 					}
 				}
 			}
 		}
 	}
 
-	return true;
+	return 1;
 }
+
 
 // 현재 피킹된 점 범위 내에 Cell내의 점이 있다면 내가 정점을 return 아니면 인자값 그대로 리턴
 _vector CNavigation::Get_Nearest_Point(_float3 vPickingPt)

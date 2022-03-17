@@ -22,7 +22,7 @@ bool CImguiManager::m_bShow_Simulation_Speed = false;
 bool CImguiManager::m_bshow_gameobject_manager_window = false;
 bool CImguiManager::m_bshow_gameobject_editor_window = false;
 bool CImguiManager::m_bshow_hlsl_window = false;
-bool CImguiManager::m_bshow_naviMesh_window = false;
+bool m_bshow_naviMesh_window = false;
 
 //ImVec4 CImguiManager::clear_color = ImVec4(0.5f, 0.55f, 0.60f, 1.00f);
 ImVec4 CImguiManager::clear_color = ImVec4(0.f, 0.f, 0.f, 1.00f);
@@ -809,58 +809,96 @@ void CImguiManager::ShowNaviMeshControlWindow()
 	}
 
 	ImGui::Begin("NaviMesh Contorl Window", &m_bshow_hlsl_window);
-
-	// + 눌러서 위로 뛰우자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
 	{
-		m_yPickPos += 1.f;
-	}
+		m_vRay = CPicking::GetInstance()->Get_MouseRay();
+		m_vRayPos = CPicking::GetInstance()->Get_MouseRayPos();
 
-	// - 눌러서 아래로 보내자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
-	{
-		m_yPickPos -= 1.f;
-	}
+		// 피킹시 x좌표
+		m_xPickPos = (m_vRay.x / m_vRay.y) * (m_yPickPos - m_vRayPos.y) + m_vRayPos.x;
 
-	m_vRay = CPicking::GetInstance()->Get_MouseRay();
-	m_vRayPos = CPicking::GetInstance()->Get_MouseRayPos();
+		// 피킹시 z좌표
+		m_zPickPos = (m_vRay.z / m_vRay.y) * (m_yPickPos - m_vRayPos.y) + m_vRayPos.z;
 
-	// 피킹시 x좌표
-	m_xPickPos = (m_vRay.x / m_vRay.y) * (m_yPickPos - m_vRayPos.y) + m_vRayPos.x;
+		// x, y, z 좌표로 이동시키자. 
+		m_pSphereCom->Update(XMMatrixTranslation(m_xPickPos, m_yPickPos, m_zPickPos));
 
-	// 피킹시 z좌표
-	m_zPickPos = (m_vRay.z / m_vRay.y) * (m_yPickPos - m_vRayPos.y) + m_vRayPos.z;
+		_float3 pickingPoint;
+		XMStoreFloat3(&pickingPoint, m_pNaviCom->Get_Nearest_Point(_float3(m_xPickPos, m_yPickPos, m_zPickPos)));
 
-	// x, y, z 좌표로 이동시키자. 
-	m_pSphereCom->Update(XMMatrixTranslation(m_xPickPos, m_yPickPos, m_zPickPos));
-
-	_float3 pickingPoint;
-	XMStoreFloat3(&pickingPoint, m_pNaviCom->Get_Nearest_Point(_float3(m_xPickPos, m_yPickPos, m_zPickPos)));
-
-	// 마우스 왼쪽 정점을 찍자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_P))
-	{
-		vPoints[iNaviMeshPickCnt] = pickingPoint;
-		iNaviMeshPickCnt++;
-		if (iNaviMeshPickCnt == 3)
+		// P키를 눌러서 점을 찍도록하자
+		if (CInput_Device::GetInstance()->Key_Down(DIK_P))
 		{
-			m_pNaviCom->m_Cells.push_back(CCell::Create(m_pGraphic_Device, m_pDevice_Context, vPoints, (_uint)m_pNaviCom->m_Cells.size()));
-			m_pNaviCom->SetUp_Neighbor();
-			ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
-			iNaviMeshPickCnt = 0;
+			vPoints[iNaviMeshPickCnt] = pickingPoint;
+			iNaviMeshPickCnt++;
+			if (iNaviMeshPickCnt == 3)
+			{
+				m_pNaviCom->m_Cells.push_back(CCell::Create(m_pGraphic_Device, m_pDevice_Context, vPoints, (_uint)m_pNaviCom->m_Cells.size()));
+				m_pNaviCom->SetUp_Neighbor();
+				ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
+				iNaviMeshPickCnt = 0;
+			}
 		}
-	}
-	ImGui::Text("PickCnt : %d", iNaviMeshPickCnt);
-	ImGui::DragFloat("y Pos", &m_yPickPos);
 
-	if (ImGui::Button("Save Cells"))
-	{
-		m_pNaviCom->Save_Cells();
-	}
+		if (ImGui::BeginListBox("##Cells List", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing() + 5/*jjlee*/)))
+		{
+			for (int n = 0; n < m_pNaviCom->m_Cells.size(); n++)
+			{
+				const bool is_selected = (m_pNaviCom->m_iCurrentIndex == n);
+				if (ImGui::Selectable(DXString::Format("%d th Cell", n).c_str(), is_selected))
+				{
+					m_pNaviCom->m_iCurrentIndex = n;
+				}
 
-	if (ImGui::Button("Load Cells"))
-	{
-		m_pNaviCom->Load_Cells();
+				if (is_selected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndListBox();
+		}
+
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Current idx : %d", m_pNaviCom->m_iCurrentIndex);
+
+		bool dirty = false;
+
+		// + 눌러서 위로 뛰우자
+		if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
+		{
+			m_yPickPos += 1.f;
+			dirty = true;
+		}
+
+		// - 눌러서 아래로 보내자 
+		if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
+		{
+			m_yPickPos -= 1.f;
+			dirty = true;
+		}
+
+
+		ImGui::Text("PickCnt(3 end): %d ", iNaviMeshPickCnt);
+		if (ImGui::DragFloat("y Pos", &m_yPickPos))
+		{
+			dirty = true;
+		}
+		
+		if (dirty)
+		{
+			auto pTerrain = m_pGameInstance->Get_GameObject_CloneList(TEXT("Layer_BackGround"))->front();
+			CTransform* pTransform = static_cast<CTransform*>(pTerrain->Get_ComponentPtr(L"Com_Transform"));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetY(pTransform->Get_State(CTransform::STATE_POSITION), m_yPickPos));
+		}
+
+		if (ImGui::Button("Save Cells"))
+		{
+			m_pNaviCom->Save_Cells();
+		}
+
+		if (ImGui::Button("Load Cells"))
+		{
+			m_pNaviCom->Load_Cells();
+		}
+
 	}
 
 	ImGui::End();

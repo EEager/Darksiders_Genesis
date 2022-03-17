@@ -19,7 +19,7 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
 public:
-	_bool isMove(_fvector vPosition);
+	int isMove(_vector vPosition, OUT _vector* vDstPnt = nullptr);
 	_vector Get_Nearest_Point(_float3 vPickingPt);
 
 #ifdef _DEBUG
@@ -34,7 +34,7 @@ public:
 private:
 	static _float4x4* m_pWorldMatrixPtr;
 
-private:
+public:
 	_uint			m_iCurrentIndex = 0;
 
 public:

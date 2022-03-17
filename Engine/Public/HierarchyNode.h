@@ -47,7 +47,7 @@ public:
 	HRESULT NativeConstruct(const char* pName, _fmatrix TransformationMatrix, CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Reserve_Channels(_uint iNumAnimation);
 	void Update_CombinedTransformationMatrix(); // 뼈없는경우
-	void Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW = nullptr, const char* pRootNodeName = nullptr); // 일반적인경우
+	void Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW = nullptr, const char* pRootNodeName = nullptr, class CNavigation* pNaviCom = nullptr); // 일반적인경우
 
 
 private:

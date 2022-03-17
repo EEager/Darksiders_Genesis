@@ -67,7 +67,8 @@ _int CWar::Tick(_float fTimeDelta)
 	}
 	else // War 기본
 	{
-		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root");
+		// War 월행포인터를 던져주어, 애니메이션 로컬 위치를 월행에 적용하도록하자 
+		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom);
 	}
 
 
@@ -155,7 +156,10 @@ _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
 }
-
+#ifdef _DEBUG
+#include "imgui_Manager.h"
+extern bool m_bshow_naviMesh_window; 
+#endif
 HRESULT CWar::Render()
 {
 	// 
@@ -245,7 +249,8 @@ HRESULT CWar::Render()
 
 	// Collider Debug Rendering
 #ifdef _DEBUG
-	m_pNaviCom->Render();
+	if (m_bshow_naviMesh_window)
+		m_pNaviCom->Render();
 	m_pAABBCom->Render();
 	m_pOBBCom->Render();
 #endif // _DEBUG

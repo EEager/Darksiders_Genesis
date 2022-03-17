@@ -137,8 +137,14 @@ void CTransform::Go_Straight(_float fTimeDelta, CNavigation* pNaviCom)
 
 	if (nullptr != pNaviCom)
 	{
-		if (false == pNaviCom->isMove(vPosition))
+		//_vector cornerPos; // 모서리 처리는 TODO로 놔두자
+		int ret = pNaviCom->isMove(vPosition);
+		if (ret == 0) 
 			return;
+		else if (ret == 2) // 모서리 
+		{
+			//vPosition = cornerPos;
+		}
 	}
 
 	Set_State(CTransform::STATE_POSITION, vPosition);

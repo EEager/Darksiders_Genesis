@@ -67,7 +67,7 @@ public:
 	void SetUp_Animation(_uint iAnimIndex, _bool isLoop = true);
 	void SetUp_Animation(const char* pNameKey, _bool isLoop = true, _bool useLatestLerp = true);
 	_bool Get_Animation_isFinished(const char* pNameKey);
-	HRESULT Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW = nullptr, const char* pRootNodeName = nullptr);
+	HRESULT Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW = nullptr, const char* pRootNodeName = nullptr, class CNavigation* pNaviCom = nullptr);
 	HRESULT Bind_Shader(_uint iPassIndex);
 	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
 
