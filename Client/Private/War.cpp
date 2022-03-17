@@ -43,7 +43,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	XMStoreFloat4x4(&m_WarRuinPivotMat, XMMatrixScaling(0.01f, 0.01f, 0.01f));
 
 	// 초기 위치
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-6.f, 0.f, 27.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(17.f, 0.f, 430.f, 1.f));
 
 	// 처음 시작할때 위치 잡아주자
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -94,27 +94,7 @@ _int CWar::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-#if 0 // 네비매쉬로 높이 태울것이다
-	
-	CVIBuffer_Terrain* pTerrainBuff = (CVIBuffer_Terrain*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_BackGround"), TEXT("Com_VIBuffer"));
-	if (nullptr == pTerrainBuff)
-		goto _EXIT;
 
-
-	_float curFloorHeight = pTerrainBuff->Compute_Height(vPosition) + 90.f - 10.f;
-	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
-	{
-		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 
-		{
-			m_bJump = false;
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-		}
-	}
-	else // 점프중이 아니라면 계속 땅위에 서게 하자 
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-	}
-#else
 	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
@@ -129,7 +109,7 @@ _int CWar::LateTick(_float fTimeDelta)
 	{
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	}
-#endif
+
 	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
@@ -379,19 +359,19 @@ void CWar::War_Key(_float fTimeDelta)
 		CInput_Device* pinputDevice = GET_INSTANCE(CInput_Device);
 		if (pinputDevice->Key_Pressing(DIK_A))
 		{
-			m_pTransformCom->Go_Left_OnCamera(fTimeDelta);
+			m_pTransformCom->Go_Left_OnCamera(fTimeDelta, m_pNaviCom);
 		}
 		if (pinputDevice->Key_Pressing(DIK_D))
 		{
-			m_pTransformCom->Go_Right_OnCamera(fTimeDelta);
+			m_pTransformCom->Go_Right_OnCamera(fTimeDelta, m_pNaviCom);
 		}
 		if (pinputDevice->Key_Pressing(DIK_W))
 		{
-			m_pTransformCom->Go_Straight_OnCamera(fTimeDelta);
+			m_pTransformCom->Go_Straight_OnCamera(fTimeDelta, m_pNaviCom);
 		}
 		if (pinputDevice->Key_Pressing(DIK_S))
 		{
-			m_pTransformCom->Go_Backward_OnCamera(fTimeDelta);
+			m_pTransformCom->Go_Backward_OnCamera(fTimeDelta, m_pNaviCom);
 		}
 		RELEASE_INSTANCE(CInput_Device);
 	}
@@ -415,8 +395,7 @@ void CWar::War_Key(_float fTimeDelta)
 		// War 서서히 회전시키자
 		m_pTransformCom->TurnTo_AxisY_Degree(GetDegree(keyDownCheckBit), fTimeDelta * 10); 
 
-		// 전진
-		if (m_bDontMove_OnlyTurn == false)
+		if (m_bDontMove_OnlyTurn == false) // 점프 중이 아닐때
 			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
 	}
 

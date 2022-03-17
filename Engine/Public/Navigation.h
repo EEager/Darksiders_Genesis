@@ -45,6 +45,7 @@ public:
 public:
 	HRESULT Save_Cells();
 	HRESULT Load_Cells();
+	void Remove_Cell(int idx);
 
 public:
 	static CNavigation* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pNavigationDataFile);

@@ -141,10 +141,10 @@ void CTransform::Go_Straight(_float fTimeDelta, CNavigation* pNaviCom)
 		int ret = pNaviCom->isMove(vPosition);
 		if (ret == 0) 
 			return;
-		else if (ret == 2) // 모서리 
-		{
-			//vPosition = cornerPos;
-		}
+		//else if (ret == 2) // 모서리 
+		//{
+		//	//vPosition = cornerPos;
+		//}
 	}
 
 	Set_State(CTransform::STATE_POSITION, vPosition);
@@ -195,30 +195,47 @@ void CTransform::Go_Straight_OnCamera(_float fTimeDelta, CNavigation* pNaviCom)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Backward_OnCamera(_float fTimeDelta)
+void CTransform::Go_Backward_OnCamera(_float fTimeDelta, CNavigation* pNaviCom)
 {
 	_vector		vPosition = Get_State(STATE_POSITION);
 	_vector		vCamLook = CPipeLine::GetInstance()->Get_CamLook();
 	vPosition -= XMVector3Normalize(XMVectorSetY(vCamLook, 0.f)) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 
+	if (nullptr != pNaviCom)
+	{
+		if (false == pNaviCom->isMove(vPosition))
+			return;
+	}
+
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Left_OnCamera(_float fTimeDelta)
+void CTransform::Go_Left_OnCamera(_float fTimeDelta, CNavigation* pNaviCom)
 {
 	_vector		vPosition = Get_State(STATE_POSITION);
 	_vector		vCameRight = XMVector3Cross(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), CPipeLine::GetInstance()->Get_CamLook());
 	vPosition -= XMVector3Normalize(vCameRight) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 
+	if (nullptr != pNaviCom)
+	{
+		if (false == pNaviCom->isMove(vPosition))
+			return;
+	}
+
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
-void CTransform::Go_Right_OnCamera(_float fTimeDelta)
+void CTransform::Go_Right_OnCamera(_float fTimeDelta, CNavigation* pNaviCom)
 {
 	_vector		vPosition = Get_State(STATE_POSITION);
 	_vector		vCameRight = XMVector3Cross(XMLoadFloat4(&_float4(0.f, 1.f, 0.f, 0.f)), CPipeLine::GetInstance()->Get_CamLook());
 	vPosition += XMVector3Normalize(vCameRight) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
 
+	if (nullptr != pNaviCom)
+	{
+		if (false == pNaviCom->isMove(vPosition))
+			return;
+	}
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 

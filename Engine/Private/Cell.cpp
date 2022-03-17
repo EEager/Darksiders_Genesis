@@ -72,13 +72,17 @@ _bool CCell::Compare_Points(_fvector vDestPoint1, _fvector vDestPoint2)
 }
 
 // 모서리 이동 없음
-_bool CCell::isIn(_vector vPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor, OUT _vector* vDstPnt)
+_bool CCell::isIn(_vector vObjectPoint, _float4x4* pWorldMatrix, CCell** ppNeighbor, OUT _vector* vDstPnt)
 {
 	// 3개의 변을 돌면서 vPoint가 내부점에 있는지 확인해야한다
 	for (_uint i = 0; i < LINE_END; ++i)
 	{
-		_vector		vDirW = vPoint - XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix));
-		_vector		vNormalW = XMVectorSet(m_vLine[i].z * -1, m_vPoints[i].y, m_vLine[i].x, 0.f);
+		_vector pointTemp = XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix)); 
+		pointTemp = XMVectorSetY(pointTemp, XMVectorGetY(vObjectPoint)); // y는 vPoint를 기준으로 하자
+
+		_vector		vDirW = vObjectPoint - pointTemp;
+		//_vector		vNormalW = XMVectorSet(m_vLine[i].z * -1, m_vPoints[i].y, m_vLine[i].x, 0.f);
+		_vector		vNormalW = XMVectorSet(m_vLine[i].z * -1, XMVectorGetY(vObjectPoint), m_vLine[i].x, 0.f);
 
 		vNormalW = XMVector3TransformNormal(vNormalW, XMLoadFloat4x4(pWorldMatrix));
 

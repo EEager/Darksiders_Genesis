@@ -23,33 +23,6 @@ HRESULT CNavigation::NativeConstruct_Prototype(const _tchar * pNavigationDataFil
 {
 	Load_Cells();
 
-	//_ulong		dwByte = 0;
-
-	//HANDLE		hFile = CreateFile(pNavigationDataFile, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-	//if (0 == hFile)
-	//	return E_FAIL;
-
-	//_float3		vPoints[CCell::POINT_END];	
-
-	//while (true)
-	//{
-	//	ZeroMemory(vPoints, sizeof(_float3) * CCell::POINT_END);
-
-	//	ReadFile(hFile, vPoints, sizeof(_float3) * CCell::POINT_END, &dwByte, nullptr);
-
-	//	if (0 == dwByte)
-	//		break;
-
-	//	CCell*			pCell = CCell::Create(m_pDevice, m_pDeviceContext, vPoints, (_uint)m_Cells.size());
-	//	if (nullptr == pCell)
-	//		return E_FAIL;
-
-	//	m_Cells.push_back(pCell);
-
-	//}
-
-	//CloseHandle(hFile);
-
 	if (FAILED(SetUp_Neighbor()))
 		return E_FAIL;
 
@@ -87,42 +60,46 @@ void CNavigation::SetUp_CurrentIdx(_fvector vPos)
 // 네비매쉬 따라 움직일수 있는지 없는지 확인하는 함수
 int CNavigation::isMove(_vector vPosition, OUT _vector* vDstPnt)
 {
+	if (m_Cells.empty() || m_iCurrentIndex >= m_Cells.size())
+		return false;
+
 	CCell* pNeighbor = nullptr;
 	int	loopCnt = 0;
 	int MAX_LOOP_CNT = (int)m_Cells.size();
 
-	// isIn에서 변경된 vPosition값을 반환받기위해서 포인터를 넘겨주자
 	if (false == m_Cells[m_iCurrentIndex]->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor, vDstPnt))
 	{
 		if (nullptr == pNeighbor)
 		{
 			// 모서리 이동하려면 여기서 
 			// return 1; 모서리 처리는 나중에...
-			return 0;
+			return false;
 		}
 		else
 		{
 			while (loopCnt++<MAX_LOOP_CNT) // vPosition 위치에 Cell이 있는지 계속 체크하기 위함. 
 			{
-				// isIn에서 vPosition 변경할 필요가 없기때문에 값을 넘겨주자
 				_bool ret = pNeighbor->isIn(vPosition, m_pWorldMatrixPtr, &pNeighbor);
 				if (ret == true)
 				{
 					m_iCurrentIndex = pNeighbor->Get_Index();
-					return 1;
+					return true;
 				}
 				else
 				{
 					if (pNeighbor == nullptr) // 이웃셀쪽에 위치해 있는데 이웃 셀이없다. return false다 
 					{
-						return 0;
+						return false;
 					}
 				}
 			}
+
+			if (loopCnt >= MAX_LOOP_CNT)
+				return false;
 		}
 	}
 
-	return 1;
+	return true;
 }
 
 
@@ -185,8 +162,8 @@ HRESULT CNavigation::SetUp_Neighbor()
 
 _float CNavigation::Compute_Height(_fvector vPos)
 {
-	if (m_Cells[m_iCurrentIndex] == nullptr)
-		return 77.f;
+	if (m_Cells.empty() || m_iCurrentIndex >= m_Cells.size() || m_Cells[m_iCurrentIndex] == nullptr)
+		return 0.f;
 
 	_vector		vPlane;
 	vPlane = XMPlaneFromPoints(m_Cells[m_iCurrentIndex]->Get_Point(CCell::POINT::POINT_A),
@@ -202,7 +179,7 @@ HRESULT CNavigation::Save_Cells()
 {
 	_ulong		dwByte = 0;
 
-	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.txt"), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.dat"), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 	if (0 == hFile)
 		return E_FAIL;
 
@@ -229,7 +206,7 @@ HRESULT CNavigation::Load_Cells()
 	m_Cells.clear();
 
 	_ulong		dwByte = 0;
-	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.txt"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE		hFile = CreateFile(TEXT("../Bin/Data/NavigationData.dat"), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (0 == hFile)
 		return E_FAIL;
 
@@ -251,6 +228,21 @@ HRESULT CNavigation::Load_Cells()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CNavigation::Remove_Cell(int idx)
+{
+	if (idx >= m_Cells.size() || m_Cells.empty())
+		return;
+	auto iter = m_Cells.begin();
+	while (idx--)
+		iter++;
+
+	Safe_Release(*iter);
+	m_Cells.erase(iter);
+
+	SetUp_Neighbor();
+	m_iCurrentIndex = 0;
 }
 
 CNavigation * CNavigation::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const _tchar * pNavigationDataFile)

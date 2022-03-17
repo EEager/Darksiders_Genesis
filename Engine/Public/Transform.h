@@ -67,9 +67,9 @@ public:
 	void Go_Right(_float fTimeDelta);
 
 	void Go_Straight_OnCamera(_float fTimeDelta, class CNavigation* pNaviCom = nullptr);
-	void Go_Backward_OnCamera(_float fTimeDelta);
-	void Go_Left_OnCamera(_float fTimeDelta);
-	void Go_Right_OnCamera(_float fTimeDelta);
+	void Go_Backward_OnCamera(_float fTimeDelta, class CNavigation* pNaviCom = nullptr);
+	void Go_Left_OnCamera(_float fTimeDelta, class CNavigation* pNaviCom = nullptr);
+	void Go_Right_OnCamera(_float fTimeDelta, class CNavigation* pNaviCom = nullptr);
 
 
 	void Rotation(_fvector vAxis, _float fRadian);

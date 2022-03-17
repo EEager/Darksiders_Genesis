@@ -57,8 +57,8 @@ HRESULT CMainApp::NativeConstruct()
 	if (FAILED(Ready_GameObject_Prototype()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Gara()))
-		return E_FAIL;
+	//if (FAILED(Ready_Gara()))
+	//	return E_FAIL;
 
 	if (FAILED(Open_Level(LEVEL_LOGO)))
 		return E_FAIL;	

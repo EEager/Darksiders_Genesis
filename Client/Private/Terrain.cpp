@@ -65,7 +65,7 @@ HRESULT CTerrain::Render()
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 
-	m_pVIBufferCom->Render(0);
+//	m_pVIBufferCom->Render(0);
 
 	m_pRendererCom->ClearRenderStates();
 

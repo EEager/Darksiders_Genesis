@@ -857,7 +857,13 @@ void CImguiManager::ShowNaviMeshControlWindow()
 			ImGui::EndListBox();
 		}
 
+
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Current idx : %d", m_pNaviCom->m_iCurrentIndex);
+
+		if (ImGui::Button("Remove Current Cell"))
+		{
+			m_pNaviCom->Remove_Cell(m_pNaviCom->m_iCurrentIndex);
+		}
 
 		bool dirty = false;
 
