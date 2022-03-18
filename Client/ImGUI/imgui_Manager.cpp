@@ -792,8 +792,9 @@ void CImguiManager::ShowNaviMeshControlWindow()
 		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
 		ColliderDesc.fRadius = .5f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 		m_pSphereCom = static_cast<CCollider*>(
-			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"), &ColliderDesc)
+			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider"), &ColliderDesc)
 			);
 		//Safe_AddRef(m_pSphereCom);
 

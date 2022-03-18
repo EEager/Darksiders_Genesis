@@ -71,7 +71,6 @@ _int CWar::Tick(_float fTimeDelta)
 		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom);
 	}
 
-
 	// OBB, AABB
 	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
 	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
@@ -123,93 +122,11 @@ _EXIT:
 
 #ifdef _DEBUG
 #include "imgui_Manager.h"
-extern bool m_bshow_naviMesh_window; 
+extern bool m_bshow_naviMesh_window;
 #endif
 HRESULT CWar::Render()
 {
-	// 
-	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
-	// 
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
-
-	/* 장치에 월드변환 행렬을 저장한다. */
-	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
-	{
-		if (FAILED(SetUp_ConstantTable(false, modelIdx)))
-			return E_FAIL;
-
-		// iNumMaterials : 망토, 몸통
-		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials(); 
-		for (_uint i = 0; i < iNumMaterials; ++i)
-		{
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE); 
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-
-			m_pModelCom[modelIdx]->Render(i, 0);
-		}
-	}
-
-
-	//
-	// 말 렌더링
-	//
-	if (m_War_On_Ruin_State)
-	{
-		if (FAILED(SetUp_Ruin_ConstantTable(false)))
-			return E_FAIL;
-		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
-		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
-		{
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-			m_pModelCom_Ruin->Render(i, 0);
-		}
-	}
-
-	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
-	m_pRendererCom->ClearRenderStates();
-
-	// 
-	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) 
-	// War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
-	// 
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
-
-	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
-	{
-		if (FAILED(SetUp_ConstantTable(true, modelIdx)))
-			return E_FAIL;
-
-		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
-		for (_uint i = 0; i < iNumMaterials; ++i)
-		{
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-
-
-			m_pModelCom[modelIdx]->Render(i, 0);
-		}
-	}
-
-	//
-	// 말 외곽선 렌더링
-	//
-	if (m_War_On_Ruin_State)
-	{
-		if (FAILED(SetUp_Ruin_ConstantTable(true)))
-			return E_FAIL;
-		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
-		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
-		{
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-			m_pModelCom_Ruin->Render(i, 0);
-		}
-	}
+	War_Render();
 
 	// Collider Debug Rendering
 #ifdef _DEBUG
@@ -217,11 +134,9 @@ HRESULT CWar::Render()
 		m_pNaviCom->Render();
 	m_pAABBCom->Render();
 	m_pOBBCom->Render();
-#endif // _DEBUG
-
 	// Restore default states
 	m_pRendererCom->ClearRenderStates();
-
+#endif // _DEBUG
 
 	return S_OK;
 }
@@ -388,81 +303,98 @@ void CWar::War_Key(_float fTimeDelta)
 
 HRESULT CWar::SetUp_Component()
 {
-	/* For.Com_Transform */
-	CTransform::TRANSFORMDESC		TransformDesc;
-	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+	// Transform
+	{
+		/* For.Com_Transform */
+		CTransform::TRANSFORMDESC		TransformDesc;
+		ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
 
-	TransformDesc.fSpeedPerSec = WAR_SPEED;
-	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
-		return E_FAIL;
+		TransformDesc.fSpeedPerSec = WAR_SPEED;
+		TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
+			return E_FAIL;
+	}
 
-	/* For.Com_Renderer*/
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
-		return E_FAIL;
+	// Renderer
+	{
+		/* For.Com_Renderer*/
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+			return E_FAIL;
+	}
 
-	/* For.Com_Model_War */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"), TEXT("Com_Model_War"), (CComponent**)&m_pModelCom[MODELTYPE_WAR])))
-		return E_FAIL;
-	m_pModelCom[MODELTYPE_WAR]->SetUp_Animation("War_Mesh.ao|War_Idle");
+	
+	// War Model
+	{
+		/* For.Com_Model_War */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"), TEXT("Com_Model_War"), (CComponent**)&m_pModelCom[MODELTYPE_WAR])))
+			return E_FAIL;
+		m_pModelCom[MODELTYPE_WAR]->SetUp_Animation("War_Mesh.ao|War_Idle");
 
-	/* For.Com_Model_War_Ruin */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Ruin"), TEXT("Com_Model_War_Ruin"), (CComponent**)&m_pModelCom_Ruin)))
-		return E_FAIL;
-	m_pModelCom_Ruin->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Mount_Running", false, false);//Not Loop
+		/* For.Com_Model_War_Ruin */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Ruin"), TEXT("Com_Model_War_Ruin"), (CComponent**)&m_pModelCom_Ruin)))
+			return E_FAIL;
+		m_pModelCom_Ruin->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Mount_Running", false, false);//Not Loop
 
 
-	/* For.Com_Model_War_Gauntlet */
-		// 애니메이션은 Com_Model_War를 복사하자
-	CModel::MODELDESC	tagModelWarGauntletDesc;
-	tagModelWarGauntletDesc.pHierarchyNodes = m_pModelCom[MODELTYPE_WAR]->Get_HierarchyNodes();
-	tagModelWarGauntletDesc.pAnimations = m_pModelCom[MODELTYPE_WAR]->Get_Animations();
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"), TEXT("Com_Model_War_Gauntlet"), (CComponent**)&m_pModelCom[MODELTYPE_GAUNTLET], &tagModelWarGauntletDesc)))
-		return E_FAIL;
+		/* For.Com_Model_War_Gauntlet */
+			// 애니메이션은 Com_Model_War를 복사하자
+		CModel::MODELDESC	tagModelWarGauntletDesc;
+		tagModelWarGauntletDesc.pHierarchyNodes = m_pModelCom[MODELTYPE_WAR]->Get_HierarchyNodes();
+		tagModelWarGauntletDesc.pAnimations = m_pModelCom[MODELTYPE_WAR]->Get_Animations();
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"), TEXT("Com_Model_War_Gauntlet"), (CComponent**)&m_pModelCom[MODELTYPE_GAUNTLET], &tagModelWarGauntletDesc)))
+			return E_FAIL;
 
-	/* For.Prototype_Component_Model_War_Weapon */
-		// Model_War가 갖고 있는 뼈중 이름이 "Bone_War_Weapon_Sword" 인것을 찾아 넣어주자.
-	CModel::MODELDESC	tagModelWarWeaponDesc;
-	tagModelWarWeaponDesc.pHierarchyNode = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], &tagModelWarWeaponDesc)))
-		return E_FAIL;
+		/* For.Prototype_Component_Model_War_Weapon */
+			// Model_War가 갖고 있는 뼈중 이름이 "Bone_War_Weapon_Sword" 인것을 찾아 넣어주자.
+		CModel::MODELDESC	tagModelWarWeaponDesc;
+		tagModelWarWeaponDesc.pHierarchyNode = m_pModelCom[MODELTYPE_WAR]->Find_HierarchyNode("Bone_War_Weapon_Sword");
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"), TEXT("Com_Model_War_Weapon"), (CComponent**)&m_pModelCom[MODELTYPE_WEAPON], &tagModelWarWeaponDesc)))
+			return E_FAIL;
 
-	/* For.Com_StateMachine : Model 뒤에 해야한다. State Ready에서 Model를 사용하기 때문. */
-	g_pWar_Model_Context = m_pModelCom[MODELTYPE_WAR];
-	g_pWar_Model_Gauntlet_Context = m_pModelCom[MODELTYPE_GAUNTLET];
-	g_pWar_Model_Sword_Context = m_pModelCom[MODELTYPE_WEAPON];
-	g_pWar_Model_Ruin_Context = m_pModelCom_Ruin;
-	g_pWar_Transform_Context = m_pTransformCom;
-	CStateMachine::STATEMACHINEDESC fsmDesc;
-	fsmDesc.pOwner = this;
-	fsmDesc.pInitState = CState_War_Idle::GetInstance();
+		/* For.Com_StateMachine : Model 뒤에 해야한다. State Ready에서 Model를 사용하기 때문. */
+		g_pWar_Model_Context = m_pModelCom[MODELTYPE_WAR];
+		g_pWar_Model_Gauntlet_Context = m_pModelCom[MODELTYPE_GAUNTLET];
+		g_pWar_Model_Sword_Context = m_pModelCom[MODELTYPE_WEAPON];
+		g_pWar_Model_Ruin_Context = m_pModelCom_Ruin;
+		g_pWar_Transform_Context = m_pTransformCom;
+		CStateMachine::STATEMACHINEDESC fsmDesc;
+		fsmDesc.pOwner = this;
+		fsmDesc.pInitState = CState_War_Idle::GetInstance();
 		// For.Com_StateMachine
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
-		return E_FAIL;
-	static_cast<CStateMachine*>(m_pStateMachineCom)->Set_GlobalState(CGlobal_State_War::GetInstance());
-	g_pWar_State_Context = m_pStateMachineCom;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateMachineCom, &fsmDesc)))
+			return E_FAIL;
+		static_cast<CStateMachine*>(m_pStateMachineCom)->Set_GlobalState(CGlobal_State_War::GetInstance());
+		g_pWar_State_Context = m_pStateMachineCom;
+	}
 
 
-	/* For.Com_AABB */
-	CCollider::COLLIDERDESC		ColliderDesc;
-	ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
-	ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
+	// Collider
+	{
+		/* For.Com_AABB */
+		CCollider::COLLIDERDESC		ColliderDesc;
+		ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
+		ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
+		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+			return E_FAIL;
+
+		/* For.Com_OBB */
+		ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
+		ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
+		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
+		//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
+		//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
+			return E_FAIL;
+	}
 
 
-	/* For.Com_OBB */
-	ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
-	ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
-	//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
-	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
-		return E_FAIL;
-
-	/* For.Com_Navi */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
-		return E_FAIL;
+	{
+		/* For.Com_Navi */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
+			return E_FAIL;
+	}
 
 
 
@@ -573,6 +505,100 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 	return S_OK;
 }
+
+
+
+
+HRESULT CWar::War_Render()
+{
+	// 
+	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
+	// 
+	m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
+
+	/* 장치에 월드변환 행렬을 저장한다. */
+	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
+	{
+		if (FAILED(SetUp_ConstantTable(false, modelIdx)))
+			return E_FAIL;
+
+		// iNumMaterials : 망토, 몸통
+		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
+		for (_uint i = 0; i < iNumMaterials; ++i)
+		{
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+
+			m_pModelCom[modelIdx]->Render(i, 0);
+		}
+	}
+
+
+	//
+	// 말 렌더링
+	//
+	if (m_War_On_Ruin_State)
+	{
+		if (FAILED(SetUp_Ruin_ConstantTable(false)))
+			return E_FAIL;
+		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+		{
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+			m_pModelCom_Ruin->Render(i, 0);
+		}
+	}
+
+	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
+	m_pRendererCom->ClearRenderStates();
+
+	// 
+	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) 
+	// War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
+	// 
+	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
+
+	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
+	{
+		if (FAILED(SetUp_ConstantTable(true, modelIdx)))
+			return E_FAIL;
+
+		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
+		for (_uint i = 0; i < iNumMaterials; ++i)
+		{
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+
+
+			m_pModelCom[modelIdx]->Render(i, 0);
+		}
+	}
+
+	//
+	// 말 외곽선 렌더링
+	//
+	if (m_War_On_Ruin_State)
+	{
+		if (FAILED(SetUp_Ruin_ConstantTable(true)))
+			return E_FAIL;
+		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+		{
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+			m_pModelCom_Ruin->Render(i, 0);
+		}
+	}
+
+	// Restore default states
+	m_pRendererCom->ClearRenderStates();
+}
+
 
 
 CWar * CWar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

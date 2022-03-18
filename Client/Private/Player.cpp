@@ -148,15 +148,17 @@ HRESULT CPlayer::SetUp_Component()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = _float3(0.f, 0.5f, 0.f);
 	ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
 		return E_FAIL;
 
 	/* For.Com_OBB */
 	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
 	ColliderDesc.vSize = _float3(0.8f, 1.5f, 0.8f);
+	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
 	//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
 	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
 
 	
@@ -175,16 +177,6 @@ HRESULT CPlayer::SetUp_ConstantTable()
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
-	/*LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
-	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightSpecular", &LightDesc.vSpecular, sizeof(_float4));
-
-	_float4			vCamPosition;	
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));*/
-	
 
 	RELEASE_INSTANCE(CGameInstance);
 

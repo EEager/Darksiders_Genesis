@@ -115,7 +115,8 @@ HRESULT CEnviroment::SetUp_Component()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
 	ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+	ColliderDesc.eColType = CCollider::COL_TYPE_AABB;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -180,7 +181,7 @@ CGameObject * CEnviroment::Clone(void* pArg)
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{
-		MSG_BOX("Failed to Created CEnviroment");
+		MSG_BOX("Failed to Clone CEnviroment");
 		Safe_Release(pInstance);
 	}
 

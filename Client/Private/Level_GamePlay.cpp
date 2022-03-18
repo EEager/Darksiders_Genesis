@@ -117,9 +117,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_GameObject_CEnviroment */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
 		return E_FAIL;
-	/* For.Prototype_GameObject_CEnviroment */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
-		return E_FAIL;
+	///* For.Prototype_GameObject_CEnviroment */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

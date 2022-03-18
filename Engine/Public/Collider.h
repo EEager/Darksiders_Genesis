@@ -8,16 +8,18 @@ BEGIN(Engine)
 class ENGINE_DLL CCollider final : public CComponent
 {
 public:
-	enum TYPE { TYPE_AABB, TYPE_OBB, TYPE_SPHERE, TYPE_END };
+	enum COL_TYPE { COL_TYPE_AABB, COL_TYPE_OBB, COL_TYPE_SPHERE, COL_TYPE_END };
 
 public:
 	typedef struct ColliderDesc
 	{
+		COL_TYPE	eColType;
 		_float3		vPivot;
 		_float3		vSize;
 		_float		fRadius;
 	}COLLIDERDESC;
 
+	// For.OBB collision check
 	typedef struct OBBDesc
 	{
 		_float3		vCenter;
@@ -31,7 +33,7 @@ private:
 	virtual ~CCollider() = default;
 
 public:
-	virtual HRESULT NativeConstruct_Prototype(TYPE eType);
+	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
 public:
@@ -57,13 +59,12 @@ private:
 	COLLIDERDESC			m_ColliderDesc;
 
 private:
-	TYPE					m_eType = TYPE_END;
 	BasicEffect*			m_pEffect = nullptr;
 	PrimitiveBatch<DirectX::VertexPositionColor>*	m_pBatch = nullptr;
 	ID3D11InputLayout*		m_pInputLayout = nullptr;
 
 public:
-	static CCollider* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, TYPE eType);
+	static CCollider* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 	

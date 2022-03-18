@@ -120,16 +120,18 @@ HRESULT CFork::SetUp_Component()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = _float3(0.f, 2.5f, 0.f);
 	ColliderDesc.vSize = _float3(2.f, 5.0f, 5.0f);
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
 		return E_FAIL;
 
 
 	/* For.Com_OBB */
 	ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
 	ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
+	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
 	/*ColliderDesc.vPivot = _float3(0.f, 3.0f, 0.f);
 	ColliderDesc.vSize = _float3(1.8f, 6.0f, 4.8f);*/
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
 		return E_FAIL;
 	
 

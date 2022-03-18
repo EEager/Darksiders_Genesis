@@ -220,7 +220,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 
 
 	// ======================================================================
-	// 여기서부턴 Textures
+	// Textures
 	/* For.Prototype_Component_Texture_Logo */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title.dds")))))
 		return E_FAIL;
@@ -235,6 +235,15 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	/* For.Prototype_Component_Texture_Mouse */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Mouse/UI_Map_FocusCursor.dds")))))
 		return E_FAIL;
+
+	// ======================================================================
+	// Collider
+	/* For.Prototype_Component_Colllider_AABB */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Collider"),
+		CCollider::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+
 
 	return S_OK;
 }

@@ -8,52 +8,46 @@ CCollider::CCollider(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 
 CCollider::CCollider(const CCollider& rhs)
 	: CComponent(rhs)
-	, m_pInputLayout(rhs.m_pInputLayout)
-	, m_pAABB(rhs.m_pAABB)
-	, m_pOBB(rhs.m_pOBB)
-	, m_pSphere(rhs.m_pSphere)
-	, m_eType(rhs.m_eType)
-	, m_pEffect(rhs.m_pEffect)
-	, m_pBatch(rhs.m_pBatch)
 {
-	Safe_AddRef(m_pInputLayout);
 }
 
-HRESULT CCollider::NativeConstruct_Prototype(TYPE eType)
+HRESULT CCollider::NativeConstruct_Prototype()
 {
-	m_pEffect = new BasicEffect(m_pDevice);
-	m_pEffect->SetVertexColorEnabled(true);
-
-	const void* pShaderByteCodes = nullptr;
-	size_t	iShaderByteCodeLength = 0;
-
-	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iShaderByteCodeLength);
-
-	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pDeviceContext);
-
-	m_eType = eType;
-
-	if (FAILED(m_pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iShaderByteCodeLength, &m_pInputLayout)))
-		return E_FAIL;
-
-
 	return S_OK;
 }
 
 HRESULT CCollider::NativeConstruct(void* pArg)
 {
+	assert(pArg);
+
 	if (nullptr != pArg)
 		memcpy(&m_ColliderDesc, pArg, sizeof(COLLIDERDESC));
 
-	switch (m_eType)
 	{
-	case CCollider::TYPE_AABB:
+		m_pEffect = new BasicEffect(m_pDevice);
+		m_pEffect->SetVertexColorEnabled(true);
+
+		const void* pShaderByteCodes = nullptr;
+		size_t	iShaderByteCodeLength = 0;
+
+		m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iShaderByteCodeLength);
+
+		m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pDeviceContext);
+
+		if (FAILED(m_pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iShaderByteCodeLength, &m_pInputLayout)))
+			return E_FAIL;
+	}
+	
+
+	switch (m_ColliderDesc.eColType)
+	{
+	case CCollider::COL_TYPE_AABB:
 		m_pAABB = new BoundingBox(_float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f));
 		break;
-	case CCollider::TYPE_OBB:
+	case CCollider::COL_TYPE_OBB:
 		m_pOBB = new BoundingOrientedBox(_float3(0.f, 0.f, 0.f), _float3(0.5f, 0.5f, 0.5f), _float4(0.f, 0.f, 0.f, 0.f));
 		break;
-	case CCollider::TYPE_SPHERE:
+	case CCollider::COL_TYPE_SPHERE:
 		m_pSphere = new BoundingSphere(m_ColliderDesc.vPivot, m_ColliderDesc.fRadius);
 		break;
 	}
@@ -75,13 +69,14 @@ HRESULT CCollider::Render()
 
 	m_pBatch->Begin();
 
+	// 충돌시 : 핑크, 논충돌시 : 밝은 초록색
 	_vector		vColor = m_isCollision == false ? DirectX::Colors::LightGreen : DirectX::Colors::LightPink;
 
-	if (TYPE_AABB == m_eType)
+	if (COL_TYPE_AABB == m_ColliderDesc.eColType)
 		DX::Draw(m_pBatch, *m_pAABB, vColor);
-	if (TYPE_OBB == m_eType)
+	if (COL_TYPE_OBB == m_ColliderDesc.eColType)
 		DX::Draw(m_pBatch, *m_pOBB, vColor);
-	if (TYPE_SPHERE == m_eType)
+	if (COL_TYPE_SPHERE == m_ColliderDesc.eColType)
 		DX::Draw(m_pBatch, *m_pSphere, vColor);
 
 
@@ -95,7 +90,7 @@ HRESULT CCollider::Render()
 
 void CCollider::Update(_fmatrix TransformMatrix)
 {
-	if (TYPE_AABB == m_eType)
+	if (COL_TYPE_AABB == m_ColliderDesc.eColType)
 	{
 		m_pAABB->Center = m_ColliderDesc.vPivot;
 		m_pAABB->Extents = _float3(m_ColliderDesc.vSize.x * 0.5f, m_ColliderDesc.vSize.y * 0.5f, m_ColliderDesc.vSize.z * 0.5f);
@@ -103,7 +98,7 @@ void CCollider::Update(_fmatrix TransformMatrix)
 		m_pAABB->Transform(*m_pAABB, Remove_Rotation(TransformMatrix));
 	}
 
-	if (TYPE_OBB == m_eType)
+	if (COL_TYPE_OBB == m_ColliderDesc.eColType)
 	{
 		m_pOBB->Center = m_ColliderDesc.vPivot;
 		m_pOBB->Extents = _float3(m_ColliderDesc.vSize.x * 0.5f, m_ColliderDesc.vSize.y * 0.5f, m_ColliderDesc.vSize.z * 0.5f);
@@ -112,7 +107,7 @@ void CCollider::Update(_fmatrix TransformMatrix)
 		m_pOBB->Transform(*m_pOBB, TransformMatrix);
 	}
 
-	if (TYPE_SPHERE == m_eType)
+	if (COL_TYPE_SPHERE == m_ColliderDesc.eColType)
 	{
 		m_pSphere->Center = m_ColliderDesc.vPivot;
 		m_pSphere->Radius = m_ColliderDesc.fRadius;
@@ -121,6 +116,7 @@ void CCollider::Update(_fmatrix TransformMatrix)
 	}
 }
 
+// AABB vs AABB
 _bool CCollider::Collision_AABB(CCollider* pTargetCollider)
 {
 	_vector		vSourMin, vSourMax;
@@ -152,6 +148,8 @@ _bool CCollider::Collision_AABB(CCollider* pTargetCollider)
 	return true;
 }
 
+
+// OBB vs OBB 
 _bool CCollider::Collision_OBB(CCollider* pTargetCollider)
 {
 	if (pTargetCollider == nullptr)
@@ -188,6 +186,7 @@ _bool CCollider::Collision_OBB(CCollider* pTargetCollider)
 	m_isCollision = true;
 	return true;
 }
+
 
 _matrix CCollider::Remove_Rotation(_fmatrix TransformMatrix)
 {
@@ -229,11 +228,11 @@ CCollider::OBBDESC CCollider::Compute_OBBDesc()
 }
 
 
-CCollider* CCollider::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, TYPE eType)
+CCollider* CCollider::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
 	CCollider* pInstance = new CCollider(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct_Prototype(eType)))
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
 		MSG_BOX("Failed to Created CCollider");
 		Safe_Release(pInstance);
@@ -265,9 +264,6 @@ void CCollider::Free()
 	Safe_Delete(m_pOBB);
 	Safe_Delete(m_pSphere);
 
-	if (false == m_isCloned)
-	{
-		Safe_Delete(m_pEffect);
-		Safe_Delete(m_pBatch);
-	}
+	Safe_Delete(m_pEffect);
+	Safe_Delete(m_pBatch);
 }

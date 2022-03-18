@@ -324,24 +324,24 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	// 
 	// Enviroment
 	//
-	/* For.Prototype_Component_Model_Enviroment1*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", PivotMatrix))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Enviroment2*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", PivotMatrix))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Enviroment3*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", PivotMatrix))))
-		return E_FAIL;
-
-
+	{
+		/* For.Prototype_Component_Model_Enviroment1*/
+		wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
+		PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
+			CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", PivotMatrix))))
+			return E_FAIL;
+		/* For.Prototype_Component_Model_Enviroment2*/
+		wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
+			CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", PivotMatrix))))
+			return E_FAIL;
+		///* For.Prototype_Component_Model_Enviroment3*/
+		//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3"));
+		//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
+		//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", PivotMatrix))))
+		//	return E_FAIL;
+	}
 
 
 	/* For.Prototype_Component_Navigation */
@@ -349,20 +349,23 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CNavigation::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Data/NavigationData.dat")))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Colllider_AABB */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
-		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_AABB))))
-		return E_FAIL;
 
-	/* For.Prototype_Component_Colllider_OBB */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
-		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_OBB))))
-		return E_FAIL;
 
-	///* For.Prototype_Component_Collider_Sphere */ // -> Move to MainApp
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"),
-		CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_SPHERE))))
-		return E_FAIL;
+	// -> Move to MainApp
+	///* For.Prototype_Component_Colllider_AABB */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_AABB"),
+	//	CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_AABB))))
+	//	return E_FAIL;
+
+	///* For.Prototype_Component_Colllider_OBB */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_OBB"),
+	//	CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_OBB))))
+	//	return E_FAIL;
+
+	///* For.Prototype_Component_Collider_Sphere */  
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"),
+	//	CCollider::Create(m_pDevice, m_pDeviceContext, CCollider::TYPE_SPHERE))))
+	//	return E_FAIL;
 
 
 

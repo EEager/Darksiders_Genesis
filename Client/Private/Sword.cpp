@@ -91,7 +91,8 @@ HRESULT CSword::SetUp_Component()
 
 	ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
 	ColliderDesc.fRadius = 0.1f;
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider_Sphere"), TEXT("Com_Sphere"), (CComponent**)&m_pSphereCom, &ColliderDesc)))
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Sphere"), (CComponent**)&m_pSphereCom, &ColliderDesc)))
 		return E_FAIL;
 	
 

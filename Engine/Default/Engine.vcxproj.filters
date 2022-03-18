@@ -154,6 +154,9 @@
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Sphere">
       <UniqueIdentifier>{ce97aa57-bc4d-4013-ade6-1c003cbd808a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\Collider\Manager">
+      <UniqueIdentifier>{f7466d0f-c7ca-4ba0-84ce-2790710c11b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">

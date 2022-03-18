@@ -98,6 +98,8 @@ private:
 	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);
 	HRESULT SetUp_Ruin_ConstantTable(bool drawOutLine);
 
+	HRESULT War_Render();
+
 
 public:
 	static CWar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

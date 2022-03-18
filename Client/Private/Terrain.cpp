@@ -49,8 +49,8 @@ _int CTerrain::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return -1;
 	
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_TERRAIN, this)))
-		return 0;
+	//if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_TERRAIN, this)))
+	//	return 0;
 
 	return _int();
 }
@@ -63,8 +63,8 @@ HRESULT CTerrain::Render()
 		return E_FAIL;
 
 	/* 장치에 월드변환 행렬을 저장한다. */
-
-//	m_pVIBufferCom->Render(0);
+	 
+	m_pVIBufferCom->Render(0);
 
 	m_pRendererCom->ClearRenderStates();
 
