@@ -1,0 +1,1071 @@
+NumFrames = 11
+KeyEncodingFormat = AKF_ConstantKeyLerp (0)
+TranslationCompressionFormat = ACF_None (0)
+RotationCompressionFormat = ACF_Float96NoW (1)
+ScaleCompressionFormat = ACF_None (0)
+CompressedTrackOffsets[0] = {}
+CompressedScaleOffsets =
+{
+    OffsetData[196] =
+    {
+        OffsetData[0] = 24
+        OffsetData[1] = 1
+        OffsetData[2] = 60
+        OffsetData[3] = 1
+        OffsetData[4] = 96
+        OffsetData[5] = 1
+        OffsetData[6] = 132
+        OffsetData[7] = 1
+        OffsetData[8] = 168
+        OffsetData[9] = 1
+        OffsetData[10] = 204
+        OffsetData[11] = 1
+        OffsetData[12] = 240
+        OffsetData[13] = 1
+        OffsetData[14] = 276
+        OffsetData[15] = 1
+        OffsetData[16] = 312
+        OffsetData[17] = 1
+        OffsetData[18] = 348
+        OffsetData[19] = 1
+        OffsetData[20] = 384
+        OffsetData[21] = 1
+        OffsetData[22] = 420
+        OffsetData[23] = 1
+        OffsetData[24] = 456
+        OffsetData[25] = 1
+        OffsetData[26] = 492
+        OffsetData[27] = 1
+        OffsetData[28] = 528
+        OffsetData[29] = 1
+        OffsetData[30] = 564
+        OffsetData[31] = 1
+        OffsetData[32] = 600
+        OffsetData[33] = 1
+        OffsetData[34] = 636
+        OffsetData[35] = 1
+        OffsetData[36] = 672
+        OffsetData[37] = 1
+        OffsetData[38] = 708
+        OffsetData[39] = 1
+        OffsetData[40] = 744
+        OffsetData[41] = 1
+        OffsetData[42] = 780
+        OffsetData[43] = 1
+        OffsetData[44] = 816
+        OffsetData[45] = 1
+        OffsetData[46] = 852
+        OffsetData[47] = 1
+        OffsetData[48] = 888
+        OffsetData[49] = 1
+        OffsetData[50] = 924
+        OffsetData[51] = 1
+        OffsetData[52] = 960
+        OffsetData[53] = 1
+        OffsetData[54] = 996
+        OffsetData[55] = 1
+        OffsetData[56] = 1032
+        OffsetData[57] = 1
+        OffsetData[58] = 1068
+        OffsetData[59] = 1
+        OffsetData[60] = 1104
+        OffsetData[61] = 1
+        OffsetData[62] = 1140
+        OffsetData[63] = 1
+        OffsetData[64] = 1176
+        OffsetData[65] = 1
+        OffsetData[66] = 1212
+        OffsetData[67] = 1
+        OffsetData[68] = 1248
+        OffsetData[69] = 1
+        OffsetData[70] = 1284
+        OffsetData[71] = 1
+        OffsetData[72] = 1320
+        OffsetData[73] = 1
+        OffsetData[74] = 1356
+        OffsetData[75] = 1
+        OffsetData[76] = 1392
+        OffsetData[77] = 1
+        OffsetData[78] = 1428
+        OffsetData[79] = 1
+        OffsetData[80] = 1464
+        OffsetData[81] = 1
+        OffsetData[82] = 1500
+        OffsetData[83] = 1
+        OffsetData[84] = 1536
+        OffsetData[85] = 1
+        OffsetData[86] = 1692
+        OffsetData[87] = 1
+        OffsetData[88] = 1728
+        OffsetData[89] = 1
+        OffsetData[90] = 1884
+        OffsetData[91] = 1
+        OffsetData[92] = 1920
+        OffsetData[93] = 1
+        OffsetData[94] = 1956
+        OffsetData[95] = 1
+        OffsetData[96] = 1992
+        OffsetData[97] = 1
+        OffsetData[98] = 2028
+        OffsetData[99] = 1
+        OffsetData[100] = 2064
+        OffsetData[101] = 1
+        OffsetData[102] = 2100
+        OffsetData[103] = 1
+        OffsetData[104] = 2136
+        OffsetData[105] = 1
+        OffsetData[106] = 2172
+        OffsetData[107] = 1
+        OffsetData[108] = 2328
+        OffsetData[109] = 1
+        OffsetData[110] = 2364
+        OffsetData[111] = 1
+        OffsetData[112] = 2520
+        OffsetData[113] = 1
+        OffsetData[114] = 2556
+        OffsetData[115] = 1
+        OffsetData[116] = 2592
+        OffsetData[117] = 1
+        OffsetData[118] = 2628
+        OffsetData[119] = 1
+        OffsetData[120] = 2664
+        OffsetData[121] = 1
+        OffsetData[122] = 2700
+        OffsetData[123] = 1
+        OffsetData[124] = 2736
+        OffsetData[125] = 1
+        OffsetData[126] = 2772
+        OffsetData[127] = 1
+        OffsetData[128] = 2808
+        OffsetData[129] = 1
+        OffsetData[130] = 2844
+        OffsetData[131] = 1
+        OffsetData[132] = 2880
+        OffsetData[133] = 1
+        OffsetData[134] = 2916
+        OffsetData[135] = 1
+        OffsetData[136] = 2952
+        OffsetData[137] = 1
+        OffsetData[138] = 2988
+        OffsetData[139] = 1
+        OffsetData[140] = 3024
+        OffsetData[141] = 1
+        OffsetData[142] = 3060
+        OffsetData[143] = 1
+        OffsetData[144] = 3096
+        OffsetData[145] = 1
+        OffsetData[146] = 3132
+        OffsetData[147] = 1
+        OffsetData[148] = 3168
+        OffsetData[149] = 1
+        OffsetData[150] = 3204
+        OffsetData[151] = 1
+        OffsetData[152] = 3240
+        OffsetData[153] = 1
+        OffsetData[154] = 3276
+        OffsetData[155] = 1
+        OffsetData[156] = 3312
+        OffsetData[157] = 1
+        OffsetData[158] = 3348
+        OffsetData[159] = 1
+        OffsetData[160] = 3384
+        OffsetData[161] = 1
+        OffsetData[162] = 3420
+        OffsetData[163] = 1
+        OffsetData[164] = 3456
+        OffsetData[165] = 1
+        OffsetData[166] = 3492
+        OffsetData[167] = 1
+        OffsetData[168] = 3528
+        OffsetData[169] = 1
+        OffsetData[170] = 3564
+        OffsetData[171] = 1
+        OffsetData[172] = 3600
+        OffsetData[173] = 1
+        OffsetData[174] = 3636
+        OffsetData[175] = 1
+        OffsetData[176] = 3672
+        OffsetData[177] = 1
+        OffsetData[178] = 3708
+        OffsetData[179] = 1
+        OffsetData[180] = 3744
+        OffsetData[181] = 1
+        OffsetData[182] = 3780
+        OffsetData[183] = 1
+        OffsetData[184] = 3816
+        OffsetData[185] = 1
+        OffsetData[186] = 3852
+        OffsetData[187] = 1
+        OffsetData[188] = 3888
+        OffsetData[189] = 1
+        OffsetData[190] = 3924
+        OffsetData[191] = 1
+        OffsetData[192] = 3960
+        OffsetData[193] = 1
+        OffsetData[194] = 3996
+        OffsetData[195] = 1
+    }
+    StripSize = 2
+}
+TrackToSkeletonMapTable[95] =
+{
+    TrackToSkeletonMapTable[0] = { BoneTreeIndex=0 }
+    TrackToSkeletonMapTable[1] = { BoneTreeIndex=1 }
+    TrackToSkeletonMapTable[2] = { BoneTreeIndex=2 }
+    TrackToSkeletonMapTable[3] = { BoneTreeIndex=3 }
+    TrackToSkeletonMapTable[4] = { BoneTreeIndex=4 }
+    TrackToSkeletonMapTable[5] = { BoneTreeIndex=5 }
+    TrackToSkeletonMapTable[6] = { BoneTreeIndex=6 }
+    TrackToSkeletonMapTable[7] = { BoneTreeIndex=7 }
+    TrackToSkeletonMapTable[8] = { BoneTreeIndex=8 }
+    TrackToSkeletonMapTable[9] = { BoneTreeIndex=9 }
+    TrackToSkeletonMapTable[10] = { BoneTreeIndex=10 }
+    TrackToSkeletonMapTable[11] = { BoneTreeIndex=11 }
+    TrackToSkeletonMapTable[12] = { BoneTreeIndex=12 }
+    TrackToSkeletonMapTable[13] = { BoneTreeIndex=13 }
+    TrackToSkeletonMapTable[14] = { BoneTreeIndex=14 }
+    TrackToSkeletonMapTable[15] = { BoneTreeIndex=15 }
+    TrackToSkeletonMapTable[16] = { BoneTreeIndex=16 }
+    TrackToSkeletonMapTable[17] = { BoneTreeIndex=17 }
+    TrackToSkeletonMapTable[18] = { BoneTreeIndex=18 }
+    TrackToSkeletonMapTable[19] = { BoneTreeIndex=19 }
+    TrackToSkeletonMapTable[20] = { BoneTreeIndex=20 }
+    TrackToSkeletonMapTable[21] = { BoneTreeIndex=21 }
+    TrackToSkeletonMapTable[22] = { BoneTreeIndex=22 }
+    TrackToSkeletonMapTable[23] = { BoneTreeIndex=23 }
+    TrackToSkeletonMapTable[24] = { BoneTreeIndex=24 }
+    TrackToSkeletonMapTable[25] = { BoneTreeIndex=25 }
+    TrackToSkeletonMapTable[26] = { BoneTreeIndex=26 }
+    TrackToSkeletonMapTable[27] = { BoneTreeIndex=27 }
+    TrackToSkeletonMapTable[28] = { BoneTreeIndex=28 }
+    TrackToSkeletonMapTable[29] = { BoneTreeIndex=29 }
+    TrackToSkeletonMapTable[30] = { BoneTreeIndex=30 }
+    TrackToSkeletonMapTable[31] = { BoneTreeIndex=31 }
+    TrackToSkeletonMapTable[32] = { BoneTreeIndex=32 }
+    TrackToSkeletonMapTable[33] = { BoneTreeIndex=33 }
+    TrackToSkeletonMapTable[34] = { BoneTreeIndex=34 }
+    TrackToSkeletonMapTable[35] = { BoneTreeIndex=35 }
+    TrackToSkeletonMapTable[36] = { BoneTreeIndex=36 }
+    TrackToSkeletonMapTable[37] = { BoneTreeIndex=37 }
+    TrackToSkeletonMapTable[38] = { BoneTreeIndex=38 }
+    TrackToSkeletonMapTable[39] = { BoneTreeIndex=39 }
+    TrackToSkeletonMapTable[40] = { BoneTreeIndex=40 }
+    TrackToSkeletonMapTable[41] = { BoneTreeIndex=41 }
+    TrackToSkeletonMapTable[42] = { BoneTreeIndex=42 }
+    TrackToSkeletonMapTable[43] = { BoneTreeIndex=43 }
+    TrackToSkeletonMapTable[44] = { BoneTreeIndex=45 }
+    TrackToSkeletonMapTable[45] = { BoneTreeIndex=46 }
+    TrackToSkeletonMapTable[46] = { BoneTreeIndex=47 }
+    TrackToSkeletonMapTable[47] = { BoneTreeIndex=48 }
+    TrackToSkeletonMapTable[48] = { BoneTreeIndex=49 }
+    TrackToSkeletonMapTable[49] = { BoneTreeIndex=50 }
+    TrackToSkeletonMapTable[50] = { BoneTreeIndex=51 }
+    TrackToSkeletonMapTable[51] = { BoneTreeIndex=52 }
+    TrackToSkeletonMapTable[52] = { BoneTreeIndex=53 }
+    TrackToSkeletonMapTable[53] = { BoneTreeIndex=54 }
+    TrackToSkeletonMapTable[54] = { BoneTreeIndex=55 }
+    TrackToSkeletonMapTable[55] = { BoneTreeIndex=56 }
+    TrackToSkeletonMapTable[56] = { BoneTreeIndex=57 }
+    TrackToSkeletonMapTable[57] = { BoneTreeIndex=58 }
+    TrackToSkeletonMapTable[58] = { BoneTreeIndex=59 }
+    TrackToSkeletonMapTable[59] = { BoneTreeIndex=60 }
+    TrackToSkeletonMapTable[60] = { BoneTreeIndex=61 }
+    TrackToSkeletonMapTable[61] = { BoneTreeIndex=62 }
+    TrackToSkeletonMapTable[62] = { BoneTreeIndex=63 }
+    TrackToSkeletonMapTable[63] = { BoneTreeIndex=64 }
+    TrackToSkeletonMapTable[64] = { BoneTreeIndex=65 }
+    TrackToSkeletonMapTable[65] = { BoneTreeIndex=66 }
+    TrackToSkeletonMapTable[66] = { BoneTreeIndex=67 }
+    TrackToSkeletonMapTable[67] = { BoneTreeIndex=68 }
+    TrackToSkeletonMapTable[68] = { BoneTreeIndex=69 }
+    TrackToSkeletonMapTable[69] = { BoneTreeIndex=70 }
+    TrackToSkeletonMapTable[70] = { BoneTreeIndex=71 }
+    TrackToSkeletonMapTable[71] = { BoneTreeIndex=72 }
+    TrackToSkeletonMapTable[72] = { BoneTreeIndex=73 }
+    TrackToSkeletonMapTable[73] = { BoneTreeIndex=74 }
+    TrackToSkeletonMapTable[74] = { BoneTreeIndex=75 }
+    TrackToSkeletonMapTable[75] = { BoneTreeIndex=78 }
+    TrackToSkeletonMapTable[76] = { BoneTreeIndex=79 }
+    TrackToSkeletonMapTable[77] = { BoneTreeIndex=80 }
+    TrackToSkeletonMapTable[78] = { BoneTreeIndex=81 }
+    TrackToSkeletonMapTable[79] = { BoneTreeIndex=82 }
+    TrackToSkeletonMapTable[80] = { BoneTreeIndex=83 }
+    TrackToSkeletonMapTable[81] = { BoneTreeIndex=84 }
+    TrackToSkeletonMapTable[82] = { BoneTreeIndex=85 }
+    TrackToSkeletonMapTable[83] = { BoneTreeIndex=86 }
+    TrackToSkeletonMapTable[84] = { BoneTreeIndex=87 }
+    TrackToSkeletonMapTable[85] = { BoneTreeIndex=88 }
+    TrackToSkeletonMapTable[86] = { BoneTreeIndex=89 }
+    TrackToSkeletonMapTable[87] = { BoneTreeIndex=90 }
+    TrackToSkeletonMapTable[88] = { BoneTreeIndex=91 }
+    TrackToSkeletonMapTable[89] = { BoneTreeIndex=92 }
+    TrackToSkeletonMapTable[90] = { BoneTreeIndex=93 }
+    TrackToSkeletonMapTable[91] = { BoneTreeIndex=94 }
+    TrackToSkeletonMapTable[92] = { BoneTreeIndex=95 }
+    TrackToSkeletonMapTable[93] = { BoneTreeIndex=96 }
+    TrackToSkeletonMapTable[94] = { BoneTreeIndex=97 }
+}
+CompressedTrackToSkeletonMapTable[98] =
+{
+    CompressedTrackToSkeletonMapTable[0] = { BoneTreeIndex=0 }
+    CompressedTrackToSkeletonMapTable[1] = { BoneTreeIndex=1 }
+    CompressedTrackToSkeletonMapTable[2] = { BoneTreeIndex=2 }
+    CompressedTrackToSkeletonMapTable[3] = { BoneTreeIndex=3 }
+    CompressedTrackToSkeletonMapTable[4] = { BoneTreeIndex=98 }
+    CompressedTrackToSkeletonMapTable[5] = { BoneTreeIndex=99 }
+    CompressedTrackToSkeletonMapTable[6] = { BoneTreeIndex=100 }
+    CompressedTrackToSkeletonMapTable[7] = { BoneTreeIndex=7 }
+    CompressedTrackToSkeletonMapTable[8] = { BoneTreeIndex=8 }
+    CompressedTrackToSkeletonMapTable[9] = { BoneTreeIndex=9 }
+    CompressedTrackToSkeletonMapTable[10] = { BoneTreeIndex=10 }
+    CompressedTrackToSkeletonMapTable[11] = { BoneTreeIndex=11 }
+    CompressedTrackToSkeletonMapTable[12] = { BoneTreeIndex=12 }
+    CompressedTrackToSkeletonMapTable[13] = { BoneTreeIndex=13 }
+    CompressedTrackToSkeletonMapTable[14] = { BoneTreeIndex=14 }
+    CompressedTrackToSkeletonMapTable[15] = { BoneTreeIndex=15 }
+    CompressedTrackToSkeletonMapTable[16] = { BoneTreeIndex=16 }
+    CompressedTrackToSkeletonMapTable[17] = { BoneTreeIndex=17 }
+    CompressedTrackToSkeletonMapTable[18] = { BoneTreeIndex=18 }
+    CompressedTrackToSkeletonMapTable[19] = { BoneTreeIndex=19 }
+    CompressedTrackToSkeletonMapTable[20] = { BoneTreeIndex=20 }
+    CompressedTrackToSkeletonMapTable[21] = { BoneTreeIndex=21 }
+    CompressedTrackToSkeletonMapTable[22] = { BoneTreeIndex=22 }
+    CompressedTrackToSkeletonMapTable[23] = { BoneTreeIndex=23 }
+    CompressedTrackToSkeletonMapTable[24] = { BoneTreeIndex=24 }
+    CompressedTrackToSkeletonMapTable[25] = { BoneTreeIndex=25 }
+    CompressedTrackToSkeletonMapTable[26] = { BoneTreeIndex=26 }
+    CompressedTrackToSkeletonMapTable[27] = { BoneTreeIndex=27 }
+    CompressedTrackToSkeletonMapTable[28] = { BoneTreeIndex=28 }
+    CompressedTrackToSkeletonMapTable[29] = { BoneTreeIndex=29 }
+    CompressedTrackToSkeletonMapTable[30] = { BoneTreeIndex=30 }
+    CompressedTrackToSkeletonMapTable[31] = { BoneTreeIndex=31 }
+    CompressedTrackToSkeletonMapTable[32] = { BoneTreeIndex=32 }
+    CompressedTrackToSkeletonMapTable[33] = { BoneTreeIndex=33 }
+    CompressedTrackToSkeletonMapTable[34] = { BoneTreeIndex=34 }
+    CompressedTrackToSkeletonMapTable[35] = { BoneTreeIndex=35 }
+    CompressedTrackToSkeletonMapTable[36] = { BoneTreeIndex=36 }
+    CompressedTrackToSkeletonMapTable[37] = { BoneTreeIndex=37 }
+    CompressedTrackToSkeletonMapTable[38] = { BoneTreeIndex=38 }
+    CompressedTrackToSkeletonMapTable[39] = { BoneTreeIndex=39 }
+    CompressedTrackToSkeletonMapTable[40] = { BoneTreeIndex=40 }
+    CompressedTrackToSkeletonMapTable[41] = { BoneTreeIndex=41 }
+    CompressedTrackToSkeletonMapTable[42] = { BoneTreeIndex=42 }
+    CompressedTrackToSkeletonMapTable[43] = { BoneTreeIndex=43 }
+    CompressedTrackToSkeletonMapTable[44] = { BoneTreeIndex=44 }
+    CompressedTrackToSkeletonMapTable[45] = { BoneTreeIndex=45 }
+    CompressedTrackToSkeletonMapTable[46] = { BoneTreeIndex=46 }
+    CompressedTrackToSkeletonMapTable[47] = { BoneTreeIndex=47 }
+    CompressedTrackToSkeletonMapTable[48] = { BoneTreeIndex=48 }
+    CompressedTrackToSkeletonMapTable[49] = { BoneTreeIndex=49 }
+    CompressedTrackToSkeletonMapTable[50] = { BoneTreeIndex=50 }
+    CompressedTrackToSkeletonMapTable[51] = { BoneTreeIndex=51 }
+    CompressedTrackToSkeletonMapTable[52] = { BoneTreeIndex=52 }
+    CompressedTrackToSkeletonMapTable[53] = { BoneTreeIndex=53 }
+    CompressedTrackToSkeletonMapTable[54] = { BoneTreeIndex=54 }
+    CompressedTrackToSkeletonMapTable[55] = { BoneTreeIndex=55 }
+    CompressedTrackToSkeletonMapTable[56] = { BoneTreeIndex=56 }
+    CompressedTrackToSkeletonMapTable[57] = { BoneTreeIndex=57 }
+    CompressedTrackToSkeletonMapTable[58] = { BoneTreeIndex=58 }
+    CompressedTrackToSkeletonMapTable[59] = { BoneTreeIndex=59 }
+    CompressedTrackToSkeletonMapTable[60] = { BoneTreeIndex=60 }
+    CompressedTrackToSkeletonMapTable[61] = { BoneTreeIndex=61 }
+    CompressedTrackToSkeletonMapTable[62] = { BoneTreeIndex=62 }
+    CompressedTrackToSkeletonMapTable[63] = { BoneTreeIndex=63 }
+    CompressedTrackToSkeletonMapTable[64] = { BoneTreeIndex=64 }
+    CompressedTrackToSkeletonMapTable[65] = { BoneTreeIndex=65 }
+    CompressedTrackToSkeletonMapTable[66] = { BoneTreeIndex=66 }
+    CompressedTrackToSkeletonMapTable[67] = { BoneTreeIndex=67 }
+    CompressedTrackToSkeletonMapTable[68] = { BoneTreeIndex=68 }
+    CompressedTrackToSkeletonMapTable[69] = { BoneTreeIndex=69 }
+    CompressedTrackToSkeletonMapTable[70] = { BoneTreeIndex=70 }
+    CompressedTrackToSkeletonMapTable[71] = { BoneTreeIndex=71 }
+    CompressedTrackToSkeletonMapTable[72] = { BoneTreeIndex=72 }
+    CompressedTrackToSkeletonMapTable[73] = { BoneTreeIndex=73 }
+    CompressedTrackToSkeletonMapTable[74] = { BoneTreeIndex=74 }
+    CompressedTrackToSkeletonMapTable[75] = { BoneTreeIndex=75 }
+    CompressedTrackToSkeletonMapTable[76] = { BoneTreeIndex=76 }
+    CompressedTrackToSkeletonMapTable[77] = { BoneTreeIndex=77 }
+    CompressedTrackToSkeletonMapTable[78] = { BoneTreeIndex=78 }
+    CompressedTrackToSkeletonMapTable[79] = { BoneTreeIndex=79 }
+    CompressedTrackToSkeletonMapTable[80] = { BoneTreeIndex=80 }
+    CompressedTrackToSkeletonMapTable[81] = { BoneTreeIndex=81 }
+    CompressedTrackToSkeletonMapTable[82] = { BoneTreeIndex=82 }
+    CompressedTrackToSkeletonMapTable[83] = { BoneTreeIndex=101 }
+    CompressedTrackToSkeletonMapTable[84] = { BoneTreeIndex=102 }
+    CompressedTrackToSkeletonMapTable[85] = { BoneTreeIndex=85 }
+    CompressedTrackToSkeletonMapTable[86] = { BoneTreeIndex=86 }
+    CompressedTrackToSkeletonMapTable[87] = { BoneTreeIndex=87 }
+    CompressedTrackToSkeletonMapTable[88] = { BoneTreeIndex=103 }
+    CompressedTrackToSkeletonMapTable[89] = { BoneTreeIndex=104 }
+    CompressedTrackToSkeletonMapTable[90] = { BoneTreeIndex=105 }
+    CompressedTrackToSkeletonMapTable[91] = { BoneTreeIndex=91 }
+    CompressedTrackToSkeletonMapTable[92] = { BoneTreeIndex=92 }
+    CompressedTrackToSkeletonMapTable[93] = { BoneTreeIndex=93 }
+    CompressedTrackToSkeletonMapTable[94] = { BoneTreeIndex=94 }
+    CompressedTrackToSkeletonMapTable[95] = { BoneTreeIndex=95 }
+    CompressedTrackToSkeletonMapTable[96] = { BoneTreeIndex=96 }
+    CompressedTrackToSkeletonMapTable[97] = { BoneTreeIndex=97 }
+}
+CompressedCurveData = { FloatCurves[0]={} }
+Interpolation = Linear (0)
+AdditiveAnimType = AAT_RotationOffsetMeshSpace (2)
+RefPoseType = ABPT_AnimFrame (3)
+RetargetSource = None
+RefPoseSeq = AnimSequence4'/Game/Characters/Creatures/Legion/Animations/Champion/LegionChampion_Idle.LegionChampion_Idle'
+RefFrameIndex = 0
+RetargetSourceAssetReferencePose[0] = {}
+bEnableRootMotion = false
+AuthoredSyncMarkers[0] = {}
+BakedPerBoneCustomAttributeData[0] = {}
+Notifies[0] = {}
+SequenceLength = 0.333333
+RateScale = 1
+RawCurveData = { FloatCurves[0]={} }
+Skeleton = Skeleton'/Game/Characters/Creatures/Legion/Mesh/Legion_Mesh_Skeleton.Legion_Mesh_Skeleton'
+
+// Sequence: LegionChampion_LookPose_RD
+NumFrames = 11
+KeyEncodingFormat = AKF_ConstantKeyLerp (0)
+TranslationCompressionFormat = ACF_None (0)
+RotationCompressionFormat = ACF_Float96NoW (1)
+ScaleCompressionFormat = ACF_None (0)
+CompressedTrackOffsets[0] = {}
+CompressedScaleOffsets =
+{
+    OffsetData[196] =
+    {
+        OffsetData[0] = 24
+        OffsetData[1] = 1
+        OffsetData[2] = 60
+        OffsetData[3] = 1
+        OffsetData[4] = 96
+        OffsetData[5] = 1
+        OffsetData[6] = 132
+        OffsetData[7] = 1
+        OffsetData[8] = 168
+        OffsetData[9] = 1
+        OffsetData[10] = 204
+        OffsetData[11] = 1
+        OffsetData[12] = 240
+        OffsetData[13] = 1
+        OffsetData[14] = 276
+        OffsetData[15] = 1
+        OffsetData[16] = 312
+        OffsetData[17] = 1
+        OffsetData[18] = 348
+        OffsetData[19] = 1
+        OffsetData[20] = 384
+        OffsetData[21] = 1
+        OffsetData[22] = 420
+        OffsetData[23] = 1
+        OffsetData[24] = 456
+        OffsetData[25] = 1
+        OffsetData[26] = 492
+        OffsetData[27] = 1
+        OffsetData[28] = 528
+        OffsetData[29] = 1
+        OffsetData[30] = 564
+        OffsetData[31] = 1
+        OffsetData[32] = 600
+        OffsetData[33] = 1
+        OffsetData[34] = 636
+        OffsetData[35] = 1
+        OffsetData[36] = 672
+        OffsetData[37] = 1
+        OffsetData[38] = 708
+        OffsetData[39] = 1
+        OffsetData[40] = 744
+        OffsetData[41] = 1
+        OffsetData[42] = 780
+        OffsetData[43] = 1
+        OffsetData[44] = 816
+        OffsetData[45] = 1
+        OffsetData[46] = 852
+        OffsetData[47] = 1
+        OffsetData[48] = 888
+        OffsetData[49] = 1
+        OffsetData[50] = 924
+        OffsetData[51] = 1
+        OffsetData[52] = 960
+        OffsetData[53] = 1
+        OffsetData[54] = 996
+        OffsetData[55] = 1
+        OffsetData[56] = 1032
+        OffsetData[57] = 1
+        OffsetData[58] = 1068
+        OffsetData[59] = 1
+        OffsetData[60] = 1104
+        OffsetData[61] = 1
+        OffsetData[62] = 1140
+        OffsetData[63] = 1
+        OffsetData[64] = 1176
+        OffsetData[65] = 1
+        OffsetData[66] = 1212
+        OffsetData[67] = 1
+        OffsetData[68] = 1248
+        OffsetData[69] = 1
+        OffsetData[70] = 1284
+        OffsetData[71] = 1
+        OffsetData[72] = 1320
+        OffsetData[73] = 1
+        OffsetData[74] = 1356
+        OffsetData[75] = 1
+        OffsetData[76] = 1392
+        OffsetData[77] = 1
+        OffsetData[78] = 1428
+        OffsetData[79] = 1
+        OffsetData[80] = 1464
+        OffsetData[81] = 1
+        OffsetData[82] = 1500
+        OffsetData[83] = 1
+        OffsetData[84] = 1536
+        OffsetData[85] = 1
+        OffsetData[86] = 1692
+        OffsetData[87] = 1
+        OffsetData[88] = 1728
+        OffsetData[89] = 1
+        OffsetData[90] = 1884
+        OffsetData[91] = 1
+        OffsetData[92] = 1920
+        OffsetData[93] = 1
+        OffsetData[94] = 1956
+        OffsetData[95] = 1
+        OffsetData[96] = 1992
+        OffsetData[97] = 1
+        OffsetData[98] = 2028
+        OffsetData[99] = 1
+        OffsetData[100] = 2064
+        OffsetData[101] = 1
+        OffsetData[102] = 2100
+        OffsetData[103] = 1
+        OffsetData[104] = 2136
+        OffsetData[105] = 1
+        OffsetData[106] = 2172
+        OffsetData[107] = 1
+        OffsetData[108] = 2328
+        OffsetData[109] = 1
+        OffsetData[110] = 2364
+        OffsetData[111] = 1
+        OffsetData[112] = 2520
+        OffsetData[113] = 1
+        OffsetData[114] = 2556
+        OffsetData[115] = 1
+        OffsetData[116] = 2592
+        OffsetData[117] = 1
+        OffsetData[118] = 2628
+        OffsetData[119] = 1
+        OffsetData[120] = 2664
+        OffsetData[121] = 1
+        OffsetData[122] = 2700
+        OffsetData[123] = 1
+        OffsetData[124] = 2736
+        OffsetData[125] = 1
+        OffsetData[126] = 2772
+        OffsetData[127] = 1
+        OffsetData[128] = 2808
+        OffsetData[129] = 1
+        OffsetData[130] = 2844
+        OffsetData[131] = 1
+        OffsetData[132] = 2880
+        OffsetData[133] = 1
+        OffsetData[134] = 2916
+        OffsetData[135] = 1
+        OffsetData[136] = 2952
+        OffsetData[137] = 1
+        OffsetData[138] = 2988
+        OffsetData[139] = 1
+        OffsetData[140] = 3024
+        OffsetData[141] = 1
+        OffsetData[142] = 3060
+        OffsetData[143] = 1
+        OffsetData[144] = 3096
+        OffsetData[145] = 1
+        OffsetData[146] = 3132
+        OffsetData[147] = 1
+        OffsetData[148] = 3168
+        OffsetData[149] = 1
+        OffsetData[150] = 3204
+        OffsetData[151] = 1
+        OffsetData[152] = 3240
+        OffsetData[153] = 1
+        OffsetData[154] = 3276
+        OffsetData[155] = 1
+        OffsetData[156] = 3312
+        OffsetData[157] = 1
+        OffsetData[158] = 3348
+        OffsetData[159] = 1
+        OffsetData[160] = 3384
+        OffsetData[161] = 1
+        OffsetData[162] = 3420
+        OffsetData[163] = 1
+        OffsetData[164] = 3456
+        OffsetData[165] = 1
+        OffsetData[166] = 3492
+        OffsetData[167] = 1
+        OffsetData[168] = 3528
+        OffsetData[169] = 1
+        OffsetData[170] = 3564
+        OffsetData[171] = 1
+        OffsetData[172] = 3600
+        OffsetData[173] = 1
+        OffsetData[174] = 3636
+        OffsetData[175] = 1
+        OffsetData[176] = 3672
+        OffsetData[177] = 1
+        OffsetData[178] = 3708
+        OffsetData[179] = 1
+        OffsetData[180] = 3744
+        OffsetData[181] = 1
+        OffsetData[182] = 3780
+        OffsetData[183] = 1
+        OffsetData[184] = 3816
+        OffsetData[185] = 1
+        OffsetData[186] = 3852
+        OffsetData[187] = 1
+        OffsetData[188] = 3888
+        OffsetData[189] = 1
+        OffsetData[190] = 3924
+        OffsetData[191] = 1
+        OffsetData[192] = 3960
+        OffsetData[193] = 1
+        OffsetData[194] = 3996
+        OffsetData[195] = 1
+    }
+    StripSize = 2
+}
+TrackToSkeletonMapTable[95] =
+{
+    TrackToSkeletonMapTable[0] = { BoneTreeIndex=0 }
+    TrackToSkeletonMapTable[1] = { BoneTreeIndex=1 }
+    TrackToSkeletonMapTable[2] = { BoneTreeIndex=2 }
+    TrackToSkeletonMapTable[3] = { BoneTreeIndex=3 }
+    TrackToSkeletonMapTable[4] = { BoneTreeIndex=4 }
+    TrackToSkeletonMapTable[5] = { BoneTreeIndex=5 }
+    TrackToSkeletonMapTable[6] = { BoneTreeIndex=6 }
+    TrackToSkeletonMapTable[7] = { BoneTreeIndex=7 }
+    TrackToSkeletonMapTable[8] = { BoneTreeIndex=8 }
+    TrackToSkeletonMapTable[9] = { BoneTreeIndex=9 }
+    TrackToSkeletonMapTable[10] = { BoneTreeIndex=10 }
+    TrackToSkeletonMapTable[11] = { BoneTreeIndex=11 }
+    TrackToSkeletonMapTable[12] = { BoneTreeIndex=12 }
+    TrackToSkeletonMapTable[13] = { BoneTreeIndex=13 }
+    TrackToSkeletonMapTable[14] = { BoneTreeIndex=14 }
+    TrackToSkeletonMapTable[15] = { BoneTreeIndex=15 }
+    TrackToSkeletonMapTable[16] = { BoneTreeIndex=16 }
+    TrackToSkeletonMapTable[17] = { BoneTreeIndex=17 }
+    TrackToSkeletonMapTable[18] = { BoneTreeIndex=18 }
+    TrackToSkeletonMapTable[19] = { BoneTreeIndex=19 }
+    TrackToSkeletonMapTable[20] = { BoneTreeIndex=20 }
+    TrackToSkeletonMapTable[21] = { BoneTreeIndex=21 }
+    TrackToSkeletonMapTable[22] = { BoneTreeIndex=22 }
+    TrackToSkeletonMapTable[23] = { BoneTreeIndex=23 }
+    TrackToSkeletonMapTable[24] = { BoneTreeIndex=24 }
+    TrackToSkeletonMapTable[25] = { BoneTreeIndex=25 }
+    TrackToSkeletonMapTable[26] = { BoneTreeIndex=26 }
+    TrackToSkeletonMapTable[27] = { BoneTreeIndex=27 }
+    TrackToSkeletonMapTable[28] = { BoneTreeIndex=28 }
+    TrackToSkeletonMapTable[29] = { BoneTreeIndex=29 }
+    TrackToSkeletonMapTable[30] = { BoneTreeIndex=30 }
+    TrackToSkeletonMapTable[31] = { BoneTreeIndex=31 }
+    TrackToSkeletonMapTable[32] = { BoneTreeIndex=32 }
+    TrackToSkeletonMapTable[33] = { BoneTreeIndex=33 }
+    TrackToSkeletonMapTable[34] = { BoneTreeIndex=34 }
+    TrackToSkeletonMapTable[35] = { BoneTreeIndex=35 }
+    TrackToSkeletonMapTable[36] = { BoneTreeIndex=36 }
+    TrackToSkeletonMapTable[37] = { BoneTreeIndex=37 }
+    TrackToSkeletonMapTable[38] = { BoneTreeIndex=38 }
+    TrackToSkeletonMapTable[39] = { BoneTreeIndex=39 }
+    TrackToSkeletonMapTable[40] = { BoneTreeIndex=40 }
+    TrackToSkeletonMapTable[41] = { BoneTreeIndex=41 }
+    TrackToSkeletonMapTable[42] = { BoneTreeIndex=42 }
+    TrackToSkeletonMapTable[43] = { BoneTreeIndex=43 }
+    TrackToSkeletonMapTable[44] = { BoneTreeIndex=45 }
+    TrackToSkeletonMapTable[45] = { BoneTreeIndex=46 }
+    TrackToSkeletonMapTable[46] = { BoneTreeIndex=47 }
+    TrackToSkeletonMapTable[47] = { BoneTreeIndex=48 }
+    TrackToSkeletonMapTable[48] = { BoneTreeIndex=49 }
+    TrackToSkeletonMapTable[49] = { BoneTreeIndex=50 }
+    TrackToSkeletonMapTable[50] = { BoneTreeIndex=51 }
+    TrackToSkeletonMapTable[51] = { BoneTreeIndex=52 }
+    TrackToSkeletonMapTable[52] = { BoneTreeIndex=53 }
+    TrackToSkeletonMapTable[53] = { BoneTreeIndex=54 }
+    TrackToSkeletonMapTable[54] = { BoneTreeIndex=55 }
+    TrackToSkeletonMapTable[55] = { BoneTreeIndex=56 }
+    TrackToSkeletonMapTable[56] = { BoneTreeIndex=57 }
+    TrackToSkeletonMapTable[57] = { BoneTreeIndex=58 }
+    TrackToSkeletonMapTable[58] = { BoneTreeIndex=59 }
+    TrackToSkeletonMapTable[59] = { BoneTreeIndex=60 }
+    TrackToSkeletonMapTable[60] = { BoneTreeIndex=61 }
+    TrackToSkeletonMapTable[61] = { BoneTreeIndex=62 }
+    TrackToSkeletonMapTable[62] = { BoneTreeIndex=63 }
+    TrackToSkeletonMapTable[63] = { BoneTreeIndex=64 }
+    TrackToSkeletonMapTable[64] = { BoneTreeIndex=65 }
+    TrackToSkeletonMapTable[65] = { BoneTreeIndex=66 }
+    TrackToSkeletonMapTable[66] = { BoneTreeIndex=67 }
+    TrackToSkeletonMapTable[67] = { BoneTreeIndex=68 }
+    TrackToSkeletonMapTable[68] = { BoneTreeIndex=69 }
+    TrackToSkeletonMapTable[69] = { BoneTreeIndex=70 }
+    TrackToSkeletonMapTable[70] = { BoneTreeIndex=71 }
+    TrackToSkeletonMapTable[71] = { BoneTreeIndex=72 }
+    TrackToSkeletonMapTable[72] = { BoneTreeIndex=73 }
+    TrackToSkeletonMapTable[73] = { BoneTreeIndex=74 }
+    TrackToSkeletonMapTable[74] = { BoneTreeIndex=75 }
+    TrackToSkeletonMapTable[75] = { BoneTreeIndex=78 }
+    TrackToSkeletonMapTable[76] = { BoneTreeIndex=79 }
+    TrackToSkeletonMapTable[77] = { BoneTreeIndex=80 }
+    TrackToSkeletonMapTable[78] = { BoneTreeIndex=81 }
+    TrackToSkeletonMapTable[79] = { BoneTreeIndex=82 }
+    TrackToSkeletonMapTable[80] = { BoneTreeIndex=83 }
+    TrackToSkeletonMapTable[81] = { BoneTreeIndex=84 }
+    TrackToSkeletonMapTable[82] = { BoneTreeIndex=85 }
+    TrackToSkeletonMapTable[83] = { BoneTreeIndex=86 }
+    TrackToSkeletonMapTable[84] = { BoneTreeIndex=87 }
+    TrackToSkeletonMapTable[85] = { BoneTreeIndex=88 }
+    TrackToSkeletonMapTable[86] = { BoneTreeIndex=89 }
+    TrackToSkeletonMapTable[87] = { BoneTreeIndex=90 }
+    TrackToSkeletonMapTable[88] = { BoneTreeIndex=91 }
+    TrackToSkeletonMapTable[89] = { BoneTreeIndex=92 }
+    TrackToSkeletonMapTable[90] = { BoneTreeIndex=93 }
+    TrackToSkeletonMapTable[91] = { BoneTreeIndex=94 }
+    TrackToSkeletonMapTable[92] = { BoneTreeIndex=95 }
+    TrackToSkeletonMapTable[93] = { BoneTreeIndex=96 }
+    TrackToSkeletonMapTable[94] = { BoneTreeIndex=97 }
+}
+CompressedTrackToSkeletonMapTable[98] =
+{
+    CompressedTrackToSkeletonMapTable[0] = { BoneTreeIndex=0 }
+    CompressedTrackToSkeletonMapTable[1] = { BoneTreeIndex=1 }
+    CompressedTrackToSkeletonMapTable[2] = { BoneTreeIndex=2 }
+    CompressedTrackToSkeletonMapTable[3] = { BoneTreeIndex=3 }
+    CompressedTrackToSkeletonMapTable[4] = { BoneTreeIndex=98 }
+    CompressedTrackToSkeletonMapTable[5] = { BoneTreeIndex=99 }
+    CompressedTrackToSkeletonMapTable[6] = { BoneTreeIndex=100 }
+    CompressedTrackToSkeletonMapTable[7] = { BoneTreeIndex=7 }
+    CompressedTrackToSkeletonMapTable[8] = { BoneTreeIndex=8 }
+    CompressedTrackToSkeletonMapTable[9] = { BoneTreeIndex=9 }
+    CompressedTrackToSkeletonMapTable[10] = { BoneTreeIndex=10 }
+    CompressedTrackToSkeletonMapTable[11] = { BoneTreeIndex=11 }
+    CompressedTrackToSkeletonMapTable[12] = { BoneTreeIndex=12 }
+    CompressedTrackToSkeletonMapTable[13] = { BoneTreeIndex=13 }
+    CompressedTrackToSkeletonMapTable[14] = { BoneTreeIndex=14 }
+    CompressedTrackToSkeletonMapTable[15] = { BoneTreeIndex=15 }
+    CompressedTrackToSkeletonMapTable[16] = { BoneTreeIndex=16 }
+    CompressedTrackToSkeletonMapTable[17] = { BoneTreeIndex=17 }
+    CompressedTrackToSkeletonMapTable[18] = { BoneTreeIndex=18 }
+    CompressedTrackToSkeletonMapTable[19] = { BoneTreeIndex=19 }
+    CompressedTrackToSkeletonMapTable[20] = { BoneTreeIndex=20 }
+    CompressedTrackToSkeletonMapTable[21] = { BoneTreeIndex=21 }
+    CompressedTrackToSkeletonMapTable[22] = { BoneTreeIndex=22 }
+    CompressedTrackToSkeletonMapTable[23] = { BoneTreeIndex=23 }
+    CompressedTrackToSkeletonMapTable[24] = { BoneTreeIndex=24 }
+    CompressedTrackToSkeletonMapTable[25] = { BoneTreeIndex=25 }
+    CompressedTrackToSkeletonMapTable[26] = { BoneTreeIndex=26 }
+    CompressedTrackToSkeletonMapTable[27] = { BoneTreeIndex=27 }
+    CompressedTrackToSkeletonMapTable[28] = { BoneTreeIndex=28 }
+    CompressedTrackToSkeletonMapTable[29] = { BoneTreeIndex=29 }
+    CompressedTrackToSkeletonMapTable[30] = { BoneTreeIndex=30 }
+    CompressedTrackToSkeletonMapTable[31] = { BoneTreeIndex=31 }
+    CompressedTrackToSkeletonMapTable[32] = { BoneTreeIndex=32 }
+    CompressedTrackToSkeletonMapTable[33] = { BoneTreeIndex=33 }
+    CompressedTrackToSkeletonMapTable[34] = { BoneTreeIndex=34 }
+    CompressedTrackToSkeletonMapTable[35] = { BoneTreeIndex=35 }
+    CompressedTrackToSkeletonMapTable[36] = { BoneTreeIndex=36 }
+    CompressedTrackToSkeletonMapTable[37] = { BoneTreeIndex=37 }
+    CompressedTrackToSkeletonMapTable[38] = { BoneTreeIndex=38 }
+    CompressedTrackToSkeletonMapTable[39] = { BoneTreeIndex=39 }
+    CompressedTrackToSkeletonMapTable[40] = { BoneTreeIndex=40 }
+    CompressedTrackToSkeletonMapTable[41] = { BoneTreeIndex=41 }
+    CompressedTrackToSkeletonMapTable[42] = { BoneTreeIndex=42 }
+    CompressedTrackToSkeletonMapTable[43] = { BoneTreeIndex=43 }
+    CompressedTrackToSkeletonMapTable[44] = { BoneTreeIndex=44 }
+    CompressedTrackToSkeletonMapTable[45] = { BoneTreeIndex=45 }
+    CompressedTrackToSkeletonMapTable[46] = { BoneTreeIndex=46 }
+    CompressedTrackToSkeletonMapTable[47] = { BoneTreeIndex=47 }
+    CompressedTrackToSkeletonMapTable[48] = { BoneTreeIndex=48 }
+    CompressedTrackToSkeletonMapTable[49] = { BoneTreeIndex=49 }
+    CompressedTrackToSkeletonMapTable[50] = { BoneTreeIndex=50 }
+    CompressedTrackToSkeletonMapTable[51] = { BoneTreeIndex=51 }
+    CompressedTrackToSkeletonMapTable[52] = { BoneTreeIndex=52 }
+    CompressedTrackToSkeletonMapTable[53] = { BoneTreeIndex=53 }
+    CompressedTrackToSkeletonMapTable[54] = { BoneTreeIndex=54 }
+    CompressedTrackToSkeletonMapTable[55] = { BoneTreeIndex=55 }
+    CompressedTrackToSkeletonMapTable[56] = { BoneTreeIndex=56 }
+    CompressedTrackToSkeletonMapTable[57] = { BoneTreeIndex=57 }
+    CompressedTrackToSkeletonMapTable[58] = { BoneTreeIndex=58 }
+    CompressedTrackToSkeletonMapTable[59] = { BoneTreeIndex=59 }
+    CompressedTrackToSkeletonMapTable[60] = { BoneTreeIndex=60 }
+    CompressedTrackToSkeletonMapTable[61] = { BoneTreeIndex=61 }
+    CompressedTrackToSkeletonMapTable[62] = { BoneTreeIndex=62 }
+    CompressedTrackToSkeletonMapTable[63] = { BoneTreeIndex=63 }
+    CompressedTrackToSkeletonMapTable[64] = { BoneTreeIndex=64 }
+    CompressedTrackToSkeletonMapTable[65] = { BoneTreeIndex=65 }
+    CompressedTrackToSkeletonMapTable[66] = { BoneTreeIndex=66 }
+    CompressedTrackToSkeletonMapTable[67] = { BoneTreeIndex=67 }
+    CompressedTrackToSkeletonMapTable[68] = { BoneTreeIndex=68 }
+    CompressedTrackToSkeletonMapTable[69] = { BoneTreeIndex=69 }
+    CompressedTrackToSkeletonMapTable[70] = { BoneTreeIndex=70 }
+    CompressedTrackToSkeletonMapTable[71] = { BoneTreeIndex=71 }
+    CompressedTrackToSkeletonMapTable[72] = { BoneTreeIndex=72 }
+    CompressedTrackToSkeletonMapTable[73] = { BoneTreeIndex=73 }
+    CompressedTrackToSkeletonMapTable[74] = { BoneTreeIndex=74 }
+    CompressedTrackToSkeletonMapTable[75] = { BoneTreeIndex=75 }
+    CompressedTrackToSkeletonMapTable[76] = { BoneTreeIndex=76 }
+    CompressedTrackToSkeletonMapTable[77] = { BoneTreeIndex=77 }
+    CompressedTrackToSkeletonMapTable[78] = { BoneTreeIndex=78 }
+    CompressedTrackToSkeletonMapTable[79] = { BoneTreeIndex=79 }
+    CompressedTrackToSkeletonMapTable[80] = { BoneTreeIndex=80 }
+    CompressedTrackToSkeletonMapTable[81] = { BoneTreeIndex=81 }
+    CompressedTrackToSkeletonMapTable[82] = { BoneTreeIndex=82 }
+    CompressedTrackToSkeletonMapTable[83] = { BoneTreeIndex=101 }
+    CompressedTrackToSkeletonMapTable[84] = { BoneTreeIndex=102 }
+    CompressedTrackToSkeletonMapTable[85] = { BoneTreeIndex=85 }
+    CompressedTrackToSkeletonMapTable[86] = { BoneTreeIndex=86 }
+    CompressedTrackToSkeletonMapTable[87] = { BoneTreeIndex=87 }
+    CompressedTrackToSkeletonMapTable[88] = { BoneTreeIndex=103 }
+    CompressedTrackToSkeletonMapTable[89] = { BoneTreeIndex=104 }
+    CompressedTrackToSkeletonMapTable[90] = { BoneTreeIndex=105 }
+    CompressedTrackToSkeletonMapTable[91] = { BoneTreeIndex=91 }
+    CompressedTrackToSkeletonMapTable[92] = { BoneTreeIndex=92 }
+    CompressedTrackToSkeletonMapTable[93] = { BoneTreeIndex=93 }
+    CompressedTrackToSkeletonMapTable[94] = { BoneTreeIndex=94 }
+    CompressedTrackToSkeletonMapTable[95] = { BoneTreeIndex=95 }
+    CompressedTrackToSkeletonMapTable[96] = { BoneTreeIndex=96 }
+    CompressedTrackToSkeletonMapTable[97] = { BoneTreeIndex=97 }
+}
+CompressedCurveData = { FloatCurves[0]={} }
+Interpolation = Linear (0)
+AdditiveAnimType = AAT_RotationOffsetMeshSpace (2)
+RefPoseType = ABPT_AnimFrame (3)
+RetargetSource = None
+RefPoseSeq = AnimSequence4'/Game/Characters/Creatures/Legion/Animations/Champion/LegionChampion_Idle.LegionChampion_Idle'
+RefFrameIndex = 0
+RetargetSourceAssetReferencePose[0] = {}
+bEnableRootMotion = false
+AuthoredSyncMarkers[0] = {}
+BakedPerBoneCustomAttributeData[0] = {}
+Notifies[0] = {}
+SequenceLength = 0.333333
+RateScale = 1
+RawCurveData = { FloatCurves[0]={} }
+Skeleton = Skeleton'/Game/Characters/Creatures/Legion/Mesh/Legion_Mesh_Skeleton.Legion_Mesh_Skeleton'
+
+// Sequence: LegionChampion_Idle
+NumFrames = 101
+KeyEncodingFormat = AKF_ConstantKeyLerp (0)
+TranslationCompressionFormat = ACF_None (0)
+RotationCompressionFormat = ACF_Float96NoW (1)
+ScaleCompressionFormat = ACF_None (0)
+CompressedTrackOffsets[0] = {}
+CompressedScaleOffsets = { OffsetData[0]={}, StripSize=2 }
+TrackToSkeletonMapTable[95] =
+{
+    TrackToSkeletonMapTable[0] = { BoneTreeIndex=0 }
+    TrackToSkeletonMapTable[1] = { BoneTreeIndex=1 }
+    TrackToSkeletonMapTable[2] = { BoneTreeIndex=2 }
+    TrackToSkeletonMapTable[3] = { BoneTreeIndex=3 }
+    TrackToSkeletonMapTable[4] = { BoneTreeIndex=4 }
+    TrackToSkeletonMapTable[5] = { BoneTreeIndex=5 }
+    TrackToSkeletonMapTable[6] = { BoneTreeIndex=6 }
+    TrackToSkeletonMapTable[7] = { BoneTreeIndex=7 }
+    TrackToSkeletonMapTable[8] = { BoneTreeIndex=8 }
+    TrackToSkeletonMapTable[9] = { BoneTreeIndex=9 }
+    TrackToSkeletonMapTable[10] = { BoneTreeIndex=10 }
+    TrackToSkeletonMapTable[11] = { BoneTreeIndex=11 }
+    TrackToSkeletonMapTable[12] = { BoneTreeIndex=12 }
+    TrackToSkeletonMapTable[13] = { BoneTreeIndex=13 }
+    TrackToSkeletonMapTable[14] = { BoneTreeIndex=14 }
+    TrackToSkeletonMapTable[15] = { BoneTreeIndex=15 }
+    TrackToSkeletonMapTable[16] = { BoneTreeIndex=16 }
+    TrackToSkeletonMapTable[17] = { BoneTreeIndex=17 }
+    TrackToSkeletonMapTable[18] = { BoneTreeIndex=18 }
+    TrackToSkeletonMapTable[19] = { BoneTreeIndex=19 }
+    TrackToSkeletonMapTable[20] = { BoneTreeIndex=20 }
+    TrackToSkeletonMapTable[21] = { BoneTreeIndex=21 }
+    TrackToSkeletonMapTable[22] = { BoneTreeIndex=22 }
+    TrackToSkeletonMapTable[23] = { BoneTreeIndex=23 }
+    TrackToSkeletonMapTable[24] = { BoneTreeIndex=24 }
+    TrackToSkeletonMapTable[25] = { BoneTreeIndex=25 }
+    TrackToSkeletonMapTable[26] = { BoneTreeIndex=26 }
+    TrackToSkeletonMapTable[27] = { BoneTreeIndex=27 }
+    TrackToSkeletonMapTable[28] = { BoneTreeIndex=28 }
+    TrackToSkeletonMapTable[29] = { BoneTreeIndex=29 }
+    TrackToSkeletonMapTable[30] = { BoneTreeIndex=30 }
+    TrackToSkeletonMapTable[31] = { BoneTreeIndex=31 }
+    TrackToSkeletonMapTable[32] = { BoneTreeIndex=32 }
+    TrackToSkeletonMapTable[33] = { BoneTreeIndex=33 }
+    TrackToSkeletonMapTable[34] = { BoneTreeIndex=34 }
+    TrackToSkeletonMapTable[35] = { BoneTreeIndex=35 }
+    TrackToSkeletonMapTable[36] = { BoneTreeIndex=36 }
+    TrackToSkeletonMapTable[37] = { BoneTreeIndex=37 }
+    TrackToSkeletonMapTable[38] = { BoneTreeIndex=38 }
+    TrackToSkeletonMapTable[39] = { BoneTreeIndex=39 }
+    TrackToSkeletonMapTable[40] = { BoneTreeIndex=40 }
+    TrackToSkeletonMapTable[41] = { BoneTreeIndex=41 }
+    TrackToSkeletonMapTable[42] = { BoneTreeIndex=42 }
+    TrackToSkeletonMapTable[43] = { BoneTreeIndex=43 }
+    TrackToSkeletonMapTable[44] = { BoneTreeIndex=45 }
+    TrackToSkeletonMapTable[45] = { BoneTreeIndex=46 }
+    TrackToSkeletonMapTable[46] = { BoneTreeIndex=47 }
+    TrackToSkeletonMapTable[47] = { BoneTreeIndex=48 }
+    TrackToSkeletonMapTable[48] = { BoneTreeIndex=49 }
+    TrackToSkeletonMapTable[49] = { BoneTreeIndex=50 }
+    TrackToSkeletonMapTable[50] = { BoneTreeIndex=51 }
+    TrackToSkeletonMapTable[51] = { BoneTreeIndex=52 }
+    TrackToSkeletonMapTable[52] = { BoneTreeIndex=53 }
+    TrackToSkeletonMapTable[53] = { BoneTreeIndex=54 }
+    TrackToSkeletonMapTable[54] = { BoneTreeIndex=55 }
+    TrackToSkeletonMapTable[55] = { BoneTreeIndex=56 }
+    TrackToSkeletonMapTable[56] = { BoneTreeIndex=57 }
+    TrackToSkeletonMapTable[57] = { BoneTreeIndex=58 }
+    TrackToSkeletonMapTable[58] = { BoneTreeIndex=59 }
+    TrackToSkeletonMapTable[59] = { BoneTreeIndex=60 }
+    TrackToSkeletonMapTable[60] = { BoneTreeIndex=61 }
+    TrackToSkeletonMapTable[61] = { BoneTreeIndex=62 }
+    TrackToSkeletonMapTable[62] = { BoneTreeIndex=63 }
+    TrackToSkeletonMapTable[63] = { BoneTreeIndex=64 }
+    TrackToSkeletonMapTable[64] = { BoneTreeIndex=65 }
+    TrackToSkeletonMapTable[65] = { BoneTreeIndex=66 }
+    TrackToSkeletonMapTable[66] = { BoneTreeIndex=67 }
+    TrackToSkeletonMapTable[67] = { BoneTreeIndex=68 }
+    TrackToSkeletonMapTable[68] = { BoneTreeIndex=69 }
+    TrackToSkeletonMapTable[69] = { BoneTreeIndex=70 }
+    TrackToSkeletonMapTable[70] = { BoneTreeIndex=71 }
+    TrackToSkeletonMapTable[71] = { BoneTreeIndex=72 }
+    TrackToSkeletonMapTable[72] = { BoneTreeIndex=73 }
+    TrackToSkeletonMapTable[73] = { BoneTreeIndex=74 }
+    TrackToSkeletonMapTable[74] = { BoneTreeIndex=75 }
+    TrackToSkeletonMapTable[75] = { BoneTreeIndex=78 }
+    TrackToSkeletonMapTable[76] = { BoneTreeIndex=79 }
+    TrackToSkeletonMapTable[77] = { BoneTreeIndex=80 }
+    TrackToSkeletonMapTable[78] = { BoneTreeIndex=81 }
+    TrackToSkeletonMapTable[79] = { BoneTreeIndex=82 }
+    TrackToSkeletonMapTable[80] = { BoneTreeIndex=83 }
+    TrackToSkeletonMapTable[81] = { BoneTreeIndex=84 }
+    TrackToSkeletonMapTable[82] = { BoneTreeIndex=85 }
+    TrackToSkeletonMapTable[83] = { BoneTreeIndex=86 }
+    TrackToSkeletonMapTable[84] = { BoneTreeIndex=87 }
+    TrackToSkeletonMapTable[85] = { BoneTreeIndex=88 }
+    TrackToSkeletonMapTable[86] = { BoneTreeIndex=89 }
+    TrackToSkeletonMapTable[87] = { BoneTreeIndex=90 }
+    TrackToSkeletonMapTable[88] = { BoneTreeIndex=91 }
+    TrackToSkeletonMapTable[89] = { BoneTreeIndex=92 }
+    TrackToSkeletonMapTable[90] = { BoneTreeIndex=93 }
+    TrackToSkeletonMapTable[91] = { BoneTreeIndex=94 }
+    TrackToSkeletonMapTable[92] = { BoneTreeIndex=95 }
+    TrackToSkeletonMapTable[93] = { BoneTreeIndex=96 }
+    TrackToSkeletonMapTable[94] = { BoneTreeIndex=97 }
+}
+CompressedTrackToSkeletonMapTable[95] =
+{
+    CompressedTrackToSkeletonMapTable[0] = { BoneTreeIndex=0 }
+    CompressedTrackToSkeletonMapTable[1] = { BoneTreeIndex=1 }
+    CompressedTrackToSkeletonMapTable[2] = { BoneTreeIndex=2 }
+    CompressedTrackToSkeletonMapTable[3] = { BoneTreeIndex=3 }
+    CompressedTrackToSkeletonMapTable[4] = { BoneTreeIndex=4 }
+    CompressedTrackToSkeletonMapTable[5] = { BoneTreeIndex=5 }
+    CompressedTrackToSkeletonMapTable[6] = { BoneTreeIndex=6 }
+    CompressedTrackToSkeletonMapTable[7] = { BoneTreeIndex=7 }
+    CompressedTrackToSkeletonMapTable[8] = { BoneTreeIndex=8 }
+    CompressedTrackToSkeletonMapTable[9] = { BoneTreeIndex=9 }
+    CompressedTrackToSkeletonMapTable[10] = { BoneTreeIndex=10 }
+    CompressedTrackToSkeletonMapTable[11] = { BoneTreeIndex=11 }
+    CompressedTrackToSkeletonMapTable[12] = { BoneTreeIndex=12 }
+    CompressedTrackToSkeletonMapTable[13] = { BoneTreeIndex=13 }
+    CompressedTrackToSkeletonMapTable[14] = { BoneTreeIndex=14 }
+    CompressedTrackToSkeletonMapTable[15] = { BoneTreeIndex=15 }
+    CompressedTrackToSkeletonMapTable[16] = { BoneTreeIndex=16 }
+    CompressedTrackToSkeletonMapTable[17] = { BoneTreeIndex=17 }
+    CompressedTrackToSkeletonMapTable[18] = { BoneTreeIndex=18 }
+    CompressedTrackToSkeletonMapTable[19] = { BoneTreeIndex=19 }
+    CompressedTrackToSkeletonMapTable[20] = { BoneTreeIndex=20 }
+    CompressedTrackToSkeletonMapTable[21] = { BoneTreeIndex=21 }
+    CompressedTrackToSkeletonMapTable[22] = { BoneTreeIndex=22 }
+    CompressedTrackToSkeletonMapTable[23] = { BoneTreeIndex=23 }
+    CompressedTrackToSkeletonMapTable[24] = { BoneTreeIndex=24 }
+    CompressedTrackToSkeletonMapTable[25] = { BoneTreeIndex=25 }
+    CompressedTrackToSkeletonMapTable[26] = { BoneTreeIndex=26 }
+    CompressedTrackToSkeletonMapTable[27] = { BoneTreeIndex=27 }
+    CompressedTrackToSkeletonMapTable[28] = { BoneTreeIndex=28 }
+    CompressedTrackToSkeletonMapTable[29] = { BoneTreeIndex=29 }
+    CompressedTrackToSkeletonMapTable[30] = { BoneTreeIndex=30 }
+    CompressedTrackToSkeletonMapTable[31] = { BoneTreeIndex=31 }
+    CompressedTrackToSkeletonMapTable[32] = { BoneTreeIndex=32 }
+    CompressedTrackToSkeletonMapTable[33] = { BoneTreeIndex=33 }
+    CompressedTrackToSkeletonMapTable[34] = { BoneTreeIndex=34 }
+    CompressedTrackToSkeletonMapTable[35] = { BoneTreeIndex=35 }
+    CompressedTrackToSkeletonMapTable[36] = { BoneTreeIndex=36 }
+    CompressedTrackToSkeletonMapTable[37] = { BoneTreeIndex=37 }
+    CompressedTrackToSkeletonMapTable[38] = { BoneTreeIndex=38 }
+    CompressedTrackToSkeletonMapTable[39] = { BoneTreeIndex=39 }
+    CompressedTrackToSkeletonMapTable[40] = { BoneTreeIndex=40 }
+    CompressedTrackToSkeletonMapTable[41] = { BoneTreeIndex=41 }
+    CompressedTrackToSkeletonMapTable[42] = { BoneTreeIndex=42 }
+    CompressedTrackToSkeletonMapTable[43] = { BoneTreeIndex=43 }
+    CompressedTrackToSkeletonMapTable[44] = { BoneTreeIndex=45 }
+    CompressedTrackToSkeletonMapTable[45] = { BoneTreeIndex=46 }
+    CompressedTrackToSkeletonMapTable[46] = { BoneTreeIndex=47 }
+    CompressedTrackToSkeletonMapTable[47] = { BoneTreeIndex=48 }
+    CompressedTrackToSkeletonMapTable[48] = { BoneTreeIndex=49 }
+    CompressedTrackToSkeletonMapTable[49] = { BoneTreeIndex=50 }
+    CompressedTrackToSkeletonMapTable[50] = { BoneTreeIndex=51 }
+    CompressedTrackToSkeletonMapTable[51] = { BoneTreeIndex=52 }
+    CompressedTrackToSkeletonMapTable[52] = { BoneTreeIndex=53 }
+    CompressedTrackToSkeletonMapTable[53] = { BoneTreeIndex=54 }
+    CompressedTrackToSkeletonMapTable[54] = { BoneTreeIndex=55 }
+    CompressedTrackToSkeletonMapTable[55] = { BoneTreeIndex=56 }
+    CompressedTrackToSkeletonMapTable[56] = { BoneTreeIndex=57 }
+    CompressedTrackToSkeletonMapTable[57] = { BoneTreeIndex=58 }
+    CompressedTrackToSkeletonMapTable[58] = { BoneTreeIndex=59 }
+    CompressedTrackToSkeletonMapTable[59] = { BoneTreeIndex=60 }
+    CompressedTrackToSkeletonMapTable[60] = { BoneTreeIndex=61 }
+    CompressedTrackToSkeletonMapTable[61] = { BoneTreeIndex=62 }
+    CompressedTrackToSkeletonMapTable[62] = { BoneTreeIndex=63 }
+    CompressedTrackToSkeletonMapTable[63] = { BoneTreeIndex=64 }
+    CompressedTrackToSkeletonMapTable[64] = { BoneTreeIndex=65 }
+    CompressedTrackToSkeletonMapTable[65] = { BoneTreeIndex=66 }
+    CompressedTrackToSkeletonMapTable[66] = { BoneTreeIndex=67 }
+    CompressedTrackToSkeletonMapTable[67] = { BoneTreeIndex=68 }
+    CompressedTrackToSkeletonMapTable[68] = { BoneTreeIndex=69 }
+    CompressedTrackToSkeletonMapTable[69] = { BoneTreeIndex=70 }
+    CompressedTrackToSkeletonMapTable[70] = { BoneTreeIndex=71 }
+    CompressedTrackToSkeletonMapTable[71] = { BoneTreeIndex=72 }
+    CompressedTrackToSkeletonMapTable[72] = { BoneTreeIndex=73 }
+    CompressedTrackToSkeletonMapTable[73] = { BoneTreeIndex=74 }
+    CompressedTrackToSkeletonMapTable[74] = { BoneTreeIndex=75 }
+    CompressedTrackToSkeletonMapTable[75] = { BoneTreeIndex=78 }
+    CompressedTrackToSkeletonMapTable[76] = { BoneTreeIndex=79 }
+    CompressedTrackToSkeletonMapTable[77] = { BoneTreeIndex=80 }
+    CompressedTrackToSkeletonMapTable[78] = { BoneTreeIndex=81 }
+    CompressedTrackToSkeletonMapTable[79] = { BoneTreeIndex=82 }
+    CompressedTrackToSkeletonMapTable[80] = { BoneTreeIndex=83 }
+    CompressedTrackToSkeletonMapTable[81] = { BoneTreeIndex=84 }
+    CompressedTrackToSkeletonMapTable[82] = { BoneTreeIndex=85 }
+    CompressedTrackToSkeletonMapTable[83] = { BoneTreeIndex=86 }
+    CompressedTrackToSkeletonMapTable[84] = { BoneTreeIndex=87 }
+    CompressedTrackToSkeletonMapTable[85] = { BoneTreeIndex=88 }
+    CompressedTrackToSkeletonMapTable[86] = { BoneTreeIndex=89 }
+    CompressedTrackToSkeletonMapTable[87] = { BoneTreeIndex=90 }
+    CompressedTrackToSkeletonMapTable[88] = { BoneTreeIndex=91 }
+    CompressedTrackToSkeletonMapTable[89] = { BoneTreeIndex=92 }
+    CompressedTrackToSkeletonMapTable[90] = { BoneTreeIndex=93 }
+    CompressedTrackToSkeletonMapTable[91] = { BoneTreeIndex=94 }
+    CompressedTrackToSkeletonMapTable[92] = { BoneTreeIndex=95 }
+    CompressedTrackToSkeletonMapTable[93] = { BoneTreeIndex=96 }
+    CompressedTrackToSkeletonMapTable[94] = { BoneTreeIndex=97 }
+}
+CompressedCurveData = { FloatCurves[0]={} }
+Interpolation = Linear (0)
+AdditiveAnimType = AAT_None (0)
+RefPoseType = ABPT_None (0)
+RetargetSource = None
+RefPoseSeq = None
+RefFrameIndex = 0
+RetargetSourceAssetReferencePose[0] = {}
+bEnableRootMotion = true
+AuthoredSyncMarkers[0] = {}
+BakedPerBoneCustomAttributeData[0] = {}
+Notifies[0] = {}
+SequenceLength = 3.33333
+RateScale = 1
+RawCurveData = { FloatCurves[0]={} }
+Skeleton = Skeleton'/Game/Characters/Creatures/Legion/Mesh/Legion_Mesh_Skeleton.Legion_Mesh_Skeleton'
