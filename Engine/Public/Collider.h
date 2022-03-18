@@ -35,6 +35,26 @@ private:
 	explicit CCollider(const CCollider& rhs);
 	virtual ~CCollider() = default;
 
+
+	// =====================
+	// 충돌체 보완
+public:
+	class CGameObject* Get_Owner()
+	{
+		return m_pOwner;
+	}
+	void Set_Owner(class CGameObject* pOwner)
+	{
+		m_pOwner = pOwner;
+	}
+	UINT Get_ID() { return m_iID; }
+
+private:
+	static UINT g_iNextID;
+	UINT			m_iID; // 충돌체 고유한 ID 값
+	// =====================
+
+
 public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg) override;
@@ -47,11 +67,6 @@ public:
 	_bool Collision_AABB(class CCollider* pTargetCollider);
 	_bool Collision_OBB(class CCollider* pTargetCollider);
 
-	void Set_Owner(class CGameObject* pOwner)
-	{
-		m_pOwner = pOwner;
-	}
-
 private:
 	_matrix Remove_Rotation(_fmatrix TransformMatrix);
 	OBBDESC Compute_OBBDesc();
@@ -60,9 +75,7 @@ private:
 	BoundingBox*			m_pAABB = nullptr;
 	BoundingOrientedBox*	m_pOBB = nullptr;
 	BoundingSphere*			m_pSphere = nullptr;
-
 	_bool					m_isCollision = false;
-
 	COLLIDERDESC			m_ColliderDesc;
 
 private:

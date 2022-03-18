@@ -1,35 +1,122 @@
 #include "..\public\Collider_Manager.h"
+#include "GameObject.h"
 
 IMPLEMENT_SINGLETON(CCollider_Manager)
 
-CCollider_Manager::CCollider_Manager()
+
+void CCollider_Manager::Add_Collision(CGameObject* pGameObject)
 {
+	if (pGameObject->isColliderListEmpty())
+		return;
+
+	Safe_AddRef(pGameObject);
+	m_CollisionList.push_back(pGameObject);
 }
 
-void CCollider_Manager::Set_Transform(TRANSFORMTYPE eTransformType, _fmatrix TransformMatrix)
+void CCollider_Manager::Collision(float fTimeDelta)
 {
-	if (eTransformType == TS_VIEW)
+	if (m_CollisionList.empty())
+		return;
+
+	if (m_CollisionList.size() == 1)
 	{
-		XMStoreFloat4x4(&m_ViewMatrix, TransformMatrix);
-		
+		Safe_Release(m_CollisionList.front());
+		m_CollisionList.clear();
+		return;
 	}
-	else
+
+	// iter 2개를 이용하여 m_CollisionList에 등록된 GameObject를 빈틈없이 순회하자 
+	list<CGameObject*>::iterator iter;
+	list<CGameObject*>::iterator iterEnd = m_CollisionList.end();
+	--iterEnd;
+
+	for (iter = m_CollisionList.begin(); iter != iterEnd; ++iter)
 	{
-		XMStoreFloat4x4(&m_ProjMatrix, TransformMatrix);
-		
+		auto iter1 = iter; ++iter1;
+		auto iter1End = m_CollisionList.end();
+		for (; iter1 != iter1End; ++iter1)
+		{
+			Collision(*iter, *iter1, fTimeDelta);
+			Safe_Release(*iter1);
+		}
+		Safe_Release(*iter);
+	}
+
+	m_CollisionList.clear();
+}
+
+void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fTimeDelta)
+{
+	const list<CCollider*>* pSrcList = pSrc->Get_ColliderList();
+	if (pSrcList->empty())
+		return;
+
+	const list<CCollider*>* pDstList = pDst->Get_ColliderList();
+	if (pDstList->empty())
+		return;
+
+	// CGameObject가 가지고 있는 CCollider 끼리 충돌체크를 확인하다
+	for (auto& pSrc : *pSrcList)
+	{
+		for (auto& pDst : *pDstList)
+		{
+			COLLIDER_ID ID;
+			ID.Src_id = pSrc->Get_ID();
+			ID.Dst_id = pDst->Get_ID();
+			map<ULONGLONG, bool>::iterator iter = m_mapColInfo.find(ID.ID);
+			if (iter == m_mapColInfo.end()) // 처음 충돌한 상태 
+			{
+				m_mapColInfo.insert(make_pair(ID.ID, false));
+				iter = m_mapColInfo.find(ID.ID);
+			}
+
+			if (CheckCollision(pSrc, pDst, fTimeDelta)) // 둘이 충돌했다.
+			{
+				// 충돌목록에서 이전에 충돌된적이 없다면
+				// #1. 처음 막 충돌된 상태
+				if (iter->second == false)
+				{
+					// 서로 상대방을 충돌 목록으로 추가한다. 
+					iter->second = true;
+
+					// 오브젝트들의 콜라이더콜백함수를 호출하자
+					pSrc->Get_Owner()->OnCollision_Enter(pDst->Get_Owner(), fTimeDelta);
+					pDst->Get_Owner()->OnCollision_Enter(pSrc->Get_Owner(), fTimeDelta);
+
+				}
+				// #2. 기존 충돌된적이 있다면 계속 충돌 상태
+				else
+				{
+					// 오브젝트들의 콜라이더콜백함수를 호출하자
+					pSrc->Get_Owner()->OnCollision_Stay(pDst->Get_Owner(), fTimeDelta);
+					pDst->Get_Owner()->OnCollision_Stay(pSrc->Get_Owner(), fTimeDelta);
+				}
+			}
+			// 현재 충돌이 안된 상태에서, 이전에 충돌이 되고 있었다면, 
+			// #3. 이제 막 충돌에서 떨어진 상태
+			else if (iter->second == true)
+			{
+				// 서로 충돌이 안되므로 충돌목록에서 지워준다. 
+				iter->second = false;
+
+				// 오브젝트들의 콜라이더콜백함수를 호출하자
+				pSrc->Get_Owner()->OnCollision_Leave(pDst->Get_Owner(), fTimeDelta);
+				pDst->Get_Owner()->OnCollision_Leave(pSrc->Get_Owner(), fTimeDelta);
+			}
+		}
 	}
 }
 
-void CCollider_Manager::Tick()
+bool CCollider_Manager::CheckCollision(CCollider* pSrc, CCollider* pDst, float deltaTime)
 {
-	XMStoreFloat4x4(&m_ViewMatrixInverse, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_ViewMatrix)));
-
-	memcpy(&m_vCamPosition, &m_ViewMatrixInverse.m[3][0], sizeof(_float4));
-	memcpy(&m_vCamLook, &m_ViewMatrixInverse.m[2][0], sizeof(_float4));
+	return false;
 }
 
 void CCollider_Manager::Free()
 {
+	for (auto pGameObject : m_CollisionList)
+	{
+		Safe_Release(pGameObject);
+	}
+	m_CollisionList.clear();
 }
-
-

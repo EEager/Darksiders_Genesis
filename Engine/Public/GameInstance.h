@@ -13,6 +13,7 @@
 #include "Light_Manager.h"
 #include "Picking.h"
 #include "Target_Manager.h"
+#include "Collider_Manager.h"
 
 // DirectX Utils
 #include "DXString.h"
@@ -77,6 +78,8 @@ public: /* For.Light_Manager */
 	list<class CLight*>* Get_LightList_Addr();
 
 
+public: /* For.Collider_Manager */
+	void Add_Collision(class CGameObject* pGameObject);
 
 public: /* For.Level_Manager */
 	int Get_CurrentLevel() // Used in ImGUI
@@ -101,6 +104,7 @@ private:
 	CLight_Manager*				m_pLight_Manager = nullptr;
 	CTarget_Manager*			m_pTarget_Manager = nullptr;
 	CPicking*					m_pPicking = nullptr;
+	CCollider_Manager*			m_pCollider_Manager = nullptr;
 
 public:
 	static void Release_Engine();

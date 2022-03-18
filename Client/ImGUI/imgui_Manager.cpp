@@ -794,14 +794,11 @@ void CImguiManager::ShowNaviMeshControlWindow()
 		ColliderDesc.fRadius = .5f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 		m_pSphereCom = static_cast<CCollider*>(
-			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Collider"), &ColliderDesc)
+			CComponent_Manager::GetInstance()->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &ColliderDesc)
 			);
-		//Safe_AddRef(m_pSphereCom);
+		assert(m_pSphereCom);
 
 		/* For.Com_Navi */
-		//m_pNaviCom = static_cast<CNavigation*>(
-		//	CComponent_Manager::GetInstance()->Clone_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), nullptr)
-		//	);
 		auto pWar = m_pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"))->front();
 		m_pNaviCom = static_cast<CNavigation*>(pWar->Get_ComponentPtr(L"Com_Navi"));
 		Safe_AddRef(m_pNaviCom);

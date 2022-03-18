@@ -46,7 +46,12 @@ protected:
 	list <class CCollider*>				m_ColliderList;
 	typedef list <class CCollider*>		COLLIDERS;
 
-protected:
+public:
+	list <class CCollider*>* Get_ColliderList()
+	{
+		return &m_ColliderList;
+	}
+
 	_bool isColliderListEmpty() { return m_ColliderList.empty(); }
 	HRESULT Add_Collider(class CCollider* pCollider)
 	{
@@ -79,7 +84,12 @@ protected:
 		}
 		return 0;
 	}
-	// ======================================================
+
+public:
+	virtual void OnCollision_Enter(class CGameObject* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(class CGameObject* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(class CGameObject* pDst, float fTimeDelta);
+	// =======================================================================
 
 
 protected:

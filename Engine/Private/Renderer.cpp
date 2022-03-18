@@ -172,8 +172,8 @@ HRESULT CRenderer::Render_Priority_Terrain()
 
 HRESULT CRenderer::Render_NonAlpha()
 {
-	if (nullptr == m_pTarget_Manager)
-		return E_FAIL;
+	//if (nullptr == m_pTarget_Manager)
+	//	return E_FAIL;
 
 	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Deferred"))))
 	//	return E_FAIL;
@@ -331,7 +331,7 @@ CRenderer * CRenderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDevic
 
 CComponent * CRenderer::Clone(void * pArg)
 {
-	AddRef();
+	this->AddRef();
 
 	return this;
 }

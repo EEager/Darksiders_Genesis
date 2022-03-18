@@ -14,7 +14,9 @@ CGameInstance::CGameInstance()
 	, m_pLight_Manager(CLight_Manager::GetInstance())
 	, m_pPicking(CPicking::GetInstance())
 	, m_pTarget_Manager(CTarget_Manager::GetInstance())
+	, m_pCollider_Manager(CCollider_Manager::GetInstance())
 {
+	Safe_AddRef(m_pCollider_Manager);
 	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pPipeLine);
@@ -24,7 +26,6 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pObject_Manager);
 	Safe_AddRef(m_pTimer_Manager);
 	Safe_AddRef(m_pGraphic_Device);
-
 }
 
 HRESULT CGameInstance::Initialize_Engine(HINSTANCE hInst, _uint iNumLevels, CGraphic_Device::GRAPHICDEVDESC GraphicDesc, ID3D11Device ** ppDevice, ID3D11DeviceContext ** ppDeviceContext)
@@ -70,6 +71,8 @@ _int CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	if (0 > (iProgress = m_pObject_Manager->LateTick(fTimeDelta)))
 		return -1;
+
+	m_pCollider_Manager->Collision(fTimeDelta);
 
 	if (0 > (iProgress = m_pLevel_Manager->Tick(fTimeDelta)))
 		return -1;
@@ -324,6 +327,14 @@ list<class CLight*>* CGameInstance::Get_LightList_Addr()
 	return m_pLight_Manager->Get_LightList_Addr();
 }
 
+void CGameInstance::Add_Collision(CGameObject* pGameObject)
+{
+	if (m_pCollider_Manager == nullptr)
+		return;
+
+	m_pCollider_Manager->Add_Collision(pGameObject);
+}
+
 HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel * pNextLevel)
 {
 	if (nullptr == m_pLevel_Manager)
@@ -364,8 +375,11 @@ void CGameInstance::Release_Engine()
 	if (0 != CLight_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CLight_Manager ");
 
+	if (0 != CCollider_Manager::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CCollider_Manager");
+
 	if (0 != CTarget_Manager::GetInstance()->DestroyInstance())
-		MSG_BOX("Failed to Release CTarget_Manager ");
+		MSG_BOX("Failed to Release CTarget_Manager "); 
 
 	if (0 != CInput_Device::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CInput_Device ");
@@ -378,6 +392,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pCollider_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pPicking);
 	Safe_Release(m_pLight_Manager);
@@ -388,6 +403,5 @@ void CGameInstance::Free()
 	Safe_Release(m_pObject_Manager);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pGraphic_Device);
-	
 }
 

@@ -28,6 +28,11 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+public:
+	virtual void OnCollision_Enter(class CGameObject* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(class CGameObject* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(class CGameObject* pDst, float fTimeDelta);
+
 private:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;

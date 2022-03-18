@@ -7,39 +7,33 @@ BEGIN(Engine)
 class ENGINE_DLL CCollider_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CCollider_Manager)
+
 public:
-	enum TRANSFORMTYPE { TS_VIEW, TS_PROJ, TS_END };
+	union COLLIDER_ID
+	{
+		struct {
+			UINT Src_id;
+			UINT Dst_id;
+		};
+		ULONGLONG ID;
+	};
+
 private:
-	CCollider_Manager();
+	CCollider_Manager() = default;
 	virtual ~CCollider_Manager() = default;
-public:
-	_matrix Get_Transform(TRANSFORMTYPE eTransformType) {
-		return eTransformType == TS_VIEW ? XMLoadFloat4x4(&m_ViewMatrix) : XMLoadFloat4x4(&m_ProjMatrix);
-	}
-
-	_vector Get_CamPosition() {
-		return XMLoadFloat4(&m_vCamPosition);
-	}
-	_vector Get_CamLook() {
-		return XMLoadFloat4(&m_vCamLook);
-	}
-
 
 public:
-	void Set_Transform(TRANSFORMTYPE eTransformType, _fmatrix TransformMatrix);
-
-public:
-	void Tick();
-
+	void Add_Collision(class CGameObject* pGameObject);
+	void Collision(float fTimeDelta);
+	void Collision(class CGameObject* pSrc, class CGameObject* pDst, float fTimeDelta);
+	bool CheckCollision(class CCollider * pSrc, class CCollider* pDst, float deltaTime);
+	bool CheckCollisionList(class CCollider* pSrc, class CCollider* pDst);
+	
 
 private:
-	_float4x4					m_ViewMatrix;
-	_float4x4					m_ViewMatrixInverse;
+	list<class CGameObject*> m_CollisionList;
+	map <ULONGLONG, bool> m_mapColInfo;
 
-	_float4x4					m_ProjMatrix;
-
-	_float4						m_vCamPosition;
-	_float4						m_vCamLook;
 
 public:
 	virtual void Free() override;

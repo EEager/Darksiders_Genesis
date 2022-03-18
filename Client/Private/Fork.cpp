@@ -60,10 +60,11 @@ _int CFork::LateTick(_float fTimeDelta)
 	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		goto _EXIT;
 
+	// Collider 
+	pGameInstance->Add_Collision(this);
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
@@ -97,6 +98,19 @@ HRESULT CFork::Render()
 
 
 	return S_OK;
+}
+
+void CFork::OnCollision_Enter(CGameObject* pDst, float fTimeDelta)
+{
+	
+}
+
+void CFork::OnCollision_Stay(CGameObject* pDst, float fTimeDelta)
+{
+}
+
+void CFork::OnCollision_Leave(CGameObject* pDst, float fTimeDelta)
+{
 }
 
 HRESULT CFork::SetUp_Component()

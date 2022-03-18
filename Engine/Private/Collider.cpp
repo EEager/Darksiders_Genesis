@@ -1,16 +1,21 @@
 #include "..\Public\Collider.h"
 #include "PipeLine.h"
 
+
+UINT CCollider::g_iNextID = 0;
 CCollider::CCollider(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
+	, m_iID(g_iNextID++)
 {
 }
+
 
 CCollider::CCollider(const CCollider& rhs)
 	: CComponent(rhs)
 	, m_pInputLayout(rhs.m_pInputLayout)
 	, m_pEffect(rhs.m_pEffect)
 	, m_pBatch(rhs.m_pBatch)
+	, m_iID(g_iNextID++)
 {
 	Safe_AddRef(m_pInputLayout);
 }

@@ -79,6 +79,18 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const _tchar * pPrototypeT
 	return S_OK;
 }
 
+void CGameObject::OnCollision_Enter(CGameObject* pDst, float fTimeDelta)
+{
+}
+
+void CGameObject::OnCollision_Stay(CGameObject* pDst, float fTimeDelta)
+{
+}
+
+void CGameObject::OnCollision_Leave(CGameObject* pDst, float fTimeDelta)
+{
+}
+
 CComponent * CGameObject::Find_Component(const _tchar * pComponentTag)
 {
 	auto	iter = find_if(m_Components.begin(), m_Components.end(), CTagFinder(pComponentTag));
