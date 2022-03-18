@@ -10,6 +10,9 @@ class ENGINE_DLL CCollider final : public CComponent
 public:
 	enum COL_TYPE { COL_TYPE_AABB, COL_TYPE_OBB, COL_TYPE_SPHERE, COL_TYPE_END };
 
+	// COLLISION_STATE
+	enum CS_TYPE { CS_ENTER, CS_STAY, CS_LEAVE, CS_END };
+
 public:
 	typedef struct ColliderDesc
 	{
@@ -44,9 +47,13 @@ public:
 	_bool Collision_AABB(class CCollider* pTargetCollider);
 	_bool Collision_OBB(class CCollider* pTargetCollider);
 
+	void Set_Owner(class CGameObject* pOwner)
+	{
+		m_pOwner = pOwner;
+	}
+
 private:
 	_matrix Remove_Rotation(_fmatrix TransformMatrix);
-
 	OBBDESC Compute_OBBDesc();
 
 private:
@@ -57,6 +64,9 @@ private:
 	_bool					m_isCollision = false;
 
 	COLLIDERDESC			m_ColliderDesc;
+
+private:
+	class CGameObject*		m_pOwner = nullptr;
 
 private:
 	BasicEffect*			m_pEffect = nullptr;

@@ -98,5 +98,6 @@ void CGameObject::Free()
 
 	m_Components.clear();
 
+	Release_Collider();
 
 }

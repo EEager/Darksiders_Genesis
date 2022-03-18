@@ -67,8 +67,8 @@ _int CPlayer::Tick(_float fTimeDelta)
 
 	m_pModelCom->Update_Animation(fTimeDelta);
 
-	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
-	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	//m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	//m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();
 }
@@ -110,9 +110,9 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	//m_pNaviCom->Render();
-	m_pAABBCom->Render();
-	m_pOBBCom->Render();
+	////m_pNaviCom->Render();
+	//m_pAABBCom->Render();
+	//m_pOBBCom->Render();
 #endif
 
 	
@@ -144,22 +144,22 @@ HRESULT CPlayer::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
 		return E_FAIL;
 
-	/* For.Com_AABB */
-	CCollider::COLLIDERDESC		ColliderDesc;
-	ColliderDesc.vPivot = _float3(0.f, 0.5f, 0.f);
-	ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
-	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
-		return E_FAIL;
+	///* For.Com_AABB */
+	//CCollider::COLLIDERDESC		ColliderDesc;
+	//ColliderDesc.vPivot = _float3(0.f, 0.5f, 0.f);
+	//ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
+	//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+	//	return E_FAIL;
 
-	/* For.Com_OBB */
-	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
-	ColliderDesc.vSize = _float3(0.8f, 1.5f, 0.8f);
-	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-	//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
-	//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
-		return E_FAIL;
+	///* For.Com_OBB */
+	//ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
+	//ColliderDesc.vSize = _float3(0.8f, 1.5f, 0.8f);
+	//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
+	////ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
+	////ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
+	//	return E_FAIL;
 
 	
 
@@ -216,8 +216,8 @@ void CPlayer::Free()
 
 	__super::Free();
 
-	Safe_Release(m_pOBBCom);
-	Safe_Release(m_pAABBCom);
+	//Safe_Release(m_pOBBCom);
+	//Safe_Release(m_pAABBCom);
 	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);

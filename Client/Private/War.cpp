@@ -71,9 +71,9 @@ _int CWar::Tick(_float fTimeDelta)
 		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom);
 	}
 
-	// OBB, AABB
-	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
-	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	//// OBB, AABB
+	//m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	//m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
 
 	// 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
 	if (true == m_bJump) 
@@ -132,8 +132,8 @@ HRESULT CWar::Render()
 #ifdef _DEBUG
 	if (m_bshow_naviMesh_window)
 		m_pNaviCom->Render();
-	m_pAABBCom->Render();
-	m_pOBBCom->Render();
+	//m_pAABBCom->Render();
+	//m_pOBBCom->Render();
 	// Restore default states
 	m_pRendererCom->ClearRenderStates();
 #endif // _DEBUG
@@ -370,23 +370,23 @@ HRESULT CWar::SetUp_Component()
 
 	// Collider
 	{
-		/* For.Com_AABB */
-		CCollider::COLLIDERDESC		ColliderDesc;
-		ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
-		ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
-		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+		///* For.Com_AABB */
+		//CCollider::COLLIDERDESC		ColliderDesc;
+		//ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
+		//ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
+		//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
-			return E_FAIL;
+		//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
+		//	return E_FAIL;
 
-		/* For.Com_OBB */
-		ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
-		ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
-		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-		//ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
-		//ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
-			return E_FAIL;
+		///* For.Com_OBB */
+		//ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
+		//ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
+		//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
+		////ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
+		////ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
+		//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
+		//	return E_FAIL;
 	}
 
 
@@ -597,6 +597,8 @@ HRESULT CWar::War_Render()
 
 	// Restore default states
 	m_pRendererCom->ClearRenderStates();
+
+	return S_OK;
 }
 
 
@@ -634,8 +636,8 @@ void CWar::Free()
 
 
 	Safe_Release(m_pNaviCom);
-	Safe_Release(m_pOBBCom);
-	Safe_Release(m_pAABBCom);
+	//Safe_Release(m_pOBBCom);
+	//Safe_Release(m_pAABBCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pStateMachineCom);

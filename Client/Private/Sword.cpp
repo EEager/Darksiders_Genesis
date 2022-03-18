@@ -35,14 +35,14 @@ HRESULT CSword::NativeConstruct(void * pArg)
 
 _int CSword::Tick(_float fTimeDelta)
 {
-	_matrix		OffsetMatrix = XMLoadFloat4x4(&m_SwordDesc.OffsetMatrix);
-	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_SwordDesc.pBoneMatrix);
-	_matrix		PivotMatrix = XMLoadFloat4x4(&m_SwordDesc.PivotMatrix);
-	_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_SwordDesc.pTargetWorldMatrix);
+	//_matrix		OffsetMatrix = XMLoadFloat4x4(&m_SwordDesc.OffsetMatrix);
+	//_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_SwordDesc.pBoneMatrix);
+	//_matrix		PivotMatrix = XMLoadFloat4x4(&m_SwordDesc.PivotMatrix);
+	//_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_SwordDesc.pTargetWorldMatrix);
 
-	_matrix		TransformationMatrix = m_pTransformCom->Get_WorldMatrix() * (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) * TargetWorldMatrix;
-			
-	m_pSphereCom->Update(TransformationMatrix);
+	//_matrix		TransformationMatrix = m_pTransformCom->Get_WorldMatrix() * (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) * TargetWorldMatrix;
+	//		
+	//m_pSphereCom->Update(TransformationMatrix);
 
 	return _int();
 }
@@ -68,7 +68,7 @@ HRESULT CSword::Render()
 		return E_FAIL;	
 
 #ifdef _DEBUG
-	m_pSphereCom->Render();
+	//m_pSphereCom->Render();
 #endif // _DEBUG
 	
 
@@ -86,14 +86,14 @@ HRESULT CSword::SetUp_Component()
 		return E_FAIL;
 
 	/* For.Com_Sphere */
-	CCollider::COLLIDERDESC		ColliderDesc;
-	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	//CCollider::COLLIDERDESC		ColliderDesc;
+	//ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 
-	ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
-	ColliderDesc.fRadius = 0.1f;
-	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Sphere"), (CComponent**)&m_pSphereCom, &ColliderDesc)))
-		return E_FAIL;
+	//ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
+	//ColliderDesc.fRadius = 0.1f;
+	//ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Sphere"), (CComponent**)&m_pSphereCom, &ColliderDesc)))
+	//	return E_FAIL;
 	
 
 	return S_OK;
@@ -167,7 +167,7 @@ void CSword::Free()
 
 	__super::Free();
 
-	Safe_Release(m_pSphereCom);
+	//Safe_Release(m_pSphereCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 }

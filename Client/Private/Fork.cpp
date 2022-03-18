@@ -41,8 +41,10 @@ HRESULT CFork::NativeConstruct(void * pArg)
 
 _int CFork::Tick(_float fTimeDelta)
 {
-	m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
-	m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	if (__super::Tick(fTimeDelta) < 0)
+		return -1;
+
+	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();
 }
@@ -70,6 +72,7 @@ _EXIT:
 
 HRESULT CFork::Render()
 {
+
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 	
@@ -83,12 +86,10 @@ HRESULT CFork::Render()
 		m_pModelCom->Render(i, 0);
 	}
 
+
 #ifdef _DEBUG
-	m_pAABBCom->Render();
-	m_pOBBCom->Render();
+	__super::Render_Colliders();
 #endif // _DEBUG
-
-
 
 	// restore default states, as the SkyFX changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
@@ -116,24 +117,25 @@ HRESULT CFork::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)m_pNaviCom.GetAddressOf())))
 		return E_FAIL;
 
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	/* For.Com_AABB */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = _float3(0.f, 2.5f, 0.f);
 	ColliderDesc.vSize = _float3(2.f, 5.0f, 5.0f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
-		return E_FAIL;
+	m_pAABBCom = (CCollider*)pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &ColliderDesc);
+	__super::Add_Collider(m_pAABBCom);
 
 
 	/* For.Com_OBB */
 	ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
 	ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-	/*ColliderDesc.vPivot = _float3(0.f, 3.0f, 0.f);
-	ColliderDesc.vSize = _float3(1.8f, 6.0f, 4.8f);*/
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
-		return E_FAIL;
-	
+	m_pOBBCom = (CCollider*)pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &ColliderDesc);
+	__super::Add_Collider(m_pOBBCom);
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
@@ -185,7 +187,6 @@ CGameObject * CFork::Clone(void* pArg)
 
 void CFork::Free()
 {
-
 	__super::Free();
 
 	Safe_Release(m_pOBBCom);

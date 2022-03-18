@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Collider.h"
 
 BEGIN(Engine)
 
@@ -28,12 +29,58 @@ public:
 
 public:
 	HRESULT Add_Component(_uint iLevelIndex, const _tchar* pPrototypeTag, const _tchar* pComponentTag, class CComponent** ppOut, void* pArg = nullptr);
+
 protected:
 	ID3D11Device*				m_pDevice = nullptr;
 	ID3D11DeviceContext*		m_pDeviceContext = nullptr;
 
 	unordered_map<const _tchar*, class CComponent*>				m_Components;
 	typedef unordered_map<const _tchar*, class CComponent*>		COMPONENTS;
+
+
+	
+	// ======================================================
+	// Collider  
+protected:
+	// Collider Component List를 가지도록하자
+	list <class CCollider*>				m_ColliderList;
+	typedef list <class CCollider*>		COLLIDERS;
+
+protected:
+	_bool isColliderListEmpty() { return m_ColliderList.empty(); }
+	HRESULT Add_Collider(class CCollider* pCollider)
+	{
+		m_ColliderList.push_back(pCollider);
+		return S_OK;
+	}
+	void Release_Collider()
+	{
+		for (auto pCollider : m_ColliderList)
+		{
+			Safe_Release(pCollider);
+		}
+		m_ColliderList.clear();
+	}
+
+	_int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity())
+	{
+		for (auto pCollider : m_ColliderList)
+		{
+			pCollider->Update(wolrdMatrix);
+		}
+		return 0;
+	}
+
+	_int Render_Colliders()
+	{
+		for (auto pCollider : m_ColliderList)
+		{
+			pCollider->Render();
+		}
+		return 0;
+	}
+	// ======================================================
+
 
 protected:
 	_float					m_fCamDistance = 0.f;

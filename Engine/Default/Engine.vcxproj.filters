@@ -315,6 +315,9 @@
     <ClInclude Include="..\Public\VIBuffer_Sphere.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Sphere</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Collider_Manager.h">
+      <Filter>01.Utility\04.Component\Components\Collider\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -457,6 +460,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Sphere.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Collider_Manager.cpp">
+      <Filter>01.Utility\04.Component\Components\Collider\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

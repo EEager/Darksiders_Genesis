@@ -8,11 +8,28 @@ CCollider::CCollider(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 
 CCollider::CCollider(const CCollider& rhs)
 	: CComponent(rhs)
+	, m_pInputLayout(rhs.m_pInputLayout)
+	, m_pEffect(rhs.m_pEffect)
+	, m_pBatch(rhs.m_pBatch)
 {
+	Safe_AddRef(m_pInputLayout);
 }
 
 HRESULT CCollider::NativeConstruct_Prototype()
 {
+	m_pEffect = new BasicEffect(m_pDevice);
+	m_pEffect->SetVertexColorEnabled(true);
+
+	const void* pShaderByteCodes = nullptr;
+	size_t	iShaderByteCodeLength = 0;
+
+	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iShaderByteCodeLength);
+
+	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pDeviceContext);
+
+	if (FAILED(m_pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iShaderByteCodeLength, &m_pInputLayout)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -22,22 +39,6 @@ HRESULT CCollider::NativeConstruct(void* pArg)
 
 	if (nullptr != pArg)
 		memcpy(&m_ColliderDesc, pArg, sizeof(COLLIDERDESC));
-
-	{
-		m_pEffect = new BasicEffect(m_pDevice);
-		m_pEffect->SetVertexColorEnabled(true);
-
-		const void* pShaderByteCodes = nullptr;
-		size_t	iShaderByteCodeLength = 0;
-
-		m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iShaderByteCodeLength);
-
-		m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pDeviceContext);
-
-		if (FAILED(m_pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iShaderByteCodeLength, &m_pInputLayout)))
-			return E_FAIL;
-	}
-	
 
 	switch (m_ColliderDesc.eColType)
 	{
@@ -264,6 +265,9 @@ void CCollider::Free()
 	Safe_Delete(m_pOBB);
 	Safe_Delete(m_pSphere);
 
-	Safe_Delete(m_pEffect);
-	Safe_Delete(m_pBatch);
+	if (m_isCloned == false)
+	{
+		Safe_Delete(m_pEffect);
+		Safe_Delete(m_pBatch);
+	}
 }
