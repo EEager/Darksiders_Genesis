@@ -48,6 +48,9 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	// 처음 시작할때 위치 잡아주자
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
 
+	if (SetUp_BoneMatrix())
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -71,16 +74,16 @@ _int CWar::Tick(_float fTimeDelta)
 		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom);
 	}
 
-	//// OBB, AABB
-	//m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
-	//m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
-
 	// 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
-	if (true == m_bJump) 
+	if (true == m_bJump)
 	{
 		// 점프 상태이면, 잠시 위로 올라갔다가 중력적용받아 떨어진다
 		m_pTransformCom->JumpY(fTimeDelta);
 	}
+
+	// Collider Update
+	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
+
 
 	return _int();
 }
@@ -108,11 +111,13 @@ _int CWar::LateTick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	}
 
-	//
 	// Renderer
-	// 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
+
+
+	// Collider 
+	pGameInstance->Add_Collision(this);
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
@@ -128,12 +133,12 @@ HRESULT CWar::Render()
 {
 	War_Render();
 
-	// Collider Debug Rendering
 #ifdef _DEBUG
 	if (m_bshow_naviMesh_window)
 		m_pNaviCom->Render();
-	//m_pAABBCom->Render();
-	//m_pOBBCom->Render();
+
+	__super::Render_Colliders();
+
 	// Restore default states
 	m_pRendererCom->ClearRenderStates();
 #endif // _DEBUG
@@ -153,14 +158,12 @@ void CWar::Set_Jump(_bool warJump, _bool clearJump)
 		m_pTransformCom->ClearJumpVar();
 }
 
-
 _float CWar::Get_Speed()
 {
 	assert(m_pTransformCom);
 	CTransform::TRANSFORMDESC* pDesc = m_pTransformCom->Get_TransformDesc_Ptr();
 	return pDesc->fSpeedPerSec;
 }
-
 
 void CWar::Set_Speed(const _float& fSpeed)
 {
@@ -300,6 +303,35 @@ void CWar::War_Key(_float fTimeDelta)
 
 }
 
+_int CWar::Update_Colliders(_matrix wolrdMatrix)
+{
+	for (auto pCollider : m_ColliderList)
+	{
+		if (pCollider->Get_ColliderTag() == L"WarWeapon")
+		{
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_WarSwordDesc.OffsetMatrix); // 뼈->정점
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_WarSwordDesc.pBoneMatrix); // Root->뼈 
+
+			_matrix		PivotMatrix; // 정점들 피봇
+			if (m_War_On_Ruin_State)
+				PivotMatrix = Get_WarRuinPivot();
+			else
+				PivotMatrix = XMLoadFloat4x4(&m_WarSwordDesc.PivotMatrix); 
+
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_WarSwordDesc.pTargetWorldMatrix); // War 월행
+
+			_matrix		TransformationMatrix = 
+				(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) * 
+				TargetWorldMatrix; 
+			pCollider->Update(TransformationMatrix);
+		}
+		else
+		{
+			pCollider->Update(wolrdMatrix);
+		}
+	}
+	return 0;
+}
 
 HRESULT CWar::SetUp_Component()
 {
@@ -370,23 +402,29 @@ HRESULT CWar::SetUp_Component()
 
 	// Collider
 	{
-		///* For.Com_AABB */
-		//CCollider::COLLIDERDESC		ColliderDesc;
-		//ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
-		//ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
-		//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-		//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
-		//	return E_FAIL;
+		/* For.Com_AABB */
+		CCollider::COLLIDERDESC		ColliderDesc;
+		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+		ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
+		ColliderDesc.vSize = _float3(1.4f, 2.0f, 1.4f);
+		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+		__super::Add_Collider(&ColliderDesc, L"WarBody1");
 
-		///* For.Com_OBB */
-		//ColliderDesc.vPivot = _float3(0.f, 1.2f, 0.f);
-		//ColliderDesc.vSize = _float3(1.4f, 2.4f, 1.4f);
-		//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-		////ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Center();
-		////ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom[MODELTYPE_WAR])->Get_Extents();
-		//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
-		//	return E_FAIL;
+		/* For.Com_OBB */
+		ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
+		ColliderDesc.vSize = _float3(1.4f, 2.0f, 1.4f);
+		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
+		__super::Add_Collider(&ColliderDesc, L"WarBody2");
+
+		/* For.WarWeapon */
+		ColliderDesc.vPivot = _float3(0.f, 0.f, 0.9f); //칼 뼈
+		ColliderDesc.vSize = _float3(0.2f, 0.5f, 2.3f); //x:칼폭,y:칼너비, z:칼높이
+		ColliderDesc.eColType = CCollider::COL_TYPE_OBB;
+		__super::Add_Collider(&ColliderDesc, L"WarWeapon");
+
+		RELEASE_INSTANCE(CGameInstance);
 	}
 
 
@@ -397,7 +435,17 @@ HRESULT CWar::SetUp_Component()
 	}
 
 
+	return S_OK;
+}
 
+
+HRESULT CWar::SetUp_BoneMatrix()
+{
+	ZeroMemory(&m_WarSwordDesc, sizeof(SWORDDESC));
+	m_WarSwordDesc.pBoneMatrix = m_pModelCom[MODELTYPE_WAR]->Get_CombinedMatrixPtr("Bone_War_Weapon_Sword"); // War root -> 행렬
+	m_WarSwordDesc.OffsetMatrix = m_pModelCom[MODELTYPE_WAR]->Get_OffsetMatrix("Bone_War_Weapon_Sword"); // War 뼈->정점
+	m_WarSwordDesc.PivotMatrix = m_pModelCom[MODELTYPE_WAR]->Get_PivotMatrix_Bones(); // War 피봇값 
+	m_WarSwordDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr(); // War 월행
 
 	return S_OK;
 }
@@ -505,8 +553,6 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 	return S_OK;
 }
-
-
 
 
 HRESULT CWar::War_Render()
@@ -636,8 +682,8 @@ void CWar::Free()
 
 
 	Safe_Release(m_pNaviCom);
-	//Safe_Release(m_pOBBCom);
-	//Safe_Release(m_pAABBCom);
+	Safe_Release(m_pOBBCom);
+	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pStateMachineCom);

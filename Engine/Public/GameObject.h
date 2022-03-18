@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Collider.h"
+#include "GameInstance.h"
 
 BEGIN(Engine)
 
@@ -53,12 +54,18 @@ public:
 	}
 
 	_bool isColliderListEmpty() { return m_ColliderList.empty(); }
-	HRESULT Add_Collider(class CCollider* pCollider)
+	HRESULT Add_Collider(CCollider::COLLIDERDESC* ColliderDesc, const _tchar* pColliderTag, _uint iLevel = 0, const _tchar* pColliderPrototypeTag = L"Prototype_Component_Collider")
 	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		CCollider* pCollider = static_cast<CCollider*>(pGameInstance->Clone_Component(iLevel, pColliderPrototypeTag, ColliderDesc));
+		pCollider->Set_Owner(this);
+		pCollider->Set_ColliderTag(pColliderTag);
 		m_ColliderList.push_back(pCollider);
+		RELEASE_INSTANCE(CGameInstance);
 		return S_OK;
 	}
-	void Release_Collider()
+
+	virtual void Release_Collider()
 	{
 		for (auto pCollider : m_ColliderList)
 		{
@@ -67,7 +74,7 @@ public:
 		m_ColliderList.clear();
 	}
 
-	_int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity())
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity())
 	{
 		for (auto pCollider : m_ColliderList)
 		{
@@ -76,7 +83,7 @@ public:
 		return 0;
 	}
 
-	_int Render_Colliders()
+	virtual _int Render_Colliders()
 	{
 		for (auto pCollider : m_ColliderList)
 		{

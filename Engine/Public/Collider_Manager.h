@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Base.h"
+#include "Collider.h"
+
 
 BEGIN(Engine)
 
@@ -28,6 +30,10 @@ public:
 	void Collision(class CGameObject* pSrc, class CGameObject* pDst, float fTimeDelta);
 	bool CheckCollision(class CCollider * pSrc, class CCollider* pDst, float deltaTime);
 	bool CheckCollisionList(class CCollider* pSrc, class CCollider* pDst);
+
+	bool CollisionAABBToAABB(CCollider* pSrc, CCollider* pDst);
+	bool CollisionAABBToOBB(CCollider* pSrc, CCollider* pDst);
+	bool CollisionAABBToSPHERE(CCollider* pSrc, CCollider* pDst);
 	
 
 private:

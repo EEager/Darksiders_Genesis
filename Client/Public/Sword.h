@@ -15,7 +15,7 @@ BEGIN(Client)
 
 class CSword final : public CGameObject
 {
-public:
+private:
 	typedef struct tagSwordDesc
 	{
 		_float4x4		OffsetMatrix;

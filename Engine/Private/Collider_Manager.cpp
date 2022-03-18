@@ -64,7 +64,7 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 			ID.Src_id = pSrc->Get_ID();
 			ID.Dst_id = pDst->Get_ID();
 			map<ULONGLONG, bool>::iterator iter = m_mapColInfo.find(ID.ID);
-			if (iter == m_mapColInfo.end()) // 처음 충돌한 상태 
+			if (iter == m_mapColInfo.end()) // 처음 등록된 상태
 			{
 				m_mapColInfo.insert(make_pair(ID.ID, false));
 				iter = m_mapColInfo.find(ID.ID);
@@ -80,16 +80,16 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 					iter->second = true;
 
 					// 오브젝트들의 콜라이더콜백함수를 호출하자
-					pSrc->Get_Owner()->OnCollision_Enter(pDst->Get_Owner(), fTimeDelta);
-					pDst->Get_Owner()->OnCollision_Enter(pSrc->Get_Owner(), fTimeDelta);
+					pSrc->OnCollision_Enter(pDst, fTimeDelta);
+					pDst->OnCollision_Enter(pSrc, fTimeDelta);
 
 				}
 				// #2. 기존 충돌된적이 있다면 계속 충돌 상태
 				else
 				{
 					// 오브젝트들의 콜라이더콜백함수를 호출하자
-					pSrc->Get_Owner()->OnCollision_Stay(pDst->Get_Owner(), fTimeDelta);
-					pDst->Get_Owner()->OnCollision_Stay(pSrc->Get_Owner(), fTimeDelta);
+					pSrc->OnCollision_Stay(pDst, fTimeDelta);
+					pDst->OnCollision_Stay(pSrc, fTimeDelta);
 				}
 			}
 			// 현재 충돌이 안된 상태에서, 이전에 충돌이 되고 있었다면, 
@@ -100,8 +100,8 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 				iter->second = false;
 
 				// 오브젝트들의 콜라이더콜백함수를 호출하자
-				pSrc->Get_Owner()->OnCollision_Leave(pDst->Get_Owner(), fTimeDelta);
-				pDst->Get_Owner()->OnCollision_Leave(pSrc->Get_Owner(), fTimeDelta);
+				pSrc->OnCollision_Leave(pDst, fTimeDelta);
+				pDst->OnCollision_Leave(pSrc, fTimeDelta);
 			}
 		}
 	}
@@ -109,8 +109,78 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 
 bool CCollider_Manager::CheckCollision(CCollider* pSrc, CCollider* pDst, float deltaTime)
 {
+	bool bCollision = false;
+
+	if (pSrc->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
+	{
+		if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
+		{
+			bCollision = CollisionAABBToAABB(pSrc, pDst);
+		}
+
+		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_OBB)
+		{
+			bCollision = CollisionAABBToOBB(pSrc, pDst);
+		}
+
+		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_SPHERE)
+		{
+			bCollision = CollisionAABBToSPHERE(pSrc, pDst);
+		}
+	}
+
+	//else if (pSrc->Get_ColliderType() == COLLIDER_TYPE::CT_POINT)
+	//{
+	//	if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_RECT)
+	//	{
+	//		bCollision = CollisionRectToPoint(pDst, pSrc); //역
+	//	}
+	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_POINT) // 포인트 투 포인트가 말이되냐고 ㅋㅋ 
+	//	{
+	//		bCollision = false;
+	//	}
+	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
+	//	{
+	//		bCollision = CollisionSphereToPoint(pDst, pSrc); //역
+	//	}
+	//}
+
+	//else if (pSrc->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
+	//{
+	//	if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_RECT)
+	//	{
+	//		bCollision = CollisionRectToSphere(pDst, pSrc); //역
+	//	}
+	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_POINT) // 포인트 투 포인트가 말이되냐고 ㅋㅋ 
+	//	{
+	//		bCollision = CollisionSphereToPoint(pSrc, pDst);
+	//	}
+	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
+	//	{
+	//		bCollision = CollisionSphereToShpere(pSrc, pDst);
+	//	}
+	//}
+
+	return bCollision;
+}
+
+
+bool CCollider_Manager::CollisionAABBToAABB(CCollider* pSrc, CCollider* pDst)
+{
+	return pSrc->Collision_AABB(pDst);
+}
+
+bool CCollider_Manager::CollisionAABBToOBB(CCollider* pSrc, CCollider* pDst)
+{
 	return false;
 }
+
+bool CCollider_Manager::CollisionAABBToSPHERE(CCollider* pSrc, CCollider* pDst)
+{
+	return false;
+}
+
+
 
 void CCollider_Manager::Free()
 {

@@ -16,6 +16,14 @@ BEGIN(Client)
 
 class CWar final : public CGameObject
 {
+private:
+	typedef struct tagSwordDesc
+	{
+		_float4x4		OffsetMatrix;
+		_float4x4*		pBoneMatrix;
+		_float4x4		PivotMatrix;
+		_float4x4*		pTargetWorldMatrix;
+	}SWORDDESC;
 public:
 	enum TEXTURETYPE { TYPE_DIFFUSE, TYPE_FILTER, TYPE_BRUSH, TYPE_END };
 	enum MODELTYPE { MODELTYPE_WAR, MODELTYPE_GAUNTLET, MODELTYPE_WEAPON, MODELTYPE_END };
@@ -37,14 +45,15 @@ public:
 	_vector Get_War_Pos(); // used in camera_fly
 
 private:
-	CRenderer* m_pRendererCom = nullptr;
-	CTransform* m_pTransformCom = nullptr;
-	CStateMachine* m_pStateMachineCom = nullptr;
-	CCollider* m_pAABBCom = nullptr;
-	CCollider* m_pOBBCom = nullptr;
-	CModel* m_pModelCom[MODELTYPE_END] = { 0, };
-	CModel* m_pModelCom_Ruin = nullptr;
-	CNavigation* m_pNaviCom = nullptr;
+	CRenderer*		m_pRendererCom = nullptr;
+	CTransform*		m_pTransformCom = nullptr;
+	CStateMachine*	m_pStateMachineCom = nullptr;
+	CCollider*		m_pAABBCom = nullptr;
+	CCollider*		m_pOBBCom = nullptr;
+	CModel*			m_pModelCom[MODELTYPE_END] = { 0, };
+	CModel*			m_pModelCom_Ruin = nullptr;
+	CNavigation*	m_pNaviCom = nullptr;
+	SWORDDESC		m_WarSwordDesc;
 
 private:
 	ID3D11ShaderResourceView* pSRV = nullptr;
@@ -93,8 +102,14 @@ private:
 public:
 	void War_Key(_float fTimeDelta);
 
+
+	// ----------------------------------------------------------------
+	// Collider
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity()) override;
+
 private:
 	HRESULT SetUp_Component();
+	HRESULT SetUp_BoneMatrix();
 	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);
 	HRESULT SetUp_Ruin_ConstantTable(bool drawOutLine);
 

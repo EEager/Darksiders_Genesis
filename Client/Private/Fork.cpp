@@ -133,23 +133,18 @@ HRESULT CFork::SetUp_Component()
 
 
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	/* For.Com_AABB */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = _float3(0.f, 2.5f, 0.f);
 	ColliderDesc.vSize = _float3(2.f, 5.0f, 5.0f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	m_pAABBCom = (CCollider*)pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &ColliderDesc);
-	__super::Add_Collider(m_pAABBCom);
-
+	__super::Add_Collider(&ColliderDesc, L"Fork1");
 
 	/* For.Com_OBB */
 	ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
 	ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-	m_pOBBCom = (CCollider*)pGameInstance->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), &ColliderDesc);
-	__super::Add_Collider(m_pOBBCom);
-	RELEASE_INSTANCE(CGameInstance);
+	__super::Add_Collider(&ColliderDesc, L"Fork2");
 
 	return S_OK;
 }
@@ -203,8 +198,6 @@ void CFork::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pOBBCom);
-	Safe_Release(m_pAABBCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);

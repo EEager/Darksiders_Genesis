@@ -53,10 +53,10 @@ public:
 private:
 	char					m_szName[MAX_PATH] = ""; // aiNode's Name
 	_float4x4				m_OffsetMatrix; // 뼈 -> 정점 
-	_float4x4				m_TransformationMatrix; // 채널에서 보간한 현재 애니메이션의 뼈 행렬인데요?
+	_float4x4				m_TransformationMatrix; // 부모뼈에서 내뼈 
 	/* m_CombinedTransformationMatrix =
 	TransformationMatrix(보간행렬) * pParent->CombinedTransformationMatrix(부모행렬) */
-	_float4x4				m_CombinedTransformationMatrix; // 아 이거 조금 헷갈리네 시발것
+	_float4x4				m_CombinedTransformationMatrix; // root에서 뼈까지의 매트릭스
 	CHierarchyNode*			m_pParent = nullptr;
 	_uint					m_iDepth = 0;
 

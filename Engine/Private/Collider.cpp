@@ -1,5 +1,6 @@
 #include "..\Public\Collider.h"
 #include "PipeLine.h"
+#include "GameObject.h"
 
 
 UINT CCollider::g_iNextID = 0;
@@ -18,6 +19,24 @@ CCollider::CCollider(const CCollider& rhs)
 	, m_iID(g_iNextID++)
 {
 	Safe_AddRef(m_pInputLayout);
+}
+
+void CCollider::OnCollision_Enter(CCollider* pDst, _float fTimeDelta)
+{
+	m_isCollision = true;
+	m_pOwner->OnCollision_Enter(pDst->Get_Owner(), fTimeDelta);
+}
+
+void CCollider::OnCollision_Stay(CCollider* pDst, _float fTimeDelta)
+{
+	m_isCollision = true;
+	m_pOwner->OnCollision_Stay(pDst->Get_Owner(), fTimeDelta);
+}
+
+void CCollider::OnCollision_Leave(CCollider* pDst, _float fTimeDelta)
+{
+	m_isCollision = false;
+	m_pOwner->OnCollision_Leave(pDst->Get_Owner(), fTimeDelta);
 }
 
 HRESULT CCollider::NativeConstruct_Prototype()
@@ -76,7 +95,7 @@ HRESULT CCollider::Render()
 	m_pBatch->Begin();
 
 	// 충돌시 : 핑크, 논충돌시 : 밝은 초록색
-	_vector		vColor = m_isCollision == false ? DirectX::Colors::LightGreen : DirectX::Colors::LightPink;
+	_vector		vColor = m_isCollision == false ? DirectX::Colors::Lime : DirectX::Colors::Red;
 
 	if (COL_TYPE_AABB == m_ColliderDesc.eColType)
 		DX::Draw(m_pBatch, *m_pAABB, vColor);
@@ -135,8 +154,6 @@ _bool CCollider::Collision_AABB(CCollider* pTargetCollider)
 	vDestMin = XMVectorSet(pTargetAABB->Center.x - pTargetAABB->Extents.x, pTargetAABB->Center.y - pTargetAABB->Extents.y, pTargetAABB->Center.z - pTargetAABB->Extents.z, 1.f);
 	vDestMax = XMVectorSet(pTargetAABB->Center.x + pTargetAABB->Extents.x, pTargetAABB->Center.y + pTargetAABB->Extents.y, pTargetAABB->Center.z + pTargetAABB->Extents.z, 1.f);
 
-	m_isCollision = false;
-
 	/* 너비비교 */
 	if (max(XMVectorGetX(vSourMin), XMVectorGetX(vDestMin)) > min(XMVectorGetX(vSourMax), XMVectorGetX(vDestMax)))
 		return false;
@@ -148,8 +165,6 @@ _bool CCollider::Collision_AABB(CCollider* pTargetCollider)
 	/* 깊이비교 */
 	if (max(XMVectorGetZ(vSourMin), XMVectorGetZ(vDestMin)) > min(XMVectorGetZ(vSourMax), XMVectorGetZ(vDestMax)))
 		return false;
-
-	m_isCollision = true;
 
 	return true;
 }
@@ -167,8 +182,6 @@ _bool CCollider::Collision_OBB(CCollider* pTargetCollider)
 	OBBDesc[1] = pTargetCollider->Compute_OBBDesc();
 
 	_float			fDistance[3];
-
-	m_isCollision = false;
 
 	for (_uint i = 0; i < 2; ++i)
 	{
@@ -189,7 +202,6 @@ _bool CCollider::Collision_OBB(CCollider* pTargetCollider)
 		}
 	}
 
-	m_isCollision = true;
 	return true;
 }
 

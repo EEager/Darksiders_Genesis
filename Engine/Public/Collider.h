@@ -36,22 +36,25 @@ private:
 	virtual ~CCollider() = default;
 
 
-	// =====================
-	// 충돌체 보완
+	// ===================================
+	// 내가 추가한 충돌보완
 public:
-	class CGameObject* Get_Owner()
-	{
-		return m_pOwner;
-	}
-	void Set_Owner(class CGameObject* pOwner)
-	{
-		m_pOwner = pOwner;
-	}
+	class CGameObject* Get_Owner(){	return m_pOwner;}
+	void Set_Owner(class CGameObject* pOwner){m_pOwner = pOwner;}
 	UINT Get_ID() { return m_iID; }
+	COL_TYPE Get_ColliderType() { return m_ColliderDesc.eColType; }
+	void Set_ColliderTag(const _tchar* p) { m_pColliderTag = p; }
+	const _tchar* Get_ColliderTag() { return m_pColliderTag; }
+
+	void OnCollision_Enter(class CCollider* pDst, _float fTimeDelta);
+	void OnCollision_Stay(class CCollider* pDst, _float fTimeDelta);
+	void OnCollision_Leave(class CCollider* pDst, _float fTimeDelta);
+	
 
 private:
 	static UINT g_iNextID;
 	UINT			m_iID; // 충돌체 고유한 ID 값
+	const _tchar* m_pColliderTag = L"";
 	// =====================
 
 
@@ -75,9 +78,10 @@ private:
 	BoundingBox*			m_pAABB = nullptr;
 	BoundingOrientedBox*	m_pOBB = nullptr;
 	BoundingSphere*			m_pSphere = nullptr;
-	_bool					m_isCollision = false;
 	COLLIDERDESC			m_ColliderDesc;
 
+public:
+	_bool					m_isCollision = false;
 private:
 	class CGameObject*		m_pOwner = nullptr;
 
