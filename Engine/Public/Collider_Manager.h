@@ -31,9 +31,14 @@ public:
 	bool CheckCollision(class CCollider * pSrc, class CCollider* pDst, float deltaTime);
 	bool CheckCollisionList(class CCollider* pSrc, class CCollider* pDst);
 
+	// AABB vs
 	bool CollisionAABBToAABB(CCollider* pSrc, CCollider* pDst);
 	bool CollisionAABBToOBB(CCollider* pSrc, CCollider* pDst);
 	bool CollisionAABBToSPHERE(CCollider* pSrc, CCollider* pDst);
+
+	// OBB vs
+	bool CollisionOBBToOBB(CCollider* pSrc, CCollider* pDst);
+	bool CollisionOBBToSPHERE(CCollider* pSrc, CCollider* pDst);
 	
 
 private:

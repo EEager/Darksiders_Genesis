@@ -44,6 +44,8 @@ _int CFork::Tick(_float fTimeDelta)
 	if (__super::Tick(fTimeDelta) < 0)
 		return -1;
 
+	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();
@@ -116,7 +118,13 @@ void CFork::OnCollision_Leave(CGameObject* pDst, float fTimeDelta)
 HRESULT CFork::SetUp_Component()
 {
 	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	CTransform::TRANSFORMDESC		TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+
+	TransformDesc.fSpeedPerSec = 7.f;
+	TransformDesc.fRotationPerSec = XMConvertToRadians(10.0f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
 
 	/* For.Com_Renderer*/

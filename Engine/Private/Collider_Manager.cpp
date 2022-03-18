@@ -111,6 +111,7 @@ bool CCollider_Manager::CheckCollision(CCollider* pSrc, CCollider* pDst, float d
 {
 	bool bCollision = false;
 
+	// AABB vs
 	if (pSrc->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
 	{
 		if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
@@ -129,21 +130,25 @@ bool CCollider_Manager::CheckCollision(CCollider* pSrc, CCollider* pDst, float d
 		}
 	}
 
-	//else if (pSrc->Get_ColliderType() == COLLIDER_TYPE::CT_POINT)
-	//{
-	//	if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_RECT)
-	//	{
-	//		bCollision = CollisionRectToPoint(pDst, pSrc); //역
-	//	}
-	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_POINT) // 포인트 투 포인트가 말이되냐고 ㅋㅋ 
-	//	{
-	//		bCollision = false;
-	//	}
-	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
-	//	{
-	//		bCollision = CollisionSphereToPoint(pDst, pSrc); //역
-	//	}
-	//}
+	// OBB vs
+	else if (pSrc->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_OBB)
+	{
+		if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
+		{
+			bCollision = CollisionAABBToOBB(pDst, pSrc);
+		}
+
+		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_OBB)
+		{
+			bCollision = CollisionOBBToOBB(pSrc, pDst);
+		}
+
+		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_SPHERE)
+		{
+			bCollision = CollisionOBBToSPHERE(pSrc, pDst);
+		}
+	}
+
 
 	//else if (pSrc->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
 	//{
@@ -181,6 +186,18 @@ bool CCollider_Manager::CollisionAABBToSPHERE(CCollider* pSrc, CCollider* pDst)
 }
 
 
+bool CCollider_Manager::CollisionOBBToOBB(CCollider* pSrc, CCollider* pDst)
+{
+	return pSrc->Collision_OBB(pDst);
+}
+
+bool CCollider_Manager::CollisionOBBToSPHERE(CCollider* pSrc, CCollider* pDst)
+{
+	return false;
+}
+
+
+
 
 void CCollider_Manager::Free()
 {
@@ -190,3 +207,4 @@ void CCollider_Manager::Free()
 	}
 	m_CollisionList.clear();
 }
+
