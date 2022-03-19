@@ -390,6 +390,19 @@ HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMateria
 	return pVariable->SetResource(m_Materials[iMaterialIndex].pTexture[eTextureType]->Get_SRV());
 }
 
+
+HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, ID3D11ShaderResourceView* pSRV)
+{
+	if (nullptr == m_pEffect)
+		return E_FAIL;
+
+	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName(pConstantName)->AsShaderResource();
+	if (nullptr == pValiable)
+		return E_FAIL;
+
+	return pValiable->SetResource(pSRV);
+}
+
 CHierarchyNode* CModel::Find_HierarchyNode(const char* pNodeName)
 {
 	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)

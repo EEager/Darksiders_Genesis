@@ -42,11 +42,14 @@ HRESULT CHollowLord::NativeConstruct(void * pArg)
 	__super::Add_Collider(&ColliderDesc, L"HollowBody");
 
 	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(100.f, 0.f, 470.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -4.f, 467.f, 1.f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(30.f));
 	m_pModelCom->SetUp_Animation((_uint)0);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
+
+
 
 	return S_OK;
 }
@@ -56,6 +59,7 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	// 모든 몬스터는 Collider list 를 update해야한다
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
+
 
 	// 로컬위치변화를 월행에 적용시키자 
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_HL_Root", m_pNaviCom);
@@ -67,8 +71,16 @@ _int CHollowLord::Tick(_float fTimeDelta)
 _int CHollowLord::LateTick(_float fTimeDelta)
 {
 	// 모든 몬스터는 Height, Renderer, Add_Collider
-	if (CMonster::LateTick(fTimeDelta) < 0)
-		return -1;
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// 모든 몬스터는 Nonalpha 그룹에서 render한다
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		return 0;
+
+	// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
+	pGameInstance->Add_Collision(this);
+
+	RELEASE_INSTANCE(CGameInstance);
 
 	return _int();
 }

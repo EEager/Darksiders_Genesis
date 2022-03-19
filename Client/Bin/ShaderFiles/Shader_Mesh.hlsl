@@ -6,9 +6,12 @@ cbuffer Matrices
 	matrix			g_WorldMatrix;
 	matrix			g_ViewMatrix;
 	matrix			g_ProjMatrix;
+	
+	float			g_DissolvePwr;
 };
 
 texture2D		g_DiffuseTexture;
+texture2D		g_DissolveTexture;
 
 //--------------
 // VS
@@ -67,6 +70,12 @@ struct PS_OUT
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
+	
+	if (g_DissolvePwr > 0)
+	{
+		float Dissolve = g_DissolveTexture.Sample(DefaultSampler, In.vTexUV).r; // r:잘게, g:부드럽게, b:한쪽먼저
+		clip(Dissolve - g_DissolvePwr);
+	}
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);

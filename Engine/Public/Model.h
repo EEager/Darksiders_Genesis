@@ -75,6 +75,7 @@ public:
 public:
 	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);
 	HRESULT	Set_ShaderResourceView(const char* pConstantName, _uint iMeshContainerIndex, aiTextureType eTextureType);
+	HRESULT	Set_ShaderResourceView(const char* pConstantName, ID3D11ShaderResourceView* pSRV);
 
 public:
 	class CHierarchyNode* Find_HierarchyNode(const char* pNodeName);

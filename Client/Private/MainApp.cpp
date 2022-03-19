@@ -234,6 +234,10 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Mouse"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Mouse/UI_Map_FocusCursor.dds")))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Dissolve */
+ 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/T_DissolveMask_A.tga")))))
+		return E_FAIL;
+
 	// ======================================================================
 	// Collider
 	/* For.Prototype_Component_Colllider_AABB */

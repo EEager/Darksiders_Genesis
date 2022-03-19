@@ -22,6 +22,7 @@ public:
 
 public:
 	HRESULT SetUp_OnShader(class CVIBuffer* pVIBuffer, const char* pConstantName, _uint iTextureIndex = 0);
+	HRESULT SetUp_OnShader(class CModel* pVIBuffer, const char* pConstantName, _uint iTextureIndex = 0);
 
 
 private:	

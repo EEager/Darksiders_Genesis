@@ -1,5 +1,6 @@
 #include "..\Public\Texture.h"
 #include "VIBuffer.h"
+#include "Model.h"
 
 CTexture::CTexture(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)	
@@ -75,6 +76,16 @@ HRESULT CTexture::SetUp_OnShader(CVIBuffer * pVIBuffer, const char * pConstantNa
 
 	return pVIBuffer->Set_ShaderResourceView(pConstantName, m_Textures[iTextureIndex]);
 	
+}
+
+HRESULT CTexture::SetUp_OnShader(CModel* pModel, const char* pConstantName, _uint iTextureIndex)
+{
+	if (nullptr == pModel ||
+		iTextureIndex >= m_Textures.size())
+		return E_FAIL;
+
+	return pModel->Set_ShaderResourceView(pConstantName, m_Textures[iTextureIndex]);
+
 }
 
 CTexture * CTexture::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const _tchar* pTextureFilePath, _uint iNumTexture)

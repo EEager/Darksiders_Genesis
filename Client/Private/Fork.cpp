@@ -88,6 +88,7 @@ HRESULT CFork::Render()
 	for (_uint i = 0; i < iNumMeshContainer; ++i)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+
 		m_pModelCom->Render(i, 0);
 	}
 
@@ -142,6 +143,12 @@ HRESULT CFork::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)m_pNaviCom.GetAddressOf())))
 		return E_FAIL;
 
+
+	/* For.Com_Texture*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_Texture"), (CComponent**)m_pDissolveTextureCom.GetAddressOf())))
+		return E_FAIL;
+
+
 	/* For.Com_AABB */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = _float3(0.f, 2.5f, 0.f);
@@ -169,6 +176,15 @@ HRESULT CFork::SetUp_ConstantTable()
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+
+	// Bind Dissolve 
+	dissolvePower += 0.001f; 
+	if (dissolvePower >= 1.f) // 1이면 다 사라졌다
+		dissolvePower = 0.f;
+	m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));
+	if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
+		return E_FAIL;
+
 
 	RELEASE_INSTANCE(CGameInstance);
 

@@ -7,6 +7,7 @@ BEGIN(Engine)
 class CCollider;
 class CRenderer;
 class CTransform;
+class CTexture;
 class CModel;
 class CNavigation;
 END
@@ -28,6 +29,9 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+private:
+	_float dissolvePower = 0.001f;
+
 public:
 	virtual void OnCollision_Enter(class CGameObject* pDst, float fTimeDelta);
 	virtual void OnCollision_Stay(class CGameObject* pDst, float fTimeDelta);
@@ -40,9 +44,8 @@ private:
 	CCollider*					m_pAABBCom = nullptr;
 	CCollider*					m_pOBBCom = nullptr;
 	ComPtr<CNavigation>			m_pNaviCom = nullptr; // ComPtr Test
-
-private:
-	ID3D11ShaderResourceView*	pSRV = nullptr;
+	ComPtr<CTexture>			m_pDissolveTextureCom = nullptr;
+	
 
 private:
 	HRESULT SetUp_Component();
