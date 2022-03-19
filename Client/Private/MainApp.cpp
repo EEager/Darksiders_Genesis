@@ -96,11 +96,9 @@ HRESULT CMainApp::Clear()
 
 HRESULT CMainApp::Render()
 {
-	m_pRenderer->Draw(); // Main Draw
+  	m_pRenderer->Draw(); // Main Draw
 
 	m_pGameInstance->Render_Engine(); // Level Dummy
-
-	m_pGameInstance->Render_Engine(); // UI_Manager Render
 
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Render();

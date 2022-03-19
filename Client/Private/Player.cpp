@@ -28,7 +28,6 @@ HRESULT CPlayer::NativeConstruct(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(80.f + rand()%10, 0.f, 446.f + rand() % 10, 1.f));
 
-
 	m_pModelCom->SetUp_Animation(rand()%24);
 
 	return S_OK;
@@ -67,8 +66,8 @@ _int CPlayer::Tick(_float fTimeDelta)
 
 	m_pModelCom->Update_Animation(fTimeDelta);
 
-	//m_pAABBCom->Update(m_pTransformCom->Get_WorldMatrix());
-	//m_pOBBCom->Update(m_pTransformCom->Get_WorldMatrix());
+	// Collider 
+	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();
 }
@@ -85,9 +84,12 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 
-
+	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
+
+	// Collider 
+	pGameInstance->Add_Collision(this);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -99,7 +101,7 @@ HRESULT CPlayer::Render()
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
-	/* 장치에 월드변환 행렬을 저장한다. */
+	// Player Render
 	_uint	iNumMaterials = m_pModelCom->Get_NumMaterials();
 
 	for (_uint i = 0; i < iNumMaterials; ++i)
@@ -110,12 +112,9 @@ HRESULT CPlayer::Render()
 	}
 
 #ifdef _DEBUG
-	////m_pNaviCom->Render();
-	//m_pAABBCom->Render();
-	//m_pOBBCom->Render();
+	// Collider 
+	__super::Render_Colliders();
 #endif
-
-	
 
 	return S_OK;
 }
@@ -144,24 +143,21 @@ HRESULT CPlayer::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
 		return E_FAIL;
 
-	///* For.Com_AABB */
-	//CCollider::COLLIDERDESC		ColliderDesc;
-	//ColliderDesc.vPivot = _float3(0.f, 0.5f, 0.f);
-	//ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
-	//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_AABB"), (CComponent**)&m_pAABBCom, &ColliderDesc)))
-	//	return E_FAIL;
 
-	///* For.Com_OBB */
-	//ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
-	//ColliderDesc.vSize = _float3(0.8f, 1.5f, 0.8f);
-	//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-	////ColliderDesc.vPivot = static_cast<CModel*>(m_pModelCom)->Get_Center();
-	////ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_OBB"), (CComponent**)&m_pOBBCom, &ColliderDesc)))
-	//	return E_FAIL;
+	// Collider 
+	/* For.Com_AABB */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vPivot = _float3(0.f, 0.5f, 0.f);
+	ColliderDesc.vSize = _float3(1.f, 1.f, 1.f);
+	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+	__super::Add_Collider(&ColliderDesc, L"PlayerBody1");
 
-	
+	/* For.Com_OBB */
+	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
+	ColliderDesc.vSize = _float3(0.8f, 1.5f, 0.8f);
+	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
+	__super::Add_Collider(&ColliderDesc, L"PlayerBody2");
 
 	return S_OK;
 }
@@ -216,8 +212,6 @@ void CPlayer::Free()
 
 	__super::Free();
 
-	//Safe_Release(m_pOBBCom);
-	//Safe_Release(m_pAABBCom);
 	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);

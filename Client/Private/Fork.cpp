@@ -44,8 +44,10 @@ _int CFork::Tick(_float fTimeDelta)
 	if (__super::Tick(fTimeDelta) < 0)
 		return -1;
 
+	// Init
 	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
+	// Collider 
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();
@@ -91,6 +93,7 @@ HRESULT CFork::Render()
 
 
 #ifdef _DEBUG
+	// Collider 
 	__super::Render_Colliders();
 #endif // _DEBUG
 
@@ -138,8 +141,6 @@ HRESULT CFork::SetUp_Component()
 	/* For.Com_Navi */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)m_pNaviCom.GetAddressOf())))
 		return E_FAIL;
-
-
 
 	/* For.Com_AABB */
 	CCollider::COLLIDERDESC		ColliderDesc;

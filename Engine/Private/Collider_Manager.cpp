@@ -37,10 +37,14 @@ void CCollider_Manager::Collision(float fTimeDelta)
 		for (; iter1 != iter1End; ++iter1)
 		{
 			Collision(*iter, *iter1, fTimeDelta);
-			Safe_Release(*iter1);
 		}
 		Safe_Release(*iter);
 	}
+
+	// 마지막 iter도 release
+	// ex) 0 1 2 3 -> 인경우 0 1 2 까지 위에서 release를 했다. 여기서 3을 release하자
+	Safe_Release(*iter);
+
 
 	m_CollisionList.clear();
 }

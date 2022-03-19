@@ -109,6 +109,12 @@
     <Filter Include="97.ShaderFiles\Shaders">
       <UniqueIdentifier>{e211c7d6-11b9-4e14-8adb-2c719c94fcdd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Monster">
+      <UniqueIdentifier>{f838095b-17a1-4694-8fa7-c9e2c444d4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\Legion">
+      <UniqueIdentifier>{2ffc106e-2578-48e1-9a67-70298c701686}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">

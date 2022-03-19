@@ -402,8 +402,6 @@ HRESULT CWar::SetUp_Component()
 
 	// Collider
 	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
 		/* For.Com_AABB */
 		CCollider::COLLIDERDESC		ColliderDesc;
 		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
@@ -423,8 +421,6 @@ HRESULT CWar::SetUp_Component()
 		ColliderDesc.vSize = _float3(0.2f, 0.5f, 2.3f); //x:Ä®Æø,y:Ä®³Êºñ, z:Ä®³ôÀÌ
 		ColliderDesc.eColType = CCollider::COL_TYPE_OBB;
 		__super::Add_Collider(&ColliderDesc, L"WarWeapon");
-
-		RELEASE_INSTANCE(CGameInstance);
 	}
 
 
