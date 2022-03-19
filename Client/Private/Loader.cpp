@@ -355,6 +355,21 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Armor"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Armor/", "Goblin_Armor.fbx", Goblin_PivotMat))))
 		return E_FAIL;
+	/* For.Prototype_Component_Model_Goblin_Spear*/
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Spear"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Spear"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Spear/", "Goblin_Spear.fbx", Goblin_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Goblin_Quiver*/
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Quiver"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Quiver"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Quiver/", "Goblin_Quiver.fbx", Goblin_PivotMat))))
+		return E_FAIL;
+
+
+
+
+
 	/* For.Prototype_Component_Model_FallenDog*/
 	_matrix		FallenDog_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_FallenDog"));

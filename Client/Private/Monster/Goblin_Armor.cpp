@@ -37,9 +37,39 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 	__super::Add_Collider(&ColliderDesc, L"GoblinBody");
 
+	// For Weapon
+	{
+		/* For.Com_Model_Goblin_Spear */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Spear"), TEXT("Com_Model_Goblin_Spear"), (CComponent**)&m_pModelSpearCom)))
+			return E_FAIL;
+		/* For.Com_Model_Goblin_Quiver */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Quiver"), TEXT("Com_Model_Goblin_Quiver"), (CComponent**)&m_pModelQuiverCom)))
+			return E_FAIL;
+
+		/* For.GoblinSpear */
+		ColliderDesc.vPivot = _float3(0.f, -0.5f, 0.f); 
+		ColliderDesc.fRadius = 0.25f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+		__super::Add_Collider(&ColliderDesc, L"GoblinSpear");
+		ZeroMemory(&m_spearDesc, sizeof(SPEARDESC));
+		m_spearDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Goblin_Weapon_Fleamag_Sword");
+		m_spearDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_Goblin_Weapon_Fleamag_Sword");
+		m_spearDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
+		m_spearDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
+
+		/* For.GoblinQuiver */
+		ZeroMemory(&m_quiverDesc, sizeof(QUIVERDESC));
+		m_quiverDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Goblin_Quiver");
+		m_quiverDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_Goblin_Quiver");
+		m_quiverDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
+		m_quiverDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
+	}
+
+
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
-	m_pModelCom->SetUp_Animation((_uint)0);
+	m_pModelCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear");
+
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -49,11 +79,30 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 
 _int CGoblin_Armor::Tick(_float fTimeDelta)
 {
-	// 모든 몬스터는 Collider list 를 update해야한다
-	if (CMonster::Tick(fTimeDelta) < 0)
-		return -1;
+	// For Weapon Collider
+	{
+		for (auto pCollider : m_ColliderList)
+		{
+			if (pCollider->Get_ColliderTag() == L"GoblinSpear")
+			{
+				_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix); 
+				_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix); 
+				_matrix		PivotMatrix = XMLoadFloat4x4(&m_spearDesc.PivotMatrix);
+				_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_spearDesc.pTargetWorldMatrix); 
+				_matrix		TransformationMatrix =
+					(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
+					TargetWorldMatrix;
+				pCollider->Update(TransformationMatrix);
+			}
+			else
+			{
+				pCollider->Update(m_pTransformCom->Get_WorldMatrix());
+			}
+		}
+	}
 
-	// Legiondms 
+
+	// 로컬이동값 -> 월드이동반영
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom);
 
 	// for test
@@ -76,6 +125,94 @@ HRESULT CGoblin_Armor::Render()
 	// 모든 몬스터는 SetUp_ConstantTable, RenderColliders
 	if (CMonster::Render() < 0)
 		return -1;
+
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
+	DirectionalLight mDirLight;
+	mDirLight.Ambient = dirLightDesc.vAmbient;
+	mDirLight.Diffuse = dirLightDesc.vDiffuse;
+	mDirLight.Specular = dirLightDesc.vSpecular;
+	mDirLight.Direction = dirLightDesc.vDirection;
+
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+
+	// Render Sphere
+	{
+		// Bind Directional Light
+
+		m_pModelSpearCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+		// Bind Material
+		m_pModelSpearCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+		_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix);
+		_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix);
+		_matrix		PivotMatrix = XMLoadFloat4x4(&m_spearDesc.PivotMatrix);
+		_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_spearDesc.pTargetWorldMatrix);
+
+		// 이게 정답인가 보네...
+		_matrix		TransformationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) /** OffsetMatrix*/ * CombinedTransformationMatrix * PivotMatrix * TargetWorldMatrix;
+		_float4x4	modelWorldMat;
+		XMStoreFloat4x4(&modelWorldMat, XMMatrixTranspose(TransformationMatrix));
+		m_pModelSpearCom->Set_RawValue("g_WorldMatrix", &modelWorldMat, sizeof(_float4x4));
+
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelSpearCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelSpearCom, "g_ProjMatrix");
+
+		// Bind Position
+		m_pModelSpearCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+		// Branch to Use Normal Mapping 
+		m_pModelSpearCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+		m_pModelSpearCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+
+		_uint	iNumMaterials = m_pModelSpearCom->Get_NumMaterials();
+		for (_uint i = 0; i < iNumMaterials; ++i)
+		{
+			m_pModelSpearCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelSpearCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelSpearCom->Render(i, 0);
+		}
+	}
+
+
+	// Render Quiver
+	{
+		m_pModelQuiverCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+		// Bind Material
+		m_pModelQuiverCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+		_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_quiverDesc.pBoneMatrix);
+		_matrix		OffsetMatrix = XMLoadFloat4x4(&m_quiverDesc.OffsetMatrix);
+		_matrix		PivotMatrix = XMLoadFloat4x4(&m_quiverDesc.PivotMatrix);
+		_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_quiverDesc.pTargetWorldMatrix);
+
+		_matrix		TransformationMatrix =  XMMatrixRotationX(XMConvertToRadians(90)) * XMMatrixRotationY(XMConvertToRadians(180)) * CombinedTransformationMatrix * PivotMatrix * TargetWorldMatrix;
+		_float4x4	modelWorldMat;
+		XMStoreFloat4x4(&modelWorldMat, XMMatrixTranspose(TransformationMatrix));
+		m_pModelQuiverCom->Set_RawValue("g_WorldMatrix", &modelWorldMat, sizeof(_float4x4));
+
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelQuiverCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelQuiverCom, "g_ProjMatrix");
+
+		// Bind Position
+		m_pModelQuiverCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+		// Branch to Use Normal Mapping 
+		m_pModelQuiverCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+		m_pModelQuiverCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+
+		_uint	iNumMaterials = m_pModelQuiverCom->Get_NumMaterials();
+		for (_uint i = 0; i < iNumMaterials; ++i)
+		{
+			m_pModelQuiverCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelQuiverCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelQuiverCom->Render(i, 0);
+		}
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
@@ -111,4 +248,7 @@ CGameObject * CGoblin_Armor::Clone(void* pArg)
 void CGoblin_Armor::Free()
 {
 	CMonster::Free();
+
+	Safe_Release(m_pModelSpearCom);
+	Safe_Release(m_pModelQuiverCom);
 }

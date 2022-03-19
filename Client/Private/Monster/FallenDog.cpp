@@ -42,7 +42,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	__super::Add_Collider(&ColliderDesc, L"FallenDogBody");
 
 	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%20, 0.f, 431.f + rand() % 20, 1.f));
 	m_pModelCom->SetUp_Animation((_uint)0);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다

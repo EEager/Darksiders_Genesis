@@ -21,6 +21,7 @@ private:
 		_float4x4		PivotMatrix;
 		_float4x4* pTargetWorldMatrix;
 	}SWORDDESC;
+	SWORDDESC		m_WarSwordDesc;
 
 private:
 	explicit CLegion(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
@@ -40,7 +41,6 @@ private:
 private:
 	CModel* m_pModelWeaponLCom = nullptr;
 	CModel* m_pModelWeaponRCom = nullptr;
-	SWORDDESC		m_WarSwordDesc;
 
 public:	
 	static CLegion* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
