@@ -297,7 +297,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
-		return E_FAIL;
 #endif
 
 	// ¡å War
@@ -335,12 +334,20 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/", "Legion.fbx", Legion_PivotMat))))
 		return E_FAIL;
-	/* For.Prototype_Component_Model_Legion_Axe*/
-	Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);// *XMMatrixRotationY(XMConvertToRadians(180.f));
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe.fbx", Legion_PivotMat))))
+	/* For.Prototype_Component_Model_Legion_Axe_L*/
+	Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe_L"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_L"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_L.fbx", Legion_PivotMat))))
 		return E_FAIL;
+	/* For.Prototype_Component_Model_Legion_Axe_R*/
+	Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe_R"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_R"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_R.fbx", Legion_PivotMat))))
+		return E_FAIL;
+
+
 
 	/* For.Prototype_Component_Model_Goblin_Armor*/
 	_matrix		Goblin_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));

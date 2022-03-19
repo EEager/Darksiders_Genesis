@@ -35,7 +35,11 @@ public:
 	virtual HRESULT Render();
 
 private:
-	CModel* m_pModelWeaponCom = nullptr;
+	HRESULT Render_Weapon(CModel* pModel, _float fRadian);
+
+private:
+	CModel* m_pModelWeaponLCom = nullptr;
+	CModel* m_pModelWeaponRCom = nullptr;
 	SWORDDESC		m_WarSwordDesc;
 
 public:	

@@ -70,7 +70,7 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _t
 	}
 
 	// 장치에 여러개의 렌터타겟들을 바인드한다
-	pDeviceContext->OMSetRenderTargets(pMRTList->size(), pRenderTargets, m_pDepthStencilView);
+	pDeviceContext->OMSetRenderTargets((_uint)pMRTList->size(), pRenderTargets, m_pDepthStencilView);
 
 	return S_OK;
 }

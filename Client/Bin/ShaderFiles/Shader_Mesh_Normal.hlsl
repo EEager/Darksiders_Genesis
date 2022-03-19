@@ -29,17 +29,6 @@ cbuffer CameraDesc
 	vector		g_vCamPosition = vector(0.f, 0.f, 0.f, 0.f);
 };
 
-struct tagBoneMatrixArray
-{
-	matrix		Bones[192];
-};
-
-cbuffer BoneMatrices
-{
-	tagBoneMatrixArray		g_BoneMatrices;
-};
-
-
 // --------------------
 // Global Variables
 // --------------------

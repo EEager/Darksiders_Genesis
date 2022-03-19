@@ -127,15 +127,19 @@ _EXIT:
 
 
 #ifdef _DEBUG
+#ifdef USE_IMGUI
 #include "imgui_Manager.h"
 extern bool m_bshow_naviMesh_window;
+#endif
 #endif
 HRESULT CWar::Render()
 {
 	War_Render();
 
 #ifdef _DEBUG
+#ifdef USE_IMGUI
 	if (m_bshow_naviMesh_window)
+#endif
 		m_pNaviCom->Render();
 
 	__super::Render_Colliders();

@@ -40,15 +40,17 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 	// For Weapon
 	{ 
-		/* For.Com_Model_Legion_Weapon */
-		CModel::MODELDESC	tagModelLegionWeaponDesc;
-		tagModelLegionWeaponDesc.pHierarchyNode = m_pModelCom->Find_HierarchyNode("Bone_LE_Weapon");
-		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe"), TEXT("Com_Model_Legion_Weapon"), (CComponent**)&m_pModelWeaponCom, &tagModelLegionWeaponDesc)))
+		/* For.Com_Model_Legion_WeaponL */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_L"), TEXT("Com_Model_Legion_WeaponL"), (CComponent**)&m_pModelWeaponLCom)))
+			return E_FAIL;
+		/* For.Com_Model_Legion_WeaponR */
+		if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_R"), TEXT("Com_Model_Legion_WeaponR"), (CComponent**)&m_pModelWeaponRCom)))
 			return E_FAIL;
 
 		/* For.LegionWeapon */
-		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.0f);
-		ColliderDesc.fRadius = 0.1f;
+		ColliderDesc.vPivot = _float3(0.f, 0.0f, -.75f); // For Test
+		ColliderDesc.fRadius = 0.5f;
+
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 		__super::Add_Collider(&ColliderDesc, L"LegionWeapon");
 
@@ -62,7 +64,8 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
-	m_pModelCom->SetUp_Animation("Legion_Mesh.ao|Legion_Idle");
+	//m_pModelCom->SetUp_Animation("Legion_Mesh.ao|Legion_Idle");
+	m_pModelCom->SetUp_Animation((_uint)0);
 
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
@@ -73,9 +76,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 _int CLegion::Tick(_float fTimeDelta)
 {
-
-
-	// For Weapon
+	// For Weapon Collider
 	{
 		for (auto pCollider : m_ColliderList)
 		{
@@ -86,7 +87,7 @@ _int CLegion::Tick(_float fTimeDelta)
 				_matrix		PivotMatrix = XMLoadFloat4x4(&m_WarSwordDesc.PivotMatrix);
 				_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_WarSwordDesc.pTargetWorldMatrix); // just legion's world matrix
 				_matrix		TransformationMatrix =
-					(/*OffsetMatrix **/ CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix를 안곱하니간 뭔가 되는거 같다... 왜?
+					(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix를 안곱하니간 뭔가 되는거 같다... 왜?
 					TargetWorldMatrix;
 				pCollider->Update(TransformationMatrix);
 			}
@@ -97,12 +98,11 @@ _int CLegion::Tick(_float fTimeDelta)
 		}
 	}
 
-
 	// 로컬이동값 -> 월드이동반영
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom);
 
 	// for test
-	//m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.001f);
+	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.001f);
 
 	return _int();
 }
@@ -122,60 +122,57 @@ HRESULT CLegion::Render()
 	if (CMonster::Render() < 0)
 		return -1;
 
-	// Render Weapon
+	// Weapon Render : ToDo 최적화
+	Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90));
+	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90));
+
+	return S_OK;
+}
+
+
+HRESULT CLegion::Render_Weapon(CModel* pModel, _float fRadian)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Directional Light
+	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
+	DirectionalLight mDirLight;
+	mDirLight.Ambient = dirLightDesc.vAmbient;
+	mDirLight.Diffuse = dirLightDesc.vDiffuse;
+	mDirLight.Specular = dirLightDesc.vSpecular;
+	mDirLight.Direction = dirLightDesc.vDirection;
+	pModel->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+	// Bind Material
+	pModel->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_WarSwordDesc.pBoneMatrix);
+	_matrix		PivotMatrix = XMLoadFloat4x4(&m_WarSwordDesc.PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_WarSwordDesc.pTargetWorldMatrix);
+	_matrix		TransformationMatrix = XMMatrixRotationX(fRadian) * CombinedTransformationMatrix * PivotMatrix * TargetWorldMatrix;
+	_float4x4 modelWeaponWorldMat;
+	XMStoreFloat4x4(&modelWeaponWorldMat, XMMatrixTranspose(TransformationMatrix));
+	pModel->Set_RawValue("g_WorldMatrix", &modelWeaponWorldMat, sizeof(_float4x4));
+
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, pModel, "g_ViewMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, pModel, "g_ProjMatrix");
+
+	// Bind Position
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	pModel->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+
+	// Branch to Use Normal Mapping 
+	pModel->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+	pModel->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	_uint	iNumMaterials = pModel->Get_NumMaterials();
+	for (_uint i = 0; i < iNumMaterials; ++i)
 	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-		// Bind Directional Light
-		LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
-		DirectionalLight mDirLight;
-		mDirLight.Ambient = dirLightDesc.vAmbient;
-		mDirLight.Diffuse = dirLightDesc.vDiffuse;
-		mDirLight.Specular = dirLightDesc.vSpecular;
-		mDirLight.Direction = dirLightDesc.vDirection;
-		m_pModelWeaponCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
-
-		// Bind Material
-		m_pModelWeaponCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
-
-		// Bind Weapon Transform
-		{
-			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_WarSwordDesc.pBoneMatrix); // Root->뼈 
-			_matrix		PivotMatrix = XMLoadFloat4x4(&m_WarSwordDesc.PivotMatrix);
-			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_WarSwordDesc.pTargetWorldMatrix);
-			_matrix		TransformationMatrix =
-				(/*OffsetMatrix **/  // 오프셋을 곱하지 않으니깐 되는거 같다.. 
-					XMMatrixRotationX(XMConvertToRadians(-90)) * CombinedTransformationMatrix * PivotMatrix) *
-				TargetWorldMatrix;
-			_float4x4 modelWeaponWorldMat;
-			XMStoreFloat4x4(&modelWeaponWorldMat, XMMatrixTranspose(TransformationMatrix));
-			m_pModelWeaponCom->Set_RawValue("g_WorldMatrix", &modelWeaponWorldMat, sizeof(_float4x4));
-		}
-
-		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelWeaponCom, "g_ViewMatrix");
-		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelWeaponCom, "g_ProjMatrix");
-
-		// Bind Position
-		_float4			vCamPosition;
-		XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-		m_pModelWeaponCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
-
-		// Branch to Use Normal Mapping 
-		m_pModelWeaponCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
-		m_pModelWeaponCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
-
-		RELEASE_INSTANCE(CGameInstance);
-
-		// iNumMaterials : 망토, 몸통
-		_uint	iNumMaterials = m_pModelWeaponCom->Get_NumMaterials();
-		for (_uint i = 0; i < iNumMaterials; ++i)
-		{
-			m_pModelWeaponCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-			m_pModelWeaponCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelWeaponCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-
-			m_pModelWeaponCom->Render(i, 0);
-		}
+		pModel->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		pModel->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+		pModel->Render(i, 0);
 	}
 
 	return S_OK;
@@ -212,4 +209,7 @@ CGameObject * CLegion::Clone(void* pArg)
 void CLegion::Free()
 {
 	CMonster::Free();
+
+	Safe_Release(m_pModelWeaponLCom);
+	Safe_Release(m_pModelWeaponRCom);
 }
