@@ -49,6 +49,8 @@ public:
 	void OnCollision_Enter(class CCollider* pDst, _float fTimeDelta);
 	void OnCollision_Stay(class CCollider* pDst, _float fTimeDelta);
 	void OnCollision_Leave(class CCollider* pDst, _float fTimeDelta);
+
+	bool Collider_Intersects(_In_ const CCollider* pCollider) const; 
 	
 
 private:
@@ -73,6 +75,7 @@ public:
 private:
 	_matrix Remove_Rotation(_fmatrix TransformMatrix);
 	OBBDESC Compute_OBBDesc();
+
 
 private:
 	BoundingBox*			m_pAABB = nullptr;

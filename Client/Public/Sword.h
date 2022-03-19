@@ -34,6 +34,10 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+	// ----------------------------------------------------------------
+	// Collider
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity()) override;
+
 private:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;	

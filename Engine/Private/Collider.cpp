@@ -39,6 +39,55 @@ void CCollider::OnCollision_Leave(CCollider* pDst, _float fTimeDelta)
 	m_pOwner->OnCollision_Leave(pDst->Get_Owner(), fTimeDelta);
 }
 
+bool CCollider::Collider_Intersects(_In_ const CCollider* pCollider) const
+{
+	switch (m_ColliderDesc.eColType)
+	{
+	// AABB vs
+	case CCollider::COL_TYPE_AABB:
+	{
+		switch (pCollider->m_ColliderDesc.eColType)
+		{
+		case CCollider::COL_TYPE_AABB:
+			return m_pAABB->Intersects(*pCollider->m_pAABB);
+		case CCollider::COL_TYPE_OBB:
+			return m_pAABB->Intersects(*pCollider->m_pOBB);
+		case CCollider::COL_TYPE_SPHERE:
+			return m_pAABB->Intersects(*pCollider->m_pSphere);
+		}
+	}
+	// OBB vs
+	case CCollider::COL_TYPE_OBB:
+	{
+		switch (pCollider->m_ColliderDesc.eColType)
+		{
+		case CCollider::COL_TYPE_AABB:
+			return m_pOBB->Intersects(*pCollider->m_pAABB);
+		case CCollider::COL_TYPE_OBB:
+			return m_pOBB->Intersects(*pCollider->m_pOBB);
+		case CCollider::COL_TYPE_SPHERE:
+			return m_pOBB->Intersects(*pCollider->m_pSphere);
+		}
+	}
+	// SPHERE vs
+	case CCollider::COL_TYPE_SPHERE:
+	{
+		switch (pCollider->m_ColliderDesc.eColType)
+		{
+		case CCollider::COL_TYPE_AABB:
+			return m_pSphere->Intersects(*pCollider->m_pAABB);
+		case CCollider::COL_TYPE_OBB:
+			return m_pSphere->Intersects(*pCollider->m_pOBB);
+		case CCollider::COL_TYPE_SPHERE:
+			return m_pSphere->Intersects(*pCollider->m_pSphere);
+		}
+	}
+	default:
+		assert(0);
+		return 0;
+	}
+}
+
 HRESULT CCollider::NativeConstruct_Prototype()
 {
 	m_pEffect = new BasicEffect(m_pDevice);

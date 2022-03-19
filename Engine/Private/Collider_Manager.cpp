@@ -41,7 +41,6 @@ void CCollider_Manager::Collision(float fTimeDelta)
 		Safe_Release(*iter);
 	}
 
-	// 마지막 iter도 release
 	// ex) 0 1 2 3 -> 인경우 0 1 2 까지 위에서 release를 했다. 여기서 3을 release하자
 	Safe_Release(*iter);
 
@@ -115,93 +114,10 @@ bool CCollider_Manager::CheckCollision(CCollider* pSrc, CCollider* pDst, float d
 {
 	bool bCollision = false;
 
-	// AABB vs
-	if (pSrc->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
-	{
-		if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
-		{
-			bCollision = CollisionAABBToAABB(pSrc, pDst);
-		}
-
-		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_OBB)
-		{
-			bCollision = CollisionAABBToOBB(pSrc, pDst);
-		}
-
-		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_SPHERE)
-		{
-			bCollision = CollisionAABBToSPHERE(pSrc, pDst);
-		}
-	}
-
-	// OBB vs
-	else if (pSrc->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_OBB)
-	{
-		if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_AABB)
-		{
-			bCollision = CollisionAABBToOBB(pDst, pSrc);
-		}
-
-		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_OBB)
-		{
-			bCollision = CollisionOBBToOBB(pSrc, pDst);
-		}
-
-		else if (pDst->Get_ColliderType() == CCollider::COL_TYPE::COL_TYPE_SPHERE)
-		{
-			bCollision = CollisionOBBToSPHERE(pSrc, pDst);
-		}
-	}
-
-
-	//else if (pSrc->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
-	//{
-	//	if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_RECT)
-	//	{
-	//		bCollision = CollisionRectToSphere(pDst, pSrc); //역
-	//	}
-	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_POINT) // 포인트 투 포인트가 말이되냐고 ㅋㅋ 
-	//	{
-	//		bCollision = CollisionSphereToPoint(pSrc, pDst);
-	//	}
-	//	else if (pDst->Get_ColliderType() == COLLIDER_TYPE::CT_SPHERE)
-	//	{
-	//		bCollision = CollisionSphereToShpere(pSrc, pDst);
-	//	}
-	//}
-
+	bCollision = pSrc->Collider_Intersects(pDst);
+	
 	return bCollision;
 }
-
-
-bool CCollider_Manager::CollisionAABBToAABB(CCollider* pSrc, CCollider* pDst)
-{
-	return pSrc->Collision_AABB(pDst);
-}
-
-bool CCollider_Manager::CollisionAABBToOBB(CCollider* pSrc, CCollider* pDst)
-{
-	return false;
-}
-
-bool CCollider_Manager::CollisionAABBToSPHERE(CCollider* pSrc, CCollider* pDst)
-{
-	return false;
-}
-
-
-bool CCollider_Manager::CollisionOBBToOBB(CCollider* pSrc, CCollider* pDst)
-{
-	return pSrc->Collision_OBB(pDst);
-}
-
-bool CCollider_Manager::CollisionOBBToSPHERE(CCollider* pSrc, CCollider* pDst)
-{
-	return false;
-}
-
-
-
 
 void CCollider_Manager::Free()
 {

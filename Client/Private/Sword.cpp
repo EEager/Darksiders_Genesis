@@ -35,14 +35,8 @@ HRESULT CSword::NativeConstruct(void * pArg)
 
 _int CSword::Tick(_float fTimeDelta)
 {
-	//_matrix		OffsetMatrix = XMLoadFloat4x4(&m_SwordDesc.OffsetMatrix);
-	//_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_SwordDesc.pBoneMatrix);
-	//_matrix		PivotMatrix = XMLoadFloat4x4(&m_SwordDesc.PivotMatrix);
-	//_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_SwordDesc.pTargetWorldMatrix);
-
-	//_matrix		TransformationMatrix = m_pTransformCom->Get_WorldMatrix() * (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) * TargetWorldMatrix;
-	//		
-	//m_pSphereCom->Update(TransformationMatrix);
+	// Collider 
+	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();
 }
@@ -54,8 +48,12 @@ _int CSword::LateTick(_float fTimeDelta)
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	
+	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
+
+	// Collider 
+	pGameInstance->Add_Collision(this);
 
 	RELEASE_INSTANCE(CGameInstance);	
 
@@ -68,11 +66,30 @@ HRESULT CSword::Render()
 		return E_FAIL;	
 
 #ifdef _DEBUG
-	//m_pSphereCom->Render();
-#endif // _DEBUG
+	// Collider 
+	__super::Render_Colliders();
+#endif
 	
 
 	return S_OK;
+}
+
+// @override
+_int CSword::Update_Colliders(_matrix wolrdMatrix)
+{
+	_matrix		OffsetMatrix = XMLoadFloat4x4(&m_SwordDesc.OffsetMatrix);
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_SwordDesc.pBoneMatrix);
+	_matrix		PivotMatrix = XMLoadFloat4x4(&m_SwordDesc.PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_SwordDesc.pTargetWorldMatrix);
+
+	_matrix		TransformationMatrix = m_pTransformCom->Get_WorldMatrix() * (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) * TargetWorldMatrix;
+
+	for (auto pCollider : m_ColliderList)
+	{
+		pCollider->Update(TransformationMatrix);
+	}
+
+	return 0;
 }
 
 HRESULT CSword::SetUp_Component()
@@ -85,15 +102,13 @@ HRESULT CSword::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Sphere */
-	//CCollider::COLLIDERDESC		ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-
-	//ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
-	//ColliderDesc.fRadius = 0.1f;
-	//ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Collider"), TEXT("Com_Sphere"), (CComponent**)&m_pSphereCom, &ColliderDesc)))
-	//	return E_FAIL;
+	// Collider.Player_Sword
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vPivot = _float3(2.f, 0.0f, .5f); // For Test
+	ColliderDesc.fRadius = 1.f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, L"Player_Sword");
 	
 
 	return S_OK;
