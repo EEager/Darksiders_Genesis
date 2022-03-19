@@ -70,6 +70,7 @@ public:
 	HRESULT Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW = nullptr, const char* pRootNodeName = nullptr, class CNavigation* pNaviCom = nullptr);
 	HRESULT Bind_Shader(_uint iPassIndex);
 	HRESULT Render(_uint iMtrlIndex, _uint iPassIndex);
+	HRESULT Render(_uint iMtrlIndex, _fmatrix vMat, _uint iPassIndex); // 칼같은것은 뼈가 1개일것이다. 그래서 이것을 사용하자
 
 public:
 	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);

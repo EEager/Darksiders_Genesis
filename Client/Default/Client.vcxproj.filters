@@ -115,6 +115,15 @@
     <Filter Include="02.GameObjects\Monster\Legion">
       <UniqueIdentifier>{2ffc106e-2578-48e1-9a67-70298c701686}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Monster\Goblin_Armor">
+      <UniqueIdentifier>{32e884d9-3bf4-40cb-9e27-a0f6e2cdf1f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\FallenDog">
+      <UniqueIdentifier>{508a3dc3-e4c1-4847-a9c4-92b8ad99bbd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Monster\HollowLord">
+      <UniqueIdentifier>{bba21b6b-b706-4169-8877-bfdb9f340ded}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -231,6 +240,21 @@
     <ClInclude Include="..\Public\PointEffect.h">
       <Filter>02.GameObjects\Effect\Point</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Monster\Monster.h">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster\Legion.h">
+      <Filter>02.GameObjects\Monster\Legion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster\Goblin_Armor.h">
+      <Filter>02.GameObjects\Monster\Goblin_Armor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster\FallenDog.h">
+      <Filter>02.GameObjects\Monster\FallenDog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster\HollowLord.h">
+      <Filter>02.GameObjects\Monster\HollowLord</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -328,6 +352,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\PointEffect.cpp">
       <Filter>02.GameObjects\Effect\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster\Monster.cpp">
+      <Filter>02.GameObjects\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster\Legion.cpp">
+      <Filter>02.GameObjects\Monster\Legion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster\Goblin_Armor.cpp">
+      <Filter>02.GameObjects\Monster\Goblin_Armor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster\FallenDog.cpp">
+      <Filter>02.GameObjects\Monster\FallenDog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster\HollowLord.cpp">
+      <Filter>02.GameObjects\Monster\HollowLord</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

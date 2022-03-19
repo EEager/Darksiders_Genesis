@@ -19,6 +19,7 @@ cbuffer cbPerObject
 	matrix		g_ViewMatrix;
 	matrix		g_ProjMatrix;
 	Material	g_Material;
+
 	bool		g_UseNormalMap;
 	bool		g_UseEmissiveMap;
 };
@@ -39,6 +40,9 @@ cbuffer BoneMatrices
 };
 
 
+// --------------------
+// Global Variables
+// --------------------
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
@@ -202,10 +206,10 @@ technique11	DefaultTechnique
 {
 	pass DefaultPass
 	{
+		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
-		SetRasterizerState(NoCull);
 	}
 
 }

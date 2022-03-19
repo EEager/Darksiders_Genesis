@@ -25,6 +25,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_War"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Monster()))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
 
@@ -66,7 +69,7 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	LightDesc.eType = tagLightDesc::TYPE_DIRECTIONAL;
 	LightDesc.vDiffuse = _float4(0.5f, 0.5f, 0.5f, 1.0f);
 	LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.0f);
-	LightDesc.vSpecular = _float4(0.5f, 0.5f, 0.5f, 1.0f);
+	LightDesc.vSpecular = _float4(0.25f, 0.25f, 0.25f, 1.0f);
 	LightDesc.vDirection = _float3(0.57735f, -0.57735f, 0.57735f);
 
 	if (FAILED(pGameInstance->Add_Light(m_pDevice, m_pDeviceContext, LightDesc)))
@@ -230,6 +233,34 @@ HRESULT CLevel_GamePlay::Ready_Layer_UI(const _tchar* pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_UI_War_Skills"))))
 		return E_FAIL;
 
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Monster()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	/* For.Prototype_GameObject_Legion*/
+	for (int i = 0; i < 2; i++)
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"))))
+			return E_FAIL;
+
+	/* For.Prototype_GameObject_Goblin_Armor*/
+	for (int i = 0; i < 6; i++)
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"))))
+			return E_FAIL;
+
+	/* For.Prototype_GameObject_FallenDog*/
+	for (int i = 0; i < 2; i++)
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"))))
+			return E_FAIL;
+
+	/* For.Prototype_GameObject_FallenDog*/
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_HollowLord", TEXT("Prototype_GameObject_HollowLord"))))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

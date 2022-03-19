@@ -106,7 +106,7 @@ HRESULT CSword::SetUp_Component()
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 	ColliderDesc.vPivot = _float3(2.f, 0.0f, .5f); // For Test
-	ColliderDesc.fRadius = 1.f;
+	ColliderDesc.fRadius = 1.23f;
 	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 	__super::Add_Collider(&ColliderDesc, L"Player_Sword");
 	

@@ -190,6 +190,11 @@
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\Loading_BackGround.h" />
     <ClInclude Include="..\public\MainApp.h" />
+    <ClInclude Include="..\Public\Monster\FallenDog.h" />
+    <ClInclude Include="..\Public\Monster\Goblin_Armor.h" />
+    <ClInclude Include="..\Public\Monster\HollowLord.h" />
+    <ClInclude Include="..\Public\Monster\Legion.h" />
+    <ClInclude Include="..\Public\Monster\Monster.h" />
     <ClInclude Include="..\Public\Mouse.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PointEffect.h" />
@@ -226,6 +231,11 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\Loading_BackGround.cpp" />
     <ClCompile Include="..\private\MainApp.cpp" />
+    <ClCompile Include="..\Private\Monster\FallenDog.cpp" />
+    <ClCompile Include="..\Private\Monster\Goblin_Armor.cpp" />
+    <ClCompile Include="..\Private\Monster\HollowLord.cpp" />
+    <ClCompile Include="..\Private\Monster\Legion.cpp" />
+    <ClCompile Include="..\Private\Monster\Monster.cpp" />
     <ClCompile Include="..\Private\Mouse.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PointEffect.cpp" />

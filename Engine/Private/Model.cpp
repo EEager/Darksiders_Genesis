@@ -181,7 +181,7 @@ HRESULT CModel::NativeConstruct(void * pArg)
 			}
 		}
 	}
-	else // if (TYPE_ANIM == m_eType) and if (TYPE_ANIM_need_continue == m_eType)
+	else // if (TYPE_ANIM == m_eType) and if (TYPE_ANIM_need_continue == m_eType) Weapon같은 경우 끝에 플레이어의 뼈를 달자
 	{
 		// m_HierarchyNodes를 채운다.
 		if (FAILED(Create_HierarchyNodes(m_pScene->mRootNode)))
@@ -328,6 +328,30 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 			if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
 				return E_FAIL;
 		}
+
+		Bind_Shader(iPassIndex);
+
+		pMeshContainer->Render();
+	}
+
+	return S_OK;
+}
+
+// 칼 같은 것
+HRESULT CModel::Render(_uint iMtrlIndex, _fmatrix vMat, _uint iPassIndex)
+{
+	if (iPassIndex >= m_PassesDesc.size())
+		return E_FAIL;
+
+	for (auto& pMeshContainer : m_MeshContainers[iMtrlIndex]) // 1. 정점들 룹을 돈다.
+	{
+#define MAX_BONE_NUM 192
+		_float4x4		BoneMatrices[MAX_BONE_NUM];
+		ZeroMemory(BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM);
+		XMStoreFloat4x4(&BoneMatrices[0], XMMatrixTranspose(vMat));
+
+		if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))
+			return E_FAIL;
 
 		Bind_Shader(iPassIndex);
 

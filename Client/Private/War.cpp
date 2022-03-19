@@ -45,9 +45,10 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	// 초기 위치
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(17.f, 0.f, 430.f, 1.f));
 
-	// 처음 시작할때 위치 잡아주자
+	// Navigation
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
 
+	// 무기 콜라이더를 위함
 	if (SetUp_BoneMatrix())
 		return E_FAIL;
 
@@ -64,9 +65,9 @@ _int CWar::Tick(_float fTimeDelta)
 	if (m_War_On_Ruin_State)
 	{
 		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
-		_float4x4 forDontMoveInLocal;
-		XMStoreFloat4x4(&forDontMoveInLocal, XMMatrixIdentity());
-		m_pModelCom_Ruin->Update_Animation(fTimeDelta, &forDontMoveInLocal, "_Master");
+		_float4x4 forDontMoveInWorld;
+		XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
+		m_pModelCom_Ruin->Update_Animation(fTimeDelta, &forDontMoveInWorld, "_Master");
 	}
 	else // War 기본
 	{
@@ -303,6 +304,7 @@ void CWar::War_Key(_float fTimeDelta)
 
 }
 
+// @Override
 _int CWar::Update_Colliders(_matrix wolrdMatrix)
 {
 	for (auto pCollider : m_ColliderList)
@@ -530,20 +532,6 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 	// Outline 원형은 그리지않는다.
 	m_pModelCom[modelIdx]->Set_RawValue("g_DrawOutLine", &drawOutLine, sizeof(bool));
-
-
-#if 0 // Legacy
-	LIGHTDESC		LightDesc = *pGameInstance->Get_LightDesc(0);
-	m_pVIBufferCom->Set_RawValue("g_vLightDir", &_float4(LightDesc.vDirection, 0.f), sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightDiffuse", &LightDesc.vDiffuse, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightAmbient", &LightDesc.vAmbient, sizeof(_float4));
-	m_pVIBufferCom->Set_RawValue("g_vLightSpecular", &LightDesc.vSpecular, sizeof(_float4));
-
-	_float4			vCamPosition;	
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pVIBufferCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
-#endif
-	
 
 	RELEASE_INSTANCE(CGameInstance);
 

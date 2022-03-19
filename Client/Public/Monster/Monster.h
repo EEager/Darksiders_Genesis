@@ -5,7 +5,6 @@
 
 BEGIN(Engine)
 class CRenderer;
-class CCollider;
 class CTransform;
 class CNavigation;
 class CModel;
@@ -13,12 +12,12 @@ END
 
 BEGIN(Client)
 
-class CPlayer final : public CGameObject
+class CMonster : public CGameObject
 {
-private:
-	explicit CPlayer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
-	explicit CPlayer(const CPlayer& rhs);
-	virtual ~CPlayer() = default;
+protected:
+	explicit CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	explicit CMonster(const CMonster& rhs);
+	virtual ~CMonster() = default;
 public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg);
@@ -26,21 +25,18 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-private:	
+protected:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
-	CModel*						m_pModelCom = nullptr;
 	CNavigation*				m_pNaviCom = nullptr;
+	CModel*						m_pModelCom = nullptr;
 
-private:
-	ID3D11ShaderResourceView*	pSRV = nullptr;
-
-private:
-	HRESULT SetUp_Component();
-	HRESULT SetUp_ConstantTable();	
+protected:
+	virtual HRESULT SetUp_Component();
+	virtual HRESULT SetUp_ConstantTable();	
 
 public:	
-	static CPlayer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

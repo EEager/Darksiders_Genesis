@@ -49,47 +49,52 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 		// pMatW 받아서 로컬 애니메이션 움직인거리 만큼 월드행렬에 반영하고 싶다
 		if (pMatW && pRootNodeName && !strcmp(m_szName, pRootNodeName))
 		{
-			// 1. Bone_War_Root 이동값만 가져오자 -> Get_TransformationMatrix_4x4()->m[3] 
+			// Bone_War_Root 이동값만 가져오자 -> Get_TransformationMatrix_4x4()->m[3] 
 			_float4 offsetPos;
 			memcpy(&offsetPos, &m_Channels[iCurrentAnimIndex]->Get_TransformationMatrix_4x4()->m[3], sizeof(_float4));
-			// 2. 이전오프셋위치와 다르고 0, 0, 0, 1이 아니라면 월드행렬에 더해주자.
 			if (offsetPos != m_prevOffsetPos)  // 이전오프셋위치와 다르고
 			{
-				if (m_Channels[iCurrentAnimIndex]->Get_KeyFrameIndex() == 0 || offsetPos == _float4(0.f, 0.f, 0.f, 1.f)) // 현재 오프셋이 0,0,0,1이 아니고 
+				// 첫번째 애니메이션이거나 offset에 변화가 없는 경우는 이전 오프셋값만 갱신한다
+				if (m_Channels[iCurrentAnimIndex]->Get_KeyFrameIndex() == 0 || offsetPos == _float4(0.f, 0.f, 0.f, 1.f)) 
 				{
-					//if (XMVectorGetX(XMVector4Length(XMLoadFloat4(&offsetPos))) < 3.f) // 오프셋을 Air_Land 같은것은 첫번째 키프레임인데 앞ㅈ으로 나간다.. 시발.. 
+					//if (XMVectorGetX(XMVector4Length(XMLoadFloat4(&offsetPos))) < 3.f) // Air_Land 같은것은 첫번째 키프레임인데 이미 오프셋 만큼 앞으로 나간 상태이다.
 					m_prevOffsetPos = offsetPos;
 				}
-				else
+				else // 오프셋만큼 월행을 이동시켜주자
 				{
 
 					_float4 tmpOffset = {};
 					// (현재오프셋위치 - 이전오프셋위치) 만큼 월드행렬에 더할꺼다.
 					XMStoreFloat4(&tmpOffset, XMLoadFloat4(&offsetPos) - XMLoadFloat4(&m_prevOffsetPos));
 
-					// 하지만 War Look 방향을 고려해야한다. 
+					// 하지만 War Look 방향을 고려해야하기때문에 여기서 이동시킬 거리만 얻어오자
 					_float offsetLength = XMVectorGetX(XMVector4Length(XMLoadFloat4(&tmpOffset)));
 
 					// War Look방향으로 offsetLength 곱하여, tmpOffset에 저장하자.
 					XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[2])) * offsetLength);
 
 					// 최종적으로 pMatW에 tmpOffset를 적용한다.
-					// 그러나 네비매쉬위에 없다면? 적용하지말아야지
+					// 그러나 네비매쉬위에 없다면? 적용하지말자
 					if (pNaviCom)
 					{
 						if (pNaviCom->isMove((XMLoadFloat4((_float4*)&pMatW->m[3]) + XMLoadFloat4(&tmpOffset))) == 1)
 						{
 							_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x, tmpOffset.y, tmpOffset.z);
 							XMStoreFloat4x4(pMatW, dstMat);
-							m_prevOffsetPos = offsetPos;
 						}
 					}
-
+					else
+					{
+						_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x, tmpOffset.y, tmpOffset.z);
+						XMStoreFloat4x4(pMatW, dstMat);
+					}
 					// 이전 오프셋위치를 저장한다. 
+					m_prevOffsetPos = offsetPos;
+
 				}
 			}
 
-			// 3. 로컬 애니메이션 위치(m_TransformationMatrix)는 0으로 고정하자.
+			// 로컬 애니메이션 위치(m_TransformationMatrix)는 0으로 고정하자.
 			_float4x4 ZeroOffset;
 			XMStoreFloat4x4(&ZeroOffset, m_Channels[iCurrentAnimIndex]->Get_TransformationMatrix());
 			memcpy(ZeroOffset.m[3], &_float4(0.f, 0.f, 0.f, 1.f), sizeof(_float4));

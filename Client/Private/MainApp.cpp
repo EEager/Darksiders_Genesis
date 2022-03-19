@@ -22,7 +22,7 @@
 // ----------------------
 // Client_Extern.h Variables
 bool g_bUseNormalMap = true;
-bool g_bUseEmissiveMap = false;
+bool g_bUseEmissiveMap = true;
 // ----------------------
 
 

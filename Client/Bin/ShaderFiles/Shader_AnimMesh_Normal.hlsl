@@ -19,7 +19,6 @@ cbuffer cbPerObject
 	matrix		g_ProjMatrix;
 	Material	g_Material;
 
-	// ImGUI에서 사용하는 bool 변수
 	bool		g_UseNormalMap;
 	bool		g_UseEmissiveMap;
 };
@@ -214,7 +213,7 @@ PS_OUT PS_MAIN(PS_IN In)
 		// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
 		// gFogRange : 크면 시야가 더 잘보인다
 		// gFogStart : 안개 적용시킬 시야 시작 지점.
-		float fogLerp = saturate((distToEye - 15.0f) / 100.f);
+		float fogLerp = saturate((distToEye - 15.0f) / 600.f);
 
 		// Blend the fog color and the lit color.
 		Out.vColor = lerp(Out.vColor, vector(0.75f, 0.75f, 0.75f, 1.0f), fogLerp);
