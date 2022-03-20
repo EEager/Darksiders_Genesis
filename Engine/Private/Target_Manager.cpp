@@ -11,7 +11,10 @@ CTarget_Manager::CTarget_Manager()
 HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
 {
 	if (nullptr != Find_RenderTarget(pRenderTargetTag))
-		return E_FAIL;
+	{
+		MSG_BOX("Add_RenderTarget Already exists!");
+		return S_OK;
+	}
 
 	CRenderTarget*		pRenderTarget = CRenderTarget::Create(pDevice, pDeviceContext, iWidth, iHeight, eFormat, vClearColor);
 	if (nullptr == pRenderTarget)
