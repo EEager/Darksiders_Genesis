@@ -34,9 +34,6 @@
     <Filter Include="97.ShaderFiles\Header">
       <UniqueIdentifier>{1f28af27-a403-4abe-8414-dbf3c2416300}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97.ShaderFiles\App">
-      <UniqueIdentifier>{4fa29561-5dee-487e-a939-55b8dfacffd7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96.ImGUI">
       <UniqueIdentifier>{ef296e70-b85a-4179-a8e5-32e98a863054}</UniqueIdentifier>
     </Filter>
@@ -124,6 +121,9 @@
     <Filter Include="02.GameObjects\Monster\HollowLord">
       <UniqueIdentifier>{bba21b6b-b706-4169-8877-bfdb9f340ded}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.ShaderFiles\FromDX11">
+      <UniqueIdentifier>{4fa29561-5dee-487e-a939-55b8dfacffd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -199,7 +199,7 @@
       <Filter>97.ShaderFiles\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\LightHelper.h">
-      <Filter>97.ShaderFiles\App</Filter>
+      <Filter>97.ShaderFiles\FromDX11</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Extern.h">
       <Filter>98.Default</Filter>
@@ -315,7 +315,7 @@
       <Filter>02.GameObjects\Object\Fork</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\LightHelper.cpp">
-      <Filter>97.ShaderFiles\App</Filter>
+      <Filter>97.ShaderFiles\FromDX11</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\War.cpp">
       <Filter>02.GameObjects\Player\War</Filter>
@@ -421,6 +421,9 @@
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Terrain_Shadow.hlsl">
       <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\BuildShadowMap.hlsl">
+      <Filter>97.ShaderFiles\FromDX11</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

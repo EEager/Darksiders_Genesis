@@ -96,7 +96,7 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CPlayer::Render()
+HRESULT CPlayer::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
@@ -108,7 +108,7 @@ HRESULT CPlayer::Render()
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i, 0);
+		m_pModelCom->Render(i, iPassIndex);
 	}
 
 #ifdef _DEBUG

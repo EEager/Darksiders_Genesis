@@ -38,7 +38,7 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);
-	virtual HRESULT Render();
+	virtual HRESULT Render(_uint iPassIndex=0);
 
 
 public:
@@ -113,7 +113,7 @@ private:
 	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);
 	HRESULT SetUp_Ruin_ConstantTable(bool drawOutLine);
 
-	HRESULT War_Render();
+	HRESULT War_Render(_uint iPassIndex = 0);
 
 
 public:

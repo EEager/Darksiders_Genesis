@@ -50,7 +50,7 @@ _int CUI_War_Hp_n_Wrath_Bar::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CUI_War_Hp_n_Wrath_Bar::Render()
+HRESULT CUI_War_Hp_n_Wrath_Bar::Render(_uint iPassIndex)
 {
 	// 1. UI_War_Base 출력
 	if (FAILED(SetUp_ConstantTable_Base()))
@@ -60,12 +60,12 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::Render()
 	// 2. UI_War_HpBar 출력
 	if (FAILED(SetUp_ConstantTable_HpBar()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	// 3. UI_War_WrathBar 출력
 	if (FAILED(SetUp_ConstantTable_WrathBar()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	return S_OK;
 }

@@ -48,7 +48,7 @@ _int CGameObject::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CGameObject::Render()
+HRESULT CGameObject::Render(_uint iPassIndex)
 {
 	return S_OK;
 }

@@ -263,6 +263,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\BuildShadowMap.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh_Normal.hlsl" />

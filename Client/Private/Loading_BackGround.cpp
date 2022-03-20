@@ -67,7 +67,7 @@ _int CLoading_BackGround::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CLoading_BackGround::Render()
+HRESULT CLoading_BackGround::Render(_uint iPassIndex)
 {
 	// 1. Loading_Background Ãâ·Â
 	if (FAILED(SetUp_ConstantTable_BackGround()))
@@ -79,7 +79,7 @@ HRESULT CLoading_BackGround::Render()
 	if (FAILED(SetUp_ConstantTable_LoadingCircle()))
 		return E_FAIL;
 
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	return S_OK;
 }

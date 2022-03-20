@@ -20,7 +20,7 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg) override;
 	virtual _int Tick(_float fTimeDelta) override;
 	virtual _int LateTick(_float fTimeDelta) override;
-	virtual HRESULT Render() override;
+	virtual HRESULT Render(_uint iPassIndex=0) override;
 public:
 	TYPE_MODE Get_Type() { return m_eType; }
 

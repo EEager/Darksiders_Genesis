@@ -75,7 +75,7 @@ _EXIT:
 	return _int();
 }
 
-HRESULT CFork::Render()
+HRESULT CFork::Render(_uint iPassIndex)
 {
 
 	if (FAILED(SetUp_ConstantTable()))
@@ -89,7 +89,7 @@ HRESULT CFork::Render()
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i, 0);
+		m_pModelCom->Render(i, iPassIndex);
 	}
 
 

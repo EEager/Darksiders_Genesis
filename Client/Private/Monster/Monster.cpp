@@ -61,7 +61,7 @@ _int CMonster::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CMonster::Render()
+HRESULT CMonster::Render(_uint iPassIndex)
 {
 	// 모든 몬스터는 아래와 같이 Render를 진행한다
 	if (FAILED(SetUp_ConstantTable()))
@@ -75,7 +75,7 @@ HRESULT CMonster::Render()
 		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
-		m_pModelCom->Render(i, 0);
+		m_pModelCom->Render(i, iPassIndex);
 	}
 
 #ifdef _DEBUG

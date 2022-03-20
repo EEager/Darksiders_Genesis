@@ -56,7 +56,7 @@ _int CCamera_Fly::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CCamera_Fly::Render()
+HRESULT CCamera_Fly::Render(_uint iPassIndex)
 {
 	return S_OK;
 }

@@ -120,10 +120,10 @@ _int CGoblin_Armor::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CGoblin_Armor::Render()
+HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 {
 	// 모든 몬스터는 SetUp_ConstantTable, RenderColliders
-	if (CMonster::Render() < 0)
+	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 
 

@@ -73,3 +73,15 @@ unsigned long ClassName::DestroyInstance()				\
 #ifndef HR
 #define HR(x) (x)
 #endif
+
+//---------------------------------------------------------------------------------------
+// Convenience macro for releasing COM objects.
+//---------------------------------------------------------------------------------------
+
+#define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
+
+//---------------------------------------------------------------------------------------
+// Convenience macro for deleting objects.
+//---------------------------------------------------------------------------------------
+
+#define SafeDelete(x) { delete x; x = 0; }

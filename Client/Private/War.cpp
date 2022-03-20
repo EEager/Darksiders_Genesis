@@ -132,9 +132,9 @@ _EXIT:
 extern bool m_bshow_naviMesh_window;
 #endif
 #endif
-HRESULT CWar::Render()
+HRESULT CWar::Render(_uint iPassIndex)
 {
-	War_Render();
+	War_Render(iPassIndex);
 
 #ifdef _DEBUG
 #ifdef USE_IMGUI
@@ -543,7 +543,7 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 }
 
 
-HRESULT CWar::War_Render()
+HRESULT CWar::War_Render(_uint iPassIndex)
 {
 	// 
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
@@ -564,7 +564,7 @@ HRESULT CWar::War_Render()
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
-			m_pModelCom[modelIdx]->Render(i, 0);
+			m_pModelCom[modelIdx]->Render(i, iPassIndex);
 		}
 	}
 

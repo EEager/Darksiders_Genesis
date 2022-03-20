@@ -55,7 +55,7 @@ _int CTerrain::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CTerrain::Render()
+HRESULT CTerrain::Render(_uint iPassIndex)
 {
 	// m_pDeviceContext->RSSetState(RenderStates::WireframeRS.Get());
 
@@ -64,7 +64,7 @@ HRESULT CTerrain::Render()
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 	 
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	m_pRendererCom->ClearRenderStates();
 

@@ -57,12 +57,12 @@ _int CPointEffect::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CPointEffect::Render()
+HRESULT CPointEffect::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
-	m_pModelCom->Render(0);
+	m_pModelCom->Render(iPassIndex);
 
 	return S_OK;
 }

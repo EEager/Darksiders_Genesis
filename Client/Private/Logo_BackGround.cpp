@@ -55,14 +55,14 @@ _int CLogo_BackGround::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CLogo_BackGround::Render()
+HRESULT CLogo_BackGround::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	return S_OK;
 }

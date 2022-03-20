@@ -33,6 +33,11 @@ public:
 	ID3D11DeviceContext* GetDC() { return m_pDeviceContext; }
 	IDXGISwapChain* GetSwapChain() { return m_pSwapChain; }
 
+	// for shadow map
+	ID3D11RenderTargetView* Get_BackBufferRTV() { return m_pBackBufferRTV; }
+	ID3D11DepthStencilView* Get_DepthStencilView() { return m_pDepthStencilView; }
+	D3D11_VIEWPORT* Get_ViewPortDesc_Ptr() { return &m_ViewPortDesc; }
+
 private:	
 
 	/* 메모리 할당. (정점버퍼, 인덱스버퍼, 텍스쳐로드) */
@@ -46,6 +51,9 @@ private:
 	// ID3D11ShaderResourceView*
 	ID3D11RenderTargetView*		m_pBackBufferRTV = nullptr;
 	ID3D11DepthStencilView*		m_pDepthStencilView = nullptr;
+
+	D3D11_VIEWPORT			m_ViewPortDesc;
+
 
 private:
 	HRESULT Ready_SwapChain(HWND hWnd, WINMODE WinMode, _uint iWinCX, _uint iWinCY);

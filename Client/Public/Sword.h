@@ -32,7 +32,7 @@ public:
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);
-	virtual HRESULT Render();
+	virtual HRESULT Render(_uint iPassIndex=0);
 
 	// ----------------------------------------------------------------
 	// Collider

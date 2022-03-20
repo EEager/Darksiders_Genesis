@@ -58,22 +58,22 @@ _int CUI_War_Skills::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CUI_War_Skills::Render()
+HRESULT CUI_War_Skills::Render(_uint iPassIndex)
 {
 	// 1. UI_Skill_Base 출력
 	if (FAILED(SetUp_ConstantTable_Base()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	// 2. WrathPower 출력
 	if (FAILED(SetUp_ConstantTable_WrathPower()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	// 버튼1
 	if (FAILED(SetUp_ConstantTable_Bnt1()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	// 3. Enhancement 출력
 	CTexture* pEnhance_Texture;
@@ -84,12 +84,12 @@ HRESULT CUI_War_Skills::Render()
 		pEnhance_Texture = m_pTextureCom_Leaf.Get();
 	if (FAILED(SetUp_ConstantTable_Enhancement(pEnhance_Texture)))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	// 버튼G
 	if (FAILED(SetUp_ConstantTable_BntG()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	return S_OK;
 }

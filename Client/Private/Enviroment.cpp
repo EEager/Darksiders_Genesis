@@ -66,7 +66,7 @@ _EXIT:
 	return _int();
 }
 
-HRESULT CEnviroment::Render()
+HRESULT CEnviroment::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
@@ -80,7 +80,7 @@ HRESULT CEnviroment::Render()
 		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
-		m_pModelCom->Render(i, 0);
+		m_pModelCom->Render(i, iPassIndex);
 	}
 
 #ifdef _DEBUG

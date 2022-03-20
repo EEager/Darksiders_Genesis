@@ -74,7 +74,7 @@ _int CCamera::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CCamera::Render()
+HRESULT CCamera::Render(_uint iPassIndex)
 {
 	return S_OK;
 }

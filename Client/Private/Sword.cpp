@@ -60,7 +60,7 @@ _int CSword::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CSword::Render()
+HRESULT CSword::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;	

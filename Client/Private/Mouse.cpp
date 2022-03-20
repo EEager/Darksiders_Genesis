@@ -58,12 +58,12 @@ _int CMouse::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CMouse::Render()
+HRESULT CMouse::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(iPassIndex);
 
 	return S_OK;
 }

@@ -75,10 +75,10 @@ _int CFallenDog::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CFallenDog::Render()
+HRESULT CFallenDog::Render(_uint iPassIndex)
 {
 	// 모든 몬스터는 SetUp_ConstantTable, RenderColliders
-	if (CMonster::Render() < 0)
+	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 
 	return S_OK;

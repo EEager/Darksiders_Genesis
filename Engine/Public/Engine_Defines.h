@@ -64,6 +64,9 @@ using namespace DirectX::PackedVector;
 #include <algorithm>
 #include <unordered_map>
 #include <process.h>
+#include <sstream>
+#include <fstream>
+
 using namespace std;
 
 
