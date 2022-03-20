@@ -15,7 +15,7 @@ CGoblin_Armor::CGoblin_Armor(const CGoblin_Armor & rhs)
 
 HRESULT CGoblin_Armor::NativeConstruct_Prototype()
 {	
-
+	m_bShadowEnable = true;
 	return S_OK;
 }
 

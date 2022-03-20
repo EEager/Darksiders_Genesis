@@ -34,6 +34,10 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::NativeConstruct()
 {
+#ifndef _DEBUG // Release
+	while (::ShowCursor(false) >= 0); // HIDE cursor
+#endif
+
 	CGraphic_Device::GRAPHICDEVDESC		GraphicDevDesc;
 	GraphicDevDesc.eWinMode = CGraphic_Device::MODE_WIN;
 	GraphicDevDesc.iWinCX = (_uint)g_iWinCX;

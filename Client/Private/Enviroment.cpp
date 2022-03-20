@@ -16,7 +16,6 @@ CEnviroment::CEnviroment(const CEnviroment & rhs)
 
 HRESULT CEnviroment::NativeConstruct_Prototype()
 {	
-
 	// Material Init
 	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -30,6 +29,8 @@ HRESULT CEnviroment::NativeConstruct_Prototype()
 
 HRESULT CEnviroment::NativeConstruct(void * pArg)
 {
+	
+
 	if (pArg) // 모델 Com 객체의 프로토타입을 클론시 새롭게 받아오자
 		wsprintfW(m_szModelName, L"%s", pArg);
 

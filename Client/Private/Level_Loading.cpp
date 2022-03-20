@@ -55,7 +55,9 @@ HRESULT CLevel_Loading::Render()
 	if (nullptr == m_pLoader)
 		return E_FAIL;
 
+#ifdef _DEBUG
 	SetWindowText(g_hWnd, m_pLoader->Get_LoadingText());
+#endif
 
 	return S_OK;
 }

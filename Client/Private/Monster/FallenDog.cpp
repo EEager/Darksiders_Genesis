@@ -19,7 +19,7 @@ CFallenDog::CFallenDog(const CFallenDog & rhs)
 
 HRESULT CFallenDog::NativeConstruct_Prototype()
 {	
-
+	m_bShadowEnable = true;
 	return S_OK;
 }
 

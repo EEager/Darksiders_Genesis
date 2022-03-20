@@ -14,10 +14,12 @@ Safe_AddRef(m_pDeviceContext);
 
 void CCell::Set_Constant_Shphere(_fmatrix fmatrix, _float4 vColor)
 {
+#ifdef _DEBUG
 	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", (_float4x4*)&fmatrix, sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
+#endif
 }
 
 HRESULT CCell::NativeConstruct(_float3* pPoints, _uint iIndex)

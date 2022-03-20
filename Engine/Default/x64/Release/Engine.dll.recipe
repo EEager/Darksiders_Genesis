@@ -2,12 +2,12 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>E:\DarkSider2\Darksiders_Genesis\Engine\Bin\Engine.dll</FullPath>
+      <FullPath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Engine\Bin\Engine.dll</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>E:\DarkSider2\Darksiders_Genesis\Engine\Bin\Shader_Line.cso</FullPath>
+      <FullPath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Engine\Bin\Shader_Line.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

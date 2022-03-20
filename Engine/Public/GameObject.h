@@ -98,6 +98,11 @@ public:
 	virtual void OnCollision_Leave(class CGameObject* pDst, float fTimeDelta);
 	// =======================================================================
 
+	// For Test Shadow Map 
+public:
+	_bool m_bShadowEnable = false;
+
+
 
 protected:
 	_float					m_fCamDistance = 0.f;

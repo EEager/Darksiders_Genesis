@@ -15,12 +15,14 @@ CLegion::CLegion(const CLegion & rhs)
 
 HRESULT CLegion::NativeConstruct_Prototype()
 {	
+	m_bShadowEnable = true;
 
 	return S_OK;
 }
 
 HRESULT CLegion::NativeConstruct(void * pArg)
 {
+
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
 		return E_FAIL;	

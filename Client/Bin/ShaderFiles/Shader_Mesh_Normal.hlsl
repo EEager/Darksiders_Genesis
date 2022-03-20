@@ -20,6 +20,9 @@ cbuffer cbPerObject
 	matrix		g_ProjMatrix;
 	Material	g_Material;
 
+	float4x4	gShadowTransform;
+
+	bool		g_enableShadowMap;
 	bool		g_UseNormalMap;
 	bool		g_UseEmissiveMap;
 };
@@ -35,6 +38,7 @@ cbuffer CameraDesc
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
+Texture2D		gShadowMap;
 
 
 // --------------------
@@ -55,6 +59,7 @@ struct VS_OUT
 	float3		TangentW : TANGENT;
 	float2		vTexUV : TEXCOORD0;
 	float4		vPosW : TEXCOORD1;
+	float4 ShadowPosH : TEXCOORD2;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -71,6 +76,10 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.TangentW = mul(In.vTangentL, (float3x3)g_WorldMatrix);
 	Out.vPosW = mul(vector(In.vPosL, 1.f), g_WorldMatrix);
 
+	// 그림자 맵을 장면에 투영하기 위한 투영 텍스처 좌표를 생성한다.
+	if (g_enableShadowMap)
+		Out.ShadowPosH = mul(float4(In.vPosL, 1.0f), gShadowTransform);
+
 	return Out;
 }
 
@@ -85,6 +94,7 @@ struct PS_IN
 	float3		TangentW : TANGENT;
 	float2		vTexUV : TEXCOORD0;
 	float4		vPosW : TEXCOORD1;
+	float4 ShadowPosH : TEXCOORD2;
 };
 
 struct PS_OUT
@@ -137,6 +147,13 @@ PS_OUT PS_MAIN(PS_IN In)
 		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+		// Only the first light casts a shadow.
+		float3 shadow = float3(1.0f, 1.0f, 1.0f);
+		if (g_enableShadowMap)
+		{
+			shadow[0] = CalcShadowFactor(samShadow, gShadowMap, In.ShadowPosH);
+		}
+
 		// Sum the light contribution from each light source.
 		float4 A, D, S;
 
@@ -145,8 +162,8 @@ PS_OUT PS_MAIN(PS_IN In)
 		else
 			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW.xyz, A, D, S);
 		ambient += A;
-		diffuse += D;
-		spec += S;
+		diffuse += shadow[0] * D;
+		spec += shadow[0] * S;
 
 		//ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
 		//ambient += A;
@@ -191,6 +208,37 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
+void PS_SHADOW(PS_IN In)
+{
+	float4 diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	// Don't write transparent pixels to the shadow map.
+	clip(diffuse.a - 0.15f);
+}
+
+RasterizerState Depth
+{
+	// [From MSDN]
+	// If the depth buffer currently bound to the output-merger stage has a UNORM format or
+	// no depth buffer is bound the bias value is calculated like this: 
+	//
+	// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
+	//
+	// where r is the minimum representable value > 0 in the depth-buffer format converted to float32.
+	// [/End MSDN]
+	// 
+	// For a 24-bit depth buffer, r = 1 / 2^24.
+	//
+	// Example: DepthBias = 100000 ==> Actual DepthBias = 100000/2^24 = .006
+
+	// You need to experiment with these values for your scene.
+	DepthBias = 100000;
+	DepthBiasClamp = 0.0f;
+	SlopeScaledDepthBias = 1.0f;
+
+	CullMode = None;
+};
+
 technique11	DefaultTechnique
 {
 	pass DefaultPass
@@ -200,5 +248,11 @@ technique11	DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
-
+	pass ShadowPass
+	{
+		SetRasterizerState(Depth);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_SHADOW();
+	}
 }

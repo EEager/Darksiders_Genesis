@@ -44,9 +44,10 @@ HRESULT CMeshContainer::Render()
 
 	_uint		iOffset = 0;
 
-	m_pDeviceContext->IASetVertexBuffers(0, 1, &m_pVB, &m_iStride, &iOffset);
+	m_pDeviceContext->IASetVertexBuffers(0, m_iNumVertexBuffers, &m_pVB, &m_iStride, &iOffset);
 	m_pDeviceContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
 	m_pDeviceContext->IASetPrimitiveTopology(m_ePrimitiveTopology);
+
 
 	m_pDeviceContext->DrawIndexed(m_iNumPrimitive * m_iNumIndicesPerFigure, 0, 0);
 

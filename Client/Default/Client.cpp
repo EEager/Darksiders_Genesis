@@ -65,8 +65,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return FALSE;
 
 	_double		TimerAcc = 0.0;
+	_double		dt = 0.0;
 
     MSG msg;
+	_uint iFPS = 0;
+	_float fTimeStack = 0.f;
 
     // 기본 메시지 루프입니다.
 	while (true)
@@ -83,12 +86,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}	
 		}
 
-		TimerAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+		dt = pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+		TimerAcc += dt;
+		fTimeStack += (float)dt;
 
 #define MAX_FPS 144.f
-		if (TimerAcc > 1.f / MAX_FPS)
+		if (TimerAcc >= 1.f / MAX_FPS)
 		{
 			TimerAcc = 0.0;
+			++iFPS;
 
 			pMainApp->Tick((float)pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
 
@@ -101,6 +107,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			pMainApp->Present();
 		}
+
+#ifndef _DEBUG // FPS 계산
+		if (fTimeStack >= 1.f)
+		{
+			TCHAR szFPS[64] = L"";
+			swprintf_s(szFPS, L"FPS: %d", iFPS); // Frame Per Seconde
+			::SetWindowText(g_hWnd, szFPS);
+			fTimeStack = 0.f;
+			iFPS = 0.f;
+		}
+#endif
 	}
 
 
