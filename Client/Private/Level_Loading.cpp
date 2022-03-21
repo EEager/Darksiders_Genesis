@@ -55,7 +55,9 @@ HRESULT CLevel_Loading::Render()
 	if (nullptr == m_pLoader)
 		return E_FAIL;
 
+#ifdef _DEBUG
 	SetWindowText(g_hWnd, m_pLoader->Get_LoadingText());
+#endif
 
 	return S_OK;
 }
@@ -66,7 +68,7 @@ const _tchar* CLevel_Loading::GetDots(bool loadFinished)
 		return L"";
 
 	const _tchar* m_szDots = L"";
-	
+
 	switch ((int)m_fNumDot)
 	{
 	case 0: m_szDots = L"."; break;
@@ -129,9 +131,9 @@ HRESULT CLevel_Loading::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, uniqu
 
 HRESULT CLevel_Loading::Open_Level()
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	CLevel*			pLevel = nullptr;
+	CLevel* pLevel = nullptr;
 
 	switch (m_eNextLevel)
 	{
@@ -160,9 +162,9 @@ except:
 
 }
 
-HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar * pLayerTag)
+HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* pLayerTag)
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_LOADING, pLayerTag, TEXT("Prototype_GameObject_Loading_BackGround"))))
 		return E_FAIL;
@@ -173,22 +175,22 @@ HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar * pLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_Loading::Ready_Layer_LoadingUI(const _tchar * pLayerTag)
+HRESULT CLevel_Loading::Ready_Layer_LoadingUI(const _tchar* pLayerTag)
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	
+
 
 	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
 }
 
-CLevel_Loading * CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, LEVEL eNextLevel)
+CLevel_Loading* CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, LEVEL eNextLevel)
 {
-	CLevel_Loading*		pInstance = new CLevel_Loading(pDevice, pDeviceContext);
+	CLevel_Loading* pInstance = new CLevel_Loading(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct(eNextLevel)))	{
+	if (FAILED(pInstance->NativeConstruct(eNextLevel))) {
 		MSG_BOX("Failed to Created CLevel_Loading");
 		Safe_Release(pInstance);
 	}
@@ -198,7 +200,7 @@ CLevel_Loading * CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceConte
 
 void CLevel_Loading::Free()
 {
-	__super::Free();	
+	__super::Free();
 
 	Safe_Release(m_pLoader);
 }

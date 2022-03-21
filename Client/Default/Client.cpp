@@ -26,37 +26,37 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 CMainApp* pMainApp = nullptr;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: 여기에 코드를 입력합니다.
+	// TODO: 여기에 코드를 입력합니다.
 
-    // 전역 문자열을 초기화합니다.
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_CLIENT, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+	// 전역 문자열을 초기화합니다.
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_CLIENT, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hInstance);
 
-    // 응용 프로그램 초기화를 수행합니다.
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+	// 응용 프로그램 초기화를 수행합니다.
+	if (!InitInstance(hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
 	pMainApp = CMainApp::Create();
 	if (nullptr == pMainApp)
 		return FALSE;
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
+	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	if (FAILED(pGameInstance->Add_Timers(TEXT("Timer_Default"))))
 		return FALSE;
@@ -65,10 +65,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return FALSE;
 
 	_double		TimerAcc = 0.0;
+	_double		dt = 0.0;
 
-    MSG msg;
+	MSG msg;
+	_uint iFPS = 0;
+	_float fTimeStack = 0.f;
 
-    // 기본 메시지 루프입니다.
+	// 기본 메시지 루프입니다.
 	while (true)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -80,15 +83,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
-			}	
+			}
 		}
 
-		TimerAcc += pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+		dt = pGameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+		TimerAcc += dt;
+		fTimeStack += (float)dt;
 
 #define MAX_FPS 144.f
-		if (TimerAcc > 1.f / MAX_FPS)
+		if (TimerAcc >= 1.f / MAX_FPS)
 		{
 			TimerAcc = 0.0;
+			++iFPS;
 
 			pMainApp->Tick((float)pGameInstance->Compute_TimeDelta(TEXT("Timer_60")));
 
@@ -101,6 +107,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 			pMainApp->Present();
 		}
+
+#ifndef _DEBUG // FPS 계산
+		if (fTimeStack >= 1.f)
+		{
+			TCHAR szFPS[64] = L"";
+			swprintf_s(szFPS, L"FPS: %d", iFPS); // Frame Per Seconde
+			::SetWindowText(g_hWnd, szFPS);
+			fTimeStack = 0.f;
+			iFPS = 0.f;
+		}
+#endif
 	}
 
 
@@ -108,9 +125,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Safe_Release(pMainApp);
 
-  
 
-    return (int) msg.wParam;
+
+	return (int)msg.wParam;
 }
 
 
@@ -122,23 +139,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+	WNDCLASSEXW wcex;
 
-    wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = NULL;
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = szWindowClass;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    return RegisterClassExW(&wcex);
+	return RegisterClassExW(&wcex);
 }
 
 //
@@ -161,17 +178,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, rcWindow.right - rcWindow.left, rcWindow.bottom - rcWindow.top, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
-   g_hWnd = hWnd;
+	g_hWnd = hWnd;
 
-   return TRUE;
+	return TRUE;
 }
 
 //

@@ -4,20 +4,22 @@
 #include "VIBuffer_Sphere.h"
 #include "Renderer.h"
 
-CCell::CCell(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
+CCell::CCell(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: m_pDevice(pDevice)
 	, m_pDeviceContext(pDeviceContext)
 {
-Safe_AddRef(m_pDevice);
-Safe_AddRef(m_pDeviceContext);
+	Safe_AddRef(m_pDevice);
+	Safe_AddRef(m_pDeviceContext);
 }
 
 void CCell::Set_Constant_Shphere(_fmatrix fmatrix, _float4 vColor)
 {
+#ifdef _DEBUG
 	m_pVIBufferSphere->Set_RawValue("g_WorldMatrix", (_float4x4*)&fmatrix, sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW)), sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ)), sizeof(_float4x4));
 	m_pVIBufferSphere->Set_RawValue("g_vColor", &vColor, sizeof(_float4));
+#endif
 }
 
 HRESULT CCell::NativeConstruct(_float3* pPoints, _uint iIndex)
@@ -77,7 +79,7 @@ _bool CCell::isIn(_vector vObjectPoint, _float4x4* pWorldMatrix, CCell** ppNeigh
 	// 3개의 변을 돌면서 vPoint가 내부점에 있는지 확인해야한다
 	for (_uint i = 0; i < LINE_END; ++i)
 	{
-		_vector pointTemp = XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix)); 
+		_vector pointTemp = XMVector3TransformCoord(XMLoadFloat3(&m_vPoints[i]), XMLoadFloat4x4(pWorldMatrix));
 		pointTemp = XMVectorSetY(pointTemp, XMVectorGetY(vObjectPoint)); // y는 vPoint를 기준으로 하자
 
 		_vector		vDirW = vObjectPoint - pointTemp;
@@ -135,7 +137,7 @@ HRESULT CCell::Render(_float4x4* pWorldMatrix, _uint iCurrentIndex)
 			Set_Constant_Shphere(XMMatrixTranspose(XMMatrixTranslation(m_vPoints[i].x, m_vPoints[i].y, m_vPoints[i].z)), _float4(1.f, 0.f, 1.f, 1.f));
 		else
 			Set_Constant_Shphere(XMMatrixTranspose(XMMatrixTranslation(m_vPoints[i].x, m_vPoints[i].y, m_vPoints[i].z)), _float4(1.f, 1.f, 1.f, 1.f));
-		
+
 		m_pVIBufferSphere->Render(0);
 	}
 
@@ -169,9 +171,9 @@ HRESULT CCell::Ready_DebugBuffer()
 }
 #endif // _DEBUG
 
-CCell * CCell::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _float3* pPoints, _uint iIndex)
+CCell* CCell::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _float3* pPoints, _uint iIndex)
 {
-	CCell*	pInstance = new CCell(pDevice, pDeviceContext);
+	CCell* pInstance = new CCell(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct(pPoints, iIndex)))
 	{

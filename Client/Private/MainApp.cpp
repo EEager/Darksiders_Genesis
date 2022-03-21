@@ -34,6 +34,10 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::NativeConstruct()
 {
+#ifndef _DEBUG // Release
+	while (::ShowCursor(false) >= 0); // HIDE cursor
+#endif
+
 	CGraphic_Device::GRAPHICDEVDESC		GraphicDevDesc;
 	GraphicDevDesc.eWinMode = CGraphic_Device::MODE_WIN;
 	GraphicDevDesc.iWinCX = (_uint)g_iWinCX;
@@ -45,7 +49,7 @@ HRESULT CMainApp::NativeConstruct()
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pDeviceContext);
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/Requiem_18.spritefont");
-	
+
 
 #if defined(USE_IMGUI)
 	CImguiManager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
@@ -61,7 +65,7 @@ HRESULT CMainApp::NativeConstruct()
 	//	return E_FAIL;
 
 	if (FAILED(Open_Level(LEVEL_LOGO)))
-		return E_FAIL;	
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -96,7 +100,7 @@ HRESULT CMainApp::Clear()
 
 HRESULT CMainApp::Render()
 {
-  	m_pRenderer->Draw(); // Main Draw
+	m_pRenderer->Draw(); // Main Draw
 
 	m_pGameInstance->Render_Engine(); // Level Dummy
 
@@ -129,7 +133,7 @@ HRESULT CMainApp::PostRender()
 		GraphicsDevice.RenderState.AlphaBlendEnable = false;
 		GraphicsDevice.RenderState.AlphaTestEnable = false;
 		(Depending on your 3D content)
-	    GraphicsDevice.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
+		GraphicsDevice.SamplerStates[0].AddressU = TextureAddressMode.Wrap;
 		GraphicsDevice.SamplerStates[0].AddressV = TextureAddressMode.Wrap;
 	*/
 	m_pDeviceContext->RSSetState(0);
@@ -185,7 +189,7 @@ HRESULT CMainApp::Open_Level(LEVEL eStartID)
 	if (nullptr == m_pGameInstance)
 		return E_FAIL;
 
-	CLevel*		pNextLevel = CLevel_Loading::Create(m_pDevice, m_pDeviceContext, eStartID);
+	CLevel* pNextLevel = CLevel_Loading::Create(m_pDevice, m_pDeviceContext, eStartID);
 	if (nullptr == pNextLevel)
 		return E_FAIL;
 
@@ -208,7 +212,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), CTransform::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_VIBuffer_Rect */ 
+	/* For.Prototype_Component_VIBuffer_Rect */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Rect.hlsl")))))
 		return E_FAIL;
 
@@ -222,7 +226,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	/* For.Prototype_Component_Texture_Logo */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title.dds")))))
 		return E_FAIL;
-	
+
 	/* For.Prototype_Component_Texture_Loading */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Loading/DSG_Loading_Emblem.dds")))))
 		return E_FAIL;
@@ -235,7 +239,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_Dissolve */
- 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/T_DissolveMask_A.tga")))))
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/T_DissolveMask_A.tga")))))
 		return E_FAIL;
 
 	// ======================================================================
@@ -313,9 +317,9 @@ HRESULT CMainApp::Ready_Gara()
 	return S_OK;
 }
 
-CMainApp * CMainApp::Create()
+CMainApp* CMainApp::Create()
 {
-	CMainApp*	pInstance = new CMainApp();
+	CMainApp* pInstance = new CMainApp();
 
 	if (FAILED(pInstance->NativeConstruct()))
 	{
