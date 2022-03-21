@@ -22,6 +22,9 @@ cbuffer cbPerObject
 
 	bool		g_UseNormalMap;
 	bool		g_UseEmissiveMap;
+
+	bool		g_UseRoughnessMap;
+	bool		g_UseMetalMap;
 };
 
 cbuffer CameraDesc
@@ -35,6 +38,8 @@ cbuffer CameraDesc
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
+texture2D		g_RoughnessTexture; // Roughness Map
+texture2D		g_MetalTexture; // Metal Map
 
 
 // --------------------
