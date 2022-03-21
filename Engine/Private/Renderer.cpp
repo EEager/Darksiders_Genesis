@@ -268,6 +268,8 @@ void ShadowMap::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc)
 
 
 
+
+
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
 	, m_pTarget_Manager(CTarget_Manager::GetInstance())
@@ -339,49 +341,8 @@ HRESULT CRenderer::Add_PostRenderGroup(CGameObject* pGameObject)
 	return S_OK;
 }
 
-bool bOnce;
 HRESULT CRenderer::Draw()
 {
-	if (!bOnce)
-	{
-		//// Only the first "main" light casts a shadow.
-		//XMVECTOR lightDir = XMLoadFloat3(&mDirLights[0].Direction);
-		//XMVECTOR lightPos = -2.0f * mSceneBounds.Radius * lightDir;
-		//XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
-		//XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-
-		//// 카메라의 위치와 타겟의 위치를 입력하여  카메라가 타겟을 바라보는 방향에 대한   View 행렬을 생성
-		//XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
-
-		//// Transform bounding sphere to light space.
-		//XMFLOAT3 sphereCenterLS;
-		//XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
-
-		//// Ortho frustum in light space encloses scene.
-		//float l = sphereCenterLS.x - mSceneBounds.Radius;
-		//float b = sphereCenterLS.y - mSceneBounds.Radius;
-		//float n = sphereCenterLS.z - mSceneBounds.Radius;
-		//float r = sphereCenterLS.x + mSceneBounds.Radius;
-		//float t = sphereCenterLS.y + mSceneBounds.Radius;
-		//float f = sphereCenterLS.z + mSceneBounds.Radius;
-		//XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
-
-		//// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-		//XMMATRIX T(
-		//	0.5f, 0.0f, 0.0f, 0.0f,
-		//	0.0f, -0.5f, 0.0f, 0.0f,
-		//	0.0f, 0.0f, 1.0f, 0.0f,
-		//	0.5f, 0.5f, 0.0f, 1.0f);
-
-		//XMMATRIX S = V * P * T;
-
-		//XMStoreFloat4x4(&mLightView, V);
-		//XMStoreFloat4x4(&mLightProj, P);
-		//XMStoreFloat4x4(&mShadowTransform, S);
-		bOnce = true;
-	}
-
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
 	if (FAILED(Render_Priority_Terrain()))
@@ -491,47 +452,37 @@ HRESULT CRenderer::Render_NonAlpha()
 #ifdef SHADOW_MAP_TEST
 	//mSmap->BindDsvAndSetNullRenderTarget(m_pDeviceContext);
 
-	///* 그림자 Render */
+	//// DrawSceneToShadowMap(); 동작을 여기서 수행
 	//for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
 	//{
 	//	if (nullptr != pGameObject)
 	//	{
+	//		if (FAILED(pGameObject->Render()))
+	//			return E_FAIL;
 
-	//		if (pGameObject->m_bShadowEnable) // RENDER_NONALPHA_Shadow하나 만들자
-	//			if (FAILED(pGameObject->Render(0)))
-	//				return E_FAIL;
+	//		Safe_Release(pGameObject);
 	//	}
 	//}
 
 	////
 	//// Restore the back and depth buffer to the OM stage.
 	////
-	//ClearRenderStates();
+	//m_pDeviceContext->RSSetState(0);
 	//ID3D11RenderTargetView* renderTargets[1] = { CGraphic_Device::GetInstance()->Get_BackBufferRTV() };
 	//m_pDeviceContext->OMSetRenderTargets(1, renderTargets, CGraphic_Device::GetInstance()->Get_DepthStencilView());
 	//m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
 
-	////m_pDeviceContext->ClearRenderTargetView(CGraphic_Device::GetInstance()->Get_BackBufferRTV(), reinterpret_cast<const float*>(&Colors::Black));
-	////m_pDeviceContext->ClearDepthStencilView(CGraphic_Device::GetInstance()->Get_DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//m_pDeviceContext->ClearRenderTargetView(CGraphic_Device::GetInstance()->Get_BackBufferRTV(), reinterpret_cast<const float*>(&Colors::Silver));
+	//m_pDeviceContext->ClearDepthStencilView(CGraphic_Device::GetInstance()->Get_DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 #endif
 
 
-	/* 기본 Render */
+	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
 	{
 		if (nullptr != pGameObject)
 		{
-			// 여기서
-			// 1. 오브젝트가 가지고 있는 m_pEffect(Com_Model or Com_VIBuffer)를 모두 Com_Model로 통일해야할듯?
-			// 2. ID3DX11EffectVariable* pValiable = m_pEffect->GetVariableByName(pConstantName);
-			// 3. pValiable->SetRawValue(pData, 0, iSize);	
-			/*
-				Effects::NormalMapFX->SetDirLights(mDirLights);
-				Effects::NormalMapFX->SetEyePosW(mCam.GetPosition());
-				Effects::NormalMapFX->SetShadowMap(mSmap->DepthMapSRV());
-			*/
-
-			if (FAILED(pGameObject->Render(0)))
+			if (FAILED(pGameObject->Render()))
 				return E_FAIL;
 
 			Safe_Release(pGameObject);

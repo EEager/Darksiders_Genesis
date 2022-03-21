@@ -30,7 +30,7 @@ CWar::CWar(const CWar & rhs)
 
 HRESULT CWar::NativeConstruct_Prototype()
 {	
-	m_bShadowEnable = true;
+
 	return S_OK;
 }
 

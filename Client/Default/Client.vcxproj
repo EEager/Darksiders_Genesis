@@ -177,7 +177,6 @@
     <ClInclude Include="..\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="..\ImGUI\imstb_textedit.h" />
     <ClInclude Include="..\ImGUI\imstb_truetype.h" />
-    <ClInclude Include="..\Public\Client_Enum.h" />
     <ClInclude Include="..\Public\Enviroment.h" />
     <ClInclude Include="..\Public\Logo_BackGround.h" />
     <ClInclude Include="..\Public\Camera_Fly.h" />

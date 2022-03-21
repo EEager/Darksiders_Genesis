@@ -47,6 +47,16 @@ texture2D		g_BrushTexture;
 
 Texture2D gShadowMap; // ShadowMap
 
+SamplerComparisonState samShadow
+{
+	Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	AddressU = BORDER;
+	AddressV = BORDER;
+	AddressW = BORDER;
+	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	ComparisonFunc = LESS;
+};
 
 // --------------------
 // VS
@@ -211,17 +221,6 @@ technique11 LightTech
 		SetVertexShader(CompileShader(vs_5_0, VS()));
 		SetGeometryShader(NULL);
 		SetPixelShader(CompileShader(ps_5_0, PS()));
-	}
-
-	pass P1
-	{
-		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		SetDepthStencilState(DefaultDepthStencilState, 0);
-		SetRasterizerState(WireframeRasterizerState);
-
-		SetVertexShader(CompileShader(vs_5_0, VS()));
-		SetGeometryShader(NULL);
-		SetPixelShader(NULL);
 	}
 }
 

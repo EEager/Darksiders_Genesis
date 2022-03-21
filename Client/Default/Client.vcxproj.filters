@@ -255,9 +255,6 @@
     <ClInclude Include="..\Public\Monster\HollowLord.h">
       <Filter>02.GameObjects\Monster\HollowLord</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Client_Enum.h">
-      <Filter>98.Default</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">

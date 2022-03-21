@@ -16,7 +16,7 @@ CPlayer::CPlayer(const CPlayer & rhs)
 
 HRESULT CPlayer::NativeConstruct_Prototype()
 {	
-	m_bShadowEnable = true;
+
 	return S_OK;
 }
 

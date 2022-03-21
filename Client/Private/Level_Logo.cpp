@@ -42,10 +42,7 @@ _int CLevel_Logo::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Logo::Render()
 {
-#ifdef _DEBUG
-
 	SetWindowText(g_hWnd, TEXT("로고씬입니다. "));
-#endif
 
 	return S_OK;
 }

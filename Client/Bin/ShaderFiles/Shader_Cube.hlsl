@@ -71,10 +71,4 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
-	pass ShadowPass
-	{
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		PixelShader = NULL;
-	}
 }

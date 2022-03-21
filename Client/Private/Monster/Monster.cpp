@@ -22,7 +22,6 @@ HRESULT CMonster::NativeConstruct_Prototype()
 
 HRESULT CMonster::NativeConstruct(void * pArg)
 {
-
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (SetUp_Component())
 		return E_FAIL;	

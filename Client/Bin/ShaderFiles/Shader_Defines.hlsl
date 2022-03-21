@@ -54,17 +54,6 @@ SamplerState DefaultSampler
 	AddressV = WRAP;
 };
 
-SamplerComparisonState samShadow
-{
-	Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-	AddressU = BORDER;
-	AddressV = BORDER;
-	AddressW = BORDER;
-	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	ComparisonFunc = LESS_EQUAL; // s(p) 보다 작거나 같은 점을 찍자
-};
-
 
 // --------------------
 // BlendState
@@ -137,9 +126,5 @@ RasterizerState NoCull
 {
 	CullMode = None;
 };
-
-
-// ----------------------
-// 
 
 #endif

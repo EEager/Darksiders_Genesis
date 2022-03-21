@@ -99,13 +99,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
-void PS_SHADOW(PS_IN In)
-{
-	float4 diffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
-	// Don't write transparent pixels to the shadow map.
-	clip(diffuse.a - 0.15f);
-}
 
 technique11	DefaultTechnique
 {
@@ -115,14 +109,6 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
-	}
-
-	pass ShadowPass
-	{
-		SetRasterizerState(NoCull);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_SHADOW();
 	}
 
 }

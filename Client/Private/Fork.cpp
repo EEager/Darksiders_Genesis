@@ -16,9 +16,7 @@ CFork::CFork(const CFork & rhs)
 
 HRESULT CFork::NativeConstruct_Prototype()
 {	
-	m_bShadowEnable = true;
 
-	
 	// Material Init
 	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
