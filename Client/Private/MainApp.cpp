@@ -23,6 +23,8 @@
 // Client_Extern.h Variables
 bool g_bUseNormalMap = true;
 bool g_bUseEmissiveMap = true;
+bool g_bUseRoughnessMap = false;
+bool g_bUseMetalicMap = false;
 // ----------------------
 
 

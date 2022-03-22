@@ -772,6 +772,8 @@ void CImguiManager::ShowHLSLControlWindow()
 
 	ImGui::Checkbox("g_bUseNormalMap", &g_bUseNormalMap);
 	ImGui::Checkbox("g_bUseEmissiveMap", &g_bUseEmissiveMap);
+	ImGui::Checkbox("g_bUseRoughnessMap", &g_bUseRoughnessMap);
+	ImGui::Checkbox("g_bUseMetalicMap", &g_bUseMetalicMap);
 	ImGui::End();
 }
 

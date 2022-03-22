@@ -47,8 +47,7 @@ cbuffer BoneMatrices
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
-texture2D		g_RoughnessTexture; // Roughness Map
-texture2D		g_MetalTexture; // Metal Map
+texture2D		g_MetalRoughnessTexture; // Roughness Metal Map
 
 bool		g_DrawOutLine = false;
 
@@ -177,8 +176,6 @@ PS_OUT PS_MAIN(PS_IN In)
 
 		// Sum the light contribution from each light source.
 		float4 A, D, S;
-
-
 		if (g_UseNormalMap)
 			ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
 		else
@@ -186,7 +183,15 @@ PS_OUT PS_MAIN(PS_IN In)
 
 		ambient += A;
 		diffuse += D;
-		spec += S;
+
+		if (g_UseRoughnessMap)
+		{
+			spec = S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 20.f;
+		}
+		else
+		{
+			spec += S;
+		}
 
 		// Modulate with late add.
 		Out.vColor = texColor * (ambient + diffuse) + spec;

@@ -38,8 +38,7 @@ cbuffer CameraDesc
 texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
-texture2D		g_RoughnessTexture; // Roughness Map
-texture2D		g_MetalTexture; // Metal Map
+texture2D		g_MetalRoughnessTexture; // Roughness Metal Map
 
 
 // --------------------
@@ -144,14 +143,22 @@ PS_OUT PS_MAIN(PS_IN In)
 
 		// Sum the light contribution from each light source.
 		float4 A, D, S;
-
 		if (g_UseNormalMap)
 			ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
 		else
 			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW.xyz, A, D, S);
+
 		ambient += A;
 		diffuse += D;
-		spec += S;
+
+		if (g_UseRoughnessMap)
+		{
+			spec += S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 10.f;
+		}
+		else
+		{
+			spec += S;
+		}
 
 		//ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
 		//ambient += A;
@@ -175,7 +182,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 
 	// --------------------------
-	// Fogging 마지막에 하자
+	// Fogging 마지막에 하자 
 	// --------------------------
 
 	//if (gFogEnabled)

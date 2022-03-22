@@ -30,12 +30,13 @@ CWar::CWar(const CWar & rhs)
 
 HRESULT CWar::NativeConstruct_Prototype()
 {	
-
 	return S_OK;
 }
 
 HRESULT CWar::NativeConstruct(void * pArg)
 {
+	m_tMtrlDesc.vMtrlSpecular = { 1.f, 1.f, 1.f, 7.f };
+
 	if (SetUp_Component())
 		return E_FAIL;	
 
@@ -537,6 +538,10 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 	// Outline 원형은 그리지않는다.
 	m_pModelCom[modelIdx]->Set_RawValue("g_DrawOutLine", &drawOutLine, sizeof(bool));
 
+	// Roughness Map 사용하자
+	m_pModelCom[modelIdx]->Set_RawValue("g_UseRoughnessMap", &g_bUseRoughnessMap, sizeof(bool));
+	m_pModelCom[modelIdx]->Set_RawValue("g_UseMetalMap", &g_bUseMetalicMap, sizeof(bool));
+
 	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
@@ -563,6 +568,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_MetalRoughnessTexture", i, aiTextureType_SHININESS);
 
 			m_pModelCom[modelIdx]->Render(i, iPassIndex);
 		}
