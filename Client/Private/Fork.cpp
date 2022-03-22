@@ -178,7 +178,7 @@ HRESULT CFork::SetUp_ConstantTable()
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
 	// Bind Dissolve 
-	dissolvePower += 0.001f; 
+	dissolvePower += 0.002f; 
 	if (dissolvePower >= 1.f) // 1이면 다 사라졌다
 		dissolvePower = 0.f;
 	m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));

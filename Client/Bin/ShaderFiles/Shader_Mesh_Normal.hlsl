@@ -153,7 +153,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 		if (g_UseRoughnessMap)
 		{
-			spec += S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 10.f;
+			spec = spec + S + (S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 20.f);
 		}
 		else
 		{

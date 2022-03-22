@@ -32,8 +32,8 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	/* For.Collider */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vPivot = _float3(0.f, .5f, 0.f);
-	ColliderDesc.vSize = _float3(0.5f, 1.0f, 0.5f);
+	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
+	ColliderDesc.vSize = _float3(0.5f, 1.5f, 0.5f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 	__super::Add_Collider(&ColliderDesc, L"GoblinBody");
 

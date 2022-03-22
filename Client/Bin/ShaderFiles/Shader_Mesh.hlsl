@@ -71,15 +71,29 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 	
-	if (g_DissolvePwr > 0)
-	{
-		float Dissolve = g_DissolveTexture.Sample(DefaultSampler, In.vTexUV).r; // r:잘게, g:부드럽게, b:한쪽먼저
-		clip(Dissolve - g_DissolvePwr);
-	}
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 
+	if (g_DissolvePwr > 0)
+	{
+		float Dissolve = g_DissolveTexture.Sample(DefaultSampler, In.vTexUV).g; // r:잘게, g:부드럽게, b:한쪽먼저
+		float dissolveTest = Dissolve - g_DissolvePwr;
+		clip(dissolveTest);
+
+		if (dissolveTest > 0.03 && dissolveTest <= 0.05)
+		{
+			Out.vDiffuse = float4(1, 0, 0, 1); // 빨
+		}
+		else if (dissolveTest <= 0.03f && dissolveTest > 0.01f)
+		{
+			Out.vDiffuse = float4(1, 1, 0, 1); // 노
+		}
+		else if (dissolveTest <= 0.01f)
+		{
+			Out.vDiffuse = float4(1, 1, 1, 1); // 흰
+		}
+	}
 
 	return Out;
 }
