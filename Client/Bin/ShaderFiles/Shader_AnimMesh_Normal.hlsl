@@ -93,7 +93,11 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	vector		vPosBone = mul(vector(In.vPosL, 1.f), BoneMatrix);
 	Out.vPosP = mul(vPosBone, matWVP);
-	Out.vNormalW = normalize(mul(vector(In.vNormalL, 0.f), g_WorldMatrix));
+
+
+	vector		vNormal = mul(vector(In.vNormalL, 0.f), BoneMatrix);
+	Out.vNormalW = normalize(mul(vNormal, g_WorldMatrix));
+	//Out.vNormalW = normalize(mul(vector(In.vNormalL, 0.f), g_WorldMatrix));
 	Out.vTexUV = In.vTexUV;
 	Out.TangentW = mul(In.vTangentL, (float3x3)g_WorldMatrix);
 	Out.vPosW = mul(vector(In.vPosL, 1.f), g_WorldMatrix);

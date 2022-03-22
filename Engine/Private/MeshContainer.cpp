@@ -163,6 +163,8 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 
 
 		memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices->vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices->vNormal), PivotMatrix));
+
 		memcpy(&pVertices->vTexUV, &pMesh->mTextureCoords[0][i], sizeof(_float2));
 		memcpy(&pVertices->vTangent, &pMesh->mTangents[i], sizeof(_float3));
 	}
