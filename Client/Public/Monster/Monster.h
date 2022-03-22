@@ -28,6 +28,8 @@ public:
 protected:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
+	_float						m_fSpeed = 10.f;
+
 	CNavigation*				m_pNaviCom = nullptr;
 	CModel*						m_pModelCom = nullptr;
 

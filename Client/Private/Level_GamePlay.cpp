@@ -246,7 +246,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	/* For.Prototype_GameObject_Legion*/
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 8; i++)
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"))))
 			return E_FAIL;
 

@@ -266,6 +266,11 @@ void CModel::SetUp_Animation(const char* pNameKey, _bool isLoop, _bool useLatest
 	m_isLoop = isLoop;
 }
 
+void CModel::SetUp_Animation(string pNameKey, _bool isLoop, _bool useLatestLerp) {
+
+	SetUp_Animation(pNameKey.c_str(), isLoop, useLatestLerp);
+}
+
 _bool CModel::Get_Animation_isFinished(const char* pNameKey)
 {
 	auto findIter = m_AniNameKey_IdxValue_Map.find(pNameKey);

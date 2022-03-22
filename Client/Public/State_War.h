@@ -1093,10 +1093,10 @@ public:
 --------------------------------------------------------------------------------*/
 
 
-#define WAR_SPEED 3.7f
-#define WAR_NO_WEAPON_SPEED 5.5f
-#define RUIN_SPEED 7.f
-#define RUIN_SHIFT_SPEED 14.f
+#define WAR_SPEED 5.0f
+#define WAR_NO_WEAPON_SPEED 7.f
+#define RUIN_SPEED 10.f
+#define RUIN_SHIFT_SPEED 18.f
 
 // -------------------------------------------------
 // #Horse1

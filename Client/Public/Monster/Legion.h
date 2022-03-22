@@ -42,6 +42,33 @@ private:
 	CModel* m_pModelWeaponLCom = nullptr;
 	CModel* m_pModelWeaponRCom = nullptr;
 
+	//----------------------------------------------
+	// FSM
+private: 
+	const char*	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
+	const char*	m_pNextState = "Legion_Mesh.ao|Legion_Idle";
+
+	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
+	void DoGlobalState();  
+	void DoState(float fTimeDelta); // m_eCurState Execute 
+
+	_float Get_Target_Dis(float fTimeDelta = 0.f);
+
+private:
+	const _float ATK_RANGE = 4.5f;
+	const _float CHASE_RANGE = 60.f;
+	CGameObject* m_pTarget = nullptr;
+	CTransform* m_pTargetTransform = nullptr;
+	_float GetDegree_Target();
+
+	const _float IDLE_TIME_TO_ATK_DELAY = 2.5f;
+	_float m_fTimeIdle = 0.f;
+	//----------------------------------------------
+
+
+private:
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());
+
 public:	
 	static CLegion* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;

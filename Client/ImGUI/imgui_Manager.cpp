@@ -247,6 +247,7 @@ void CImguiManager::Render()
 
 }
 
+// Merge icons into default tool font
 void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContext* pDeviceContext)
 {
 	// Setup Dear ImGui context
@@ -257,6 +258,8 @@ void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContex
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsClassic();
+
+	io.Fonts->AddFontDefault();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(g_hWnd);
