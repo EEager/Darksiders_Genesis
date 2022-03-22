@@ -132,6 +132,7 @@ using namespace Engine;
 
 
 // -----------------------
-// For VIBuffer_Terrain
+// For HierachyNode
 // ------------------------
+enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B };
 

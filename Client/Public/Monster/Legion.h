@@ -63,6 +63,7 @@ private:
 
 	const _float IDLE_TIME_TO_ATK_DELAY = 2.5f;
 	_float m_fTimeIdle = 0.f;
+	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 	//----------------------------------------------
 
 

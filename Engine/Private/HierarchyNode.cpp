@@ -37,7 +37,7 @@ void CHierarchyNode::Update_CombinedTransformationMatrix()
 			XMLoadFloat4x4(&m_TransformationMatrix));
 }
 
-void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, const char* pRootNodeName, CNavigation* pNaviCom)
+void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, IN const char* pRootNodeName, IN CNavigation* pNaviCom, IN OBJECT_DIR eDir)
 {
 	// m_Channels에서 iCurrentAnimIndex의 애니메이션에 해당하는 뼈행렬 정보를 가지고 있다. 
 	// 이 채널들은 Model 사본만들때 Model이 넣어준다. 
@@ -71,7 +71,25 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 					_float offsetLength = XMVectorGetX(XMVector4Length(XMLoadFloat4(&tmpOffset)));
 
 					// War Look방향으로 offsetLength 곱하여, tmpOffset에 저장하자.
-					XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[2])) * offsetLength);
+					// 옆으로 가는 경우도 있기에 상황에 따라 움직이도록 해주자
+					switch (eDir)
+					{
+					case DIR_L:
+						XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[CTransform::STATE_RIGHT])) * -offsetLength);
+						break;
+					case DIR_R:
+						XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[CTransform::STATE_RIGHT])) * offsetLength);
+						break;
+					case DIR_F:
+						XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[CTransform::STATE_LOOK])) * offsetLength);
+						break;
+					case DIR_B:
+						XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[CTransform::STATE_LOOK])) * -offsetLength);
+						break;
+					default:
+						assert(0);
+						break;
+					}
 
 					// 최종적으로 pMatW에 tmpOffset를 적용한다.
 					// 그러나 네비매쉬위에 없다면? 적용하지말자

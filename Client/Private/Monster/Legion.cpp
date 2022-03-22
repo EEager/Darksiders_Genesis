@@ -94,7 +94,7 @@ _int CLegion::Tick(_float fTimeDelta)
 	DoState(fTimeDelta);
 
 	// 로컬이동값 -> 월드이동반영
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom);
+	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom, m_eDir);
 
 	return _int();
 }
@@ -187,17 +187,28 @@ void CLegion::UpdateState()
 		)
 	{
 		isLoop = true;
+		m_eDir = OBJECT_DIR::DIR_F;
 	}
 	else if (
 		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Flurry" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Heavy" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Attack_02" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Slam" ||
-
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02"
 		)
 	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
+	else if (m_pNextState == "Legion_Mesh.ao|Legion_Evade_Left")
+	{
+		m_eDir = OBJECT_DIR::DIR_L;
+		isLoop = false;
+	}
+	else if (m_pNextState == "Legion_Mesh.ao|Legion_Evade_Right")
+	{
+		m_eDir = OBJECT_DIR::DIR_R;
 		isLoop = false;
 	}
 
@@ -218,8 +229,9 @@ void CLegion::DoState(float fTimeDelta)
 	{
 		// 플레이어가 공격 반경 내에 있다면 공격. 근데 바로 하지는 말고 좀 쉬었다하자
 		_float disToTarget = Get_Target_Dis();
-		if (m_fTimeIdle < fTimeDelta && (disToTarget < 4.5f))
+		if (m_fTimeIdle < fTimeDelta && (disToTarget < ATK_RANGE))
 		{
+			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
 			int randNextState = rand() % 4;
 			if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
 			else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
@@ -252,21 +264,26 @@ void CLegion::DoState(float fTimeDelta)
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{ 
 			// 확률로 도발 모션 ㅋ
-			int randTaunt = rand() % 6;
+			int randTaunt = rand() % 5;
 			if (randTaunt == 0)
 				m_pNextState = "Legion_Mesh.ao|Legion_Taunt_01";
 			else if (randTaunt == 1)
 				m_pNextState = "Legion_Mesh.ao|Legion_Taunt_02";
-			else // 공격 애니메이션 끝나면 Idle로 
+			else if (randTaunt == 2)// 공격 애니메이션 끝나면 Idle로 
 				m_pNextState = "Legion_Mesh.ao|Legion_Idle";
+			else if (randTaunt == 3)
+				m_pNextState = "Legion_Mesh.ao|Legion_Evade_Left";
+			else if (randTaunt == 4)
+				m_pNextState = "Legion_Mesh.ao|Legion_Evade_Right";
 		}
 	}
 	//-----------------------------------------------------
 	else if (m_pCurState == "Legion_Mesh.ao|Legion_Run_F")
 	{
 		// 추적하다가 공격 반경 내에 있다면 공격  
-		if (Get_Target_Dis() < 4.5f)
+		if (Get_Target_Dis() < ATK_RANGE)
 		{
+			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
 			int randAtk = rand() % 4;
 			if (randAtk == 0) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
 			else if (randAtk == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
@@ -276,7 +293,6 @@ void CLegion::DoState(float fTimeDelta)
 		// 추적은 War 방향으로 돌면서 go Straight
 		else
 		{
-			// War 서서히 회전시키자
 			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(), fTimeDelta * 10);
 			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
 		}
@@ -288,39 +304,35 @@ void CLegion::DoState(float fTimeDelta)
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
 			// 확률로 와가리 털자 ㅎ 
-			//int randEvade = rand() % 3;
-			//if (randEvade==0) m_pNextState = "Legion_Mesh.ao|Legion_Evade_Right";
-			//else if (randEvade==1) m_pNextState = "Legion_Mesh.ao|Legion_Evade_Left";
 			m_pNextState = "Legion_Mesh.ao|Legion_Idle";
 		}
 	}
 	//-----------------------------------------------------
-	//else if (m_pCurState == "Legion_Mesh.ao|Legion_Evade_Right" || "Legion_Mesh.ao|Legion_Evade_Left")
-	//{
-	//	// 와리가리 애니메이션 끝나면 바로 공격들어가자
-	//	if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
-	//	{
-	//		_float disToTarget = Get_Target_Dis();
-	//		if (disToTarget < ATK_RANGE)
-	//		{
-	//			int randNextState = rand() % 4;
-	//			if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
-	//			else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
-	//			else if (randNextState == 2) m_pNextState = "Legion_Mesh.ao|Legion_Attack_02";
-	//			else if (randNextState == 3) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Slam";
-	//		}
-	//		else if (disToTarget < CHASE_RANGE)
-	//		{
-	//			m_pNextState = "Legion_Mesh.ao|Legion_Run_F";
-	//		}
-	//	}
-	//}
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Evade_Right" || "Legion_Mesh.ao|Legion_Evade_Left")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			_float disToTarget = Get_Target_Dis();
+			if (disToTarget < ATK_RANGE)
+			{
+				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+				int randNextState = rand() % 4;
+				if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
+				else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
+				else if (randNextState == 2) m_pNextState = "Legion_Mesh.ao|Legion_Attack_02";
+				else if (randNextState == 3) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Slam";
+			}
+			else if (disToTarget < CHASE_RANGE)
+			{
+				m_pNextState = "Legion_Mesh.ao|Legion_Run_F";
+			}
+		}
+	}
 }
 
 _float CLegion::Get_Target_Dis(float fTimeDelta)
 {
 	// 타겟간의 거리를 구한다
-
 	return XMVectorGetX(XMVector3Length(
 		m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) - 
 		m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));

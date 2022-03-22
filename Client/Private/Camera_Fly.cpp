@@ -128,14 +128,14 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 
 		if (pInput_Device->Key_Pressing(DIK_LEFT))
 		{
-			m_fRadian -= .5f * CONST_TIME_DELTA_F;
+			m_fRadian -= 1.f * CONST_TIME_DELTA_F;
 			if (m_fRadian < 0)
 				m_fRadian = 2 * XM_PI;
 		}
 
 		if (pInput_Device->Key_Pressing(DIK_RIGHT))
 		{
-			m_fRadian += .5f * CONST_TIME_DELTA_F;
+			m_fRadian += 1.f * CONST_TIME_DELTA_F;
 			if (m_fRadian >= 2 * XM_PI)
 				m_fRadian = 0.f;
 		}
