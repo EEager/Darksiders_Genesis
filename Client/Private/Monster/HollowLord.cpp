@@ -98,7 +98,6 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// 모든 몬스터는 Nonalpha 그룹에서 render한다
-
 	if (m_bBattleStart == true)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))

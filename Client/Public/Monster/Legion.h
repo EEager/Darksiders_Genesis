@@ -57,7 +57,7 @@ private:
 private:
 	const _float ATK_RANGE = 4.5f;
 	const _float CHASE_RANGE = 60.f;
-	const _float IDLE_TIME_TO_ATK_DELAY = 2.5f;
+	const _float IDLE_TIME_TO_ATK_DELAY = 1.5f;
 
 	CGameObject* m_pTarget = nullptr;
 	CTransform* m_pTargetTransform = nullptr;
