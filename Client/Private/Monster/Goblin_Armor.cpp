@@ -81,13 +81,22 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 
 _int CGoblin_Armor::Tick(_float fTimeDelta)
 {
-	static bool targetingOnce = false;
-	if (!targetingOnce)
+	if (!m_bTargetingOnce)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		m_pTarget = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"))->front();
-		Safe_AddRef(m_pTarget);
-		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
+		if (pLayer_War)
+		{
+			m_pTarget = pLayer_War->front();
+			Safe_AddRef(m_pTarget);
+			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+			m_bTargetingOnce = true;
+		}
+		else
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return 0;
+		}
 		RELEASE_INSTANCE(CGameInstance)
 	}
 
@@ -289,12 +298,14 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 	//-----------------------------------------------------
 	if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle")
 	{
-		// 플레이어가 공격 반경 내에 있다면 공격. 근데 바로 하지는 말고 좀 쉬었다하자
+		// 플레이어가 공격 반경 내에 있다면 공격하자
 		_float disToTarget = Get_Target_Dis();
 		if (disToTarget < ATK_RANGE) // 근접 거리 내면 공격하자
 		{
-			if (m_fTimeIdle < fTimeDelta) // 하지만 idle 상태에서 어느 정도 시간이 지났다면 공격 시작하자
+			m_fTimeIdle += fTimeDelta;
+			if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY) // 하지만 idle 상태에서 어느 정도 시간이 지났다면 공격 시작하자
 			{
+				m_fTimeIdle = 0.f;
 				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
 				int randNextState = rand() % 4;
 				if (randNextState == 0)	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01";
@@ -303,7 +314,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 				else if (randNextState == 3) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear";
 			}
 		}
-		else if (m_bNotSpearAtk == false && disToTarget < SPEAR_RANGE) // 원거리 인 경우 50%확률로 창 공격하자
+		else if (m_bNotSpearAtk == false/*밑에 창공격하지말라는 플래그 걸리면 그 후로는 창 공격은 스킵한다 */ && disToTarget < SPEAR_RANGE) // 원거리 인 경우 50%확률로 창 공격하자
 		{
 			if (rand() % 4 == 0)
 			{

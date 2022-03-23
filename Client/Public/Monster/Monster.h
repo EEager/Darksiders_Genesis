@@ -33,6 +33,8 @@ protected:
 	CNavigation*				m_pNaviCom = nullptr;
 	CModel*						m_pModelCom = nullptr;
 
+	_bool m_bTargetingOnce = false;
+
 protected:
 	virtual HRESULT SetUp_Component();
 	virtual HRESULT SetUp_ConstantTable();	

@@ -57,13 +57,22 @@ HRESULT CHollowLord::NativeConstruct(void * pArg)
 
 _int CHollowLord::Tick(_float fTimeDelta)
 {
-	static bool targetingOnce = false;
-	if (!targetingOnce)
+	if (!m_bTargetingOnce)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		m_pTarget = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"))->front();
-		Safe_AddRef(m_pTarget);
-		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
+		if (pLayer_War)
+		{
+			m_pTarget = pLayer_War->front();
+			Safe_AddRef(m_pTarget);
+			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+			m_bTargetingOnce = true;
+		}
+		else
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return 0;
+		}
 		RELEASE_INSTANCE(CGameInstance)
 	}
 
@@ -102,10 +111,11 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 			return 0;
+
+		// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
+		pGameInstance->Add_Collision(this);
 	}
 
-	// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
-	pGameInstance->Add_Collision(this);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -264,7 +274,6 @@ CGameObject * CHollowLord::Clone(void* pArg)
 
 void CHollowLord::Free()
 {
-	CMonster::Free();
-
 	Safe_Release(m_pTarget);
+	CMonster::Free();
 }
