@@ -25,12 +25,6 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iPassIndex = 0);
 
-	// Collider
-public:
-	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
-	virtual void OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
-	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
-
 protected:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
@@ -41,10 +35,19 @@ protected:
 
 	// 타겟팅은 tick에서 한번만하자
 	_bool m_bTargetingOnce = false;
+	_bool m_bHitted = false; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
+	_float m_fMonsterHitPower = 0.f; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
+	const _float HIT_DELAY = 5.f; // 피격 지속시간
+	_float m_fHitTimeAcc = 0.f;
 
-	// 나 맞았다 flag
-	_bool m_bHitted = false;
-	const _float m_FHIT_DELAY = 1.f;
+public:
+	// Collider
+	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+
+protected:
+	virtual void DoGlobalState(float fTimeDelta);
 
 protected:
 	virtual HRESULT SetUp_Component();

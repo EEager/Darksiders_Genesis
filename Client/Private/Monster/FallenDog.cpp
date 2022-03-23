@@ -39,7 +39,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	ColliderDesc.vPivot = _float3(0.f, 1.75f, 0.f);
 	ColliderDesc.vSize = _float3(3.f, 3.5f, 3.f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	__super::Add_Collider(&ColliderDesc, L"FallenDogBody");
+	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
 
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%20, 0.f, 431.f + rand() % 20, 1.f));

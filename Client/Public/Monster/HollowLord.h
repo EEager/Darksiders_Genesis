@@ -32,7 +32,6 @@ private:
 	const char* m_pNextState = "HollowLord.ao|HollowLord_Emerge";
 
 	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
-	void DoGlobalState();
 	void DoState(float fTimeDelta); // m_eCurState Execute 
 
 	_float Get_Target_Dis(float fTimeDelta = 0.f);

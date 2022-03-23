@@ -90,8 +90,7 @@ _int CHollowLord::Tick(_float fTimeDelta)
 
 	// FSM
 	UpdateState();
-	// excute
-	DoGlobalState();
+	CMonster::DoGlobalState(fTimeDelta);
 	DoState(fTimeDelta);
 
 	// 로컬위치변화를 월행에 적용시키자 
@@ -168,9 +167,6 @@ void CHollowLord::UpdateState()
 	m_pCurState = m_pNextState;
 }
 
-void CHollowLord::DoGlobalState()
-{
-}
 
 void CHollowLord::DoState(float fTimeDelta)
 {

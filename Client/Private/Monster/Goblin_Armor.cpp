@@ -36,7 +36,7 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
 	ColliderDesc.vSize = _float3(0.5f, 1.5f, 0.5f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	__super::Add_Collider(&ColliderDesc, L"GoblinBody");
+	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
 
 	// For Weapon
 	{
@@ -51,7 +51,8 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 		ColliderDesc.vPivot = _float3(0.f, -0.5f, 0.f); 
 		ColliderDesc.fRadius = 0.25f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, L"GoblinSpear");
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+
 		ZeroMemory(&m_spearDesc, sizeof(SPEARDESC));
 		m_spearDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Goblin_Weapon_Fleamag_Sword");
 		m_spearDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_Goblin_Weapon_Fleamag_Sword");
@@ -105,8 +106,7 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 
 	// FSM
 	UpdateState();
-	// excute
-	DoGlobalState();
+	CMonster::DoGlobalState(fTimeDelta);
 	DoState(fTimeDelta);
 
 
@@ -231,7 +231,7 @@ _int CGoblin_Armor::Update_Colliders(_matrix wolrdMatrix)
 	// For Weapon Collider
 	for (auto pCollider : m_ColliderList)
 	{
-		if (pCollider->Get_ColliderTag() == L"GoblinSpear")
+		if (pCollider->Get_ColliderTag() == COL_MONSTER_WEAPON)
 		{
 			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix);
 			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix);
@@ -287,10 +287,6 @@ void CGoblin_Armor::UpdateState()
 
 	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
 	m_pCurState = m_pNextState;
-}
-
-void CGoblin_Armor::DoGlobalState()
-{
 }
 
 void CGoblin_Armor::DoState(float fTimeDelta)

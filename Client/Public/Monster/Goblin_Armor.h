@@ -61,7 +61,6 @@ private:
 	const char* m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
 
 	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
-	void DoGlobalState();
 	void DoState(float fTimeDelta); // m_eCurState Execute 
 
 	_float Get_Target_Dis(float fTimeDelta = 0.f);

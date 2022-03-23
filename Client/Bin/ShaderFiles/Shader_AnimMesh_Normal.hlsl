@@ -26,6 +26,11 @@ cbuffer cbPerObject
 	bool		g_UseMetalMap;
 };
 
+cbuffer cbGameObject
+{
+	float		g_fMonsterHitPower;
+};
+
 cbuffer CameraDesc
 {
 	vector		g_vCamPosition = vector(0.f, 0.f, 0.f, 0.f);
@@ -236,6 +241,10 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	// Common to take alpha from diffuse material and texture.
 	Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
+
+		
+	Out.vColor += float4(g_fMonsterHitPower, g_fMonsterHitPower, g_fMonsterHitPower, 0.f);
+
 
 	return Out;
 }

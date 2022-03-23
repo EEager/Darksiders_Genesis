@@ -143,6 +143,9 @@ HRESULT CMonster::SetUp_ConstantTable()
 	// Branch to Use Emissive Mapping
 	m_pModelCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
 
+	// 피격시 색상 변경할꺼다.
+	m_pModelCom->Set_RawValue("g_fMonsterHitPower", &m_fMonsterHitPower, sizeof(_float));
+
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -151,37 +154,39 @@ HRESULT CMonster::SetUp_ConstantTable()
 
 void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
-#ifdef _DEBUG
-	if (pDst->Get_ColliderTag() == WAR_COL_WEAPON) // 내꺼랑은 주소가 같다. 
+	// 몬스터 몸통과 플레이어 검이 충돌한 경우. 
+	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_MONSTER_BODY1 &&
+		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
-		int debug = 0;
-		//if (!lstrcmpW(pDst->Get_ColliderTag(), L"WarWeapon")) // 하지만 상대방꺼랑은 다르다
-		//{
-		//	CGameObject* pDstObject = pDst->Get_Owner();
-		//	cout << "OnCollision_Enter" << endl;
-		//}
+		m_bHitted = true;
+		m_fMonsterHitPower = 0.6f;
+		return;
 	}
-#endif
 }
 
 void CMonster::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
-#ifdef _DEBUG
-	if (pSrc->Get_ColliderTag() == L"LegionBody") // 내꺼랑은 주소가 같다. 
-	{
-		if (!lstrcmpW(pDst->Get_ColliderTag(), L"WarWeapon")) // 하지만 상대방꺼랑은 다르다
-		{
-			CGameObject* pDstObject = pDst->Get_Owner();
-			cout << "OnCollision_Enter" << endl;
-		}
-	}
-#endif
+
 }
 
 void CMonster::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
+
 }
 
+void CMonster::DoGlobalState(float fTimeDelta)
+{
+	// 피격시 피 달게 하자 
+	if (m_bHitted)
+	{
+		m_fMonsterHitPower -= 0.01f; 
+		if (m_fMonsterHitPower < 0)
+		{
+			m_fMonsterHitPower = 0.f;
+			m_bHitted = false;
+		}
+	}
+}
 
 
 CMonster * CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

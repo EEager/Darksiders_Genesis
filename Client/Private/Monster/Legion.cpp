@@ -36,7 +36,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
 	ColliderDesc.vSize = _float3(1.5f, 2.0f, 1.5f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	__super::Add_Collider(&ColliderDesc, MONSTER_COL_BODY1);
+	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
 
 
 	// For Weapon
@@ -53,7 +53,8 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 		ColliderDesc.fRadius = 0.5f;
 
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, L"LegionWeapon");
+		//__super::Add_Collider(&ColliderDesc, L"LegionWeapon");
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
 
 		ZeroMemory(&m_WarSwordDesc, sizeof(SWORDDESC));
 		m_WarSwordDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_LE_Weapon");
@@ -99,8 +100,7 @@ _int CLegion::Tick(_float fTimeDelta)
 
 	// FSM
 	UpdateState();
-	// excute
-	DoGlobalState();
+	CMonster::DoGlobalState(fTimeDelta);
 	DoState(fTimeDelta);
 
 	// anim update : 로컬이동값 -> 월드이동반영
@@ -226,10 +226,6 @@ void CLegion::UpdateState()
 	m_pCurState = m_pNextState;
 }
 
-// 어떤 상태에서든 동작할 수 있는 FSM
-void CLegion::DoGlobalState()
-{
-}
 
 // FSM
 void CLegion::DoState(float fTimeDelta)
@@ -363,7 +359,7 @@ _int CLegion::Update_Colliders(_matrix wolrdMatrix/*not used*/)
 {
 	for (auto pCollider : m_ColliderList)
 	{
-		if (pCollider->Get_ColliderTag() == L"LegionWeapon")
+		if (pCollider->Get_ColliderTag() == COL_MONSTER_WEAPON)
 		{
 			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_WarSwordDesc.OffsetMatrix); // 뼈->정점
 			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_WarSwordDesc.pBoneMatrix); // Root->뼈 

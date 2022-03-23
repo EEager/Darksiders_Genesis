@@ -409,25 +409,25 @@ HRESULT CWar::SetUp_Component()
 
 	// Collider
 	{
-		/* For.Com_AABB */
+		///* For.Com_AABB */
+		//ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
+		//ColliderDesc.vSize = _float3(1.4f, 2.0f, 1.4f);
+		//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
+		//__super::Add_Collider(&ColliderDesc, L"WarBody1");
+
+		/* For.Com_OBB */
 		CCollider::COLLIDERDESC		ColliderDesc;
 		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 		ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
 		ColliderDesc.vSize = _float3(1.4f, 2.0f, 1.4f);
-		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-		__super::Add_Collider(&ColliderDesc, L"WarBody1");
-
-		/* For.Com_OBB */
-		ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
-		ColliderDesc.vSize = _float3(1.4f, 2.0f, 1.4f);
 		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
-		__super::Add_Collider(&ColliderDesc, L"WarBody2");
+		__super::Add_Collider(&ColliderDesc, COL_WAR_BODY1);
 
 		/* For.WarWeapon */
 		ColliderDesc.vPivot = _float3(0.f, 0.f, 0.9f); //Ä® »À
 		ColliderDesc.vSize = _float3(0.2f, 0.5f, 2.3f); //x:Ä®Æø,y:Ä®³Êºñ, z:Ä®³ôÀÌ
 		ColliderDesc.eColType = CCollider::COL_TYPE_OBB;
-		__super::Add_Collider(&ColliderDesc, WAR_COL_WEAPON);
+		__super::Add_Collider(&ColliderDesc, COL_WAR_WEAPON);
 	}
 
 
