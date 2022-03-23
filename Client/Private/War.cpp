@@ -427,7 +427,7 @@ HRESULT CWar::SetUp_Component()
 		ColliderDesc.vPivot = _float3(0.f, 0.f, 0.9f); //Ä® »À
 		ColliderDesc.vSize = _float3(0.2f, 0.5f, 2.3f); //x:Ä®Æø,y:Ä®³Êºñ, z:Ä®³ôÀÌ
 		ColliderDesc.eColType = CCollider::COL_TYPE_OBB;
-		__super::Add_Collider(&ColliderDesc, L"WarWeapon");
+		__super::Add_Collider(&ColliderDesc, WAR_COL_WEAPON);
 	}
 
 

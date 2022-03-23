@@ -22,7 +22,7 @@ HRESULT CLegion::NativeConstruct_Prototype()
 HRESULT CLegion::NativeConstruct(void * pArg)
 {
 	m_fSpeed = 8.f;
-	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
+	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다. 
 	if (CMonster::NativeConstruct(pArg))
 		return E_FAIL;	
 
@@ -36,7 +36,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	ColliderDesc.vPivot = _float3(0.f, 1.0f, 0.f);
 	ColliderDesc.vSize = _float3(1.5f, 2.0f, 1.5f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	__super::Add_Collider(&ColliderDesc, L"LegionBody");
+	__super::Add_Collider(&ColliderDesc, MONSTER_COL_BODY1);
 
 
 	// For Weapon
