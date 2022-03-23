@@ -32,18 +32,7 @@ void CCollider_Manager::Collision(float fTimeDelta)
 
 	for (iter = m_CollisionList.begin(); iter != iterEnd; ++iter)
 	{
-		if ((*iter)->Get_LayerTag() == L"Layer_War")
-		{
-			int debug = 0;
-		}
-
-
 		auto iter1 = iter; ++iter1;
-		if ((*iter1)->Get_LayerTag() == L"Layer_War")
-		{
-			int debug = 0;
-		}
-
 		auto iter1End = m_CollisionList.end();
 		for (; iter1 != iter1End; ++iter1)
 		{

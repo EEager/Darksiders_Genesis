@@ -149,6 +149,40 @@ HRESULT CMonster::SetUp_ConstantTable()
 	return S_OK;
 }
 
+void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+#ifdef _DEBUG
+	if (pDst->Get_ColliderTag() == WAR_COL_WEAPON) // ³»²¨¶ûÀº ÁÖ¼Ò°¡ °°´Ù. 
+	{
+		int debug = 0;
+		//if (!lstrcmpW(pDst->Get_ColliderTag(), L"WarWeapon")) // ÇÏÁö¸¸ »ó´ë¹æ²¨¶ûÀº ´Ù¸£´Ù
+		//{
+		//	CGameObject* pDstObject = pDst->Get_Owner();
+		//	cout << "OnCollision_Enter" << endl;
+		//}
+	}
+#endif
+}
+
+void CMonster::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+#ifdef _DEBUG
+	if (pSrc->Get_ColliderTag() == L"LegionBody") // ³»²¨¶ûÀº ÁÖ¼Ò°¡ °°´Ù. 
+	{
+		if (!lstrcmpW(pDst->Get_ColliderTag(), L"WarWeapon")) // ÇÏÁö¸¸ »ó´ë¹æ²¨¶ûÀº ´Ù¸£´Ù
+		{
+			CGameObject* pDstObject = pDst->Get_Owner();
+			cout << "OnCollision_Enter" << endl;
+		}
+	}
+#endif
+}
+
+void CMonster::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+}
+
+
 
 CMonster * CMonster::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

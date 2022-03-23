@@ -78,25 +78,17 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const _tchar * pPrototypeT
 	return S_OK;
 }
 
-void CGameObject::OnCollision_Enter(CCollider* pDst, float fTimeDelta)
+void CGameObject::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
-	if (pDst->Get_ColliderTag() == L"WarWeapon")
-	{
-		CGameObject* pDstObject = pDst->Get_Owner();
-		cout << pDstObject->m_pPrototypeTag << " : " << "Im'hit~~!! " << endl;
-	}
+
 }
 
-void CGameObject::OnCollision_Stay(CCollider* pDst, float fTimeDelta)
+void CGameObject::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
-	if (pDst->Get_ColliderTag() == L"WarWeapon")
-	{
-		CGameObject* pDstObject = pDst->Get_Owner();
-		cout << pDstObject->m_pPrototypeTag << " : " << "Im'hit~~!! " << endl;
-	}
+
 }
 
-void CGameObject::OnCollision_Leave(CCollider* pDst, float fTimeDelta)
+void CGameObject::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 }
 

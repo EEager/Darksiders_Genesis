@@ -21,22 +21,24 @@ CCollider::CCollider(const CCollider& rhs)
 	Safe_AddRef(m_pInputLayout);
 }
 
+// Monster 한테 Src와 Dst 콜라이더의 정보를 넘겨주자.
+// Src를 넘겨주는 이유는? Monster의 어떤 콜라이더와 부딪혔는지 모른다. 몬스터한테 알려주자
 void CCollider::OnCollision_Enter(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = true;
-	m_pOwner->OnCollision_Enter(pDst, fTimeDelta);
+	m_pOwner->OnCollision_Enter(this, pDst, fTimeDelta);
 }
 
 void CCollider::OnCollision_Stay(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = true;
-	m_pOwner->OnCollision_Stay(pDst, fTimeDelta);
+	m_pOwner->OnCollision_Stay(this, pDst, fTimeDelta);
 }
 
 void CCollider::OnCollision_Leave(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = false;
-	m_pOwner->OnCollision_Leave(pDst, fTimeDelta);
+	m_pOwner->OnCollision_Leave(this, pDst, fTimeDelta);
 }
 
 bool CCollider::Collider_Intersects(_In_ const CCollider* pCollider) const

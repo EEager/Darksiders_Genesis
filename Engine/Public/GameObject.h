@@ -93,9 +93,9 @@ public:
 	}
 
 public:
-	virtual void OnCollision_Enter(CCollider* pDst, float fTimeDelta);
-	virtual void OnCollision_Stay(CCollider* pDst, float fTimeDelta);
-	virtual void OnCollision_Leave(CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
 	// =======================================================================
 
 
