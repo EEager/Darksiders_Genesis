@@ -136,3 +136,17 @@ using namespace Engine;
 // ------------------------
 enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B };
 
+
+// ------------------------
+// For Collider
+// -------------------------
+// Collider 간 리터럴 포인터를 비교하기 위해서 define을 잡아놓자
+#define MONSTER_COL_WEAPON L"MonsterWeapon"
+#define MONSTER_COL_BODY1 L"MonsterBody1"
+#define MONSTER_COL_BODY2 L"MonsterBody2"
+
+
+#define WAR_COL_WEAPON L"WarWeapon"
+#define WAR_COL_BODY1 L"WarBody1"
+#define WAR_COL_BODY2 L"WarBody2"
+
