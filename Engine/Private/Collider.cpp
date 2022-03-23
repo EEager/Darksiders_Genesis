@@ -24,19 +24,19 @@ CCollider::CCollider(const CCollider& rhs)
 void CCollider::OnCollision_Enter(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = true;
-	m_pOwner->OnCollision_Enter(pDst->Get_Owner(), fTimeDelta);
+	m_pOwner->OnCollision_Enter(pDst, fTimeDelta);
 }
 
 void CCollider::OnCollision_Stay(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = true;
-	m_pOwner->OnCollision_Stay(pDst->Get_Owner(), fTimeDelta);
+	m_pOwner->OnCollision_Stay(pDst, fTimeDelta);
 }
 
 void CCollider::OnCollision_Leave(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = false;
-	m_pOwner->OnCollision_Leave(pDst->Get_Owner(), fTimeDelta);
+	m_pOwner->OnCollision_Leave(pDst, fTimeDelta);
 }
 
 bool CCollider::Collider_Intersects(_In_ const CCollider* pCollider) const
