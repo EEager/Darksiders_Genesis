@@ -25,6 +25,34 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iPassIndex = 0);
 
+	//----------------------------------------------
+	// FSM
+private:
+	const char* m_pCurState = "HollowLord.ao|HollowLord_Emerge";
+	const char* m_pNextState = "HollowLord.ao|HollowLord_Emerge";
+
+	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
+	void DoGlobalState();
+	void DoState(float fTimeDelta); // m_eCurState Execute 
+
+	_float Get_Target_Dis(float fTimeDelta = 0.f);
+	_float GetDegree_Target();
+
+private:
+	const _float IDLE_TIME_TO_ATK_DELAY = 2.8f;
+	const _float ATK_RANGE = 10.f;
+	const _float INIT_RANGE = 50.f;
+
+	CGameObject* m_pTarget = nullptr;
+	CTransform* m_pTargetTransform = nullptr;
+
+	_bool m_bBattleStart = false;
+
+	_float m_fTimeIdle = 0.f;
+	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
+	//----------------------------------------------
+
+
 public:	
 	static CHollowLord* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;

@@ -42,7 +42,7 @@ HRESULT CHollowLord::NativeConstruct(void * pArg)
 	__super::Add_Collider(&ColliderDesc, L"HollowBody");
 
 	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -7.f, 467.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -4.f, 467.f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(30.f));
 
 	// Init Anim State

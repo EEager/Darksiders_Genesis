@@ -379,7 +379,7 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	// ¡å Boss
 	/* For.Prototype_Component_Model_HollowLord*/
-	_matrix		HollowLord_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	_matrix		HollowLord_PivotMat = XMMatrixScaling(0.02f, 0.02f, 0.02f);
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_HollowLord"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_HollowLord"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/HollowLord/", "HollowLord.fbx", HollowLord_PivotMat))))

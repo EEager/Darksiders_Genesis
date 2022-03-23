@@ -80,6 +80,7 @@ _int CLegion::Tick(_float fTimeDelta)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		m_pTarget = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"))->front();
+		Safe_AddRef(m_pTarget);
 		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
 		RELEASE_INSTANCE(CGameInstance)
 	}
@@ -404,6 +405,7 @@ void CLegion::Free()
 {
 	CMonster::Free();
 
+	Safe_Release(m_pTarget);
 	Safe_Release(m_pModelWeaponLCom);
 	Safe_Release(m_pModelWeaponRCom);
 }

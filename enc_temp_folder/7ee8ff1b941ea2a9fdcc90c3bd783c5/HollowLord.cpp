@@ -42,7 +42,7 @@ HRESULT CHollowLord::NativeConstruct(void * pArg)
 	__super::Add_Collider(&ColliderDesc, L"HollowBody");
 
 	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -7.f, 467.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -4.f, 467.f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(30.f));
 
 	// Init Anim State
@@ -98,12 +98,8 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// 모든 몬스터는 Nonalpha 그룹에서 render한다
-
-	if (m_bBattleStart == true)
-	{
-		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-			return 0;
-	}
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		return 0;
 
 	// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
 	pGameInstance->Add_Collision(this);
