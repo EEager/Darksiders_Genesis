@@ -45,8 +45,43 @@ public:
 	virtual HRESULT Render(_uint iPassIndex = 0);
 
 private:
+	void Render_Goblin();
+
+protected:
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());
+
+private:
 	CModel* m_pModelSpearCom = nullptr;
 	CModel* m_pModelQuiverCom = nullptr;
+
+	//----------------------------------------------
+	// FSM
+private:
+	const char* m_pCurState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+	const char* m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+
+	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
+	void DoGlobalState();
+	void DoState(float fTimeDelta); // m_eCurState Execute 
+
+	_float Get_Target_Dis(float fTimeDelta = 0.f);
+	_float GetDegree_Target();
+
+private:
+	const _float ATK_RANGE = 5.5f;
+	const _float SPEAR_RANGE = 50.f;
+	const _float CHASE_RANGE = 60.f;
+	const _float IDLE_TIME_TO_ATK_DELAY = 1.5f;
+
+	CGameObject* m_pTarget = nullptr;
+	CTransform* m_pTargetTransform = nullptr;
+
+	_bool m_bNotSpearAtk = false;
+
+	_float m_fTimeIdle = 0.f;
+	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
+	//----------------------------------------------
+
 
 public:	
 	static CGoblin_Armor* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

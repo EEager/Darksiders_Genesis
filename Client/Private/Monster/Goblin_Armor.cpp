@@ -21,6 +21,7 @@ HRESULT CGoblin_Armor::NativeConstruct_Prototype()
 
 HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 {
+	m_fSpeed = 5.f;
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
 		return E_FAIL;	
@@ -68,8 +69,9 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
-	m_pModelCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear");
 
+	// Init Anim State
+	m_pModelCom->SetUp_Animation(m_pCurState, true);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -79,34 +81,27 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 
 _int CGoblin_Armor::Tick(_float fTimeDelta)
 {
-	// For Weapon Collider
+	static bool targetingOnce = false;
+	if (!targetingOnce)
 	{
-		for (auto pCollider : m_ColliderList)
-		{
-			if (pCollider->Get_ColliderTag() == L"GoblinSpear")
-			{
-				_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix); 
-				_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix); 
-				_matrix		PivotMatrix = XMLoadFloat4x4(&m_spearDesc.PivotMatrix);
-				_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_spearDesc.pTargetWorldMatrix); 
-				_matrix		TransformationMatrix =
-					(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
-					TargetWorldMatrix;
-				pCollider->Update(TransformationMatrix);
-			}
-			else
-			{
-				pCollider->Update(m_pTransformCom->Get_WorldMatrix());
-			}
-		}
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		m_pTarget = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"))->front();
+		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		RELEASE_INSTANCE(CGameInstance)
 	}
 
+	// For Weapon Collider
+	Update_Colliders();
 
-	// 로컬이동값 -> 월드이동반영
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom);
+	// FSM
+	UpdateState();
+	// excute
+	DoGlobalState();
+	DoState(fTimeDelta);
 
-	// for test
-	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.001f);
+
+	// anim update : 로컬이동값 -> 월드이동반영
+	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom, m_eDir);
 
 	return _int();
 }
@@ -126,7 +121,13 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 
+	Render_Goblin();
+	
+	return S_OK;
+}
 
+void CGoblin_Armor::Render_Goblin()
+{
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
 	DirectionalLight mDirLight;
@@ -188,7 +189,7 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 		_matrix		PivotMatrix = XMLoadFloat4x4(&m_quiverDesc.PivotMatrix);
 		_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_quiverDesc.pTargetWorldMatrix);
 
-		_matrix		TransformationMatrix =  XMMatrixRotationX(XMConvertToRadians(90)) * XMMatrixRotationY(XMConvertToRadians(180)) * CombinedTransformationMatrix * PivotMatrix * TargetWorldMatrix;
+		_matrix		TransformationMatrix = XMMatrixRotationX(XMConvertToRadians(90)) * XMMatrixRotationY(XMConvertToRadians(180)) * CombinedTransformationMatrix * PivotMatrix * TargetWorldMatrix;
 		_float4x4	modelWorldMat;
 		XMStoreFloat4x4(&modelWorldMat, XMMatrixTranspose(TransformationMatrix));
 		m_pModelQuiverCom->Set_RawValue("g_WorldMatrix", &modelWorldMat, sizeof(_float4x4));
@@ -213,8 +214,181 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
+}
 
-	return S_OK;
+_int CGoblin_Armor::Update_Colliders(_matrix wolrdMatrix)
+{
+	// For Weapon Collider
+	for (auto pCollider : m_ColliderList)
+	{
+		if (pCollider->Get_ColliderTag() == L"GoblinSpear")
+		{
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix);
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix);
+			_matrix		PivotMatrix = XMLoadFloat4x4(&m_spearDesc.PivotMatrix);
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_spearDesc.pTargetWorldMatrix);
+			_matrix		TransformationMatrix =
+				(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
+				TargetWorldMatrix;
+			pCollider->Update(TransformationMatrix);
+		}
+		else
+		{
+			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
+		}
+	}
+
+	return 0;
+}
+
+void CGoblin_Armor::UpdateState()
+{
+	if (m_pCurState == m_pNextState)
+		return;
+
+	_bool isLoop = false;
+
+	// m_eCurState Exit
+
+
+	// m_eNextState Enter
+	if (m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle" ||
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Run_F"
+		)
+	{
+		isLoop = true;
+		m_eDir = OBJECT_DIR::DIR_F;
+	}
+	else if (
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01" ||
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02" ||
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear"
+		)
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
+	else if (m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back")
+	{
+		m_eDir = OBJECT_DIR::DIR_B;
+		isLoop = false;
+	}
+
+
+	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+	m_pCurState = m_pNextState;
+}
+
+void CGoblin_Armor::DoGlobalState()
+{
+}
+
+void CGoblin_Armor::DoState(float fTimeDelta)
+{
+	//-----------------------------------------------------
+	if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle")
+	{
+		// 플레이어가 공격 반경 내에 있다면 공격. 근데 바로 하지는 말고 좀 쉬었다하자
+		_float disToTarget = Get_Target_Dis();
+		if (disToTarget < ATK_RANGE) // 근접 거리 내면 공격하자
+		{
+			if (m_fTimeIdle < fTimeDelta) // 하지만 idle 상태에서 어느 정도 시간이 지났다면 공격 시작하자
+			{
+				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+				int randNextState = rand() % 4;
+				if (randNextState == 0)	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01";
+				else if (randNextState == 1) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02";
+				else if (randNextState == 2) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back";
+				else if (randNextState == 3) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear";
+			}
+		}
+		else if (m_bNotSpearAtk == false && disToTarget < SPEAR_RANGE) // 원거리 인 경우 50%확률로 창 공격하자
+		{
+			if (rand() % 4 == 0)
+			{
+				m_bNotSpearAtk = true; // 창공격 하지 말라는 플래그
+			}
+			else
+			{
+				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+				m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear";
+			}
+		}
+		else if (disToTarget < CHASE_RANGE)
+		{
+			// 플레이어가 추적 반경 안에 있다면 추적 
+			// 그러나 바로 추적하지 말고 1초정도 쉬었다가 추적하자
+			m_fTimeIdle += fTimeDelta;
+
+			if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY)
+			{
+				m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Run_F";
+				m_fTimeIdle = 0.f;
+			}
+		}
+	}
+	//-----------------------------------------------------
+	else if (
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back" // 뒤로 가면 창던져야지
+		)
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear";
+		}
+	}
+	//-----------------------------------------------------
+	else if (
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01" ||
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02" ||
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear")
+	{
+		m_bNotSpearAtk = false;
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+
+			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+		}
+	}
+	//-----------------------------------------------------
+	else if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Run_F")
+	{
+		// 추적하다가 공격 반경 내에 있다면 공격  
+		if (Get_Target_Dis() < ATK_RANGE)
+		{
+			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			int randAtk = rand() % 2;
+			if (randAtk == 0) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01";
+			else if (randAtk == 1) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02";
+		}
+		// 추적은 War 방향으로 돌면서 go Straight
+		else
+		{
+			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(), fTimeDelta * 10);
+			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+		}
+	}
+}
+
+_float CGoblin_Armor::Get_Target_Dis(float fTimeDelta)
+{
+	// 타겟간의 거리를 구한다
+	return XMVectorGetX(XMVector3Length(
+		m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) -
+		m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));
+}
+
+_float CGoblin_Armor::GetDegree_Target()
+{
+	_vector targetPos = m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
+	_vector myPos = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
+	_vector toTarget = XMVector4Normalize(targetPos - myPos);
+
+	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(toTarget, XMVectorSet(0.f, 0.f, 1.f, 0.f))
+		* (XMVectorGetX(toTarget) < 0.f ? -1.f : 1.f);
+	return XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
 }
 
 

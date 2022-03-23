@@ -64,7 +64,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 
 	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%30, 0.f, 431.f + rand() % 20, 1.f));
 	m_pModelCom->SetUp_Animation(m_pCurState, true);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
@@ -93,7 +93,7 @@ _int CLegion::Tick(_float fTimeDelta)
 	DoGlobalState();
 	DoState(fTimeDelta);
 
-	// 로컬이동값 -> 월드이동반영
+	// anim update : 로컬이동값 -> 월드이동반영
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom, m_eDir);
 
 	return _int();

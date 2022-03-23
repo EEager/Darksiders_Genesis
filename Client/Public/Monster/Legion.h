@@ -51,23 +51,22 @@ private:
 	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
 	void DoGlobalState();  
 	void DoState(float fTimeDelta); // m_eCurState Execute 
-
 	_float Get_Target_Dis(float fTimeDelta = 0.f);
+	_float GetDegree_Target();
 
 private:
 	const _float ATK_RANGE = 4.5f;
 	const _float CHASE_RANGE = 60.f;
+	const _float IDLE_TIME_TO_ATK_DELAY = 2.5f;
+
 	CGameObject* m_pTarget = nullptr;
 	CTransform* m_pTargetTransform = nullptr;
-	_float GetDegree_Target();
-
-	const _float IDLE_TIME_TO_ATK_DELAY = 2.5f;
 	_float m_fTimeIdle = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 	//----------------------------------------------
 
 
-private:
+protected:
 	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());
 
 public:	
