@@ -153,6 +153,7 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 	Render_Goblin();
 
 	// HP Bar Render
+	if (m_bOnceHitted)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		// Bind Transform

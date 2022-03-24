@@ -164,6 +164,7 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		m_bHitted = true;
+		m_bOnceHitted = true;
 		m_fHitPower = .8f;
 
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;

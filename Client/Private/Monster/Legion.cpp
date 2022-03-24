@@ -148,6 +148,7 @@ HRESULT CLegion::Render(_uint iPassIndex)
 	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90));
 
 	// HP Bar Render
+	if (m_bOnceHitted)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		// Bind Transform
