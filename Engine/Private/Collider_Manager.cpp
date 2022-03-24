@@ -75,6 +75,16 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 
 			if (CheckCollision(pSrc, pDst, fTimeDelta)) // 둘이 충돌했다.
 			{
+
+				// 만약 충돌상태에서 한쪽이 죽은 상태라면, LEAVE 콜백 해주도록 하자
+				if (pSrc->Get_Owner()->IsDead() || pDst->Get_Owner()->IsDead())
+				{
+					// 오브젝트들의 LEAVE 콜라이더콜백함수를 호출하자
+					pSrc->OnCollision_Leave(pDst, fTimeDelta);
+					pDst->OnCollision_Leave(pSrc, fTimeDelta);
+					continue; 
+				}
+
 				// 충돌목록에서 이전에 충돌된적이 없다면
 				// #1. 처음 막 충돌된 상태
 				if (iter->second == false)
