@@ -108,6 +108,21 @@ void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 
 		if (m_bShiftLockTimeAccStart == false && CInput_Device::GetInstance()->Key_Down(DIK_LSHIFT))
 		{
+			// ---------------------
+			// 보완 : 쉬프트 도중에 방향키를 눌러, 해당 방향으로 쉬프팅 되도록 하자
+			unsigned char keyDownCheckBit = 0b0;
+			bool isKeyDown = false;
+			auto const dirtyCheck = [&isKeyDown, &keyDownCheckBit](_bool b) { isKeyDown |= b; };
+			dirtyCheck(g_pWar->KeyCheck(DIK_A, keyDownCheckBit));
+			dirtyCheck(g_pWar->KeyCheck(DIK_W, keyDownCheckBit));
+			dirtyCheck(g_pWar->KeyCheck(DIK_D, keyDownCheckBit));
+			dirtyCheck(g_pWar->KeyCheck(DIK_S, keyDownCheckBit));
+			if (isKeyDown)
+			{
+				g_pWar_Transform_Context->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(g_pWar->GetDegree(keyDownCheckBit)));
+			}
+			// ---------------------
+
 			m_bShiftLockTimeAccStart = true;
 			m_fShiftLockTimeAcc = 0.f;
 			g_pWar_State_Context->ChangeState(CState_War_DashTo_F::GetInstance());
