@@ -31,11 +31,20 @@ CWar::CWar(const CWar & rhs)
 
 HRESULT CWar::NativeConstruct_Prototype()
 {	
+
+
 	return S_OK;
 }
 
 HRESULT CWar::NativeConstruct(void * pArg)
 {
+	// Init GameInfo
+	m_tGameInfo.iAtt = 1.f;
+	m_tGameInfo.iEnergy = 1.7f;
+	m_tGameInfo.iMaxHp = 10.f;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = 0.f;
+
 	m_tMtrlDesc.vMtrlSpecular = { 1.f, 1.f, 1.f, 7.f };
 
 	if (SetUp_Component())
@@ -349,6 +358,11 @@ void CWar::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 	{
 		m_bHitted = true;
 		m_fHitPower = .65f;
+
+		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
+#ifdef _DEBUG
+		cout << DXString::WideToChar(this->m_pLayerTag) << ": " << m_tGameInfo.iHp << endl;
+#endif
 		return;
 	}
 }

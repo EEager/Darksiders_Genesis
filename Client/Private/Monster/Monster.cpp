@@ -7,6 +7,7 @@
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
+
 }
 
 CMonster::CMonster(const CMonster & rhs)
@@ -160,6 +161,11 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 	{
 		m_bHitted = true;
 		m_fHitPower = .8f;
+
+		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
+#ifdef _DEBUG
+		cout << DXString::WideToChar(this->m_pLayerTag) << ": " << m_tGameInfo.iHp << endl;
+#endif
 		return;
 	}
 }

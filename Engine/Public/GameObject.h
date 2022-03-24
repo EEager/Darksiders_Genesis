@@ -98,6 +98,30 @@ public:
 	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
 	// =======================================================================
 
+	// ======================================================
+	// GameInfo
+public:
+	GAMEINFO m_tGameInfo = {};
+
+	void SetHpPlus(int hp) {
+		//// 최대체력까지는 올리지말자
+		//m_tGameInfo.iHp += hp;
+		//if (m_tGameInfo.iHp >= m_tGameInfo.iMaxHp)
+		//	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+		//else if (m_tGameInfo.iHp < 0)
+		//	m_tGameInfo.iHp = 0;
+	}
+
+	void SetEnergyPlus(int energy) {
+		//// 최대체력까지는 올리지말자
+		//m_tGameInfo.iEnergy += energy;
+		//if (m_tGameInfo.iEnergy >= m_tGameInfo.iMaxEnergy)
+		//	m_tGameInfo.iEnergy = m_tGameInfo.iMaxEnergy;
+		//else if (m_tGameInfo.iEnergy < 0)
+		//	m_tGameInfo.iEnergy = 0;
+	}
+	// ======================================================
+
 
 protected:
 	_float					m_fCamDistance = 0.f;

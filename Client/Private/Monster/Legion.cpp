@@ -21,6 +21,14 @@ HRESULT CLegion::NativeConstruct_Prototype()
 
 HRESULT CLegion::NativeConstruct(void * pArg)
 {
+	// GameInfo Init
+	m_tGameInfo.iAtt = 1.f;
+	m_tGameInfo.iEnergy = 1.7f;
+	m_tGameInfo.iMaxHp = 10.f;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = 1.f;
+
+
 	m_fSpeed = 8.f;
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다. 
 	if (CMonster::NativeConstruct(pArg))

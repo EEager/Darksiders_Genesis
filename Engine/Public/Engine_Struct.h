@@ -164,6 +164,23 @@ namespace Engine
 		vector<_float> vecHeight;
 	} MAGIC_AUTOGENNAVI;
 
+	// ---------------------
+	// For GameInfo Struct
+	// ---------------------
+	typedef struct tagGameInfo
+	{
+		struct tagGameInfo()
+		{
+			ZeroMemory(this, sizeof(this));
+		}
+		int		iAtt;
 
+		int		iMaxHp;		// 최대체력 0이면 무적
+		int		iHp;		// 현재체력
+
+		// 죽으면 나오는것들
+		int		iEnergy;   
+		int		iSoul;		// 소울이라는것이있때
+	}GAMEINFO;
 
 }
