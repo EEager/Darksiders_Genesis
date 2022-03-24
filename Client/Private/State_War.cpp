@@ -35,6 +35,16 @@ CTransform* g_pWar_Transform_Context;
 // [State] CGlobal_State_War
 // [Infom]  War_Key, 죽음 체크
 // -------------------------------------------------
+
+// 이전공격 콤보 이어지는 시간
+#define WAR_COMBO_TIME_INIT 2.f
+_float g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT;
+CState* g_pLatestWarAtkCombo = nullptr;
+CState* g_pLatestWarAtkHeavyCombo = nullptr;
+
+// 공격할때는 방향키 움직이게 하지 않는 시간
+#define WAR_KEY_LOCK_TIME_CAUSE_OF_ATK 1.5f
+
 CGlobal_State_War::CGlobal_State_War()
 {
 	m_pStateName = "CGlobal_State_War";
@@ -48,6 +58,17 @@ void CGlobal_State_War::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// 콤보 지속 시간은 계속 빼자
+	g_fWarAtkComboTimeAcc -= fTimeDelta;
+	if (g_fWarAtkComboTimeAcc < 0) 
+	{
+		// 콤보 지속 시간 끝나면 nullptr로 바꾸어 처음 동작에서 시작하도록하자 
+		g_pLatestWarAtkCombo = nullptr;
+		g_pLatestWarAtkHeavyCombo = nullptr;
+		g_fWarAtkComboTimeAcc = 0.f;
+	}
+
 
 	// [Event] 맞았다.
 	// [State] -> ToDo
@@ -224,7 +245,7 @@ void CState_War_Idle::Execute(CGameObject* pOwner, _float fTimeDelta)
 	if (CInput_Device::GetInstance()->Mouse_Down(CInput_Device::MOUSEBUTTONSTATE::DIMB_LBUTTON))
 	{
 		g_pWar_State_Context->ChangeState(CState_War_Atk_Light_01::GetInstance());
-		return;
+		return;	
 	}
 
 
@@ -749,6 +770,10 @@ void CState_War_Run_Combat::Free()
 // [State] CState_War_Atk_Light_01
 // [Infom] 약공1
 // -------------------------------------------------
+
+
+
+
 CState_War_Atk_Light_01::CState_War_Atk_Light_01()
 {
 	m_pStateName = "CState_War_Atk_Light_01";
@@ -757,24 +782,41 @@ CState_War_Atk_Light_01::CState_War_Atk_Light_01()
 void CState_War_Atk_Light_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Enter();
+
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Light_01", false);
+		
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
 }
 
 void CState_War_Atk_Light_01::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+
+	// 다음 콤보가 지정되어있다면 그걸로 상태 변환
+	if (g_pLatestWarAtkCombo)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+		g_pWar_State_Context->ChangeState(g_pLatestWarAtkCombo);
 		return;
+	}
+
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
+	{
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	// [Event] 마우스 왼쪽(약공)
@@ -797,6 +839,13 @@ void CState_War_Atk_Light_01::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Light_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+	m_fTimeAcc = 0.f;
+
+	// Combo
+	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT; // 끝에 콤보타임 초기화
+	g_pLatestWarAtkCombo = CState_War_Atk_Light_02::GetInstance(); // 다음 콤보를 지정해주자
+
 }
 
 void CState_War_Atk_Light_01::Free()
@@ -819,22 +868,31 @@ void CState_War_Atk_Light_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Light_02", false);
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
 }
 
 void CState_War_Atk_Light_02::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	// [Event] 마우스 왼쪽(약공)
@@ -857,6 +915,16 @@ void CState_War_Atk_Light_02::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Light_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+	m_fTimeAcc = 0.f;
+
+
+	// 다음 콤보 동작 넣어주자
+	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT;
+	g_pLatestWarAtkCombo = CState_War_Atk_Light_03::GetInstance();
+
 }
 
 void CState_War_Atk_Light_02::Free()
@@ -878,22 +946,30 @@ void CState_War_Atk_Light_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Light_03", false);
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Atk_Light_03::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	// [Event] 마우스 왼쪽(약공)
@@ -916,6 +992,13 @@ void CState_War_Atk_Light_03::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Light_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+	m_fTimeAcc = 0.f;
+	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT;
+	g_pLatestWarAtkCombo = g_pLatestWarAtkCombo = CState_War_Atk_Light_04::GetInstance();;
+
 }
 
 void CState_War_Atk_Light_03::Free()
@@ -937,22 +1020,33 @@ void CState_War_Atk_Light_04::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Light_04", false);
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+	// 0과 널로 만들어서 1콤보로 가게 하자 
+	g_fWarAtkComboTimeAcc = 0;
 }
 
 void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	//// [Event] 마우스 오른쪽(강공)
@@ -975,6 +1069,14 @@ void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Light_04::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+	m_fTimeAcc = 0.f;
+
+	g_fWarAtkComboTimeAcc = 0.f;
+	g_pLatestWarAtkCombo = nullptr;
+
 }
 
 void CState_War_Atk_Light_04::Free()
@@ -996,22 +1098,37 @@ void CState_War_Atk_Heavy_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Heavy_01", false);
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+
+	// 이전콤보시간이 남아있다면 그 콤보 지정해준 state로 가자
+	if (g_pLatestWarAtkHeavyCombo)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+		g_pWar_State_Context->ChangeState(g_pLatestWarAtkHeavyCombo);
 		return;
+	}
+
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
+	{
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	if (CInput_Device::GetInstance()->Mouse_Down(CInput_Device::MOUSEBUTTONSTATE::DIMB_RBUTTON))
@@ -1066,6 +1183,14 @@ void CState_War_Atk_Heavy_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 	CState::Exit();
 	m_fBntPressTime = 0.f;
 	m_bChargeStart = false;
+
+	m_fTimeAcc = 0.f; // 키락시간 초기화하자
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
+	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT; // 끝에 콤보타임넣어주자
+	g_pLatestWarAtkHeavyCombo = CState_War_Atk_Heavy_02::GetInstance();
 }
 
 void CState_War_Atk_Heavy_01::Free()
@@ -1087,23 +1212,31 @@ void CState_War_Atk_Heavy_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Heavy_02", false);
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+	// 공격후 몇초간 바로 움직이게 하지말자
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	// [Event] 마우스 오른쪽(강공)
@@ -1126,6 +1259,15 @@ void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Heavy_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	m_fTimeAcc = 0.f; // 키락시간 초기화하자
+
+		// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
+	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT; // 끝에 콤보 시간 초기화시켜주자
+	g_pLatestWarAtkHeavyCombo = CState_War_Atk_Heavy_03::GetInstance();
+
 }
 
 void CState_War_Atk_Heavy_02::Free()
@@ -1147,23 +1289,31 @@ void CState_War_Atk_Heavy_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Heavy_03", false);
+
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	// [Event] 방향키 하나라도 누르게된다면
-	// [State]  -> CState_War_Run_Combat
-	bool dirty = false;
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	if (dirty)
+	// 공격후 몇초간 바로 움직이게 하지말자
+	m_fTimeAcc += fTimeDelta;
+	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
 	{
-		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-		return;
+		// [Event] 방향키 하나라도 누르게된다면
+		// [State]  -> CState_War_Run_Combat
+		bool dirty = false;
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+		dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+		if (dirty)
+		{
+			g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
+			return;
+		}
 	}
 
 	//// [Event] 마우스 오른쪽(강공)
@@ -1186,6 +1336,13 @@ void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Heavy_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	m_fTimeAcc = 0.f;
+	// 공격하고 몇초간은 방향키 못누르게하자
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
+
+	g_fWarAtkComboTimeAcc = 0.f;
+	g_pLatestWarAtkHeavyCombo = nullptr;
 }
 
 void CState_War_Atk_Heavy_03::Free()

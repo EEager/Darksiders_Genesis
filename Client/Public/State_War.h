@@ -428,6 +428,9 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	_float m_fTimeAcc = 0.f;
+
 public:
 	virtual void Free() final;
 };
@@ -449,6 +452,9 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	_float m_fTimeAcc = 0.f;
 
 public:
 	virtual void Free() final;
@@ -472,6 +478,9 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	_float m_fTimeAcc = 0.f;
+
 public:
 	virtual void Free() final;
 };
@@ -493,6 +502,9 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	_float m_fTimeAcc = 0.f;
 
 public:
 	virtual void Free() final;
@@ -519,6 +531,7 @@ public:
 private:
 	_float m_fBntPressTime = 0.f;
 	_bool m_bChargeStart = false;
+	_float m_fTimeAcc = 0.f;
 
 public:
 	virtual void Free() final;
@@ -543,6 +556,9 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	_float m_fTimeAcc = 0.f;
+
 public:
 	virtual void Free() final;
 };
@@ -565,6 +581,9 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	_float m_fTimeAcc = 0.f;
 
 public:
 	virtual void Free() final;
