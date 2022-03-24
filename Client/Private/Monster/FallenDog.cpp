@@ -57,7 +57,7 @@ _int CFallenDog::Tick(_float fTimeDelta)
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
 
-	// Legiondms 
+	// update animation
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom);
 
 	// for test
