@@ -100,6 +100,18 @@ namespace Engine
 		float				fPSize;
 	} VTXPOINT;
 
+	typedef struct tagVertex_Point_HpBar
+	{
+		XMFLOAT3			vPosition;
+		float				fPSizeX;
+		float				fPSizeY;
+
+		XMFLOAT4			vRight;
+		XMFLOAT4			vUp;
+		XMFLOAT4			vLook;
+
+	} VTXPOINTHPBAR;
+
 	typedef struct tagVertexCubeTexture
 	{
 		XMFLOAT3		vPosition;

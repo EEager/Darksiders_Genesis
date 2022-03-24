@@ -24,7 +24,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 1;
-	m_tGameInfo.iMaxHp = 10;
+	m_tGameInfo.iMaxHp = 20;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 1;
 
@@ -32,6 +32,10 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다. 
 	if (CMonster::NativeConstruct(pArg))
 		return E_FAIL;	
+
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_MonsterHp_PointGS"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIHpBarGsBufferCom)))
+		return E_FAIL;
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -142,6 +146,28 @@ HRESULT CLegion::Render(_uint iPassIndex)
 	// Weapon Render : ToDo 최적화
 	Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90));
 	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90));
+
+	// HP Bar Render
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		// Bind Transform
+		m_pTransformCom->Bind_OnShader(m_pVIHpBarGsBufferCom, "g_WorldMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIHpBarGsBufferCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIHpBarGsBufferCom, "g_ProjMatrix");
+
+		// Bind Position
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_vector));
+
+
+		// Bind 몬스터 현재 체력비율을 UV x 좌표로 넘겨주자. ex) 0.01 ~ 0.99 이니깐 80% 면 (0.99 - 0.01) * 0.8;
+#define MAX_LEN_HP (0.99f - 0.01f)
+		_float fCurHpRatio = (_float)m_tGameInfo.iHp/(_float)m_tGameInfo.iMaxHp;
+		_float fUVx = MAX_LEN_HP * fCurHpRatio;
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
+
+		m_pVIHpBarGsBufferCom->Render(iPassIndex);
+		RELEASE_INSTANCE(CGameInstance);
+	}
 
 	return S_OK;
 }
@@ -423,6 +449,7 @@ CGameObject * CLegion::Clone(void* pArg)
 
 void CLegion::Free()
 {
+	Safe_Release(m_pVIHpBarGsBufferCom);
 	Safe_Release(m_pTarget);
 	Safe_Release(m_pModelWeaponLCom);
 	Safe_Release(m_pModelWeaponRCom);

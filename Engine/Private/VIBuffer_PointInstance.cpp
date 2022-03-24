@@ -49,9 +49,9 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 	ZeroMemory(&m_VBInstDesc, sizeof(D3D11_BUFFER_DESC));
 
 	m_VBInstDesc.ByteWidth = sizeof(VTXMATRIX) * m_iNumInstance;
-	m_VBInstDesc.Usage = D3D11_USAGE_DYNAMIC;
+	m_VBInstDesc.Usage = D3D11_USAGE_DYNAMIC; // 맵 언맵을 위한 DYNAMIC 플래그
 	m_VBInstDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_VBInstDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_VBInstDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // 맵 언맵을 위한 WRITE 플래그
 	m_VBInstDesc.MiscFlags = 0;
 	m_VBInstDesc.StructureByteStride = sizeof(VTXMATRIX);	
 
@@ -69,8 +69,6 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 		pInstanceVtx[i].vPosition = _float4(rand() % 10, 15.f, rand() % 10, 1.f);
 	}
 
-
-
 	ZeroMemory(&m_VBInstSubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_VBInstSubresourceData.pSysMem = pInstanceVtx;
 
@@ -79,6 +77,7 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 
 	Safe_Delete_Array(pInstanceVtx);
 
+	/* For. Index Buffer */
 	m_iNumPrimitive = m_iNumInstance;
 	m_iIndicesSize = sizeof(_ushort);
 	m_iNumIndicesPerFigure = 1;
@@ -96,7 +95,7 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 
 	m_pPrimitiveIndices = new _ushort[m_iNumPrimitive];	
 
-	for (_uint i = 0; i < m_iNumInstance; ++i)
+	for (_uint i = 0; i < m_iNumInstance; ++i) // 버텍스를 점으로 만들었으니 인덱스는 인스턴스 개수만큼 할당해주자
 	{
 		((_ushort*)m_pPrimitiveIndices)[0] = 0;		
 	}
@@ -108,8 +107,10 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 		return E_FAIL;
 
 
+	// 인스턴스당 인덱스 개수. 나중에 render할때 사용된다
 	m_iIndexCountPerInstance = 1;
 
+	// Shader_PointInstance.hlsl 시멘틱 
 	D3D11_INPUT_ELEMENT_DESC		ElementDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "PSIZE", 0, DXGI_FORMAT_R32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }, 
@@ -140,6 +141,7 @@ void CVIBuffer_PointInstance::Update(_float fTimeDelta)
 
 	m_pDeviceContext->Map(m_pVBInst, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResourceData);
 
+	// 인스턴스 개수만큼. 정점 버퍼가 가지고 있는 vPosition를 변경시켜주자.
 	for (_uint i = 0; i < m_iNumInstance; ++i)
 	{
 		((VTXMATRIX*)SubResourceData.pData)[i].vPosition.y -= m_pInstanceSpeed[i] * fTimeDelta;

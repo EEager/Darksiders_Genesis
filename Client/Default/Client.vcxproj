@@ -270,6 +270,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cube.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_MonsterHpBar_PointGs.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_PointInstance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_RectInstance.hlsl" />

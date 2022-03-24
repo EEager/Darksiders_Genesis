@@ -7,6 +7,7 @@ class CRenderer;
 class CTransform;
 class CNavigation;
 class CModel;
+class CVIBuffer_MonsterHp_PointGS;
 END
 
 BEGIN(Client)
@@ -41,6 +42,8 @@ private:
 private:
 	CModel* m_pModelWeaponLCom = nullptr;
 	CModel* m_pModelWeaponRCom = nullptr;
+
+	CVIBuffer_MonsterHp_PointGS* m_pVIHpBarGsBufferCom = nullptr;
 
 	//----------------------------------------------
 	// FSM

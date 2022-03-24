@@ -13,36 +13,36 @@ cbuffer Camera
 	vector			g_vCamPosition;
 };
 
-texture2D		g_DiffuseTexture;
+cbuffer Monster
+{
+	float			g_fMonsterHpUVX;
+};
 
 struct VS_IN
 {
 	float3		vPosition : POSITION;
-	float		fPSize: PSIZE;
-
+	float		fPSizeX: PSIZE0;
+	float		fPSizeY: PSIZE1;
 	float4		vRight : TEXCOORD0;
 	float4		vUp : TEXCOORD1;
 	float4		vLook : TEXCOORD2;
-	float4		vTranslation : TEXCOORD3;
 };
 
 struct VS_OUT
 {
 	float4		vPosition : POSITION;
-	float		fPSize : PSIZE;
+	float		fPSizeX : PSIZE0;
+	float		fPSizeY : PSIZE1;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
 {
 	VS_OUT		Out = (VS_OUT)0;
 
-	matrix		TransformMatrix = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
-
-	vector		vPosition = mul(vector(In.vPosition, 1.f), TransformMatrix);
-	
-	Out.vPosition = mul(vPosition, g_WorldMatrix);
-	
-	Out.fPSize = In.fPSize;
+	// 몬스터 머리 위에 
+	Out.vPosition = mul(vector(In.vPosition.x, In.vPosition.y, In.vPosition.z, 1.f), g_WorldMatrix);
+	Out.fPSizeX = In.fPSizeX;
+	Out.fPSizeY = In.fPSizeY;
 
 	return Out;
 }
@@ -50,7 +50,8 @@ VS_OUT VS_MAIN(VS_IN In)
 struct GS_IN
 {
 	float4		vPosition : POSITION;
-	float		fPSize : PSIZE;
+	float		fPSizeX : PSIZE0;
+	float		fPSizeY : PSIZE1;
 };
 
 struct GS_OUT
@@ -64,22 +65,25 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 {
 	GS_OUT			Out[4];
 
+	// 정점에서 카메라를 본다.
 	float3			vLook = normalize(g_vCamPosition - In[0].vPosition).xyz;
 	float3			vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook));
 	float3			vUp = normalize(cross(vLook, vRight));
 
-
-	// 빌보딩 작업
-	Out[0].vPosition = vector(In[0].vPosition.xyz + vRight * In[0].fPSize * 0.5f + vUp * In[0].fPSize * 0.5f, 1.f);
+	// 왼위
+	Out[0].vPosition = vector(In[0].vPosition.xyz + vRight * In[0].fPSizeX * 0.5f + vUp * In[0].fPSizeY * 0.5f, 1.f);
 	Out[0].vTexUV = float2(0.f, 0.f);
 
-	Out[1].vPosition = vector(In[0].vPosition.xyz - vRight * In[0].fPSize * 0.5f + vUp * In[0].fPSize * 0.5f, 1.f);
+	// 오위
+	Out[1].vPosition = vector(In[0].vPosition.xyz - vRight * In[0].fPSizeX * 0.5f + vUp * In[0].fPSizeY * 0.5f, 1.f);
 	Out[1].vTexUV = float2(1.f, 0.f);
 
-	Out[2].vPosition = vector(In[0].vPosition.xyz - vRight * In[0].fPSize * 0.5f - vUp * In[0].fPSize * 0.5f, 1.f);
+	// 오아
+	Out[2].vPosition = vector(In[0].vPosition.xyz - vRight * In[0].fPSizeX * 0.5f - vUp * In[0].fPSizeY * 0.5f, 1.f);
 	Out[2].vTexUV = float2(1.f, 1.f);
 
-	Out[3].vPosition = vector(In[0].vPosition.xyz + vRight * In[0].fPSize * 0.5f - vUp * In[0].fPSize * 0.5f, 1.f);
+	// 왼아
+	Out[3].vPosition = vector(In[0].vPosition.xyz + vRight * In[0].fPSizeX * 0.5f - vUp * In[0].fPSizeY * 0.5f, 1.f);
 	Out[3].vTexUV = float2(0.f, 1.f);
 
 	matrix		matVP;
@@ -115,23 +119,36 @@ struct PS_OUT
 	float4		vColor : SV_TARGET0;
 };
 
-
+// 가로가 세로보다 10배만큼 길다
+const float uvOffsetX = 0.01f;
+const float uvOffsetY = 0.1f;
 
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	// 기본 베이스는 검은색 
+	Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
 
-	Out.vColor.r = 1.f;
-	Out.vColor.gb = 0.f;
-
-	if (Out.vColor.a < 0.1f)
-		discard;
+	// 테두리 부분은 빨간색
+	if (In.vTexUV.x <= uvOffsetX ||
+		In.vTexUV.x >= (1.f - uvOffsetX) ||
+		In.vTexUV.y <= uvOffsetY ||
+		In.vTexUV.y >= (1.f - uvOffsetY)
+		)
+	{
+		Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
+	}
+	
+	// 몬스터 현재 체력은 빨간색.
+	if (In.vTexUV.x <= (uvOffsetX + g_fMonsterHpUVX))
+	{
+		Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
+	}
+	
 
 	return Out;
 }
-
 
 
 

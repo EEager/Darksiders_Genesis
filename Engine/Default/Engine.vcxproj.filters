@@ -157,6 +157,12 @@
     <Filter Include="01.Utility\04.Component\Components\Collider\Manager">
       <UniqueIdentifier>{f7466d0f-c7ca-4ba0-84ce-2790710c11b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointInstance">
+      <UniqueIdentifier>{d4e050a4-871c-4ef5-b27d-a09a47d96a91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointHpBar">
+      <UniqueIdentifier>{f54a484d-c8a3-4df7-91f0-e3afb9b69500}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -303,9 +309,6 @@
     <ClInclude Include="..\Public\VIBuffer_Instance.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Instance</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\VIBuffer_PointInstance.h">
-      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\RenderTarget.h">
       <Filter>01.Utility\09.RenderTargets</Filter>
     </ClInclude>
@@ -317,6 +320,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Collider_Manager.h">
       <Filter>01.Utility\04.Component\Components\Collider\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_PointInstance.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_MonsterHp_PointGS.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointHpBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -449,9 +458,6 @@
     <ClCompile Include="..\Private\VIBuffer_Instance.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Instance</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\VIBuffer_PointInstance.cpp">
-      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Target_Manager.cpp">
       <Filter>01.Utility\09.RenderTargets\Manager</Filter>
     </ClCompile>
@@ -463,6 +469,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Collider_Manager.cpp">
       <Filter>01.Utility\04.Component\Components\Collider\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_PointInstance.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_MonsterHp_PointGS.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointHpBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

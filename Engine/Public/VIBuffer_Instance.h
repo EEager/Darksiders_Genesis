@@ -22,8 +22,8 @@ protected:
 	ID3D11Buffer*				m_pVBInst = nullptr;
 	D3D11_BUFFER_DESC			m_VBInstDesc;
 	D3D11_SUBRESOURCE_DATA		m_VBInstSubresourceData;
-	_uint						m_iNumInstance = 0;
-	_float*						m_pInstanceSpeed = nullptr;
+	_uint						m_iNumInstance = 0; // 인스턴스 총 개수 
+	_float*						m_pInstanceSpeed = nullptr; // 각 포인트마다 속도를 가지고 있다. 
 	_uint						m_iIndexCountPerInstance = 0;
 
 public:	

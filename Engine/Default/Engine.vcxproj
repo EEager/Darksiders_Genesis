@@ -220,6 +220,7 @@
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
     <ClInclude Include="..\Public\VIBuffer_Instance.h" />
     <ClInclude Include="..\Public\VIBuffer_Line.h" />
+    <ClInclude Include="..\Public\VIBuffer_MonsterHp_PointGS.h" />
     <ClInclude Include="..\Public\VIBuffer_PointInstance.h" />
     <ClInclude Include="..\public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_RectInstance.h" />
@@ -270,6 +271,7 @@
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instance.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Line.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_MonsterHp_PointGS.cpp" />
     <ClCompile Include="..\Private\VIBuffer_PointInstance.cpp" />
     <ClCompile Include="..\private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_RectInstance.cpp" />
