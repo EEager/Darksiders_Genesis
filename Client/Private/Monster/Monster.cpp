@@ -159,7 +159,7 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		m_bHitted = true;
-		m_fMonsterHitPower = 0.6f;
+		m_fMonsterHitPower = .8f;
 		return;
 	}
 }

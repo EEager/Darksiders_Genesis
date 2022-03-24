@@ -118,24 +118,24 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		/* 카메라의 움직임을 주면서 카메라 월드행렬을 갱신한다. */
 		if (pInput_Device->Key_Pressing(DIK_UP))
 		{
-			m_fRadius += 6.f * CONST_TIME_DELTA_F;
+			m_fRadius += 4.f * CONST_TIME_DELTA_F;
 		}
 
 		if (pInput_Device->Key_Pressing(DIK_DOWN))
 		{
-			m_fRadius -= 6.f * CONST_TIME_DELTA_F;
+			m_fRadius -= 4.f * CONST_TIME_DELTA_F;
 		}
 
 		if (pInput_Device->Key_Pressing(DIK_LEFT))
 		{
-			m_fRadian -= 1.f * CONST_TIME_DELTA_F;
+			m_fRadian -= .8f * CONST_TIME_DELTA_F;
 			if (m_fRadian < 0)
 				m_fRadian = 2 * XM_PI;
 		}
 
 		if (pInput_Device->Key_Pressing(DIK_RIGHT))
 		{
-			m_fRadian += 1.f * CONST_TIME_DELTA_F;
+			m_fRadian += .8f * CONST_TIME_DELTA_F;
 			if (m_fRadian >= 2 * XM_PI)
 				m_fRadian = 0.f;
 		}

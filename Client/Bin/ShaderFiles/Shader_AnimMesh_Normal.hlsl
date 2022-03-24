@@ -243,7 +243,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
 
 		
-	Out.vColor += float4(g_fMonsterHitPower, g_fMonsterHitPower, g_fMonsterHitPower, 0.f);
+	Out.vColor += float4(g_fMonsterHitPower, 0, 0, 0.f);
 
 
 	return Out;

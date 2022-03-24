@@ -237,7 +237,7 @@ void CLegion::DoState(float fTimeDelta)
 		_float disToTarget = Get_Target_Dis();
 		if (m_fTimeIdle < fTimeDelta && (disToTarget < ATK_RANGE))
 		{
-			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 			int randNextState = rand() % 4;
 			if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
 			else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
@@ -289,7 +289,7 @@ void CLegion::DoState(float fTimeDelta)
 		// 추적하다가 공격 반경 내에 있다면 공격  
 		if (Get_Target_Dis() < ATK_RANGE)
 		{
-			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 			int randAtk = rand() % 4;
 			if (randAtk == 0) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
 			else if (randAtk == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
@@ -321,7 +321,7 @@ void CLegion::DoState(float fTimeDelta)
 			_float disToTarget = Get_Target_Dis();
 			if (disToTarget < ATK_RANGE)
 			{
-				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+				m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 				int randNextState = rand() % 4;
 				if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
 				else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";

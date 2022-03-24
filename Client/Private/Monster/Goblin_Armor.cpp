@@ -302,7 +302,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 			if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY) // 하지만 idle 상태에서 어느 정도 시간이 지났다면 공격 시작하자
 			{
 				m_fTimeIdle = 0.f;
-				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+				m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 				int randNextState = rand() % 4;
 				if (randNextState == 0)	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01";
 				else if (randNextState == 1) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02";
@@ -318,7 +318,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 			}
 			else
 			{
-				m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+				m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 				m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear";
 			}
 		}
@@ -342,7 +342,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear";
 		}
 	}
@@ -355,7 +355,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		m_bNotSpearAtk = false;
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			//m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
 
 			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
 		}
@@ -366,7 +366,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		// 추적하다가 공격 반경 내에 있다면 공격  
 		if (Get_Target_Dis() < ATK_RANGE)
 		{
-			m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
+			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 			int randAtk = rand() % 2;
 			if (randAtk == 0) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01";
 			else if (randAtk == 1) m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02";
