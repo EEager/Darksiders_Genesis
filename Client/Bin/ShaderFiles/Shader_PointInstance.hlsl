@@ -70,9 +70,10 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	float3			vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook));
 	float3			vUp = normalize(cross(vLook, vRight));
 
+
+	// 빌보딩 작업
 	Out[0].vPosition = vector(In[0].vPosition.xyz + vRight * In[0].fPSize * 0.5f + vUp * In[0].fPSize * 0.5f, 1.f);
 	Out[0].vTexUV = float2(0.f, 0.f);
-
 
 	Out[1].vPosition = vector(In[0].vPosition.xyz - vRight * In[0].fPSize * 0.5f + vUp * In[0].fPSize * 0.5f, 1.f);
 	Out[1].vTexUV = float2(1.f, 0.f);
@@ -91,11 +92,13 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[2].vPosition = mul(Out[2].vPosition, matVP);
 	Out[3].vPosition = mul(Out[3].vPosition, matVP);	
 
+	// 사각형의 첫번째 삼각형 
 	OutStream.Append(Out[0]);
 	OutStream.Append(Out[1]);
 	OutStream.Append(Out[2]);
 	OutStream.RestartStrip();
 
+	// 사각형의 두번째 삼각형 
 	OutStream.Append(Out[0]);
 	OutStream.Append(Out[2]);
 	OutStream.Append(Out[3]);
