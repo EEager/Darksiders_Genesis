@@ -8,6 +8,7 @@
 
 // In State_War.cpp
 #include "State_War.h"
+extern CWar* g_pWar;
 extern CStateMachine* g_pWar_State_Context;
 extern CModel* g_pWar_Model_Context;
 extern CModel* g_pWar_Model_Gauntlet_Context;
@@ -340,6 +341,26 @@ _int CWar::Update_Colliders(_matrix wolrdMatrix)
 	return 0;
 }
 
+void CWar::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+	// 플레이어 몸통과 몬스터 검이 충돌한 경우. 
+	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_WAR_BODY1 &&
+		pDst->Get_ColliderTag() == COL_MONSTER_WEAPON)
+	{
+		m_bHitted = true;
+		m_fHitPower = .65f;
+		return;
+	}
+}
+
+void CWar::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+}
+
+void CWar::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+}
+
 HRESULT CWar::SetUp_Component()
 {
 	// Transform
@@ -404,6 +425,7 @@ HRESULT CWar::SetUp_Component()
 			return E_FAIL;
 		static_cast<CStateMachine*>(m_pStateMachineCom)->Set_GlobalState(CGlobal_State_War::GetInstance());
 		g_pWar_State_Context = m_pStateMachineCom;
+		g_pWar = this;
 	}
 
 
@@ -541,6 +563,10 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 	// Roughness Map 사용하자
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseRoughnessMap", &g_bUseRoughnessMap, sizeof(bool));
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseMetalMap", &g_bUseMetalicMap, sizeof(bool));
+
+	if (modelIdx == 0 || modelIdx == 1) 
+		// 피격시 색상 플레이어는 흰색으로 변경할꺼다.
+		m_pModelCom[modelIdx]->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, m_fHitPower, m_fHitPower, 0.f), sizeof(_vector));
 
 	RELEASE_INSTANCE(CGameInstance);
 

@@ -144,7 +144,7 @@ HRESULT CMonster::SetUp_ConstantTable()
 	m_pModelCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
 
 	// 피격시 색상 변경할꺼다.
-	m_pModelCom->Set_RawValue("g_fMonsterHitPower", &m_fMonsterHitPower, sizeof(_float));
+	m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, 0.f, 0.f, 0.f), sizeof(_vector));
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -159,7 +159,7 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		m_bHitted = true;
-		m_fMonsterHitPower = .8f;
+		m_fHitPower = .8f;
 		return;
 	}
 }
@@ -179,10 +179,10 @@ void CMonster::DoGlobalState(float fTimeDelta)
 	// 피격시 피 달게 하자 
 	if (m_bHitted)
 	{
-		m_fMonsterHitPower -= 0.01f; 
-		if (m_fMonsterHitPower < 0)
+		m_fHitPower -= 0.01f; 
+		if (m_fHitPower < 0)
 		{
-			m_fMonsterHitPower = 0.f;
+			m_fHitPower = 0.f;
 			m_bHitted = false;
 		}
 	}

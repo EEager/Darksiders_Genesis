@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "GameObject.h"
+#include "State_War.h"
 
 BEGIN(Engine)
 class CRenderer;
@@ -16,6 +17,8 @@ BEGIN(Client)
 
 class CWar final : public CGameObject
 {
+	friend class CGlobal_State_War;
+
 private:
 	typedef struct tagSwordDesc
 	{
@@ -107,6 +110,11 @@ public:
 	// Collider
 	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity()) override;
 
+public:
+	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+
 private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_BoneMatrix();
@@ -114,6 +122,12 @@ private:
 	HRESULT SetUp_Ruin_ConstantTable(bool drawOutLine);
 
 	HRESULT War_Render(_uint iPassIndex = 0);
+
+	// GamePlay
+	_bool m_bHitted = false; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
+	_float m_fHitPower = 0.f; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
+	const _float HIT_DELAY = 5.f; // 피격 지속시간
+	_float m_fHitTimeAcc = 0.f;
 
 
 public:

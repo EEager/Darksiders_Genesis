@@ -28,7 +28,7 @@ cbuffer cbPerObject
 
 cbuffer cbGameObject
 {
-	float		g_fMonsterHitPower;
+	vector		g_vHitPower;
 };
 
 cbuffer CameraDesc
@@ -243,7 +243,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
 
 		
-	Out.vColor += float4(g_fMonsterHitPower, 0, 0, 0.f);
+	Out.vColor += g_vHitPower;
 
 
 	return Out;

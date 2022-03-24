@@ -15,6 +15,7 @@
 // 
 // Global War State Machine in War.cpp
 // 
+CWar* g_pWar;
 CStateMachine* g_pWar_State_Context;
 CModel* g_pWar_Model_Context;
 CModel* g_pWar_Model_Gauntlet_Context;
@@ -47,6 +48,19 @@ void CGlobal_State_War::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 맞았다.
+	// [State] -> ToDo
+	if (g_pWar->m_bHitted)
+	{
+		g_pWar->m_fHitPower -= 0.01f;
+		if (g_pWar->m_fHitPower < 0)
+		{
+			g_pWar->m_fHitPower = 0.f;
+			g_pWar->m_bHitted = false;
+		}
+	}
+
 
 	// [Event] 죽었다
 	// [State]  -> CState_War_Death

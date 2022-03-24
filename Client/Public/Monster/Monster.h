@@ -33,10 +33,11 @@ protected:
 	CNavigation*				m_pNaviCom = nullptr;
 	CModel*						m_pModelCom = nullptr;
 
+	// ---------------------------------------------------- 
 	// 타겟팅은 tick에서 한번만하자
 	_bool m_bTargetingOnce = false;
 	_bool m_bHitted = false; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
-	_float m_fMonsterHitPower = 0.f; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
+	_float m_fHitPower = 0.f; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
 	const _float HIT_DELAY = 5.f; // 피격 지속시간
 	_float m_fHitTimeAcc = 0.f;
 
