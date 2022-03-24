@@ -39,11 +39,11 @@ HRESULT CWar::NativeConstruct_Prototype()
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 	// Init GameInfo
-	m_tGameInfo.iAtt = 1.f;
-	m_tGameInfo.iEnergy = 1.7f;
-	m_tGameInfo.iMaxHp = 10.f;
+	m_tGameInfo.iAtt = 3.f;
+	m_tGameInfo.iEnergy = 10;
+	m_tGameInfo.iMaxHp = 20;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
-	m_tGameInfo.iSoul = 0.f;
+	m_tGameInfo.iSoul = 0;
 
 	m_tMtrlDesc.vMtrlSpecular = { 1.f, 1.f, 1.f, 7.f };
 
@@ -116,9 +116,9 @@ _int CWar::LateTick(_float fTimeDelta)
 		{
 			m_bJump = false;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-		}
+		} 
 	}
-	else // 점프중이 아니라면 계속 땅위에 서게 하자 
+	else // 점프중이 아니라면 계속 땅위에 서게 하자  
 	{
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	}

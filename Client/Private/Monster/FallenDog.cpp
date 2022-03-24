@@ -72,6 +72,10 @@ _int CFallenDog::LateTick(_float fTimeDelta)
 	if (CMonster::LateTick(fTimeDelta) < 0)
 		return -1;
 
+	//// 체력이 0이하가 되면 죽자. 
+	//if (m_tGameInfo.iHp <= 0)
+	//	m_isDead = true;
+
 	return _int();
 }
 

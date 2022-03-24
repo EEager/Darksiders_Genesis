@@ -35,15 +35,20 @@ _int CLayer::Tick(_float fTimeDelta)
 {
 	_int	iProgress = 0;
 
-	for (auto& pGameObject : m_Objects)
+	for (auto iter = m_Objects.begin(); iter != m_Objects.end();)
 	{
-		if (nullptr != pGameObject)
+		if (nullptr != (*iter))
 		{
-			iProgress = pGameObject->Tick(fTimeDelta);
-			if (0 > iProgress)
-				return -1;
+			iProgress = (*iter)->Tick(fTimeDelta);
+			if (0 > iProgress) // ав╬З╬Н.
+			{
+				::Safe_Release(*iter);
+				iter = m_Objects.erase(iter);
+			}
+			else
+				iter++;
 		}
-	}		
+	}
 
 	return _int();
 }

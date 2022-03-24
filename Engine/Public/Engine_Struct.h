@@ -174,7 +174,6 @@ namespace Engine
 			ZeroMemory(this, sizeof(this));
 		}
 		int		iAtt;
-
 		int		iMaxHp;		// 최대체력 0이면 무적
 		int		iHp;		// 현재체력
 

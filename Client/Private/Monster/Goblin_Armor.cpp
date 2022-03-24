@@ -22,11 +22,11 @@ HRESULT CGoblin_Armor::NativeConstruct_Prototype()
 HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 {
 	// GameInfo Init
-	m_tGameInfo.iAtt = 1.f;
-	m_tGameInfo.iEnergy = 1.7f;
-	m_tGameInfo.iMaxHp = 10.f;
+	m_tGameInfo.iAtt = 1;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iMaxHp = 10;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
-	m_tGameInfo.iSoul = 1.f;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
 
 	m_fSpeed = 5.f;
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
@@ -40,8 +40,8 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	/* For.Collider */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	ColliderDesc.vPivot = _float3(0.f, 0.75f, 0.f);
-	ColliderDesc.vSize = _float3(0.5f, 1.5f, 0.5f);
+	ColliderDesc.vPivot = _float3(0.f, 1.f, 0.f);
+	ColliderDesc.vSize = _float3(0.5f, 2.f, 0.5f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
 
@@ -89,6 +89,10 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 
 _int CGoblin_Armor::Tick(_float fTimeDelta)
 {
+	if (CMonster::Tick(fTimeDelta) < 0)
+		return -1;
+
+	// 타겟팅 설정하자
 	if (!m_bTargetingOnce)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -109,7 +113,7 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 	}
 
 	// For Weapon Collider
-	Update_Colliders();
+	//Update_Colliders();
 
 	// FSM
 	UpdateState();
@@ -128,6 +132,10 @@ _int CGoblin_Armor::LateTick(_float fTimeDelta)
 	// 모든 몬스터는 Height, Renderer, Add_Collider
 	if (CMonster::LateTick(fTimeDelta) < 0)
 		return -1;
+
+	// 체력이 0이하가 되면 죽자. 
+	if (m_tGameInfo.iHp <= 0)
+		m_isDead = true;
 
 	return _int();
 }

@@ -22,12 +22,11 @@ HRESULT CLegion::NativeConstruct_Prototype()
 HRESULT CLegion::NativeConstruct(void * pArg)
 {
 	// GameInfo Init
-	m_tGameInfo.iAtt = 1.f;
-	m_tGameInfo.iEnergy = 1.7f;
-	m_tGameInfo.iMaxHp = 10.f;
+	m_tGameInfo.iAtt = 2;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iMaxHp = 10;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
-	m_tGameInfo.iSoul = 1.f;
-
+	m_tGameInfo.iSoul = rand() % 10 + 1;
 
 	m_fSpeed = 8.f;
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다. 
@@ -84,6 +83,10 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 _int CLegion::Tick(_float fTimeDelta)
 {
+	if (CMonster::Tick(fTimeDelta) < 0)
+		return -1;
+
+	// 타겟팅 설정하자
 	if (!m_bTargetingOnce)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -104,7 +107,7 @@ _int CLegion::Tick(_float fTimeDelta)
 	}
 
 	// For Weapon Collider
-	Update_Colliders();
+	//Update_Colliders();
 
 	// FSM
 	UpdateState();
@@ -122,6 +125,10 @@ _int CLegion::LateTick(_float fTimeDelta)
 	// 모든 몬스터는 Height, Renderer, Add_Collider
 	if (CMonster::LateTick(fTimeDelta) < 0)
 		return -1;
+
+	// 체력이 0이하가 되면 죽자. 
+	if (m_tGameInfo.iHp <= 0)
+		m_isDead = true;
 
 	return _int();
 }

@@ -278,5 +278,6 @@ void CNavigation::Free()
 
 	m_Cells.clear();
 
-	Safe_Delete(m_pWorldMatrixPtr);
+	if (m_isCloned == false)
+		Safe_Delete(m_pWorldMatrixPtr);
 }

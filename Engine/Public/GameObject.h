@@ -120,8 +120,8 @@ public:
 		//else if (m_tGameInfo.iEnergy < 0)
 		//	m_tGameInfo.iEnergy = 0;
 	}
-	// ======================================================
 
+	// ======================================================
 
 protected:
 	_float					m_fCamDistance = 0.f;

@@ -32,6 +32,10 @@ HRESULT CMonster::NativeConstruct(void * pArg)
 
 _int CMonster::Tick(_float fTimeDelta)
 {
+	// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다
+	if (m_isDead)
+		return -1;
+
 	// 모든 몬스터는 Collider list 를 update해야한다
 	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 

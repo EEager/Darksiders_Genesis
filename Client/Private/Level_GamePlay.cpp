@@ -49,6 +49,13 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	if (0 > (__super::Tick(fTimeDelta)))
 		return -1;
 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_R))
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
+		RELEASE_INSTANCE(CGameInstance);
+	}
+
 	return _int(0);
 }
 

@@ -57,6 +57,11 @@ HRESULT CHollowLord::NativeConstruct(void * pArg)
 
 _int CHollowLord::Tick(_float fTimeDelta)
 {
+	// 모든 몬스터는 Collider list 를 update해야한다
+	if (CMonster::Tick(fTimeDelta) < 0)
+		return -1;
+
+	// 타겟팅 설정하자
 	if (!m_bTargetingOnce)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
@@ -84,9 +89,7 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	else
 		m_bBattleStart = true;
 
-	// 모든 몬스터는 Collider list 를 update해야한다
-	if (CMonster::Tick(fTimeDelta) < 0)
-		return -1;
+
 
 	// FSM
 	UpdateState();
@@ -105,7 +108,7 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 	// 모든 몬스터는 Height, Renderer, Add_Collider
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	// 모든 몬스터는 Nonalpha 그룹에서 render한다
+	// 플레이어와 일정거리 이하가 되면 그때부터 렌더링하자
 	if (m_bBattleStart == true)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
@@ -114,6 +117,10 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 		// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
 		pGameInstance->Add_Collision(this);
 	}
+
+	// 체력이 0이하가 되면 죽자. 
+	//if (m_tGameInfo.iHp <= 0)
+	//	m_isDead = true;
 
 
 	RELEASE_INSTANCE(CGameInstance);

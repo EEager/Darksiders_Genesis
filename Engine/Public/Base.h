@@ -18,6 +18,14 @@ public:
 	unsigned long Release();
 private:
 	unsigned long		m_dwRefCnt = 0;
+
+protected:
+	bool m_isDead = 0;
+
+public:
+	void SetDead() { m_isDead = true; }
+	bool IsDead() { return m_isDead; }
+
 public:
 	virtual void Free() = 0;
 };
