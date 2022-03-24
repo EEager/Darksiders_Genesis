@@ -36,7 +36,7 @@ HRESULT CVIBuffer_MonsterHp_PointGS::NativeConstruct_Prototype(const _tchar* pSh
 
 
 	// 몬스터 머리 위에 올리자
-	((VTXPOINTHPBAR*)m_pVertices)[0].vPosition = _float3(0.f, 2.4f, 0.f);
+	((VTXPOINTHPBAR*)m_pVertices)[0].vPosition = _float3(0.f, 0.f, 0.f);
 	((VTXPOINTHPBAR*)m_pVertices)[0].fPSizeX = 2.f;
 	((VTXPOINTHPBAR*)m_pVertices)[0].fPSizeY = .2f;
 

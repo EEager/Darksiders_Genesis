@@ -165,6 +165,9 @@ HRESULT CLegion::Render(_uint iPassIndex)
 		_float fUVx = MAX_LEN_HP * fCurHpRatio;
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
 
+		_float fHpBarHeight = 2.4f;
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float)); 
+
 		m_pVIHpBarGsBufferCom->Render(iPassIndex);
 		RELEASE_INSTANCE(CGameInstance);
 	}

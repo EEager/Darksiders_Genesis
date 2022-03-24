@@ -37,6 +37,10 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Armor"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_MonsterHp_PointGS"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIHpBarGsBufferCom)))
+		return E_FAIL;
+
 	/* For.Collider */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
@@ -147,6 +151,31 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 		return -1;
 
 	Render_Goblin();
+
+	// HP Bar Render
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		// Bind Transform
+		m_pTransformCom->Bind_OnShader(m_pVIHpBarGsBufferCom, "g_WorldMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIHpBarGsBufferCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIHpBarGsBufferCom, "g_ProjMatrix");
+
+		// Bind Position
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_vector));
+
+
+		// Bind 몬스터 현재 체력비율을 UV x 좌표로 넘겨주자. ex) 0.01 ~ 0.99 이니깐 80% 면 (0.99 - 0.01) * 0.8;
+#define MAX_LEN_HP (0.99f - 0.01f)
+		_float fCurHpRatio = (_float)m_tGameInfo.iHp / (_float)m_tGameInfo.iMaxHp;
+		_float fUVx = MAX_LEN_HP * fCurHpRatio;
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
+
+		_float fHpBarHeight = 1.2f;
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
+
+		m_pVIHpBarGsBufferCom->Render(iPassIndex);
+		RELEASE_INSTANCE(CGameInstance);
+	}
 	
 	return S_OK;
 }
@@ -444,6 +473,7 @@ CGameObject * CGoblin_Armor::Clone(void* pArg)
 
 void CGoblin_Armor::Free()
 {
+	Safe_Release(m_pVIHpBarGsBufferCom);
 	Safe_Release(m_pTarget);
 
 	Safe_Release(m_pModelSpearCom);

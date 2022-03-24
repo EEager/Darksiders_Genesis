@@ -16,6 +16,7 @@ cbuffer Camera
 cbuffer Monster
 {
 	float			g_fMonsterHpUVX;
+	float			g_fHpBarHeight;
 };
 
 struct VS_IN
@@ -40,7 +41,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	VS_OUT		Out = (VS_OUT)0;
 
 	// 몬스터 머리 위에 
-	Out.vPosition = mul(vector(In.vPosition.x, In.vPosition.y, In.vPosition.z, 1.f), g_WorldMatrix);
+	Out.vPosition = mul(vector(In.vPosition.x, In.vPosition.y + g_fHpBarHeight, In.vPosition.z, 1.f), g_WorldMatrix);
 	Out.fPSizeX = In.fPSizeX;
 	Out.fPSizeY = In.fPSizeY;
 
@@ -120,8 +121,8 @@ struct PS_OUT
 };
 
 // 가로가 세로보다 10배만큼 길다
-const float uvOffsetX = 0.01f;
-const float uvOffsetY = 0.1f;
+static const float uvOffsetX = 0.01f;
+static const float uvOffsetY = 0.1f;
 
 PS_OUT PS_MAIN(PS_IN In)
 {
@@ -130,7 +131,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	// 기본 베이스는 검은색 
 	Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
 
-	// 테두리 부분은 빨간색
+	// 테두리 부분은 빨간색 
 	if (In.vTexUV.x <= uvOffsetX ||
 		In.vTexUV.x >= (1.f - uvOffsetX) ||
 		In.vTexUV.y <= uvOffsetY ||
