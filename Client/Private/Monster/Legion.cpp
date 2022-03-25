@@ -131,8 +131,13 @@ _int CLegion::LateTick(_float fTimeDelta)
 		return -1;
 
 	// 체력이 0이하가 되면 죽자. 
-	if (m_tGameInfo.iHp <= 0)
-		m_isDead = true;
+	// 바로 죽이지말고 죽는 모션 다 끝나면 죽이자
+	if (m_tGameInfo.iHp <= 0 && m_bWillDead == false)
+	{
+		m_bWillDead = true;
+		m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Start";
+		//m_isDead = true;
+	}
 
 	return _int();
 }
@@ -148,7 +153,7 @@ HRESULT CLegion::Render(_uint iPassIndex)
 	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90));
 
 	// HP Bar Render
-	if (m_bOnceHitted)
+	if (m_bOnceHitted) // 한번은 맞고 난 다음에 보여주자
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		// Bind Transform
@@ -238,7 +243,9 @@ void CLegion::UpdateState()
 
 	// m_eNextState Enter
 	if (m_pNextState == "Legion_Mesh.ao|Legion_Idle" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Run_F"
+		m_pNextState == "Legion_Mesh.ao|Legion_Run_F" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2"
 		)
 	{
 		isLoop = true;
@@ -250,7 +257,9 @@ void CLegion::UpdateState()
 		m_pNextState == "Legion_Mesh.ao|Legion_Attack_02" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Slam" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02"
+		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" || 
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land"
 		)
 	{
 		m_eDir = OBJECT_DIR::DIR_F;
@@ -349,7 +358,7 @@ void CLegion::DoState(float fTimeDelta)
 		}
 	}
 	//-----------------------------------------------------
-	else if (m_pCurState == "Legion_Mesh.ao|Legion_Taunt_01" || "Legion_Mesh.ao|Legion_Taunt_02")
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Taunt_01" || m_pCurState == "Legion_Mesh.ao|Legion_Taunt_02")
 	{
 		// 도발 애니메이션 끝나면 
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
@@ -359,7 +368,7 @@ void CLegion::DoState(float fTimeDelta)
 		}
 	}
 	//-----------------------------------------------------
-	else if (m_pCurState == "Legion_Mesh.ao|Legion_Evade_Right" || "Legion_Mesh.ao|Legion_Evade_Left")
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Evade_Right" || m_pCurState == "Legion_Mesh.ao|Legion_Evade_Left")
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
@@ -377,6 +386,46 @@ void CLegion::DoState(float fTimeDelta)
 			{
 				m_pNextState = "Legion_Mesh.ao|Legion_Run_F";
 			}
+		}
+	}
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Knockback_Start")
+	{
+		int debug = 1;
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+		/*	if (rand()%2)
+				m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Loop1";
+			else*/
+				m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Loop1";
+		}
+	}
+	//-----------------------------------------------------
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Knockback_Loop1")
+	{
+		// 땅에 닿으면() Land상태로.
+		if (m_pTransformCom->MomentumWithGravity(XMVectorSet(1.f, 1.f, 1.f, 1.f), 0.5f, fTimeDelta, 0.f) == false) // 땅에 닿았다.
+		{
+			m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Land";
+	
+		}
+	}
+	//-----------------------------------------------------
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Knockback_Loop2")
+	{
+		m_fTimeKnockBackLoop += fTimeDelta;
+		if (m_fTimeKnockBackLoop > 1.f) /// TEST
+		{
+			m_fTimeKnockBackLoop = 0.f;
+			m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Land";
+		}
+	}
+	//-----------------------------------------------------
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Knockback_Land")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			// Todo : 바로 죽이지 말고 디졸브 끝나면 죽이자 
+			m_isDead = true;
 		}
 	}
 }

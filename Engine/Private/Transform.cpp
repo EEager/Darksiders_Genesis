@@ -381,6 +381,35 @@ void CTransform::ClearJumpVar()
 }
 
 
+// 현재 위치를 vDir 방향으로 fMomentum 만큼 매 프레임 마다 움직이자.
+_bool CTransform::Momentum(_fvector vDir, _float fMomentum, _float fTimeDelta)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+
+	vPosition += vDir * fMomentum * fTimeDelta;
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+
+	return true;
+}
+
+// 현재 위치를 vDir 방향으로 fMomentum 만큼 매 프레임 마다 움직이자. 중력마냥 적용시키자.
+#define MOMENTOM_GRAVITY 2.0f
+_bool CTransform::MomentumWithGravity(_fvector vDir, _float fMomentum, _float fTimeDelta, _float GroundCheck)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+	if (XMVectorGetY(vPosition) <= GroundCheck) // 땅에 닿았다.
+		return false;
+
+	vPosition += (vDir * fMomentum * fTimeDelta);
+	vPosition += (XMVectorSet(0.f, -1.f, 0.f, 1.f) * fMomentum * 20.f * fTimeDelta);
+
+	Set_State(CTransform::STATE_POSITION, vPosition);
+
+	return true;
+}
+
+
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 {
 	CTransform*		pInstance = new CTransform(pDevice, pDeviceContext);

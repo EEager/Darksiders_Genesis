@@ -64,6 +64,7 @@ private:
 	CGameObject* m_pTarget = nullptr;
 	CTransform* m_pTargetTransform = nullptr;
 	_float m_fTimeIdle = 0.f;
+	_float m_fTimeKnockBackLoop = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 	//----------------------------------------------
 

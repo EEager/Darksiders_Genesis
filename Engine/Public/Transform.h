@@ -82,6 +82,9 @@ private:
 	_float4x4		m_WorldMatrix;
 	TRANSFORMDESC	m_TransformDesc;
 
+
+	// -----------------
+	// 점프
 public:
 	void JumpY(_float fTimeDelta);
 	void ClearJumpVar();
@@ -92,6 +95,13 @@ private:
 #define GRAVITY 34.f
 	_float4			m_vJumpDir = { 0.f, 1.f, 0.f, 0.f }; // 하늘방향
 	_float			m_fJumpDy = INIT_JUMP_DY;
+	// -----------------
+
+	// 모멘텀 - 방향, 모멘텀, 프레임당 모멘텀 감속도
+	// 를 지정하여 모텐텀에서 감속도를 한다. 모멘텀이 0 이하가 되면 return한다.
+public:
+	_bool Momentum(_fvector vDir, _float fMomentum, _float fTimeDelta);
+	_bool MomentumWithGravity(_fvector vDir, _float fMomentum, _float fTimeDelta, _float GroundCheck);
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
