@@ -69,7 +69,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 		ColliderDesc.fRadius = 0.5f;
 
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
 
 		ZeroMemory(&m_WarSwordDesc, sizeof(SWORDDESC));
 		m_WarSwordDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_LE_Weapon");
@@ -242,9 +242,26 @@ void CLegion::UpdateState()
 
 	_bool isLoop = false;
 
-	// m_eCurState Exit
+	// --------------------------
+	// --------------------------
+	// --------------------------
+	// m_pCurState Exit
+	if (
+		m_pCurState == "Legion_Mesh.ao|Legion_Atk_Flurry" ||
+		m_pCurState == "Legion_Mesh.ao|Legion_Atk_Heavy" ||
+		m_pCurState == "Legion_Mesh.ao|Legion_Attack_02" ||
+		m_pCurState == "Legion_Mesh.ao|Legion_Atk_Slam"
+		)
+	{
+		// 해당 상태에서 무기 콜라이더 끄자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+	}
 
 
+
+	// --------------------------
+	// --------------------------
+	// --------------------------
 	// m_eNextState Enter
 	if (m_pNextState == "Legion_Mesh.ao|Legion_Idle" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Run_F"
@@ -253,11 +270,20 @@ void CLegion::UpdateState()
 		isLoop = true;
 		m_eDir = OBJECT_DIR::DIR_F;
 	}
+	// Atk States
 	else if (
 		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Flurry" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Heavy" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Attack_02" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Slam" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Atk_Slam"
+		)
+	{
+		// 해당 상태에서 무기 콜라이더 키자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
+	else if (
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" || 

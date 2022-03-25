@@ -62,7 +62,7 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 		ColliderDesc.vPivot = _float3(0.f, -0.5f, 0.f); 
 		ColliderDesc.fRadius = 0.25f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
 
 		ZeroMemory(&m_spearDesc, sizeof(SPEARDESC));
 		m_spearDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Goblin_Weapon_Fleamag_Sword");
@@ -307,10 +307,20 @@ void CGoblin_Armor::UpdateState()
 
 	_bool isLoop = false;
 
-	// m_eCurState Exit
+	// -----------------------------
+	// m_pCurState Exit
+	if (
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01" ||
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02" ||
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear"
+		)
+	{
+		// 해당 상태 Exit시 무기 콜라이더 끄자.
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+	}
 
-
-	// m_eNextState Enter
+	// -----------------------------
+	// m_pNextState Enter
 	if (m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle" ||
 		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Run_F"
 		)
@@ -324,6 +334,8 @@ void CGoblin_Armor::UpdateState()
 		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear"
 		)
 	{
+		// 해당 상태에서 무기 콜라이더 키고
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
