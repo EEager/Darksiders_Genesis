@@ -91,7 +91,7 @@ private:
 
 public:
 	_matrix		Get_WarPivot() { return XMLoadFloat4x4(&m_WarPivotMat); }  // 말타기 상태가 아닐때, War Model 피봇 매트릭스를 이걸로. 참고로 War_Ruin_Model은 ㄱㅊ
-	_matrix		Get_WarRuinPivot() { return XMLoadFloat4x4(&m_WarRuinPivotMat); }// 말타기 상태일 때, War Model한테 이거를 셋해줘야한다. 참고로 War_Ruin_Model은 ㄱㅊ
+	_matrix		Get_WarRuinPivot() { return XMLoadFloat4x4(&m_WarRuinPivotMat); } // 말타기 상태일 때, War Model한테 이거를 셋해줘야한다. 참고로 War_Ruin_Model은 ㄱㅊ
 
 private:
 	_float4x4	m_WarPivotMat; // 말안타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님

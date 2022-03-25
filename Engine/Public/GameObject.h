@@ -54,15 +54,31 @@ public:
 	}
 
 	_bool isColliderListEmpty() { return m_ColliderList.empty(); }
-	HRESULT Add_Collider(CCollider::COLLIDERDESC* ColliderDesc, const _tchar* pColliderTag, _uint iLevel = 0, const _tchar* pColliderPrototypeTag = L"Prototype_Component_Collider")
+	HRESULT Add_Collider(CCollider::COLLIDERDESC* ColliderDesc, const _tchar* pColliderTag, bool initialDisable = false, _uint iLevel = 0, const _tchar* pColliderPrototypeTag = L"Prototype_Component_Collider")
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		CCollider* pCollider = static_cast<CCollider*>(pGameInstance->Clone_Component(iLevel, pColliderPrototypeTag, ColliderDesc));
 		pCollider->Set_Owner(this);
 		pCollider->Set_ColliderTag(pColliderTag);
+		pCollider->m_bColliderDisble = initialDisable;
 		m_ColliderList.push_back(pCollider);
 		RELEASE_INSTANCE(CGameInstance);
 		return S_OK;
+	}
+
+	// 특정 Tag의 콜라이더 속성을 변경한다.
+	void Set_Collider_Attribute(const _tchar* pColliderTag/*define 값을 넣어주자*/, _bool disable)
+	{
+		auto iter = m_ColliderList.begin();
+		for (iter; iter != m_ColliderList.end(); iter++)
+		{
+			if ((*iter)->Get_ColliderTag() == pColliderTag)
+			{
+				(*iter)->m_bColliderDisble = disable;
+				return;
+			}
+		}
+		return;
 	}
 
 	virtual void Release_Collider()
@@ -78,7 +94,8 @@ public:
 	{
 		for (auto pCollider : m_ColliderList)
 		{
-			pCollider->Update(wolrdMatrix);
+			if (!pCollider->m_bColliderDisble)
+				pCollider->Update(wolrdMatrix);
 		}
 		return 0;
 	}
@@ -87,7 +104,8 @@ public:
 	{
 		for (auto pCollider : m_ColliderList)
 		{
-			pCollider->Render();
+			if (!pCollider->m_bColliderDisble)
+				pCollider->Render();
 		}
 		return 0;
 	}

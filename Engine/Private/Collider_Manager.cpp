@@ -61,8 +61,14 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 	// CGameObject가 가지고 있는 CCollider 끼리 충돌체크를 확인하다
 	for (auto& pSrc : *pSrcList)
 	{
+		if (pSrc->m_bColliderDisble)
+			continue;
+
 		for (auto& pDst : *pDstList)
 		{
+			if (pDst->m_bColliderDisble)
+				continue;
+
 			COLLIDER_ID ID;
 			ID.Src_id = pSrc->Get_ID();
 			ID.Dst_id = pDst->Get_ID();

@@ -804,6 +804,8 @@ void CState_War_Atk_Light_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 	// 공격하고 몇초간은 방향키 못누르게하자
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Light_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -861,6 +863,10 @@ void CState_War_Atk_Light_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT; // 끝에 콤보타임 초기화
 	g_pLatestWarAtkCombo = CState_War_Atk_Light_02::GetInstance(); // 다음 콤보를 지정해주자
 
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_Light_01::Free()
@@ -886,6 +892,10 @@ void CState_War_Atk_Light_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 공격하고 몇초간은 방향키 못누르게하자
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 
 }
 
@@ -940,6 +950,9 @@ void CState_War_Atk_Light_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT;
 	g_pLatestWarAtkCombo = CState_War_Atk_Light_03::GetInstance();
 
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_Light_02::Free()
@@ -964,6 +977,10 @@ void CState_War_Atk_Light_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 공격하고 몇초간은 방향키 못누르게하자
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Light_03::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1014,6 +1031,9 @@ void CState_War_Atk_Light_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT;
 	g_pLatestWarAtkCombo = g_pLatestWarAtkCombo = CState_War_Atk_Light_04::GetInstance();;
 
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_Light_03::Free()
@@ -1041,6 +1061,10 @@ void CState_War_Atk_Light_04::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 0과 널로 만들어서 1콤보로 가게 하자 
 	g_fWarAtkComboTimeAcc = 0;
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1092,6 +1116,9 @@ void CState_War_Atk_Light_04::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_fWarAtkComboTimeAcc = 0.f;
 	g_pLatestWarAtkCombo = nullptr;
 
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_Light_04::Free()
@@ -1116,6 +1143,10 @@ void CState_War_Atk_Heavy_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 공격하고 몇초간은 방향키 못누르게하자
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1206,6 +1237,9 @@ void CState_War_Atk_Heavy_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT; // 끝에 콤보타임넣어주자
 	g_pLatestWarAtkHeavyCombo = CState_War_Atk_Heavy_02::GetInstance();
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Atk_Heavy_01::Free()
@@ -1230,6 +1264,10 @@ void CState_War_Atk_Heavy_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 공격하고 몇초간은 방향키 못누르게하자
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1283,6 +1321,9 @@ void CState_War_Atk_Heavy_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_fWarAtkComboTimeAcc = WAR_COMBO_TIME_INIT; // 끝에 콤보 시간 초기화시켜주자
 	g_pLatestWarAtkHeavyCombo = CState_War_Atk_Heavy_03::GetInstance();
 
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_Heavy_02::Free()
@@ -1307,6 +1348,10 @@ void CState_War_Atk_Heavy_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 공격하고 몇초간은 방향키 못누르게하자
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1358,6 +1403,9 @@ void CState_War_Atk_Heavy_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	g_fWarAtkComboTimeAcc = 0.f;
 	g_pLatestWarAtkHeavyCombo = nullptr;
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Atk_Heavy_03::Free()
@@ -1776,6 +1824,10 @@ void CState_War_Jump_Fall_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Fall_Combat", true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Jump_Fall_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1823,6 +1875,9 @@ void CState_War_Jump_Fall_Combat::Execute(CGameObject* pOwner, _float fTimeDelta
 void CState_War_Jump_Fall_Combat::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Jump_Fall_Combat::Free()
@@ -1844,6 +1899,10 @@ void CState_War_Jump_Combat_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not, Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Combat_Land", false);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Jump_Combat_Land::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1876,6 +1935,9 @@ void CState_War_Jump_Combat_Land::Execute(CGameObject* pOwner, _float fTimeDelta
 void CState_War_Jump_Combat_Land::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Jump_Combat_Land::Free()
@@ -2050,6 +2112,10 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Enter(CGameObject* pOwner, _float fT
 	// 잠시 공중에서 멈추자
 	g_pWar_Transform_Context->Set_JumpDy(+9.5f);
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2080,6 +2146,9 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Exit(CGameObject* pOwner, _float fTi
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Free()
@@ -2105,6 +2174,10 @@ void CState_War_Atk_Air_Light_03_Fall::Enter(CGameObject* pOwner, _float fTimeDe
 
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(true);
 
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2126,6 +2199,8 @@ void CState_War_Atk_Air_Light_03_Fall::Exit(CGameObject* pOwner, _float fTimeDel
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 
 }
 
@@ -2150,6 +2225,10 @@ void CState_War_Atk_Air_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Air_Land", false);
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 	
 }
 
@@ -2184,6 +2263,9 @@ void CState_War_Atk_Air_Land::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Atk_Air_Land::Free()
@@ -2351,6 +2433,10 @@ void CState_War_Atk_EarthSplitter_Level1::Enter(CGameObject* pOwner, _float fTim
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_EarthSplitter_Level1", false);// Not Loop
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2385,6 +2471,9 @@ void CState_War_Atk_EarthSplitter_Level1::Exit(CGameObject* pOwner, _float fTime
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Free()
@@ -2405,6 +2494,10 @@ void CState_War_Atk_Flamebrand_Start::Enter(CGameObject* pOwner, _float fTimeDel
 {
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand_Start", false);// Not Loop
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Flamebrand_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2424,6 +2517,9 @@ void CState_War_Atk_Flamebrand_Start::Execute(CGameObject* pOwner, _float fTimeD
 void CState_War_Atk_Flamebrand_Start::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Atk_Flamebrand_Start::Free()
@@ -2445,6 +2541,10 @@ void CState_War_Atk_Flamebrand::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand");// Loop
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 
 }
 
@@ -2470,6 +2570,9 @@ void CState_War_Atk_Flamebrand::Exit(CGameObject* pOwner, _float fTimeDelta)
 	m_fSpinningTimeAcc = 0.f;
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
 
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+
 }
 
 void CState_War_Atk_Flamebrand::Free()
@@ -2493,6 +2596,10 @@ void CState_War_Atk_Flamebrand_End::Enter(CGameObject* pOwner, _float fTimeDelta
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_Flamebrand_End", false);//Not Loop
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 해당 상태에서 무기 콜라이더 키고
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 }
 
 void CState_War_Atk_Flamebrand_End::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2512,6 +2619,9 @@ void CState_War_Atk_Flamebrand_End::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
+	// 해당 상태에서 무기 콜라이더 끄자
+	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 }
 
 void CState_War_Atk_Flamebrand_End::Free()
