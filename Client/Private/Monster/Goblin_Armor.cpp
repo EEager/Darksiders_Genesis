@@ -138,8 +138,12 @@ _int CGoblin_Armor::LateTick(_float fTimeDelta)
 		return -1;
 
 	// 체력이 0이하가 되면 죽자. 
-	if (m_tGameInfo.iHp <= 0)
-		m_isDead = true;
+	// 바로 죽이지말고 죽는 모션 다 끝나면 죽이자
+	if (m_tGameInfo.iHp <= 0 && m_bWillDead == false/* 한번만 상태 변화하기 위해 필요함*/)
+	{
+		m_bWillDead = true;
+		m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_Death_01";
+	}
 
 	return _int();
 }
@@ -153,7 +157,7 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 	Render_Goblin();
 
 	// HP Bar Render
-	if (m_bOnceHitted)
+	if (m_tGameInfo.iHp != m_tGameInfo.iMaxHp) // 한번 맞으면 보여주자
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		// Bind Transform
@@ -323,7 +327,10 @@ void CGoblin_Armor::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
-	else if (m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back")
+	else if (
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back" ||
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_Death_01"
+		)
 	{
 		m_eDir = OBJECT_DIR::DIR_B;
 		isLoop = false;
@@ -421,6 +428,14 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		{
 			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(), fTimeDelta * 10);
 			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+		}
+	}
+	//-----------------------------------------------------
+	else if (m_pCurState ==  "Goblin_Armor_Mesh.ao|Goblin_Death_01")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_isDead = true;
 		}
 	}
 }

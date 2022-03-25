@@ -258,7 +258,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 			return E_FAIL;
 
 	/* For.Prototype_GameObject_Goblin_Armor*/
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 4; i++)
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"))))
 			return E_FAIL;
 

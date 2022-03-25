@@ -68,6 +68,10 @@ private:
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 	//----------------------------------------------
 
+private:
+	_float4 m_vFloatingDir; // 죽기전에 날아가는 방향. Nativecontstruct에서 정의해주ㅏ
+	_float m_fFloatingPwr; // 죽기전에 날아가는 힘.
+
 
 protected:
 	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());

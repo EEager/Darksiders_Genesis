@@ -382,11 +382,11 @@ void CTransform::ClearJumpVar()
 
 
 // 현재 위치를 vDir 방향으로 fMomentum 만큼 매 프레임 마다 움직이자.
-_bool CTransform::Momentum(_fvector vDir, _float fMomentum, _float fTimeDelta)
+_bool CTransform::Momentum(_fvector vDir, _float fSpeedPerSec, _float fTimeDelta)
 {
 	_vector		vPosition = Get_State(STATE_POSITION);
 
-	vPosition += vDir * fMomentum * fTimeDelta;
+	vPosition += vDir * fSpeedPerSec * fTimeDelta;
 
 	Set_State(CTransform::STATE_POSITION, vPosition);
 
@@ -394,18 +394,23 @@ _bool CTransform::Momentum(_fvector vDir, _float fMomentum, _float fTimeDelta)
 }
 
 // 현재 위치를 vDir 방향으로 fMomentum 만큼 매 프레임 마다 움직이자. 중력마냥 적용시키자.
-#define MOMENTOM_GRAVITY 2.0f
-_bool CTransform::MomentumWithGravity(_fvector vDir, _float fMomentum, _float fTimeDelta, _float GroundCheck)
+_bool CTransform::MomentumWithGravity(_fvector vDir, _float fSpeedPerSec, _float fTimeDelta, _float GroundCheck)
 {
 	_vector		vPosition = Get_State(STATE_POSITION);
 	if (XMVectorGetY(vPosition) <= GroundCheck) // 땅에 닿았다.
+	{
+		m_fFallingGravity = 0.f;
 		return false;
-
-	vPosition += (vDir * fMomentum * fTimeDelta);
-	vPosition += (XMVectorSet(0.f, -1.f, 0.f, 1.f) * fMomentum * 20.f * fTimeDelta);
+	}
+	 
+	vPosition += XMVector3Normalize(vDir) * fSpeedPerSec * fTimeDelta;
+	vPosition += XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)) * m_fFallingGravity * fTimeDelta;
+	 
+	// 중력처럼 적용하도록 매프레임 밑으로 감소시키자.
+	m_fFallingGravity = m_fFallingGravity - 1.5f * fTimeDelta;
 
 	Set_State(CTransform::STATE_POSITION, vPosition);
-
+	  
 	return true;
 }
 

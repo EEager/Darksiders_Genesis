@@ -100,8 +100,10 @@ private:
 	// 모멘텀 - 방향, 모멘텀, 프레임당 모멘텀 감속도
 	// 를 지정하여 모텐텀에서 감속도를 한다. 모멘텀이 0 이하가 되면 return한다.
 public:
-	_bool Momentum(_fvector vDir, _float fMomentum, _float fTimeDelta);
-	_bool MomentumWithGravity(_fvector vDir, _float fMomentum, _float fTimeDelta, _float GroundCheck);
+	_bool Momentum(_fvector vDir, _float fSpeedPerSec, _float fTimeDelta);
+	_bool MomentumWithGravity(_fvector vDir, _float fSpeedPerSec, _float fTimeDelta, _float GroundCheck);
+private:
+	_float m_fFallingGravity = 0.f;
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

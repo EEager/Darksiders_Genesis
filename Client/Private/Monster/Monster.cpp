@@ -49,10 +49,13 @@ _int CMonster::LateTick(_float fTimeDelta)
 	
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	// 모든 몬스터는 Navi 따라서 Height를 타야한다
-	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	// 모든 몬스터는 Navi 따라서 Height를 타야한다. 하지만 죽기직전 날아갈때에는 태우지말자.
+	if (m_bHeight)
+	{
+		_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
+	}
 
 	// 모든 몬스터는 Nonalpha 그룹에서 render한다
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
@@ -164,7 +167,6 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		m_bHitted = true;
-		m_bOnceHitted = true;
 		m_fHitPower = .8f;
 
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;

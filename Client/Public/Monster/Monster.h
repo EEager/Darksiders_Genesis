@@ -37,12 +37,15 @@ protected:
 	// 타겟팅은 tick에서 한번만하자
 	_bool m_bTargetingOnce = false;
 	_bool m_bHitted = false; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
-	_bool m_bOnceHitted = false; // 한번이라도 피격되었는지판단하기 위함. HpBar는 피격 이후에 출력되기때문이다. 
 	_bool m_bWillDead = false;
 
 	_float m_fHitPower = 0.f; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
 	const _float HIT_DELAY = 5.f; // 피격 지속시간
 	_float m_fHitTimeAcc = 0.f;
+
+	// 모든 몬스터는 Hp가 0이 되어 날아갈때 높이를 태우지말자 
+protected:
+	_bool m_bHeight = true;
 
 public:
 	// Collider
