@@ -366,20 +366,23 @@ void CGameInstance::Release_Engine()
 	if (0 != CPipeLine::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CPipeLine");
 
+	if (0 != CLight_Manager::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CLight_Manager");
+
+	if (0 != CTarget_Manager::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CTarget_Manager ");
+
 	if (0 != CLevel_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CLevel_Manager ");
 
 	if (0 != CTimer_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CTimer_Manager ");
 
-	if (0 != CLight_Manager::GetInstance()->DestroyInstance())
-		MSG_BOX("Failed to Release CLight_Manager ");
 
 	if (0 != CCollider_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CCollider_Manager");
 
-	if (0 != CTarget_Manager::GetInstance()->DestroyInstance())
-		MSG_BOX("Failed to Release CTarget_Manager "); 
+
 
 	if (0 != CInput_Device::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CInput_Device ");

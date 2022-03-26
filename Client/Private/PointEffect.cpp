@@ -64,6 +64,8 @@ HRESULT CPointEffect::Render(_uint iPassIndex)
 
 	m_pModelCom->Render(iPassIndex);
 
+	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
+
 	return S_OK;
 }
 

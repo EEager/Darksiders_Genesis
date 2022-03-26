@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Target_Manager.h"
 #include "Light_Manager.h"
+#include "VIBuffer_Rect.h"
 
 
 #define SHADOW_MAP_TEST
@@ -278,12 +279,25 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	m_pDeviceContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
 	/* RT */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Diffuse"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 0.f, 0.f, 1.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Diffuse"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Normal"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shade"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
+
+	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"));
+	if (nullptr == m_pVIBuffer)
+		return E_FAIL;
+
+	XMStoreFloat4x4(&m_TransformMatrix, XMMatrixIdentity());
+	m_TransformMatrix._11 = ViewportDesc.Width;
+	m_TransformMatrix._22 = ViewportDesc.Height;
+	m_TransformMatrix._41 = 0.0f;
+	m_TransformMatrix._42 = 0.0f;
+
+	XMStoreFloat4x4(&m_OrthoMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f)));
+
 
 #ifdef _DEBUG
 	/* Debug */
@@ -345,21 +359,26 @@ HRESULT CRenderer::Add_PostRenderGroup(CGameObject* pGameObject)
 }
 
 #ifdef _DEBUG
-bool bDraw_Debug;
+bool bDraw_Debug = true;
 #endif
 
 HRESULT CRenderer::Draw()
 {
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
+	
 	if (FAILED(Render_Priority_Terrain()))
 		return E_FAIL;
 	if (FAILED(Render_NonAlpha()))
 		return E_FAIL;
 	if (FAILED(Render_NonAlpha_War()))
 		return E_FAIL;
+
 	if (FAILED(Render_LightAcc()))
 		return E_FAIL;
+	if (FAILED(Render_Blend()))
+		return E_FAIL;
+
 	if (FAILED(Render_Alpha()))
 		return E_FAIL;
 	if (FAILED(Render_UI()))
@@ -552,6 +571,26 @@ HRESULT CRenderer::Render_NonAlpha_War()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_NonLight()
+{
+
+	for (auto& pGameObject : m_RenderObjects[RENDER_NONLIGHT])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render()))
+				return E_FAIL;
+
+			Safe_Release(pGameObject);
+		}
+	}
+
+	m_RenderObjects[RENDER_NONLIGHT].clear();
+
+	return S_OK;
+}
+
+
 HRESULT CRenderer::Render_Alpha()
 {
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -662,6 +701,21 @@ HRESULT CRenderer::Render_LightAcc()
 	return S_OK;
 }
 
+
+HRESULT CRenderer::Render_Blend()
+{
+	/*m_pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
+	m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+
+	m_pVIBuffer->Set_ShaderResourceView("g_DiffuseTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Diffuse")));
+	m_pVIBuffer->Set_ShaderResourceView("g_ShadeTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Shade")));
+
+	m_pVIBuffer->Render(2);*/
+
+	return S_OK;
+}
+
+
 CRenderer * CRenderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
 	CRenderer*		pInstance = new CRenderer(pDevice, pDeviceContext);
@@ -701,5 +755,7 @@ void CRenderer::Free()
 
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);
+	
+	Safe_Release(m_pVIBuffer);
 }
 

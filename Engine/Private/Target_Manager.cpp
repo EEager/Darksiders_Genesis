@@ -23,7 +23,7 @@ HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D1
 	if (nullptr != Find_RenderTarget(pRenderTargetTag))
 	{
 		MSG_BOX("Add_RenderTarget Already exists!");
-		return S_OK;
+		return S_OK; 
 	}
 
 	CRenderTarget*		pRenderTarget = CRenderTarget::Create(pDevice, pDeviceContext, iWidth, iHeight, eFormat, vClearColor);

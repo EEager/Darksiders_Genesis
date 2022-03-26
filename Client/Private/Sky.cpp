@@ -55,7 +55,7 @@ HRESULT CSky::Render(_uint iPassIndex)
 		return E_FAIL;
 
 	/* 장치에 월드변환 행렬을 저장한다. */
-	m_pVIBufferCom->Render(iPassIndex);
+	m_pModelCom->Render(0);
 
 	return S_OK;
 }
@@ -63,19 +63,15 @@ HRESULT CSky::Render(_uint iPassIndex)
 HRESULT CSky::SetUp_Component()
 {
 	/* For.Com_Transform */
-	CTransform::TRANSFORMDESC TransformDesc;
-	ZeroMemory(&TransformDesc, sizeof(TransformDesc));
-
-	TransformDesc.fRotationPerSec = XMConvertToRadians(90.f);
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
 	/* For.Com_Renderer*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_VIBuffer */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 	
 	/* For.Com_Texture*/
@@ -88,18 +84,18 @@ HRESULT CSky::SetUp_Component()
 
 HRESULT CSky::SetUp_ConstantTable()
 {
-	if (nullptr == m_pVIBufferCom)
+	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
 	// Bind Transform
-	m_pTransformCom->Bind_OnShader(m_pVIBufferCom, "g_WorldMatrix"); 
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIBufferCom, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIBufferCom, "g_ProjMatrix"); 
+	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
 	// Bind Texture 
-	if (FAILED(m_pTextureCom->SetUp_OnShader(m_pVIBufferCom, "g_CubeMapTexture", 0)))
+	if (FAILED(m_pTextureCom->SetUp_OnShader(m_pModelCom, "g_CubeMapTexture", 3)))
 		return E_FAIL;	
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -142,5 +138,5 @@ void CSky::Free()
 	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pModelCom);
 }

@@ -68,8 +68,10 @@ public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg) override;
 
+#ifdef _DEBUG
 public:
 	virtual HRESULT Render();
+#endif
 
 public:
 	void Update(_fmatrix TransformMatrix);

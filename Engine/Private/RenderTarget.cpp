@@ -12,6 +12,7 @@ CRenderTarget::CRenderTarget(ID3D11Device * pDevice, ID3D11DeviceContext * pDevi
 
 HRESULT CRenderTarget::NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
 {
+	// Create Texture
 	D3D11_TEXTURE2D_DESC		TextureDesc;
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));	
 
@@ -30,6 +31,7 @@ HRESULT CRenderTarget::NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT 
 	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pTexture)))
 		return E_FAIL;
 
+	// Create Shader Resource View
 	D3D11_SHADER_RESOURCE_VIEW_DESC			SRVDesc;
 	ZeroMemory(&SRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 
@@ -40,6 +42,7 @@ HRESULT CRenderTarget::NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT 
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
 		return E_FAIL;
 
+	// Create Render Target View 
 	D3D11_RENDER_TARGET_VIEW_DESC			RTVDesc;
 	ZeroMemory(&RTVDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 
@@ -99,6 +102,8 @@ HRESULT CRenderTarget::Render_DebugBuffer(CVIBuffer_Rect* pVIBuffer, _uint iPass
 {
 	pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
 	pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+
+	// m_pSRV¿¡ render
 	pVIBuffer->Set_ShaderResourceView("g_TargetTexture", m_pSRV);
 
 	pVIBuffer->Render(iPassIndex);

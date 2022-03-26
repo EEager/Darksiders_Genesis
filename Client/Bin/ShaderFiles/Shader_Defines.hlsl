@@ -97,6 +97,13 @@ DepthStencilState NonZTestDepthStencilState
 	DepthFunc = less;
 };
 
+DepthStencilState NonZTestNonZWriteDepthStencilState
+{
+	DepthEnable = false;
+	DepthWriteMask = zero;
+	DepthFunc = less;
+};
+
 
 
 // --------------------

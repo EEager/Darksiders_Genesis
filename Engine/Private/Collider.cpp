@@ -131,6 +131,8 @@ HRESULT CCollider::NativeConstruct(void* pArg)
 	return S_OK;
 }
 
+
+#ifdef _DEBUG
 HRESULT CCollider::Render()
 {
 	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
@@ -163,6 +165,7 @@ HRESULT CCollider::Render()
 
 	return S_OK;
 }
+#endif
 
 void CCollider::Update(_fmatrix TransformMatrix)
 {

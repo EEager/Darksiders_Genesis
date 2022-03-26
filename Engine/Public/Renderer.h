@@ -10,7 +10,7 @@ BEGIN(Engine)
 class ENGINE_DLL CRenderer final : public CComponent
 {
 public:
-	enum RENDER { RENDER_PRIORITY, RENDER_NONALPHA_TERRAIN, RENDER_NONALPHA, RENDER_NONALPHA_WAR, RENDER_ALPHA, RENDER_UI, RENDER_MOUSE, RENDER_END };
+	enum RENDER { RENDER_PRIORITY, RENDER_NONALPHA_TERRAIN, RENDER_NONALPHA, RENDER_NONALPHA_WAR, RENDER_NONLIGHT, RENDER_ALPHA, RENDER_UI, RENDER_MOUSE, RENDER_END };
 private:
 	explicit CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual ~CRenderer() = default;
@@ -34,6 +34,10 @@ private:
 	class CTarget_Manager*				m_pTarget_Manager = nullptr;
 	class CLight_Manager*				m_pLight_Manager = nullptr;
 
+	class CVIBuffer_Rect*				m_pVIBuffer = nullptr;
+	_float4x4							m_TransformMatrix;
+	_float4x4							m_OrthoMatrix;
+
 
 private:
 	HRESULT Render_Priority();
@@ -41,10 +45,14 @@ private:
 	HRESULT Render_Priority_Terrain();
 	HRESULT Render_NonAlpha();
 	HRESULT Render_NonAlpha_War();
+	HRESULT Render_NonLight();
 
 	HRESULT Render_Alpha();
 	HRESULT Render_UI();
+
 	HRESULT Render_LightAcc();
+	HRESULT Render_Blend();
+
 	HRESULT Render_Mouse();
 
 public:

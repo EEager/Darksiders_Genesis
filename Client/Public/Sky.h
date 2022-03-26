@@ -7,8 +7,7 @@ BEGIN(Engine)
 class CTexture;
 class CRenderer;
 class CTransform;
-class CNavigation;
-class CVIBuffer_Terrain;
+class CVIBuffer_Cube;
 END
 
 BEGIN(Client)
@@ -30,7 +29,7 @@ private:
 	CTexture*					m_pTextureCom =  nullptr;
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
-	CVIBuffer_Terrain*			m_pVIBufferCom = nullptr;
+	CVIBuffer_Cube*				m_pModelCom = nullptr;
 
 private:
 	HRESULT SetUp_Component();

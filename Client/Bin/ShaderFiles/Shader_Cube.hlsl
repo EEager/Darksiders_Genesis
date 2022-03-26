@@ -33,7 +33,7 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vPosition = mul(vector(In.vPosition, 1.f), matWVP);
 	
-	Out.vTexUV = In.vPosition;
+	Out.vTexUV = In.vTexUV;
 
 	return Out;
 }
@@ -66,6 +66,10 @@ technique11	DefaultTechnique
 {
 	pass DefaultPass
 	{			
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(NonZTestNonZWriteDepthStencilState, 0);
+		SetRasterizerState(CullCWRasterizerState);
+
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
