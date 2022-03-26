@@ -17,12 +17,6 @@ struct VS_IN
 };
 
 
-struct VS_IN_test
-{
-	float3		vPosition : POSITION;
-	float2		vTexUV : TEXCOORD0;
-};
-
 struct VS_OUT
 {
 	float4		vPosition : SV_POSITION;

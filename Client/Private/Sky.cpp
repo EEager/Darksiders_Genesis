@@ -4,22 +4,27 @@
 #include "GameInstance.h"
 #include "Light.h"
 
+#ifdef _DEBUG
+_uint imgIdx = 0;
+
+#endif
+
 CSky::CSky(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
 }
 
-CSky::CSky(const CSky & rhs)
+CSky::CSky(const CSky& rhs)
 	: CGameObject(rhs)
 {
 }
 
 HRESULT CSky::NativeConstruct_Prototype()
-{	
+{
 	return S_OK;
 }
 
-HRESULT CSky::NativeConstruct(void * pArg)
+HRESULT CSky::NativeConstruct(void* pArg)
 {
 	if (SetUp_Component())
 		return E_FAIL;
@@ -29,6 +34,16 @@ HRESULT CSky::NativeConstruct(void * pArg)
 
 _int CSky::Tick(_float fTimeDelta)
 {
+#ifdef _DEBUG
+	// + 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
+		imgIdx += 1.f;
+
+	// - 
+	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
+		imgIdx -= 1.f;
+#endif
+
 	return _int();
 }
 
@@ -95,7 +110,7 @@ HRESULT CSky::SetUp_ConstantTable()
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
 	// Bind Texture 
-	if (FAILED(m_pTextureCom->SetUp_OnShader(m_pModelCom, "g_CubeMapTexture", 3)))
+	if (FAILED(m_pTextureCom->SetUp_OnShader(m_pModelCom, "g_CubeMapTexture", 1)))
 		return E_FAIL;	
 
 	RELEASE_INSTANCE(CGameInstance);

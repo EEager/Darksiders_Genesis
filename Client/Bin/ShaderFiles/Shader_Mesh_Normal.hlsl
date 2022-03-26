@@ -190,10 +190,17 @@ PS_OUT PS_MAIN(PS_IN In)
 		// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
 		// gFogRange : 크면 시야가 더 잘보인다
 		// gFogStart : 안개 적용시킬 시야 시작 지점.
-		float fogLerp = saturate((distToEye - 15.0f) / 600.f);
+		float fogLerp = 0.f;
+		if (In.vPosW.y <= 0) // 땅위는 안개 표현하지말자
+		{
+			fogLerp = saturate((-In.vPosW.y - 5.0f) / 100.f);
+		}
 
 		// Blend the fog color and the lit color.
-		Out.vColor = lerp(Out.vColor, vector(0.75f, 0.75f, 0.75f, 1.0f), fogLerp);
+
+		//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
+		vector fogColor = vector(1.f, 0.87f, 0.5f, 1.0f); // 석양느낌
+		Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
 	}
 
 
