@@ -193,13 +193,13 @@ PS_OUT PS_MAIN(PS_IN In)
 		float fogLerp = 0.f;
 		if (In.vPosW.y <= 0) // 땅위는 안개 표현하지말자
 		{
-			fogLerp = saturate((-In.vPosW.y - 5.0f) / 100.f);
+			fogLerp = saturate((-In.vPosW.y - 1.0f) / 100.f);
 		}
 
 		// Blend the fog color and the lit color.
 
 		//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
-		vector fogColor = vector(1.f, 0.87f, 0.5f, 1.0f); // 석양느낌
+		vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
 		Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
 	}
 
