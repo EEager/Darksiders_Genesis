@@ -55,17 +55,17 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::Render(_uint iPassIndex)
 	// 1. UI_War_Base 출력
 	if (FAILED(SetUp_ConstantTable_Base()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(1);
 
 	// 2. UI_War_HpBar 출력
 	if (FAILED(SetUp_ConstantTable_HpBar()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(iPassIndex);
+	m_pVIBufferCom->Render(1);
 
 	// 3. UI_War_WrathBar 출력
 	if (FAILED(SetUp_ConstantTable_WrathBar()))
 		return E_FAIL;
-	m_pVIBufferCom->Render(iPassIndex);
+	m_pVIBufferCom->Render(1);
 
 	return S_OK;
 }

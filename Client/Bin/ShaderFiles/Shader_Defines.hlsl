@@ -104,8 +104,6 @@ DepthStencilState NonZTestNonZWriteDepthStencilState
 	DepthFunc = less;
 };
 
-
-
 // --------------------
 // RasterizerState
 // --------------------

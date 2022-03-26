@@ -106,6 +106,8 @@ technique11	DefaultTechnique
 {
 	pass DefaultPass
 	{			
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;

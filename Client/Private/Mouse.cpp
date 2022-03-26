@@ -63,7 +63,7 @@ HRESULT CMouse::Render(_uint iPassIndex)
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(1);
 
 	return S_OK;
 }

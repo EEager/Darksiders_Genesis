@@ -458,12 +458,9 @@ HRESULT CRenderer::ClearRenderStates()
 	return S_OK;
 }
 
+// SkyBox
 HRESULT CRenderer::Render_Priority()
 {
-	// Disable z-Buffer
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::noDepthState.Get(), 0);
-
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_PRIORITY])
 	{
@@ -478,16 +475,14 @@ HRESULT CRenderer::Render_Priority()
 
 	m_RenderObjects[RENDER_PRIORITY].clear();
 
-	// Restore default blend state
+	// Restore default states
 	ClearRenderStates();
-
 
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Priority_Terrain()
 {
-
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_TERRAIN])
 	{
@@ -502,21 +497,14 @@ HRESULT CRenderer::Render_Priority_Terrain()
 
 	m_RenderObjects[RENDER_NONALPHA_TERRAIN].clear();
 
-	// Restore default blend state
+	// Restore default states
 	ClearRenderStates();
-
 
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_NonAlpha()
 {
-	//if (nullptr == m_pTarget_Manager)
-	//	return E_FAIL;
-
-	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Deferred"))))
-	//	return E_FAIL;
-
 #ifdef SHADOW_MAP_TEST
 	//mSmap->BindDsvAndSetNullRenderTarget(m_pDeviceContext);
 
@@ -543,8 +531,6 @@ HRESULT CRenderer::Render_NonAlpha()
 	//m_pDeviceContext->ClearRenderTargetView(CGraphic_Device::GetInstance()->Get_BackBufferRTV(), reinterpret_cast<const float*>(&Colors::Silver));
 	//m_pDeviceContext->ClearDepthStencilView(CGraphic_Device::GetInstance()->Get_DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 #endif
-
-
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
 	{
@@ -559,9 +545,7 @@ HRESULT CRenderer::Render_NonAlpha()
 
 	m_RenderObjects[RENDER_NONALPHA].clear();
 
-
-
-	// Restore default blend state
+	// Restore default states
 	ClearRenderStates();
 
 	return S_OK;
@@ -569,7 +553,6 @@ HRESULT CRenderer::Render_NonAlpha()
 
 HRESULT CRenderer::Render_NonAlpha_War()
 {
-
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_WAR])
 	{
@@ -584,7 +567,7 @@ HRESULT CRenderer::Render_NonAlpha_War()
 
 	m_RenderObjects[RENDER_NONALPHA_WAR].clear();
 
-	// Restore default blend state
+	// Restore default states
 	ClearRenderStates();
 
 	return S_OK;
@@ -592,7 +575,6 @@ HRESULT CRenderer::Render_NonAlpha_War()
 
 HRESULT CRenderer::Render_NonLight()
 {
-
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONLIGHT])
 	{
 		if (nullptr != pGameObject)
@@ -606,15 +588,15 @@ HRESULT CRenderer::Render_NonLight()
 
 	m_RenderObjects[RENDER_NONLIGHT].clear();
 
+	// Restore default states
+	ClearRenderStates();
+
 	return S_OK;
 }
 
 
 HRESULT CRenderer::Render_Alpha()
 {
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS.Get(), blendFactor, 0xffffffff);
-
 	/* 카메라로부터 멀리 있는 객체부터 그린다. */
 	m_RenderObjects[RENDER_ALPHA].sort([&](CGameObject* pSour, CGameObject* pDest) 
 	{
@@ -635,10 +617,9 @@ HRESULT CRenderer::Render_Alpha()
 	}
 
 	m_RenderObjects[RENDER_ALPHA].clear();
-
-	// Restore default blend state
+	
+	// Restore default states
 	ClearRenderStates();
-
 
 
 	return S_OK;
@@ -646,12 +627,6 @@ HRESULT CRenderer::Render_Alpha()
 
 HRESULT CRenderer::Render_UI()
 {
-	// Disable z-Buffer
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::noDepthState.Get(), 0);
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	// Blending
-	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS.Get(), blendFactor, 0xffffffff);
-
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_UI])
 	{
@@ -669,18 +644,11 @@ HRESULT CRenderer::Render_UI()
 	// Restore default states
 	ClearRenderStates();
 
-
-
 	return S_OK;
 }
 
 HRESULT CRenderer::Render_Mouse()
 {
-	// Disable z-Buffer
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::noDepthState.Get(), 0);
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	m_pDeviceContext->OMSetBlendState(RenderStates::TransparentBS.Get(), blendFactor, 0xffffffff);
-
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_MOUSE])
 	{

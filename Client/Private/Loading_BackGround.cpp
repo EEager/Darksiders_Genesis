@@ -79,7 +79,7 @@ HRESULT CLoading_BackGround::Render(_uint iPassIndex)
 	if (FAILED(SetUp_ConstantTable_LoadingCircle()))
 		return E_FAIL;
 
-	m_pVIBufferCom->Render(0);
+	m_pVIBufferCom->Render(1);
 
 	return S_OK;
 }

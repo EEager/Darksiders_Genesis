@@ -60,6 +60,8 @@ _int CUI_War_Skills::LateTick(_float fTimeDelta)
 
 HRESULT CUI_War_Skills::Render(_uint iPassIndex)
 {
+	iPassIndex = 1; // z 무시, 알파블랜딩
+
 	// 1. UI_Skill_Base 출력
 	if (FAILED(SetUp_ConstantTable_Base()))
 		return E_FAIL;

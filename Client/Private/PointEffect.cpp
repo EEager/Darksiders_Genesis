@@ -62,7 +62,7 @@ HRESULT CPointEffect::Render(_uint iPassIndex)
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
-	m_pModelCom->Render(iPassIndex);
+	m_pModelCom->Render(1); // Alpha Blending
 
 	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 

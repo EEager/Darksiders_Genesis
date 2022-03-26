@@ -67,7 +67,7 @@ technique11	DefaultTechnique
 	pass DefaultPass
 	{			
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		SetDepthStencilState(NonZTestNonZWriteDepthStencilState, 0);
+		SetDepthStencilState(NonZTestNonZWriteDepthStencilState, 0); // Disable z-Buffer
 		SetRasterizerState(CullCWRasterizerState);
 
 		VertexShader = compile vs_5_0 VS_MAIN();

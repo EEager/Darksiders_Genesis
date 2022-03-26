@@ -155,8 +155,8 @@ HRESULT CWar::Render(_uint iPassIndex)
 
 	__super::Render_Colliders();
 
-	// Restore default states
-	m_pRendererCom->ClearRenderStates();
+	//// Restore default states
+	//m_pRendererCom->ClearRenderStates();
 #endif // _DEBUG
 
 	return S_OK;
@@ -590,6 +590,8 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 HRESULT CWar::War_Render(_uint iPassIndex)
 {
+	iPassIndex = 1; // ApiPass 
+
 	// 
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
 	// 
@@ -628,7 +630,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-			m_pModelCom_Ruin->Render(i, 0);
+			m_pModelCom_Ruin->Render(i, iPassIndex);
 		}
 	}
 
@@ -654,7 +656,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
 
-			m_pModelCom[modelIdx]->Render(i, 0);
+			m_pModelCom[modelIdx]->Render(i, iPassIndex);
 		}
 	}
 
@@ -671,7 +673,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-			m_pModelCom_Ruin->Render(i, 0);
+			m_pModelCom_Ruin->Render(i, iPassIndex);
 		}
 	}
 
