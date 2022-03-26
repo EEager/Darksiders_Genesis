@@ -19,9 +19,26 @@ HRESULT CLight::NativeConstruct(const LIGHTDESC & LightDesc)
 
 HRESULT CLight::Render(CVIBuffer_Rect* pVIBuffer)
 {
-	pVIBuffer->Set_RawValue("g_vLightDir", &_float4(m_LightDesc.vDirection, 0.f), sizeof(_float4));
+	/*_uint			iPassIndex = 0;
 
-	pVIBuffer->Render(1);
+	if (LIGHTDESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
+	{
+		iPassIndex = 1;
+		pVIBuffer->Set_RawValue("g_vLightDir", &_float4(m_LightDesc.vDirection, 0.f), sizeof(_float4));
+	}
+	else
+	{
+		iPassIndex = 2;
+		pVIBuffer->Set_RawValue("g_vLightPos", &_float4(m_LightDesc.vPosition, 1.f), sizeof(_float4));
+		pVIBuffer->Set_RawValue("g_fRange", &m_LightDesc.fRadiuse, sizeof(_float));
+
+	}
+
+	pVIBuffer->Set_RawValue("g_vLightDiffuse", &m_LightDesc.vDiffuse, sizeof(_float4));
+	pVIBuffer->Set_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof(_float4));
+	pVIBuffer->Set_RawValue("g_vLightSpecular", &m_LightDesc.vSpecular, sizeof(_float4));
+
+	pVIBuffer->Render(iPassIndex);*/
 
 	return S_OK;
 }
