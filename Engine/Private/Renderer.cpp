@@ -2,6 +2,7 @@
 #include "RendererStates.h"
 #include "GameObject.h"
 #include "Target_Manager.h"
+#include "Light_Manager.h"
 
 
 #define SHADOW_MAP_TEST
@@ -252,28 +253,12 @@ void ShadowMap::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CRenderer::CRenderer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CComponent(pDevice, pDeviceContext)
 	, m_pTarget_Manager(CTarget_Manager::GetInstance())
+	, m_pLight_Manager(CLight_Manager::GetInstance())
 {
+	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pTarget_Manager);
 }
 
@@ -292,6 +277,7 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 
 	m_pDeviceContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
+	/* RT */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Diffuse"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 0.f, 0.f, 1.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Normal"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
@@ -299,12 +285,29 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shade"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
 
+#ifdef _DEBUG
+	/* Debug */
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Diffuse"), 0, 0, 200, 200)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Normal"), 0, 200, 200, 200)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Shade"), 200, 0, 200, 200)))
+		return E_FAIL;
+#endif // _DEBUG
+
+	/* MRT */
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Normal"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
+
+	if (FAILED(m_pLight_Manager->NativeConstruct(m_pDevice, m_pDeviceContext)))
+		return E_FAIL;
+
 
 
 	if (FAILED(RenderStates::CreateRenderStates(m_pDevice)))
@@ -341,6 +344,10 @@ HRESULT CRenderer::Add_PostRenderGroup(CGameObject* pGameObject)
 	return S_OK;
 }
 
+#ifdef _DEBUG
+bool bDraw_Debug;
+#endif
+
 HRESULT CRenderer::Draw()
 {
 	if (FAILED(Render_Priority()))
@@ -351,12 +358,27 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 	if (FAILED(Render_NonAlpha_War()))
 		return E_FAIL;
+	if (FAILED(Render_LightAcc()))
+		return E_FAIL;
 	if (FAILED(Render_Alpha()))
 		return E_FAIL;
 	if (FAILED(Render_UI()))
 		return E_FAIL;		
 	if (FAILED(Render_Mouse()))
 		return E_FAIL;
+
+#ifdef _DEBUG
+	if (CInput_Device::GetInstance()->Key_Down(DIK_F3))
+	{
+		bDraw_Debug = !bDraw_Debug;
+	}
+
+	if (bDraw_Debug)
+	{
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
+	}
+#endif // _DEBUG
 	
 	return S_OK;
 }
@@ -376,6 +398,14 @@ HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 	}
 
 	m_PostRenderObjects.clear();
+
+#ifdef _DEBUG
+	if (bDraw_Debug)
+	{
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Deferred"), 0, m_spriteBatch, m_spriteFont);
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_LightAcc"), 0, m_spriteBatch, m_spriteFont);
+	}
+#endif // _DEBUG
 
 	return S_OK;
 }
@@ -613,6 +643,25 @@ HRESULT CRenderer::Render_Mouse()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_LightAcc()
+{
+	if (nullptr == m_pTarget_Manager ||
+		nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	/* 장치에는 Target_Shade가 셋팅된다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_LightAcc"))))
+		return E_FAIL;
+
+	/* Target_Shade에 그린다. */
+	m_pLight_Manager->Render();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 CRenderer * CRenderer::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
 	CRenderer*		pInstance = new CRenderer(pDevice, pDeviceContext);
@@ -650,6 +699,7 @@ void CRenderer::Free()
 		ObjectList.clear();		
 	}
 
+	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);
 }
 

@@ -481,5 +481,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Line.hlsl">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
+      <Filter>01.Utility\04.Component\Components\Renderer</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

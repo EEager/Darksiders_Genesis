@@ -12,11 +12,21 @@ private:
 	virtual ~CTarget_Manager() = default;
 
 public:
+	ID3D11ShaderResourceView* Get_SRV(const _tchar* pTargetTag);
+
+public:
 	HRESULT Add_RenderTarget(const _tchar* pRenderTargetTag, ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor);
 	HRESULT Add_MRT(const _tchar* pMRTTag, const _tchar* pRenderTargetTag);
 
 	HRESULT Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag);
 	HRESULT End_MRT(ID3D11DeviceContext* pDeviceContext);
+
+#ifdef _DEBUG
+public:
+	HRESULT Ready_DebugBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pTargetTag, _uint iLTX, _uint iLTY, _uint iSizeX, _uint iSizeY);
+	HRESULT Render_DebugBuffer(const _tchar* pMRTTag, _uint iPassIndex);
+	HRESULT PostRender_DebugBuffer(const _tchar* pMRTTag, _uint iPassIndex, unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
+#endif // _DEBUG
 
 private:
 	map<const _tchar*, CRenderTarget*>				m_RenderTargets;
@@ -29,6 +39,11 @@ private:
 private:
 	ID3D11RenderTargetView* m_pBackBufferView = nullptr;
 	ID3D11DepthStencilView* m_pDepthStencilView = nullptr;
+
+#ifdef _DEBUG
+private:
+	class CVIBuffer_Rect* m_pVIBuffer = nullptr;
+#endif // _DEBUG
 
 private:
 	CRenderTarget* Find_RenderTarget(const _tchar* pRenderTargetTag);

@@ -19,11 +19,18 @@ public:
 
 
 public:
+	HRESULT NativeConstruct(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const LIGHTDESC& LightDesc);
+	HRESULT Render();
 
 private:
 	list<class CLight*>				m_Lights;
 	typedef list<class CLight*>		LIGHTS;
+
+private:
+	class CVIBuffer_Rect* m_pVIBuffer = nullptr;
+	_float4x4						m_TransformMatrix;
+	_float4x4						m_OrthoMatrix;
 
 public:
 	virtual void Free() override;

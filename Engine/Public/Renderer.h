@@ -31,7 +31,8 @@ private:
 	typedef list<class CGameObject*>	POSTRENDEROBJECT;
 
 private:
-	class CTarget_Manager* m_pTarget_Manager = nullptr;
+	class CTarget_Manager*				m_pTarget_Manager = nullptr;
+	class CLight_Manager*				m_pLight_Manager = nullptr;
 
 
 private:
@@ -43,6 +44,7 @@ private:
 
 	HRESULT Render_Alpha();
 	HRESULT Render_UI();
+	HRESULT Render_LightAcc();
 	HRESULT Render_Mouse();
 
 public:

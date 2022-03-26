@@ -72,6 +72,9 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::Render(_uint iPassIndex)
 
 HRESULT CUI_War_Hp_n_Wrath_Bar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+	//ImSI
+	return S_OK;
+
 	wstring str = DXString::Format(L"100");
 
 	const wchar_t* output = str.c_str();

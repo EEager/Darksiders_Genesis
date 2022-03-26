@@ -49,6 +49,13 @@ namespace Engine
 
 		}
 
+		tagFloat4_Derived(XMFLOAT3 vFloat3, _float fW)
+			: XMFLOAT4(vFloat3.x, vFloat3.y, vFloat3.z, fW)
+		{
+
+		}
+
+
 #define FLOAT_EPSILON 0.00001
 		_bool operator==(const tagFloat4_Derived& v)
 		{

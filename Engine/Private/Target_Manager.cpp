@@ -1,11 +1,21 @@
 #include "..\Public\Target_Manager.h"
 #include "RenderTarget.h"
+#include "VIBuffer_Rect.h"
 
 IMPLEMENT_SINGLETON(CTarget_Manager)
 
 CTarget_Manager::CTarget_Manager()
 {
 
+}
+
+ID3D11ShaderResourceView* CTarget_Manager::Get_SRV(const _tchar* pTargetTag)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(pTargetTag);
+	if (nullptr == pRenderTarget)
+		return nullptr;
+
+	return pRenderTarget->Get_SRV();
 }
 
 HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
@@ -20,6 +30,8 @@ HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D1
 	if (nullptr == pRenderTarget)
 		return E_FAIL;
 
+	// RenderTarget 이름들도 출력하게끔하자.
+	pRenderTarget->Set_RenderTargetTag(pRenderTargetTag);
 
 	m_RenderTargets.emplace(pRenderTargetTag, pRenderTarget);
 
@@ -93,6 +105,50 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pDeviceContext)
 	return S_OK;
 }
 
+#ifdef _DEBUG
+
+HRESULT CTarget_Manager::Ready_DebugBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pTargetTag, _uint iLTX, _uint iLTY, _uint iSizeX, _uint iSizeY)
+{
+	if (nullptr == m_pVIBuffer)
+	{
+		m_pVIBuffer = CVIBuffer_Rect::Create(pDevice, pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"));
+		if (nullptr == m_pVIBuffer)
+			return E_FAIL;
+	}
+
+	CRenderTarget* pRenderTarget = Find_RenderTarget(pTargetTag);
+	if (nullptr == pRenderTarget)
+		return E_FAIL;
+
+	return pRenderTarget->Ready_DebugBuffer(iLTX, iLTY, iSizeX, iSizeY);
+}
+#endif // _DEBUG
+
+HRESULT CTarget_Manager::Render_DebugBuffer(const _tchar* pMRTTag, _uint iPassIndex)
+{
+	list<CRenderTarget*>* pMRTList = Find_MRT(pMRTTag);
+	if (nullptr == pMRTList)
+		return E_FAIL;
+
+	for (auto& pRenderTarget : *pMRTList)
+		pRenderTarget->Render_DebugBuffer(m_pVIBuffer, iPassIndex);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::PostRender_DebugBuffer(const _tchar* pMRTTag, _uint iPassIndex, unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	list<CRenderTarget*>* pMRTList = Find_MRT(pMRTTag);
+	if (nullptr == pMRTList)
+		return E_FAIL;
+
+	for (auto& pRenderTarget : *pMRTList)
+		pRenderTarget->PostRender_DebugBuffer(m_pVIBuffer, iPassIndex, m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
+
 CRenderTarget * CTarget_Manager::Find_RenderTarget(const _tchar * pRenderTargetTag)
 {
 	auto	iter = find_if(m_RenderTargets.begin(), m_RenderTargets.end(), CTagFinder(pRenderTargetTag));
@@ -134,4 +190,5 @@ void CTarget_Manager::Free()
 		Safe_Release(Pair.second);
 	}
 	m_RenderTargets.clear();
+	Safe_Release(m_pVIBuffer);
 }

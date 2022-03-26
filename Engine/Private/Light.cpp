@@ -1,4 +1,5 @@
 #include "..\Public\Light.h"
+#include "VIBuffer_Rect.h"
 
 
 CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
@@ -15,6 +16,16 @@ HRESULT CLight::NativeConstruct(const LIGHTDESC & LightDesc)
 
 	return S_OK;
 }
+
+HRESULT CLight::Render(CVIBuffer_Rect* pVIBuffer)
+{
+	pVIBuffer->Set_RawValue("g_vLightDir", &_float4(m_LightDesc.vDirection, 0.f), sizeof(_float4));
+
+	pVIBuffer->Render(1);
+
+	return S_OK;
+}
+
 
 CLight * CLight::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const LIGHTDESC & LightDesc)
 {

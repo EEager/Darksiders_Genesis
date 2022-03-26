@@ -1,4 +1,6 @@
 #include "..\Public\RenderTarget.h"
+#include "VIBuffer_Rect.h"
+#include "DXString.h"
 
 CRenderTarget::CRenderTarget(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: m_pDevice(pDevice)
@@ -58,16 +60,86 @@ HRESULT CRenderTarget::Clear()
 	if (nullptr == m_pDeviceContext)
 		return E_FAIL;
 
-	//if(0.0f == m_vClearColor.y)
-	//	DirectX::SaveWICTextureToFile(m_pDeviceContext, m_pTexture, GUID_ContainerFormatPng, TEXT("../Bin/Diffuse.png"));
-	//else
-	//	DirectX::SaveWICTextureToFile(m_pDeviceContext, m_pTexture, GUID_ContainerFormatPng, TEXT("../Bin/Nromal.png"));
-
-
 	m_pDeviceContext->ClearRenderTargetView(m_pRTV, (_float*)&m_vClearColor);
 
 	return S_OK;
 }
+
+#ifdef _DEBUG
+HRESULT CRenderTarget::Ready_DebugBuffer(_uint iLTX, _uint iLTY, _uint iSizeX, _uint iSizeY)
+{
+	// 랜더타겟 Text 위치
+	m_vDebugTextPos = _float2((_float)iLTX, (_float)iLTY);
+
+	_float			fCenterX, fCenterY;
+
+	// _uint iLTX, _uint iLTY, _uint iSizeX, _uint iSizeY)
+	// 0,0, 200, 200 이 들어온다했을때
+	fCenterX = iLTX + iSizeX * 0.5f; // 100
+	fCenterY = iLTY + iSizeY * 0.5f; // 100
+
+	D3D11_VIEWPORT		ViewportDesc;
+
+	_uint			iNumViewport = 1;
+
+	m_pDeviceContext->RSGetViewports(&iNumViewport, &ViewportDesc);
+
+	XMStoreFloat4x4(&m_TransformMatrix, XMMatrixIdentity());
+	m_TransformMatrix._11 = iSizeX; // x크기
+	m_TransformMatrix._22 = iSizeY; // y크기
+
+	m_TransformMatrix._41 = fCenterX - (ViewportDesc.Width * 0.5f); // -800 왼쪽 벽 기준 + 100 오른쪽으로 간 위치
+	m_TransformMatrix._42 = -fCenterY + (ViewportDesc.Height * 0.5f); // 450 윈쪽 벽 기준 - 100 만큼 내려온 위치
+
+	XMStoreFloat4x4(&m_OrthoMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f)));
+
+	return S_OK;
+}
+HRESULT CRenderTarget::Render_DebugBuffer(CVIBuffer_Rect* pVIBuffer, _uint iPassIndex)
+{
+	pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
+	pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+	pVIBuffer->Set_ShaderResourceView("g_TargetTexture", m_pSRV);
+
+	pVIBuffer->Render(iPassIndex);
+
+	return S_OK;
+}
+HRESULT CRenderTarget::PostRender_DebugBuffer(CVIBuffer_Rect* pVIBuffer, _uint iPassIndex, unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	// Render Target 종류를 TEXT로 출력하자
+	wstring str = DXString::Format(m_pRenderTargetTag);
+
+	const wchar_t* output = str.c_str();
+
+	auto origin = DirectX::g_XMZero;
+
+	_float2 tmpPos;
+	// 왼위 0,0 오아 g_iWinCX, g_iWinCY이다.
+	tmpPos = m_vDebugTextPos; // 처음 위치
+	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
+
+	// Outline Effect
+	tmpPos = _float2(1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 0.5f);
+	tmpPos = _float2(-1.f, 1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 0.5f);
+	tmpPos = _float2(-1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 0.5f);
+	tmpPos = _float2(1.f, -1.f);
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 0.5f);
+
+	// Origin Text
+	m_spriteFont->DrawString(m_spriteBatch.get(), output,
+		m_fontPos, Colors::White, 0.f, origin, 0.5f);
+
+	return S_OK;
+}
+#endif // _DEBUG
 
 CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
 {
