@@ -421,6 +421,8 @@ HRESULT CRenderer::Draw()
 // 오브젝트들이 각자 출력할 Text나 Debugging용 Line은 여기서 출력하자
 HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+	//ClearRenderStates();
+
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_PostRenderObjects)
 	{

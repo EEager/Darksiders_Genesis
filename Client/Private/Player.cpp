@@ -87,6 +87,8 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	// Renderer
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		return 0;
 
 	// Collider 
 	pGameInstance->Add_Collision(this);
@@ -111,11 +113,17 @@ HRESULT CPlayer::Render(_uint iPassIndex)
 		m_pModelCom->Render(i, iPassIndex);
 	}
 
+
+
+	return S_OK;
+}
+
+HRESULT CPlayer::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
 #ifdef _DEBUG
 	// Collider 
 	__super::Render_Colliders();
 #endif
-
 	return S_OK;
 }
 
