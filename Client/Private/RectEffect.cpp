@@ -48,7 +48,7 @@ _int CRectEffect::LateTick(_float fTimeDelta)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTarget->Get_State(CTransform::STATE_POSITION));
 		
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this)))
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONLIGHT, this))) // 빛연산 필요없는 그룹에서 출력하도록하자
 		return 0;
 
 	RELEASE_INSTANCE(CGameInstance);	

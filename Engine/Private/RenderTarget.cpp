@@ -98,6 +98,7 @@ HRESULT CRenderTarget::Ready_DebugBuffer(_uint iLTX, _uint iLTY, _uint iSizeX, _
 
 	return S_OK;
 }
+
 HRESULT CRenderTarget::Render_DebugBuffer(CVIBuffer_Rect* pVIBuffer, _uint iPassIndex)
 {
 	pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));

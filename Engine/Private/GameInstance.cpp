@@ -363,14 +363,6 @@ void CGameInstance::Release_Engine()
 	if (0 != CComponent_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CComponent_Manager");
 
-	if (0 != CPipeLine::GetInstance()->DestroyInstance())
-		MSG_BOX("Failed to Release CPipeLine");
-
-	if (0 != CLight_Manager::GetInstance()->DestroyInstance())
-		MSG_BOX("Failed to Release CLight_Manager");
-
-	if (0 != CTarget_Manager::GetInstance()->DestroyInstance())
-		MSG_BOX("Failed to Release CTarget_Manager ");
 
 	if (0 != CLevel_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CLevel_Manager ");
@@ -378,11 +370,18 @@ void CGameInstance::Release_Engine()
 	if (0 != CTimer_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CTimer_Manager ");
 
-
 	if (0 != CCollider_Manager::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CCollider_Manager");
 
+	if (0 != CPipeLine::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CPipeLine");
 
+	// Renderer에서 CLight_Manager, CTarget_Manager를 참조한다. 그래서 Renderer를 먼저 Free하여, Light, Target을 Free 하도록 하자.
+	if (0 != CLight_Manager::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CLight_Manager");
+
+	if (0 != CTarget_Manager::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CTarget_Manager ");
 
 	if (0 != CInput_Device::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CInput_Device ");
