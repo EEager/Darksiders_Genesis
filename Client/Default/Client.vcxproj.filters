@@ -195,12 +195,6 @@
     <ClInclude Include="..\Public\Fork.h">
       <Filter>02.GameObjects\Object\Fork</Filter>
     </ClInclude>
-    <ClInclude Include="..\Bin\ShaderFiles\Shader_Defines.hlsl">
-      <Filter>97.ShaderFiles\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\LightHelper.h">
-      <Filter>97.ShaderFiles\FromDX11</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Client_Extern.h">
       <Filter>98.Default</Filter>
     </ClInclude>
@@ -314,9 +308,6 @@
     <ClCompile Include="..\Private\Fork.cpp">
       <Filter>02.GameObjects\Object\Fork</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\LightHelper.cpp">
-      <Filter>97.ShaderFiles\FromDX11</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\War.cpp">
       <Filter>02.GameObjects\Player\War</Filter>
     </ClCompile>
@@ -383,9 +374,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl">
-      <Filter>97.ShaderFiles\Header</Filter>
-    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl">
       <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>

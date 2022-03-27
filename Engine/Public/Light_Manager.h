@@ -28,6 +28,9 @@ private:
 	typedef list<class CLight*>		LIGHTS;
 
 private:
+	MTRLDESC m_tMtrlDesc;
+
+private:
 	class CVIBuffer_Rect* m_pVIBuffer = nullptr;
 	_float4x4						m_TransformMatrix;
 	_float4x4						m_OrthoMatrix;

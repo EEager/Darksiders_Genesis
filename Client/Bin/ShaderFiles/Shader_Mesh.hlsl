@@ -29,6 +29,7 @@ struct VS_OUT
 	float4		vPosition : SV_POSITION;
 	float4		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -44,6 +45,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosition = mul(vector(In.vPosition, 1.f), matWVP);
 	Out.vNormal = normalize(mul(vector(In.vNormal, 0.f), g_WorldMatrix));
 	Out.vTexUV = In.vTexUV;
+	Out.vProjPos = Out.vPosition;
 
 	return Out;
 }
@@ -57,12 +59,14 @@ struct PS_IN
 	float4		vPosition : SV_POSITION;
 	float4		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
 };
 
 struct PS_OUT
 {
 	float4		vDiffuse : SV_TARGET0;
 	float4		vNormal : SV_TARGET1;
+	float4		vDepth : SV_TARGET2;
 };
 
 
@@ -94,6 +98,9 @@ PS_OUT PS_MAIN(PS_IN In)
 			Out.vDiffuse = float4(1, 1, 1, 1); // 흰
 		}
 	}
+
+	// x,y상의 깊이를 저장하자. 700 : far
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 700.f, 0.f, 0.f);
 
 	return Out;
 }

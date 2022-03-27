@@ -96,6 +96,10 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pDeviceContext)
 		nullptr == m_pDepthStencilView)
 		return E_FAIL;
 
+	ID3D11ShaderResourceView* null[] = { nullptr, nullptr };
+	pDeviceContext->PSSetShaderResources(0, 2, null);
+
+
 	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView, m_pDepthStencilView); // 장치에 백버퍼를 바인드하여 원복한다
 
 	Safe_Release(m_pBackBufferView);

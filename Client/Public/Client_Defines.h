@@ -37,7 +37,7 @@ static const unsigned int		g_iWinCY = 900;
 // -----------------------
 // LightHelper.h
 // -----------------------
-#include "LightHelper.h"
+//#include "LightHelper.h" // Move to Engine
 
 // -----------------------
 // Client_Extern.h

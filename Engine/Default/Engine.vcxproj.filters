@@ -163,6 +163,9 @@
     <Filter Include="01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointHpBar">
       <UniqueIdentifier>{f54a484d-c8a3-4df7-91f0-e3afb9b69500}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\Renderer\Shader">
+      <UniqueIdentifier>{7c1fb4d2-c424-4d6b-82b1-086f1914690d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -482,7 +485,13 @@
       <Filter>01.Utility\04.Component\Components\VIBuffer\Line</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl">
-      <Filter>01.Utility\04.Component\Components\Renderer</Filter>
+      <Filter>01.Utility\04.Component\Components\Renderer\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Defines.hlsl">
+      <Filter>01.Utility\04.Component\Components\Renderer\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl">
+      <Filter>01.Utility\04.Component\Components\Renderer\Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

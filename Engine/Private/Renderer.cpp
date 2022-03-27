@@ -285,23 +285,10 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Depth"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shade"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shade"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.0f, 0.0f, 0.0f, 1.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Specular"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
-
-	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"));
-	if (nullptr == m_pVIBuffer)
-		return E_FAIL;
-
-	XMStoreFloat4x4(&m_TransformMatrix, XMMatrixIdentity());
-	m_TransformMatrix._11 = ViewportDesc.Width;
-	m_TransformMatrix._22 = ViewportDesc.Height;
-	m_TransformMatrix._41 = 0.0f;
-	m_TransformMatrix._42 = 0.0f;
-
-	XMStoreFloat4x4(&m_OrthoMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f)));
-
 
 #ifdef _DEBUG
 	/* Debug */
@@ -324,16 +311,28 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth"))))
 		return E_FAIL;
-
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
 		return E_FAIL;
 
+	/* Lighting */
 	if (FAILED(m_pLight_Manager->NativeConstruct(m_pDevice, m_pDeviceContext)))
 		return E_FAIL;
 
 
+	/* Final Render(Render Blending) */
+	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"));
+	if (nullptr == m_pVIBuffer)
+		return E_FAIL;
+
+	XMStoreFloat4x4(&m_TransformMatrix, XMMatrixIdentity());
+	m_TransformMatrix._11 = ViewportDesc.Width;
+	m_TransformMatrix._22 = ViewportDesc.Height;
+	m_TransformMatrix._41 = 0.0f;
+	m_TransformMatrix._42 = 0.0f;
+
+	XMStoreFloat4x4(&m_OrthoMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f)));
 
 	if (FAILED(RenderStates::CreateRenderStates(m_pDevice)))
 		return E_FAIL;
@@ -375,45 +374,38 @@ bool bDraw_Debug = true;
 
 HRESULT CRenderer::Draw()
 {
+	// SkyBox
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
-	
+	// Terrain (Enviroment)
 	if (FAILED(Render_Priority_Terrain()))
 		return E_FAIL;
+	// War 제외 : diffuse normal depth를 넣자.
 	if (FAILED(Render_NonAlpha()))
 		return E_FAIL;
-	if (FAILED(Render_NonAlpha_War())) 
+	// 빛연산을 여기서하자 : shade와 spec에 넣자.
+	if (FAILED(Render_LightAcc()))
+		return E_FAIL;
+	// [Deffered End] 최종 백버퍼에 합치자
+	if (FAILED(Render_Blend())) 
 		return E_FAIL;
 
-	if (FAILED(Render_LightAcc())) // 빛처리
+	// War는 따로하자..
+	if (FAILED(Render_NonAlpha_War()))
 		return E_FAIL;
-	if (FAILED(Render_Blend())) // 최종 백버퍼에 그리자.
+	
+	// 빛처리 필요없는 애들의 경우 바로 백버퍼에 그리자
+	if (FAILED(Render_NonLight())) 
 		return E_FAIL;
 
-	if (FAILED(Render_NonLight())) // 빛처리 필요없이 백버퍼에 그리자
+	// 알파블렌딩은 Deffered로 말고 바로 백버퍼에 그리자
+	if (FAILED(Render_Alpha())) 
 		return E_FAIL;
-
-
-
-	if (FAILED(Render_Alpha())) // 알파블렌딩은 Deffered로 하지말자
-		return E_FAIL;
+	// UI도 바로 백버퍼에 그리자
 	if (FAILED(Render_UI())) 
 		return E_FAIL;		
 	if (FAILED(Render_Mouse()))
 		return E_FAIL;
-
-#ifdef _DEBUG
-	if (CInput_Device::GetInstance()->Key_Down(DIK_F3))
-	{
-		bDraw_Debug = !bDraw_Debug;
-	}
-
-	if (bDraw_Debug)
-	{
-		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
-		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
-	}
-#endif // _DEBUG
 	
 	return S_OK;
 }
@@ -438,8 +430,15 @@ HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 	m_PostRenderObjects.clear();
 
 #ifdef _DEBUG
+	if (CInput_Device::GetInstance()->Key_Down(DIK_F3))
+	{
+		bDraw_Debug = !bDraw_Debug;
+	}
+
 	if (bDraw_Debug)
 	{
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Deferred"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_LightAcc"), 0, m_spriteBatch, m_spriteFont);
 	}
@@ -531,6 +530,12 @@ HRESULT CRenderer::Render_NonAlpha()
 	//m_pDeviceContext->ClearRenderTargetView(CGraphic_Device::GetInstance()->Get_BackBufferRTV(), reinterpret_cast<const float*>(&Colors::Silver));
 	//m_pDeviceContext->ClearDepthStencilView(CGraphic_Device::GetInstance()->Get_DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 #endif
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Deferred"))))
+		return E_FAIL;
+	
 	/* 리스트 순회 */
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
 	{
@@ -545,8 +550,12 @@ HRESULT CRenderer::Render_NonAlpha()
 
 	m_RenderObjects[RENDER_NONALPHA].clear();
 
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
+
 	// Restore default states
 	ClearRenderStates();
+
 
 	return S_OK;
 }
@@ -671,19 +680,19 @@ HRESULT CRenderer::Render_Mouse()
 
 HRESULT CRenderer::Render_LightAcc()
 {
-	if (nullptr == m_pTarget_Manager ||
-		nullptr == m_pLight_Manager)
-		return E_FAIL;
+	//if (nullptr == m_pTarget_Manager ||
+	//	nullptr == m_pLight_Manager)
+	//	return E_FAIL;
 
-	/* 장치에는 Target_Shade가 셋팅된다. */
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_LightAcc"))))
-		return E_FAIL;
+	///* 장치에는 Target_Shade가 셋팅된다. */
+	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_LightAcc"))))
+	//	return E_FAIL;
 
-	/* Target_Shade에 그린다. */
-	m_pLight_Manager->Render();
+	///* Target_Shade에 그린다. */
+	//m_pLight_Manager->Render();
 
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -691,14 +700,16 @@ HRESULT CRenderer::Render_LightAcc()
 
 HRESULT CRenderer::Render_Blend()
 {
-	//m_pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
-	//m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+	m_pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
+	m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
 
-	//m_pVIBuffer->Set_ShaderResourceView("g_DiffuseTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Diffuse")));
-	//m_pVIBuffer->Set_ShaderResourceView("g_ShadeTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Shade")));
-	//m_pVIBuffer->Set_ShaderResourceView("g_SpecularTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Specular")));
+	m_pVIBuffer->Set_ShaderResourceView("g_DiffuseTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Diffuse")));
 
-	//m_pVIBuffer->Render(3);
+	// 아래 2개는 Lighting에서 찍어주는것. 
+	m_pVIBuffer->Set_ShaderResourceView("g_ShadeTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Shade")));
+	m_pVIBuffer->Set_ShaderResourceView("g_SpecularTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Specular")));
+
+	m_pVIBuffer->Render(3); // final pass로 출력하자
 
 	return S_OK;
 }

@@ -181,9 +181,14 @@ HRESULT CFork::SetUp_ConstantTable()
 	dissolvePower += 0.002f; 
 	if (dissolvePower >= 1.f) // 1이면 다 사라졌다
 		dissolvePower = 0.f;
-	m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));
-	if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
-		return E_FAIL;
+	//m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));
+	//if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
+	//	return E_FAIL;
+
+	// Emissive Map
+	_bool falseTemp = false;
+	m_pModelCom->Set_RawValue("g_UseEmissiveMap", &falseTemp, sizeof(_bool));
+	m_pModelCom->Set_RawValue("g_UseNormalMap", &falseTemp, sizeof(_bool));
 
 
 	RELEASE_INSTANCE(CGameInstance);

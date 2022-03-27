@@ -1,5 +1,6 @@
 #include "..\Public\Light.h"
 #include "VIBuffer_Rect.h"
+#include "GameInstance.h"
 
 
 CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
@@ -19,27 +20,31 @@ HRESULT CLight::NativeConstruct(const LIGHTDESC & LightDesc)
 
 HRESULT CLight::Render(CVIBuffer_Rect* pVIBuffer)
 {
-	/*_uint			iPassIndex = 0;
+	if (LIGHTDESC::TYPE_DIRECTIONAL != m_LightDesc.eType)
+		return S_OK;
+
+	_uint			iPassIndex = 0;
 
 	if (LIGHTDESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
 	{
-		iPassIndex = 1;
-		pVIBuffer->Set_RawValue("g_vLightDir", &_float4(m_LightDesc.vDirection, 0.f), sizeof(_float4));
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
+		DirectionalLight mDirLight;
+		mDirLight.Ambient = dirLightDesc.vAmbient;
+		mDirLight.Diffuse = dirLightDesc.vDiffuse;
+		mDirLight.Specular = dirLightDesc.vSpecular;
+		mDirLight.Direction = dirLightDesc.vDirection;
+		pVIBuffer->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
+		iPassIndex = 1; // Light_Direction
 	}
 	else
 	{
-		iPassIndex = 2;
+		iPassIndex = 2; // Light_Point
 		pVIBuffer->Set_RawValue("g_vLightPos", &_float4(m_LightDesc.vPosition, 1.f), sizeof(_float4));
 		pVIBuffer->Set_RawValue("g_fRange", &m_LightDesc.fRadiuse, sizeof(_float));
 
 	}
-
-	pVIBuffer->Set_RawValue("g_vLightDiffuse", &m_LightDesc.vDiffuse, sizeof(_float4));
-	pVIBuffer->Set_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof(_float4));
-	pVIBuffer->Set_RawValue("g_vLightSpecular", &m_LightDesc.vSpecular, sizeof(_float4));
-
-	pVIBuffer->Render(iPassIndex);*/
-
+	pVIBuffer->Render(iPassIndex);
 	return S_OK;
 }
 

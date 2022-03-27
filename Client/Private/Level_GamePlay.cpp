@@ -25,11 +25,11 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_War"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster()))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Monster()))
+	//	return E_FAIL;
 
-	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
 		return E_FAIL;
@@ -40,7 +40,7 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	if (FAILED(Ready_Layer_Enviroment()))
 		return E_FAIL;
 
-
+	 
 	return S_OK;
 }
 
@@ -91,6 +91,7 @@ HRESULT CLevel_GamePlay::Ready_LightDesc()
 	LightDesc.vDiffuse = _float4(0.7f, 0.7f, 0.7f, 1.0f);
 	LightDesc.vAmbient = _float4(0.3f, 0.3f, 0.3f, 1.0f);
 	LightDesc.vSpecular = _float4(0.7f, 0.7f, 0.7f, 1.0f);
+	LightDesc.vPosition = _float3(5.0f, 3.0f, 5.f);
 	LightDesc.fRadiuse = 25.f;
 	/*
 	mSpotLight.Att      = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -145,9 +146,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _tchar* pLayerTag)
 	/* 월드스페이스 상에서의 카메라 상태를 셋팅하자. */
 	CCamera::CAMERADESC			CameraDesc;
 	ZeroMemory(&CameraDesc, sizeof(CCamera::CAMERADESC));
-
-	CameraDesc.vEye = _float3(0.f, 30.f, -25.0f);
-	CameraDesc.vAt = _float3(0.f, 0.f, 0.f);
+	CameraDesc.vEye = _float3(10.f, 10.f, 430.f);
+	CameraDesc.vAt = _float3(17.f, 0.f, 430.f);;
 	CameraDesc.vAxisy = _float3(0.f, 1.f, 0.f);
 	CameraDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraDesc.fAspect = (_float)g_iWinCX / g_iWinCY;
@@ -186,20 +186,20 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _tchar* pLayerTag)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	/* For.Layer_War*/
-	for (int i = 0; i < 1; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_War", TEXT("Prototype_GameObject_War"))))
-			return E_FAIL;
+	///* For.Layer_War*/
+	//for (int i = 0; i < 1; i++)
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_War", TEXT("Prototype_GameObject_War"))))
+	//		return E_FAIL;
 
 #ifndef ONLY_WAR
-	/* For.Layer_Player*/
-	for (int i = 0; i < 2; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player", TEXT("Prototype_GameObject_Player"))))
-			return E_FAIL;
+	///* For.Layer_Player*/
+	//for (int i = 0; i < 2; i++)
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player", TEXT("Prototype_GameObject_Player"))))
+	//		return E_FAIL;
 
-	/* For.Layer_Player's Sword*/
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player_Sword", TEXT("Prototype_GameObject_Sword"))))
-		return E_FAIL;
+	///* For.Layer_Player's Sword*/
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Player_Sword", TEXT("Prototype_GameObject_Sword"))))
+	//	return E_FAIL;
 
 	/* For.Layer_Fork*/
 	for (_uint i = 0; i < 1; ++i)
@@ -218,12 +218,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar* pLayerTag)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_RectEffect"))))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_RectEffect"))))
+	//	return E_FAIL;
 
 
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_PointEffect"))))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_PointEffect"))))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 
