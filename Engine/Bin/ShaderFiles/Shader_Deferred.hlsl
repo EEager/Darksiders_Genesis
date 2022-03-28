@@ -120,31 +120,13 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 	// 각 오브젝트들이 저장한 Depth값을 가져오자.
 	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
-	float		fViewZ = vDepthDesc.y * 700.f; // 저장할때 In.vProjPos.w / 700.0f을 하였으니. 
-
-	// 각 오브젝트들이 저장한 Depth를 이용하여 뷰포트=>월드위치 변환을 수행하자.
-	vector		vWorldPos;
-	/* 투영공간상의 위치. */
-	vWorldPos.x = In.vTexUV.x * 2.f - 1.f; // 왼쪽벽이 -1부터 시작
-	vWorldPos.y = In.vTexUV.y * -2.f + 1.f; // 위쪽벽 +1부터 시작. 
-	vWorldPos.z = vDepthDesc.x; // 각 오브젝트들이 Depth값을 저장하였다.(참고로 이값은 In.vProjPos.z / In.vProjPos.w)이다. 
-	vWorldPos.w = 1.f;
-	/* 뷰스페이스상의 위치. */
-	vWorldPos = vWorldPos * fViewZ;
-	vWorldPos = mul(vWorldPos, g_ProjMatrixInverse);
-	/* 월드스페이스상의 위치. */
-	vWorldPos = mul(vWorldPos, g_ViewMatrixInverse);
+	vector vWorldPos = ToWorldPosition(vDepthDesc, In.vTexUV, g_ViewMatrixInverse, g_ProjMatrixInverse);
 
 	// -------------------------
 	// 빛연산 시작.
 	// -------------------------
-	// Interpolating normal can unnormalize it, so normalize it.
-	// Cache the distance to the eye from this surface point.
-	// Normalize.
-	vNormal = normalize(vNormal);
-	float3 toEyeW = g_vCamPosition.xyz - vWorldPos.xyz;
-	float distToEye = length(toEyeW); 
-	toEyeW /= distToEye;
+	vNormal = normalize(vNormal); 
+	float3 toEyeW = normalize(g_vCamPosition.xyz - vWorldPos.xyz); //toEyeW : 카메라 보는 벡터
 
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -158,32 +140,10 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	spec += S;
 
 	Out.vShade = (ambient + diffuse);
+	Out.vShade.a = 1.f;
 	Out.vSpecular = spec;
 
 	return Out;
-
-	//if (g_UseRoughnessMap)
-	//{
-	//	spec = spec + S + (S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 20.f);
-	//}
-	//else
-	//{
-	//}
-
-	//ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-	//ambient += A;
-	//diffuse += D;
-	//spec += S;
-
-	//ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-	//ambient += A;
-	//diffuse += D;
-	//spec += S;
-
-	// Modulate with late add.
-	//Out.vColor = texColor * (ambient + diffuse) + spec;
-
-
 }
 
 
@@ -247,6 +207,21 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 
 	if (0.f == Out.vColor.a)
 		discard;
+
+	// 
+	// Fogging 기법은 상하로 적용하자
+	// 
+	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+	vector vWorldPos = ToWorldPosition(vDepthDesc, In.vTexUV, g_ViewMatrixInverse, g_ProjMatrixInverse);
+	float		fHeight = vWorldPos.y;
+	float		fogLerp = 0.f;
+	if (fHeight <= 0) // 수직 Fogging 기법 사용
+	{
+		fogLerp = saturate((-fHeight - 1.0f) / 100.f);
+	}
+
+	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
+	Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
 
 	return Out;
 }

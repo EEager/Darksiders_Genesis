@@ -38,8 +38,8 @@ HRESULT CLight_Manager::NativeConstruct(ID3D11Device* pDevice, ID3D11DeviceConte
 {
 	// Material Init
 	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
-	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 1.0f };
+	m_tMtrlDesc.vMtrlAmbient = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_tMtrlDesc.vMtrlSpecular = { 1.f, 1.f, 1.f, 20.f }; // w is pow Áö¼ö°ª
 	m_tMtrlDesc.vMtrlEmissive = { 1.f, 1.f, 1.f, 1.f };
 	m_tMtrlDesc.fMtrlPower = 20.f;
 

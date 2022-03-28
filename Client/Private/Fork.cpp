@@ -91,7 +91,7 @@ HRESULT CFork::Render(_uint iPassIndex)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i, iPassIndex);
+		m_pModelCom->Render(i, 0); // Deferred
 	}
 
 	// restore default states, as the SkyFX changes them in the effect file.
@@ -187,9 +187,9 @@ HRESULT CFork::SetUp_ConstantTable()
 	dissolvePower += 0.002f; 
 	if (dissolvePower >= 1.f) // 1이면 다 사라졌다
 		dissolvePower = 0.f;
-	//m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));
-	//if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
-	//	return E_FAIL;
+	m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));
+	if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
+		return E_FAIL;
 
 	// Emissive Map
 	_bool falseTemp = false;

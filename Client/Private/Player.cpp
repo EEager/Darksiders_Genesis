@@ -37,6 +37,7 @@ _int CPlayer::Tick(_float fTimeDelta)
 {
 	if (GetKeyState('L') & 0x8000)
 	{
+
 		m_pModelCom->SetUp_Animation(4);
 		m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 	}

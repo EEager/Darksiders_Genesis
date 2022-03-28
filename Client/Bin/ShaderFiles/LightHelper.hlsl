@@ -50,7 +50,7 @@ struct SpotLight
 // later we will modify the individual terms.
 //---------------------------------------------------------------------------------------
 void ComputeDirectionalLight(Material mat, DirectionalLight L,
-	float4 normal, float3 toEye,
+	float4 normal, float3 toEye, // ToÄ«¸Þ¶ó 
 	out float4 ambient,
 	out float4 diffuse,
 	out float4 spec)
@@ -62,6 +62,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 
 	// The light vector aims opposite the direction the light rays travel.
 	float3 lightVec = -L.Direction;
+	lightVec = normalize(lightVec);
 
 	// Add ambient term.
 	ambient = mat.vMtrlAmbient * L.Ambient;
@@ -69,14 +70,16 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 	// Add diffuse and specular term, provided the surface is in 
 	// the line of site of the light.
 
-	float diffuseFactor = dot(lightVec, normal.xyz);
+	float diffuseFactor = saturate(dot(lightVec, normal.xyz));
 
 	// Flatten to avoid dynamic branching.
 	[flatten]
 	if (diffuseFactor > 0.0f)
 	{
-		float3 v = reflect(-lightVec, normal.xyz);
-		float specFactor = pow(max(dot(v, toEye), 0.0f), mat.vMtrlSpecular.w );
+		// -lightVec == normalize(L.Direction)
+		// -lightVec = float3(1, -1, 1)
+		float3 vReflect = normalize(reflect(-lightVec, normal.xyz));
+		float specFactor = pow(max(dot(-vReflect, -toEye), 0.0f), mat.vMtrlSpecular.w );
 
 		diffuse = diffuseFactor * mat.vMtrlDiffuse * L.Diffuse;
 		spec = specFactor * mat.vMtrlSpecular * L.Specular;

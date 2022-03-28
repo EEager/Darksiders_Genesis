@@ -25,6 +25,8 @@ cbuffer cbPerObject
 
 	bool		g_UseRoughnessMap;
 	bool		g_UseMetalMap;
+
+	float		g_DissolvePwr;
 };
 
 cbuffer CameraDesc
@@ -39,6 +41,7 @@ texture2D		g_DiffuseTexture; // Diffuse Map
 texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
 texture2D		g_MetalRoughnessTexture; // Roughness Metal Map
+texture2D		g_DissolveTexture;
 
 
 // --------------------
@@ -59,6 +62,7 @@ struct VS_OUT
 	float3		TangentW : TANGENT;
 	float2		vTexUV : TEXCOORD0;
 	float4		vPosW : TEXCOORD1;
+	float4		vPosPTexcoord : TEXCOORD2;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -74,6 +78,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vTexUV = In.vTexUV;
 	Out.TangentW = mul(In.vTangentL, (float3x3)g_WorldMatrix);
 	Out.vPosW = mul(vector(In.vPosL, 1.f), g_WorldMatrix);
+	Out.vPosPTexcoord = Out.vPosP;
 
 	return Out;
 }
@@ -89,19 +94,20 @@ struct PS_IN
 	float3		TangentW : TANGENT;
 	float2		vTexUV : TEXCOORD0;
 	float4		vPosW : TEXCOORD1;
+	float4		vPosPTexcoord : TEXCOORD2;
 };
 
 struct PS_DEFERRED_OUT
 {
 	float4		vDiffuse : SV_TARGET0;
 	float4		vNormalW : SV_TARGET1;
-	float4		vDepthW : SV_TARGET2;
+	float4		vDepthW : SV_TARGET2; 
 };
 
 PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 {
 	PS_DEFERRED_OUT		Out = (PS_DEFERRED_OUT)0;
-	
+
 	// ------------------------------------
 	// #1. vDiffuse : SV_TARGET0;
 	float4 texColor = float4(1, 1, 1, 1); // Default to multiplicative identity.
@@ -113,20 +119,26 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 	if (g_UseEmissiveMap)
 		Out.vDiffuse += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
 
-	// Fogging 
-	// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
-	// gFogRange : 크면 시야가 더 잘보인다
-	// gFogStart : 안개 적용시킬 시야 시작 지점.
-	float fogLerp = 0.f;
-	if (In.vPosW.y <= 0) // 수직 Fogging 기법 사용
+	// Dissolve
+	if (g_DissolvePwr > 0)
 	{
-		fogLerp = saturate((-In.vPosW.y - 1.0f) / 100.f);
-	}
+		float Dissolve = g_DissolveTexture.Sample(DefaultSampler, In.vTexUV).g; // r:잘게, g:부드럽게, b:한쪽먼저
+		float dissolveTest = Dissolve - g_DissolvePwr;
+		clip(dissolveTest);
 
-	// Blend the fog color and the lit color.
-	//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
-	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
-	Out.vDiffuse = lerp(Out.vDiffuse, fogColor, fogLerp);
+		if (dissolveTest > 0.03 && dissolveTest <= 0.05)
+		{
+			Out.vDiffuse = float4(1, 0, 0, 1); // 빨
+		}
+		else if (dissolveTest <= 0.03f && dissolveTest > 0.01f)
+		{
+			Out.vDiffuse = float4(1, 1, 0, 1); // 노
+		}
+		else if (dissolveTest <= 0.01f)
+		{
+			Out.vDiffuse = float4(1, 1, 1, 1); // 흰
+		}
+	}
 
 	// ------------------------------------
 	// #2. vNormalW : SV_TARGET1;
@@ -134,15 +146,17 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 	{
 		float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
 		Out.vNormalW.xyz = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
-		Out.vNormalW.w = 0.f;
+		Out.vNormalW = vector(Out.vNormalW.xyz * 0.5f + 0.5f, 0.f);
 	}
-	else 
-		Out.vNormalW = In.vNormalW;
+	else
+	{
+		Out.vNormalW = vector(In.vNormalW.xyz * 0.5f + 0.5f, 0.f);
+	}
 
 	// ------------------------------------
-	// #3. vDepthW : SV_TARGET2;
+	// #3. vDepthW : SV_TARGET2
 	// x,y상의 깊이를 저장하자. 700 : far
-	Out.vDepthW = vector(In.vPosP.z / In.vPosP.w, In.vPosP.w / 700.f, 0.f, 0.f);
+	Out.vDepthW = vector(In.vPosPTexcoord.z / In.vPosPTexcoord.w, In.vPosPTexcoord.w / 700.f, 0.f, 0.f);
 
 	return Out;
 }
@@ -217,7 +231,7 @@ PS_FORWARD_OUT PS_FORWARD_MAIN(PS_IN In)
 
 		//ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
 		//ambient += A;
-		//diffuse += D;
+		//diffuse += D;            
 		//spec += S;
 
 		// Modulate with late add.

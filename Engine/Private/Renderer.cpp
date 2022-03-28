@@ -4,6 +4,7 @@
 #include "Target_Manager.h"
 #include "Light_Manager.h"
 #include "VIBuffer_Rect.h"
+#include "PipeLine.h"
 
 
 #define SHADOW_MAP_TEST
@@ -708,6 +709,17 @@ HRESULT CRenderer::Render_Blend()
 	// 아래 2개는 Lighting에서 찍어주는것. 
 	m_pVIBuffer->Set_ShaderResourceView("g_ShadeTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Shade")));
 	m_pVIBuffer->Set_ShaderResourceView("g_SpecularTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Specular")));
+
+
+	// 안개 효과를 위해 픽셀의 world 위치를 알아오자
+	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
+	_matrix		ViewMatrixInverse = XMMatrixInverse(nullptr, pPipeLine->Get_Transform(CPipeLine::TS_VIEW));
+	_matrix		ProjMatrixInverse = XMMatrixInverse(nullptr, pPipeLine->Get_Transform(CPipeLine::TS_PROJ));
+	m_pVIBuffer->Set_RawValue("g_ViewMatrixInverse", &XMMatrixTranspose(ViewMatrixInverse), sizeof(_float4x4));
+	m_pVIBuffer->Set_RawValue("g_ProjMatrixInverse", &XMMatrixTranspose(ProjMatrixInverse), sizeof(_float4x4));
+	RELEASE_INSTANCE(CPipeLine);
+
+	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Depth")));
 
 	m_pVIBuffer->Render(3); // final pass로 출력하자
 

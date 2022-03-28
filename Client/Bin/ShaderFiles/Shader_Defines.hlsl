@@ -141,4 +141,25 @@ RasterizerState NoCull
 	CullMode = None;
 };
 
+// -----------------------
+	// -----------------------
+vector ToWorldPosition(vector depthDesc, float2	vTexUV, matrix viewInvMat, matrix projInvMat)
+{
+	// 저장할때 In.vProjPos.w / 700.0f을 하였으니. fViewZ = In.vPosP.w이다 
+	float		fViewZ = depthDesc.y * 700.f; 
+	vector		vWorldPos;
+	/* 투영공간상의 위치. */
+	vWorldPos.x = vTexUV.x * 2.f - 1.f;
+	vWorldPos.y = vTexUV.y * -2.f + 1.f;
+	vWorldPos.z = depthDesc.x;
+	vWorldPos.w = 1.f;
+	/* 뷰스페이스상의 위치. */
+	vWorldPos = vWorldPos * fViewZ; 
+	vWorldPos = mul(vWorldPos, projInvMat);
+	/* 월드스페이스상의 위치. */
+	vWorldPos = mul(vWorldPos, viewInvMat);
+
+	return vWorldPos;
+}
+
 #endif
