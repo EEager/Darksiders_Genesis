@@ -156,6 +156,11 @@ HRESULT CLegion::Render(_uint iPassIndex)
 	Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90));
 	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90));
 
+	return S_OK;
+}
+
+HRESULT CLegion::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
 	// HP Bar Render
 	if (m_tGameInfo.iHp != m_tGameInfo.iMaxHp) // 피가 좀 달면 보여주자
 	{
@@ -171,16 +176,23 @@ HRESULT CLegion::Render(_uint iPassIndex)
 
 		// Bind 몬스터 현재 체력비율을 UV x 좌표로 넘겨주자. ex) 0.01 ~ 0.99 이니깐 80% 면 (0.99 - 0.01) * 0.8;
 #define MAX_LEN_HP (0.99f - 0.01f)
-		_float fCurHpRatio = (_float)m_tGameInfo.iHp/(_float)m_tGameInfo.iMaxHp;
+		_float fCurHpRatio = (_float)m_tGameInfo.iHp / (_float)m_tGameInfo.iMaxHp;
 		_float fUVx = MAX_LEN_HP * fCurHpRatio;
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
 
 		_float fHpBarHeight = 2.4f;
-		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float)); 
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
 
-		m_pVIHpBarGsBufferCom->Render(iPassIndex);
+		m_pVIHpBarGsBufferCom->Render(0);
 		RELEASE_INSTANCE(CGameInstance);
 	}
+
+	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
+
+#ifdef _DEBUG
+	// 모든 몬스터는 Collider를 render한다
+	__super::Render_Colliders();
+#endif
 
 	return S_OK;
 }

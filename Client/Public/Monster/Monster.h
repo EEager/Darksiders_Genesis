@@ -24,6 +24,7 @@ public:
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iPassIndex = 0);
+	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 protected:	
 	CRenderer*					m_pRendererCom = nullptr;

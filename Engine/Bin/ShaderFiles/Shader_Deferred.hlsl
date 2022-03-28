@@ -36,6 +36,9 @@ texture2D		g_TargetTexture;
 texture2D		g_NormalTexture;
 texture2D		g_DepthTexture;
 texture2D		g_DiffuseTexture;
+texture2D		g_EmissiveTexture;
+texture2D		g_HitPowerTexture;
+
 texture2D		g_ShadeTexture;
 texture2D		g_SpecularTexture;
 
@@ -202,8 +205,12 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	vector		vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexUV);
+	vector		vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexUV);
+	vector		vHitPower = g_HitPowerTexture.Sample(DefaultSampler, In.vTexUV);
 
 	Out.vColor = vDiffuse * vShade + vSpecular;
+	Out.vColor += vEmissive;
+	Out.vColor += vHitPower;
 
 	if (0.f == Out.vColor.a)
 		discard;

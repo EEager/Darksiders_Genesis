@@ -61,6 +61,10 @@ _int CMonster::LateTick(_float fTimeDelta)
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
 
+	// 모든 몬스터는 Post Render를 진행한다 그룹에서 render한다
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		return 0;
+
 	// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
 	pGameInstance->Add_Collision(this);
 
@@ -86,6 +90,12 @@ HRESULT CMonster::Render(_uint iPassIndex)
 		m_pModelCom->Render(i, iPassIndex);
 	}
 
+	return S_OK;
+}
+
+HRESULT CMonster::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 #ifdef _DEBUG
 	// 모든 몬스터는 Collider를 render한다
 	__super::Render_Colliders();

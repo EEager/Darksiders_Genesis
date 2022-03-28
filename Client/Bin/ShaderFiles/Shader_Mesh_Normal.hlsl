@@ -102,6 +102,7 @@ struct PS_DEFERRED_OUT
 	float4		vDiffuse : SV_TARGET0;
 	float4		vNormalW : SV_TARGET1;
 	float4		vDepthW : SV_TARGET2; 
+	float4		vEmissive : SV_TARGET3; 
 };
 
 PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
@@ -111,7 +112,7 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 	// ------------------------------------
 	// #1. vDiffuse : SV_TARGET0;
 	float4 texColor = float4(1, 1, 1, 1); // Default to multiplicative identity.
-	texColor = g_DiffuseTexture.Sample(samLinearClamp, In.vTexUV);	// Sample texture.
+	texColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);	// Sample texture.
 	clip(texColor.a - 0.1f);
 	Out.vDiffuse = texColor;
 
@@ -158,10 +159,14 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 	// x,y상의 깊이를 저장하자. 700 : far
 	Out.vDepthW = vector(In.vPosPTexcoord.z / In.vPosPTexcoord.w, In.vPosPTexcoord.w / 700.f, 0.f, 0.f);
 
+	// -----------------------------
+	// #4. vEmissive : SV_TARGET3
+	// Emissive 맵 출력
+	if (g_UseEmissiveMap)
+		Out.vEmissive = g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+
 	return Out;
 }
-
-
 
 struct PS_FORWARD_OUT
 {
@@ -284,16 +289,4 @@ technique11	DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
-
-	// 지형 Fog는 Forward 프로세스로 처리해야한다.
-	pass Forward_Pass
-	{
-		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		SetDepthStencilState(DefaultDepthStencilState, 0);
-		SetRasterizerState(NoCull);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
-	}
-
 }
