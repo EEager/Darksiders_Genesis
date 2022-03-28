@@ -91,17 +91,16 @@ struct PS_IN
 	float4		vPosW : TEXCOORD1;
 };
 
-struct PS_OUT
+struct PS_DEFERRED_OUT
 {
 	float4		vDiffuse : SV_TARGET0;
 	float4		vNormalW : SV_TARGET1;
 	float4		vDepthW : SV_TARGET2;
 };
 
-
-PS_OUT PS_MAIN(PS_IN In)
+PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0;	
+	PS_DEFERRED_OUT		Out = (PS_DEFERRED_OUT)0;
 	
 	// ------------------------------------
 	// #1. vDiffuse : SV_TARGET0;
@@ -146,106 +145,141 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDepthW = vector(In.vPosP.z / In.vPosP.w, In.vPosP.w / 700.f, 0.f, 0.f);
 
 	return Out;
+}
+
+
+
+struct PS_FORWARD_OUT
+{
+	float4		vDiffuse : SV_TARGET;
+};
+
+PS_FORWARD_OUT PS_FORWARD_MAIN(PS_IN In)
+{
+	PS_FORWARD_OUT		Out = (PS_FORWARD_OUT)0;
+
+	// Interpolating normal can unnormalize it, so normalize it.
+	In.vNormalW = normalize(In.vNormalW);
+
+	float3 toEyeW = g_vCamPosition.xyz - In.vPosW.xyz;
+
+	// Cache the distance to the eye from this surface point.
+	float distToEye = length(toEyeW);
+
+	// Normalize.
+	toEyeW /= distToEye;
+
+	// Default to multiplicative identity.
+	float4 texColor = float4(1, 1, 1, 1);
+	// Sample texture.
+	texColor = g_DiffuseTexture.Sample(samLinearClamp, In.vTexUV);
+
+	clip(texColor.a - 0.1f);
 
 	// --------------------------
 	//	Normal mapping
 	// --------------------------
-	//float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+	float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
+	float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
 
 	// --------------------------
 	//	Light
 	// --------------------------
-	//Out.vColor = texColor;
-	//{
-	//	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	//	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	//	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	Out.vDiffuse = texColor;
+	{
+		float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//	// Sum the light contribution from each light source.
-	//	float4 A, D, S;
-	//	if (g_UseNormalMap)
-	//		ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
-	//	else
-	//		ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW.xyz, A, D, S);
+		// Sum the light contribution from each light source.
+		float4 A, D, S;
+		if (g_UseNormalMap)
+			ComputeDirectionalLight(g_Material, g_DirLight, float4(bumpedNormalW, 0.f), toEyeW.xyz, A, D, S);
+		else
+			ComputeDirectionalLight(g_Material, g_DirLight, In.vNormalW, toEyeW.xyz, A, D, S);
 
-	//	ambient += A;
-	//	diffuse += D;
+		ambient += A;
+		diffuse += D;
 
-	//	if (g_UseRoughnessMap)
-	//	{
-	//		spec = spec + S + (S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 20.f);
-	//	}
-	//	else
-	//	{
-	//		spec += S;
-	//	}
+		if (g_UseRoughnessMap)
+		{
+			spec = spec + S + (S * g_MetalRoughnessTexture.Sample(samLinear, In.vTexUV).r * 20.f);
+		}
+		else
+		{
+			spec += S;
+		}
 
-	//	//ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-	//	//ambient += A;
-	//	//diffuse += D;
-	//	//spec += S;
+		//ComputePointLight(g_Material, g_PointLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+		//ambient += A;
+		//diffuse += D;
+		//spec += S;
 
-	//	//ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
-	//	//ambient += A;
-	//	//diffuse += D;
-	//	//spec += S;
+		//ComputeSpotLight(g_Material, g_SpotLight, In.vPosW.xyz, In.vNormalW.xyz, toEyeW, A, D, S);
+		//ambient += A;
+		//diffuse += D;
+		//spec += S;
 
-	//	// Modulate with late add.
-	//	Out.vColor = texColor * (ambient + diffuse) + spec;
+		// Modulate with late add.
+		Out.vDiffuse = texColor * (ambient + diffuse) + spec;
 
-	//	// --------------------------
-	//	//	Emissive mapping
-	//	// --------------------------
-	//	if (g_UseEmissiveMap)
-	//		Out.vColor += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
-	//}
-
-
-	//// --------------------------
-	//// Fogging 마지막에 하자 
-	//// --------------------------
-
-	////if (gFogEnabled)
-	//{
-	//	// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
-	//	// gFogRange : 크면 시야가 더 잘보인다
-	//	// gFogStart : 안개 적용시킬 시야 시작 지점.
-	//	float fogLerp = 0.f;
-	//	if (In.vPosW.y <= 0) // 땅위는 안개 표현하지말자
-	//	{
-	//		fogLerp = saturate((-In.vPosW.y - 1.0f) / 100.f);
-	//	}
-
-	//	// Blend the fog color and the lit color.
-
-	//	//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
-	//	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
-	//	Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
-	//}
+		// --------------------------
+		//	Emissive mapping
+		// --------------------------
+		if (g_UseEmissiveMap)
+			Out.vDiffuse += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+	}
 
 
-	//// Common to take alpha from diffuse material and texture.
-	//Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
+	// --------------------------
+	// Fogging 마지막에 하자 
+	// --------------------------
+	float fogLerp = 0.f;
+	if (In.vPosW.y <= 0) // 땅위는 안개 표현하지말자
+	{
+		fogLerp = saturate((-In.vPosW.y - 1.0f) / 100.f);
+	}
+
+	//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
+	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
+	Out.vDiffuse = lerp(Out.vDiffuse, fogColor, fogLerp);
+
+	// Common to take alpha from diffuse material and texture.
+	Out.vDiffuse.a = g_Material.vMtrlDiffuse.a * texColor.a;
+
+	return Out;
 }
 
 technique11	DefaultTechnique
 {
-	pass DefaultPass
+	pass Deferred_Pass
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_DEFERRED_MAIN();
 	}
 
-	pass ApiPass // Api에서 render state 설정하자. outline 같은거 그릴때 이 Pass를 수행
+	// Api에서 render state 설정하자. outline 같은거 그릴때 이 Pass를 수행
+	pass Forward_ApiRenderState_Pass
 	{
 		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN(); 
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
+	}
+
+	// 지형 Fog는 Forward 프로세스로 처리해야한다.
+	pass Forward_Pass
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(NoCull);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
 
 }

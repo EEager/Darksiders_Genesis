@@ -110,7 +110,7 @@ HRESULT CPlayer::Render(_uint iPassIndex)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i, iPassIndex);
+		m_pModelCom->Render(i, 0); // Deferred
 	}
 
 

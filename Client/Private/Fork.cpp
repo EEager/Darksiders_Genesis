@@ -66,6 +66,8 @@ _int CFork::LateTick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		goto _EXIT;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		goto _EXIT;
 
 	// Collider 
 	pGameInstance->Add_Collision(this);
@@ -92,16 +94,20 @@ HRESULT CFork::Render(_uint iPassIndex)
 		m_pModelCom->Render(i, iPassIndex);
 	}
 
-
-#ifdef _DEBUG
-	// Collider 
-	__super::Render_Colliders();
-#endif // _DEBUG
-
 	// restore default states, as the SkyFX changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 
+
+	return S_OK;
+}
+
+HRESULT CFork::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+#ifdef _DEBUG
+	// Collider 
+	__super::Render_Colliders();
+#endif // _DEBUG
 
 	return S_OK;
 }

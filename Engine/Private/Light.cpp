@@ -24,10 +24,9 @@ HRESULT CLight::Render(CVIBuffer_Rect* pVIBuffer)
 		return S_OK;
 
 	_uint			iPassIndex = 0;
-
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (LIGHTDESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
 	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
 		DirectionalLight mDirLight;
 		mDirLight.Ambient = dirLightDesc.vAmbient;
@@ -44,6 +43,7 @@ HRESULT CLight::Render(CVIBuffer_Rect* pVIBuffer)
 		pVIBuffer->Set_RawValue("g_fRange", &m_LightDesc.fRadiuse, sizeof(_float));
 
 	}
+	RELEASE_INSTANCE(CGameInstance);
 	pVIBuffer->Render(iPassIndex);
 	return S_OK;
 }

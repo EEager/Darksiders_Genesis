@@ -17,12 +17,12 @@ CEnviroment::CEnviroment(const CEnviroment & rhs)
 HRESULT CEnviroment::NativeConstruct_Prototype()
 {	
 
-	// Material Init
-	m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-	m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
-	m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 1.0f };
-	m_tMtrlDesc.vMtrlEmissive = { 1.f, 1.f, 1.f, 1.f };
-	m_tMtrlDesc.fMtrlPower = 20.f;
+	//// Material Init
+	//m_tMtrlDesc.vMtrlDiffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//m_tMtrlDesc.vMtrlAmbient = { 0.5f, 0.5f, 0.5f, 1.0f };
+	//m_tMtrlDesc.vMtrlSpecular = { 0.2f, 0.2f, 0.2f, 1.0f };
+	//m_tMtrlDesc.vMtrlEmissive = { 1.f, 1.f, 1.f, 1.f };
+	//m_tMtrlDesc.fMtrlPower = 20.f;
 
 	return S_OK;
 }
@@ -57,7 +57,10 @@ _int CEnviroment::LateTick(_float fTimeDelta)
 		return -1;
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_TERRAIN, this)))
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		goto _EXIT;
+
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 		goto _EXIT;
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
@@ -80,19 +83,22 @@ HRESULT CEnviroment::Render(_uint iPassIndex)
 		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
-		m_pModelCom->Render(i, iPassIndex);
+		m_pModelCom->Render(i, 0); // Deferred_Pass
 	}
-
-#ifdef _DEBUG
-	m_pAABBCom->Render();
-#endif // _DEBUG
-
-
 
 	// restore default states, as the SkyFX changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 
+
+	return S_OK;
+}
+
+HRESULT CEnviroment::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+#ifdef _DEBUG
+	m_pAABBCom->Render();
+#endif // _DEBUG
 
 	return S_OK;
 }

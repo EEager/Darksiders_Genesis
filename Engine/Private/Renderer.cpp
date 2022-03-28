@@ -376,7 +376,7 @@ HRESULT CRenderer::Draw()
 {
 	// SkyBox
 	if (FAILED(Render_Priority()))
-		return E_FAIL;
+		return E_FAIL; 
 	// Terrain (Enviroment)
 	if (FAILED(Render_Priority_Terrain()))
 		return E_FAIL;
@@ -680,19 +680,19 @@ HRESULT CRenderer::Render_Mouse()
 
 HRESULT CRenderer::Render_LightAcc()
 {
-	//if (nullptr == m_pTarget_Manager ||
-	//	nullptr == m_pLight_Manager)
-	//	return E_FAIL;
+	if (nullptr == m_pTarget_Manager ||
+		nullptr == m_pLight_Manager)
+		return E_FAIL;
 
-	///* 장치에는 Target_Shade가 셋팅된다. */
-	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_LightAcc"))))
-	//	return E_FAIL;
+	/* 장치에는 Target_Shade가 셋팅된다. */
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_LightAcc"))))
+		return E_FAIL;
 
-	///* Target_Shade에 그린다. */
-	//m_pLight_Manager->Render();
+	/* Target_Shade에 그린다. */
+	m_pLight_Manager->Render();
 
-	//if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
 
 	return S_OK;
 }

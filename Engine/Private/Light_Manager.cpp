@@ -43,6 +43,7 @@ HRESULT CLight_Manager::NativeConstruct(ID3D11Device* pDevice, ID3D11DeviceConte
 	m_tMtrlDesc.vMtrlEmissive = { 1.f, 1.f, 1.f, 1.f };
 	m_tMtrlDesc.fMtrlPower = 20.f;
 
+
 	m_pVIBuffer = CVIBuffer_Rect::Create(pDevice, pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"));
 	if (nullptr == m_pVIBuffer)
 		return E_FAIL;

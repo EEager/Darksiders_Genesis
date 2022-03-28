@@ -123,20 +123,79 @@ struct PS_IN
 	float4		vPosW : TEXCOORD1;
 };
 
-struct PS_OUT
+struct PS_DEFERRED_OUT
 {
-	float4		vColor : SV_TARGET0;
+	float4		vDiffuse : SV_TARGET0;
+	float4		vNormalW : SV_TARGET1;
+	float4		vDepthW : SV_TARGET2;
 };
 
-PS_OUT PS_MAIN(PS_IN In)
+PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0;
+	PS_DEFERRED_OUT		Out = (PS_DEFERRED_OUT)0;
+
+	// ------------------------------------
+	// #1. vDiffuse : SV_TARGET0;
+	float4 texColor = float4(1, 1, 1, 1); // Default to multiplicative identity.
+	texColor = g_DiffuseTexture.Sample(samLinearClamp, In.vTexUV);	// Sample texture.
+	clip(texColor.a - 0.1f);
+	Out.vDiffuse = texColor;
+
+	//	Emissive mapping
+	if (g_UseEmissiveMap)
+		Out.vDiffuse += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+
+	// Fogging 
+	// float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
+	// gFogRange : 크면 시야가 더 잘보인다
+	// gFogStart : 안개 적용시킬 시야 시작 지점.
+	float fogLerp = 0.f;
+	if (In.vPosW.y <= 0) // 수직 Fogging 기법 사용
+	{
+		fogLerp = saturate((-In.vPosW.y - 1.0f) / 100.f);
+	}
+
+	// Blend the fog color and the lit color.
+	//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
+	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
+	Out.vDiffuse = lerp(Out.vDiffuse, fogColor, fogLerp);
+
+	// ------------------------------------
+	// #2. vNormalW : SV_TARGET1;
+	if (g_UseNormalMap) // Normal Map 사용시
+	{
+		float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
+		Out.vNormalW.xyz = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+		Out.vNormalW.w = 0.f;
+	}
+	else
+		Out.vNormalW = In.vNormalW;
+
+	// ------------------------------------
+	// #3. vDepthW : SV_TARGET2;
+	// x,y상의 깊이를 저장하자. 700 : far
+	Out.vDepthW = vector(In.vPosP.z / In.vPosP.w, In.vPosP.w / 700.f, 0.f, 0.f);
+
+	Out.vDiffuse += g_vHitPower;
+
+	return Out;
+}
+
+struct PS_FOWARD_OUT
+{
+	float4		vDiffuse : SV_TARGET;
+};
+
+
+PS_FOWARD_OUT PS_FORWARD_MAIN(PS_IN In)
+{
+	PS_FOWARD_OUT		Out = (PS_FOWARD_OUT)0;
 
 	if (g_DrawOutLine)
 	{
 		float4 texColor = g_DiffuseTexture.Sample(samLinear, In.vTexUV);
 		clip(texColor.a - 0.1f);
-		Out.vColor.xyz = float3(1.f / 255.f, 249.f / 255.f, 254.f / 255.f);
+		Out.vDiffuse.xyz = float3(1.f / 255.f, 249.f / 255.f, 254.f / 255.f);
 		return Out;
 	}
 
@@ -177,7 +236,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	// --------------------------
 	//	Light
 	// --------------------------
-	Out.vColor = texColor;
+	Out.vDiffuse = texColor;
 	{
 		float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -203,13 +262,13 @@ PS_OUT PS_MAIN(PS_IN In)
 		}
 
 		// Modulate with late add.
-		Out.vColor = texColor * (ambient + diffuse) + spec;
+		Out.vDiffuse = texColor * (ambient + diffuse) + spec;
 
 		// --------------------------
 		//	Emissive mapping
 		// --------------------------
 		if (g_UseEmissiveMap)
-			Out.vColor += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+			Out.vDiffuse += g_EmissiveTexture.Sample(samLinear, In.vTexUV);
 
 		// 거울 같은거 반사 효과 낼때 사용 gCubeMap를 사용하네 여기서 
 		/*if (gReflectionEnabled)
@@ -239,18 +298,16 @@ PS_OUT PS_MAIN(PS_IN In)
 		}
 
 		// Blend the fog color and the lit color.
-		
+
 		//vector fogColor = vector(0.75f, 0.75f, 0.75f, 1.0f); // Gray
-		vector fogColor = vector(0.835,0.509f, 0.235f, 1.0f); // 석양느낌
-		Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
+		vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
+		Out.vDiffuse = lerp(Out.vDiffuse, fogColor, fogLerp);
 	}
 
-
 	// Common to take alpha from diffuse material and texture.
-	Out.vColor.a = g_Material.vMtrlDiffuse.a * texColor.a;
+	Out.vDiffuse.a = g_Material.vMtrlDiffuse.a * texColor.a;
 
-		
-	Out.vColor += g_vHitPower;
+	Out.vDiffuse += g_vHitPower;
 
 
 	return Out;
@@ -259,22 +316,34 @@ PS_OUT PS_MAIN(PS_IN In)
 
 technique11	DefaultTechnique
 {
-	pass DefaultPass
+	pass Deferred_Pass
 	{			
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_DEFERRED_MAIN();
 	}
 
-	pass ApiPass
+	// Api에서 render state 설정하자. War outline 같은거 그릴때 이 Pass를 수행
+	pass Forward_ApiRenderState_Pass
 	{
 		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
+	}
+
+	// 지형 Fog는 Forward 프로세스로 처리해야한다.
+	pass Forward_Pass
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(NoCull);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
 
 }

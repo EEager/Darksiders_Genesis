@@ -106,9 +106,7 @@ HRESULT CMainApp::Render()
 
 	m_pGameInstance->Render_Engine(); // Level Dummy
 
-#if defined(USE_IMGUI)
-	CImguiManager::GetInstance()->Render();
-#endif
+
 	return S_OK;
 }
 
@@ -142,6 +140,10 @@ HRESULT CMainApp::PostRender()
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 	m_pDeviceContext->OMSetBlendState(0, 0, 0xffffffff);
 	m_pDeviceContext->PSSetSamplers(0, 0, 0);
+
+#if defined(USE_IMGUI)
+	CImguiManager::GetInstance()->Render();
+#endif
 
 	return S_OK;
 }

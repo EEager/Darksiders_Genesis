@@ -590,7 +590,7 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 HRESULT CWar::War_Render(_uint iPassIndex)
 {
-	iPassIndex = 1; // ApiPass 
+	iPassIndex = 1; // Forward_ApiRenderState_Pass 
 
 	// 
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
