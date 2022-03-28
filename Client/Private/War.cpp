@@ -137,28 +137,31 @@ _EXIT:
 }
 
 
+HRESULT CWar::Render(_uint iPassIndex)
+{
+	War_Render(1); // Forward_ApiRenderState_Pass
+	War_Outline_Render(1); // Forward_ApiRenderState_Pass
+
+	return S_OK;
+}
+
 #ifdef _DEBUG
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
 extern bool m_bshow_naviMesh_window;
 #endif
 #endif
-HRESULT CWar::Render(_uint iPassIndex)
+HRESULT CWar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
-	War_Render(iPassIndex);
 
 #ifdef _DEBUG
 #ifdef USE_IMGUI
 	if (m_bshow_naviMesh_window)
 #endif
 		m_pNaviCom->Render();
-
 	__super::Render_Colliders();
-
-	//// Restore default states
 	//m_pRendererCom->ClearRenderStates();
 #endif // _DEBUG
-
 	return S_OK;
 }
 
@@ -590,8 +593,6 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 HRESULT CWar::War_Render(_uint iPassIndex)
 {
-	iPassIndex = 1; // Forward_ApiRenderState_Pass 
-
 	// 
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
 	// 
@@ -637,6 +638,11 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
 	m_pRendererCom->ClearRenderStates();
 
+	return S_OK;
+}
+
+HRESULT CWar::War_Outline_Render(_uint iPassIndex)
+{
 	// 
 	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) 
 	// War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
@@ -656,7 +662,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
 
-			m_pModelCom[modelIdx]->Render(i, iPassIndex);
+			m_pModelCom[modelIdx]->Render(i, iPassIndex); // Forward_ApiRenderState_Pass
 		}
 	}
 
@@ -673,7 +679,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-			m_pModelCom_Ruin->Render(i, iPassIndex);
+			m_pModelCom_Ruin->Render(i, iPassIndex); // Forward_ApiRenderState_Pass
 		}
 	}
 

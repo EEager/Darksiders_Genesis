@@ -42,6 +42,7 @@ public:
 	virtual _int Tick(_float fTimeDelta);
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iPassIndex=0);
+	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 
 public:
@@ -122,6 +123,7 @@ private:
 	HRESULT SetUp_Ruin_ConstantTable(bool drawOutLine);
 
 	HRESULT War_Render(_uint iPassIndex = 0);
+	HRESULT War_Outline_Render(_uint iPassIndex = 0);
 
 	// GamePlay
 	_bool m_bHitted = false; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자

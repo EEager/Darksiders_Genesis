@@ -356,25 +356,12 @@ technique11	DefaultTechnique
 	}
 
 	// Api에서 render state 설정하자. War outline 같은거 그릴때 이 Pass를 수행
+	// War는 이것을 사용한다
 	pass Forward_ApiRenderState_Pass
 	{
-		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(NoCull);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
-
-	// 지형 Fog는 Forward 프로세스로 처리해야한다.
-	pass Forward_Pass
-	{
-		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		SetDepthStencilState(DefaultDepthStencilState, 0);
-		SetRasterizerState(NoCull);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
-	}
-
 }
