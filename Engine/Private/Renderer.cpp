@@ -284,13 +284,13 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Normal"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Depth"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Depth_Cur"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Emissive"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_HitPower"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Depth_War"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 1.f))))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Depth_Prev"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 1.f))))
 		return E_FAIL;
 
 
@@ -306,9 +306,9 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Normal"), WIDTH * 1, WIDTH * 0, WIDTH, WIDTH)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Depth"), WIDTH * 2, WIDTH * 0, WIDTH, WIDTH)))
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Depth_Cur"), WIDTH * 2, WIDTH * 0, WIDTH, WIDTH)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Depth_War"), WIDTH * 3, WIDTH * 0, WIDTH, WIDTH)))
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Depth_Prev"), WIDTH * 3, WIDTH * 0, WIDTH, WIDTH)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Emissive"), WIDTH * 4, WIDTH * 0, WIDTH, WIDTH)))
 		return E_FAIL;
@@ -326,13 +326,13 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Normal"))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth"))))
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth_Cur"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Emissive"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_HitPower"))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth_War"))))
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Depth_Prev"))))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
@@ -411,7 +411,6 @@ HRESULT CRenderer::Draw()
 	// [Deffered End] 최종 백버퍼에 합치자
 	if (FAILED(Render_Blend())) 
 		return E_FAIL;
-
 
 	
 	// 빛처리 필요없는 애들의 경우 바로 백버퍼에 그리자
@@ -752,11 +751,11 @@ HRESULT CRenderer::Render_Blend()
 	m_pVIBuffer->Set_RawValue("g_ProjMatrixInverse", &XMMatrixTranspose(ProjMatrixInverse), sizeof(_float4x4));
 	RELEASE_INSTANCE(CPipeLine);
 
-	// Target_Depth
-	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Depth")));
+	// Target_Depth_Cur
+	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Depth_Cur")));
 
-	// Target_Depth_War
-	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture_War", m_pTarget_Manager->Get_SRV(TEXT("Target_Depth_War")));
+	// Target_Depth_Prev
+	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture_War", m_pTarget_Manager->Get_SRV(TEXT("Target_Depth_Prev")));
 
 	// EmissiveTexture
 	m_pVIBuffer->Set_ShaderResourceView("g_EmissiveTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Emissive")));
