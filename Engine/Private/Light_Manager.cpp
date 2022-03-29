@@ -88,7 +88,7 @@ HRESULT CLight_Manager::Render()
 	// 각 오브젝트들이 저장한 Normal 값을 넘겨주자
 	m_pVIBuffer->Set_ShaderResourceView("g_NormalTexture", pTarget_Manager->Get_SRV(TEXT("Target_Normal")));
 	// 각 오브젝트들이 저장한 깊이 값을 넘겨주자
-	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture", pTarget_Manager->Get_SRV(TEXT("Target_Depth")));
+	m_pVIBuffer->Set_ShaderResourceView("g_DepthTexture", pTarget_Manager->Get_SRV(TEXT("Target_Depth_Cur")));
 
 
 	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);

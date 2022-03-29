@@ -516,10 +516,10 @@ void CImguiManager::ShowSpeedFactorControlWindow()
 	
 	// Ä«¸Þ¶ó »©°í ´Ù ¸ØÃßÀÚ
 	if (ImGui::Button("Play"))
-		;// m_pGameInstance->StopAllTickWithOutCamera(false);
+		int debug = 0;// m_pGameInstance->StopAllTickWithOutCamera(false);
 	ImGui::SameLine();
 	if (ImGui::Button("Stop"))
-		; //m_pGameInstance->StopAllTickWithOutCamera(true);
+		int debug = 0; //m_pGameInstance->StopAllTickWithOutCamera(true);
 	ImGui::End();
 }
 

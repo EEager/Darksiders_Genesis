@@ -214,11 +214,17 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	// 먼저 War의 외곽선을 출력해야하는지 체크 하자
+
+	//
+	// War 깊이가 더 멀리 있는 경우
+	//
 	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vDepthDesc_War = g_DepthTexture_War.Sample(DefaultSampler, In.vTexUV);
-
-
+	if (vDepthDesc.r < vDepthDesc_War.r)
+	{
+		Out.vColor = float4(1.f / 255.f, 249.f / 255.f, 254.f / 255.f, 1.f);
+		return Out;
+	}
 
 
 	vector		vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
@@ -250,13 +256,6 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
 	Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
 
-	//
-	// War 깊이가 더 멀리 있는 경우
-	//
-	if (vDepthDesc.r < vDepthDesc_War.r) 
-	{
-		Out.vColor = float4(1.f / 255.f, 249.f / 255.f, 254.f / 255.f, 1.f);
-	}
 
 	return Out;
 }
