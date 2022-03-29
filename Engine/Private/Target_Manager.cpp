@@ -84,9 +84,8 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _t
 		pRenderTargets[iIndex++] = pRenderTarget->Get_RTV();
 	}
 
-	// The shadow might might be at any slot, so clear all slots.
-	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
-	pDeviceContext->PSSetShaderResources(0, 16, nullSRV);
+	ID3D11ShaderResourceView* null[] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+	pDeviceContext->PSSetShaderResources(0, 6, null);
 
 	// 장치에 여러개의 렌터타겟들을 바인드한다
 	pDeviceContext->OMSetRenderTargets((_uint)pMRTList->size(), pRenderTargets, m_pDepthStencilView);

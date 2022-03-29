@@ -4,14 +4,7 @@
 #include "Target_Manager.h"
 #include "PipeLine.h"
 
-#include "Renderer.h"
-
 // "../Bin/ShaderFiles/Shader_Deferred.hlsl"
-
-extern ShadowMap* mSmap;
-extern XMFLOAT4X4 mLightView;
-extern XMFLOAT4X4 mLightProj;
-extern XMFLOAT4X4 mShadowTransform;
 
 IMPLEMENT_SINGLETON(CLight_Manager)
 
@@ -115,10 +108,6 @@ HRESULT CLight_Manager::Render()
 
 	// Bind Material
 	m_pVIBuffer->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
-
-
-	// Bind ShadowMap Stuffs
-
 
 	for (auto& pLight : m_Lights)
 	{
