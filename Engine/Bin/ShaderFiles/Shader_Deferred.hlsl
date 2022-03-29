@@ -39,6 +39,8 @@ texture2D		g_DiffuseTexture;
 texture2D		g_EmissiveTexture;
 texture2D		g_HitPowerTexture;
 
+texture2D		g_ShadowMap;
+
 texture2D		g_ShadeTexture;
 texture2D		g_SpecularTexture;
 
@@ -82,6 +84,8 @@ struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexUV : TEXCOORD0;
+	float4		ShadowPosH : TEXCOORD1;
+
 };
 
 struct PS_OUT
@@ -135,12 +139,18 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+	// -----------------------
+	// ShadowMAp Test
+	// -----------------------
+	float3 shadow = float3(1.0f, 1.0f, 1.0f);
+	shadow = CalcShadowFactor(samShadow, g_ShadowMap, In.ShadowPosH);
+
 	// Sum the light contribution from each light source.
 	float4 A, D, S;
 	ComputeDirectionalLight(g_Material, g_DirLight, vNormal, toEyeW.xyz, A, D, S);
 	ambient += A;
-	diffuse += D;
-	spec += S;
+	diffuse += shadow[i] * D;
+	spec += shadow[i] * S;
 
 	Out.vShade = (ambient + diffuse);
 	Out.vShade.a = 1.f;

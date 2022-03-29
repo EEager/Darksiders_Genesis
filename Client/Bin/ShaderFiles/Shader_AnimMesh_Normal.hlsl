@@ -17,6 +17,10 @@ cbuffer cbPerObject
 	matrix		g_WorldMatrix;
 	matrix		g_ViewMatrix;
 	matrix		g_ProjMatrix;
+	// --------------------------
+// Shadow Mapping Pass
+	matrix		g_TexTransform;
+	// -------------------------
 	Material	g_Material;
 
 	bool		g_UseNormalMap;
@@ -342,6 +346,47 @@ PS_FOWARD_OUT PS_FORWARD_MAIN(PS_IN In)
 	return Out;
 }
 
+// ------------------------------------------
+// Shadow Mapping Pass
+struct VS_OUT_SHADOW
+{
+	float4 PosH : SV_POSITION;
+	float2 Tex  : TEXCOORD;
+};
+
+//struct VS_IN
+//{
+//	float3		vPosL : POSITION;
+//	float3		vNormalL : NORMAL;
+//	float2		vTexUV : TEXCOORD0;
+//	float3		vTangentL : TANGENT;
+//};
+
+VS_OUT_SHADOW VS_SHADOW(VS_IN In)
+{
+	VS_OUT_SHADOW vout;
+
+	matrix		matWV, matWVP;
+	matWV = mul(g_WorldMatrix, g_ViewMatrix);
+	matWVP = mul(matWV, g_ProjMatrix);
+
+	vout.PosH = mul(float4(In.vPosL, 1.0f), matWVP);
+	vout.Tex = mul(float4(In.vTexUV, 0.0f, 1.0f), g_TexTransform).xy;
+
+	return vout;
+}
+
+void PS_SHADOW(VS_OUT_SHADOW In)
+{
+	float4 diffuse = g_DiffuseTexture.Sample(samLinear, In.Tex);
+
+	// Don't write transparent pixels to the shadow map.
+	// 투명한 픽셀들은 그림자 맵에 기록되지 않게 한다.
+	clip(diffuse.a - 0.15f);
+}
+// -------------------------------------------
+
+
 
 technique11	DefaultTechnique
 {
@@ -364,4 +409,16 @@ technique11	DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
+
+	// -----------------------------------------------------
+	// Shadow Mapping Pass
+	pass ShadowMap_Pass
+	{
+		VertexShader = compile vs_5_0 VS_SHADOW();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_SHADOW();
+
+		SetRasterizerState(DepthNoCull);
+	}
+	// ---------------------------------------------------------
 }
