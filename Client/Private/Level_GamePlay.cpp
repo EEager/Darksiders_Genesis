@@ -263,9 +263,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 			return E_FAIL;
 
 	/* For.Prototype_GameObject_FallenDog*/
-	for (int i = 0; i < 2; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"))))
-			return E_FAIL;
+	//for (int i = 0; i < 2; i++)
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"))))
+	//		return E_FAIL;
 
 	/* For.Prototype_GameObject_HollowLord*/
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_HollowLord", TEXT("Prototype_GameObject_HollowLord"))))

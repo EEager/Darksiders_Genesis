@@ -210,6 +210,93 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 	return Out;
 }
 
+// ----------------------
+// PS_DEFERRED_ONLY_WAR
+// ----------------------
+struct PS_DEFERRED_ONLY_WAR_OUT
+{
+	float4		vDiffuse : SV_TARGET0;
+	float4		vNormalW : SV_TARGET1;
+	float4		vDepthW : SV_TARGET2;
+	float4		vEmissive : SV_TARGET3;
+	float4		vHitPower : SV_TARGET4;
+	float4		vDepthW_War : SV_TARGET5;
+};
+
+PS_DEFERRED_ONLY_WAR_OUT PS_DEFERRED_ONLY_WAR_MAIN(PS_IN In)
+{
+	PS_DEFERRED_ONLY_WAR_OUT		Out = (PS_DEFERRED_ONLY_WAR_OUT)0;
+
+	// ------------------------------------
+	// #1. vDiffuse : SV_TARGET0;
+	float4 texColor = float4(1, 1, 1, 1); // Default to multiplicative identity.
+	texColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);	// Sample texture.
+	clip(texColor.a - 0.1f);
+	Out.vDiffuse = texColor;
+
+	//	Emissive mapping
+	if (g_UseEmissiveMap)
+		Out.vDiffuse += g_EmissiveTexture.Sample(DefaultSampler, In.vTexUV);
+
+	// Dissolve
+	if (g_DissolvePwr > 0)
+	{
+		float Dissolve = g_DissolveTexture.Sample(DefaultSampler, In.vTexUV).g; // r:잘게, g:부드럽게, b:한쪽먼저
+		float dissolveTest = Dissolve - g_DissolvePwr;
+		clip(dissolveTest);
+
+		if (dissolveTest > 0.03 && dissolveTest <= 0.05)
+		{
+			Out.vDiffuse = float4(1, 0, 0, 1); // 빨
+		}
+		else if (dissolveTest <= 0.03f && dissolveTest > 0.01f)
+		{
+			Out.vDiffuse = float4(1, 1, 0, 1); // 노
+		}
+		else if (dissolveTest <= 0.01f)
+		{
+			Out.vDiffuse = float4(1, 1, 1, 1); // 흰
+		}
+	}
+
+	// ------------------------------------
+	// #2. vNormalW : SV_TARGET1;
+	if (g_UseNormalMap) // Normal Map 사용시
+	{
+		float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
+		Out.vNormalW.xyz = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+		Out.vNormalW = vector(Out.vNormalW.xyz * 0.5f + 0.5f, 0.f);
+	}
+	else
+	{
+		Out.vNormalW = vector(In.vNormalW.xyz * 0.5f + 0.5f, 0.f);
+	}
+
+	// ------------------------------------
+	// #3. vDepthW : SV_TARGET2
+	// x,y상의 깊이를 저장하자. 700 : far
+	Out.vDepthW = vector(In.vPosPTexcoord.z / In.vPosPTexcoord.w, In.vPosPTexcoord.w / 700.f, 0.f, 0.f);
+	// vDepthW_War :  : SV_TARGET5
+	Out.vDepthW_War = vector(In.vPosPTexcoord.z / In.vPosPTexcoord.w, In.vPosPTexcoord.w / 700.f, 0.f, 0.f);
+
+	// -----------------------------
+	// #4. vEmissive : SV_TARGET3
+	// Emissive 맵 출력
+	if (g_UseEmissiveMap)
+		Out.vEmissive = g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+
+	// -----------------------------
+	// #5. vEmissive : SV_TARGET4
+	// g_vHitPower 맵 출력
+	Out.vHitPower += g_vHitPower;
+
+
+	return Out;
+}
+
+// --------------------
+// PS_FOWARD_OUT
+// --------------------
 struct PS_FOWARD_OUT
 {
 	float4		vDiffuse : SV_TARGET;
@@ -353,6 +440,16 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_DEFERRED_MAIN();
+	}
+
+	pass Deferred_WarOnly_Pass // War만의 Depth를 따로 찍어줘야한다
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(NoCull);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_DEFERRED_ONLY_WAR_MAIN();
 	}
 
 	// Api에서 render state 설정하자. War outline 같은거 그릴때 이 Pass를 수행

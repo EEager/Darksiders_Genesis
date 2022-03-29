@@ -35,6 +35,7 @@ cbuffer Material
 texture2D		g_TargetTexture;
 texture2D		g_NormalTexture;
 texture2D		g_DepthTexture;
+texture2D		g_DepthTexture_War;
 texture2D		g_DiffuseTexture;
 texture2D		g_EmissiveTexture;
 texture2D		g_HitPowerTexture;
@@ -202,6 +203,16 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
+	// 먼저 War의 외곽선을 출력해야하는지 체크 하자
+	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
+	vector		vDepthDesc_War = g_DepthTexture_War.Sample(DefaultSampler, In.vTexUV);
+	if (vDepthDesc.r < vDepthDesc_War.r) // War 깊이가 더 멀리 있는 경우
+	{
+		Out.vColor = float4(1.f / 255.f, 249.f / 255.f, 254.f / 255.f, 1.f);
+		return Out;
+	}
+
+
 	vector		vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vShade = g_ShadeTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vSpecular = g_SpecularTexture.Sample(DefaultSampler, In.vTexUV);
@@ -218,7 +229,6 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	// 
 	// Fogging 기법은 상하로 적용하자
 	// 
-	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
 	vector vWorldPos = ToWorldPosition(vDepthDesc, In.vTexUV, g_ViewMatrixInverse, g_ProjMatrixInverse);
 	float		fHeight = vWorldPos.y;
 	float		fogLerp = 0.f;

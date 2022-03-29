@@ -123,7 +123,7 @@ _int CWar::LateTick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	}
 
-	// Renderer
+	// Renderer 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
 
@@ -140,7 +140,7 @@ _EXIT:
 HRESULT CWar::Render(_uint iPassIndex)
 {
 	War_Render(1); // Forward_ApiRenderState_Pass
-	War_Outline_Render(1); // Forward_ApiRenderState_Pass
+	//War_Outline_Render(0); // Forward_ApiRenderState_Pass
 
 	return S_OK;
 }
@@ -596,7 +596,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 	// 
 	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
 	// 
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
+	//m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)

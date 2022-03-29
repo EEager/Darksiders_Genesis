@@ -149,7 +149,7 @@ _int CLegion::LateTick(_float fTimeDelta)
 HRESULT CLegion::Render(_uint iPassIndex)
 {
 	// 모든 몬스터는 SetUp_ConstantTable, RenderColliders
-	if (CMonster::Render(iPassIndex) < 0)
+	if (CMonster::Render(0) < 0) 
 		return -1;
 
 	// Weapon Render : ToDo 최적화
