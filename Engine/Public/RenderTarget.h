@@ -6,6 +6,9 @@ BEGIN(Engine)
 
 class CRenderTarget final : public CBase
 {
+public:
+	enum RT_TYPE { RT_RENDER_TARGET, RT_DEPTH_STENCIL, RT_END};
+
 private:
 	CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual ~CRenderTarget() = default;
@@ -19,8 +22,12 @@ public:
 		return m_pSRV;
 	}
 
+	ID3D11DepthStencilView* Get_DSV() {
+		return m_pDSV;
+	}
+
 public:
-	HRESULT NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor);
+	HRESULT NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor, RT_TYPE eType = RT_TYPE::RT_RENDER_TARGET);
 	HRESULT Clear();
 
 #ifdef _DEBUG // 렌더타겟 화면에 출력할 때, 
@@ -36,6 +43,7 @@ private:
 
 	ID3D11Texture2D*			m_pTexture = nullptr;
 	ID3D11ShaderResourceView*	m_pSRV = nullptr;
+	ID3D11DepthStencilView*		m_pDSV = nullptr;
 	ID3D11RenderTargetView*		m_pRTV = nullptr;
 	_float4						m_vClearColor;
 
@@ -56,7 +64,7 @@ private:
 #endif // _DEBUG
 
 public:
-	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor);
+	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor, RT_TYPE eType = RT_TYPE::RT_RENDER_TARGET);
 	virtual void Free() override;
 };
 

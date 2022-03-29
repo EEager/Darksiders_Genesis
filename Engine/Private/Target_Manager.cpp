@@ -1,6 +1,7 @@
 #include "..\Public\Target_Manager.h"
 #include "RenderTarget.h"
 #include "VIBuffer_Rect.h"
+#include "Graphic_Device.h"
 
 IMPLEMENT_SINGLETON(CTarget_Manager)
 
@@ -18,7 +19,16 @@ ID3D11ShaderResourceView* CTarget_Manager::Get_SRV(const _tchar* pTargetTag)
 	return pRenderTarget->Get_SRV();
 }
 
-HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
+ID3D11DepthStencilView* CTarget_Manager::Get_DSV(const _tchar* pTargetTag)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(pTargetTag);
+	if (nullptr == pRenderTarget)
+		return nullptr;
+
+	return pRenderTarget->Get_DSV();
+}
+
+HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor, CRenderTarget::RT_TYPE eType)
 {
 	if (nullptr != Find_RenderTarget(pRenderTargetTag))
 	{
@@ -26,7 +36,7 @@ HRESULT CTarget_Manager::Add_RenderTarget(const _tchar * pRenderTargetTag, ID3D1
 		return S_OK; 
 	}
 
-	CRenderTarget*		pRenderTarget = CRenderTarget::Create(pDevice, pDeviceContext, iWidth, iHeight, eFormat, vClearColor);
+	CRenderTarget*		pRenderTarget = CRenderTarget::Create(pDevice, pDeviceContext, iWidth, iHeight, eFormat, vClearColor, eType);
 	if (nullptr == pRenderTarget)
 		return E_FAIL;
 
@@ -94,14 +104,37 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _t
 	return S_OK;
 }
 
+// TEXT("MRT_Shadows")
+HRESULT CTarget_Manager::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* pDeviceContext, const _tchar* pRenderTargetTag)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(pRenderTargetTag);
+	if (nullptr == pRenderTarget)
+		return E_FAIL;
+	// 원복용으로 하나 복사
+	pDeviceContext->OMGetRenderTargets(1, &m_pBackBufferView, &m_pDepthStencilView);
+
+
+	// 이것은 굳이 필요가 없어 보인다
+	//pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
+	
+	// Set null render target because we are only going to draw to depth buffer.
+// Setting a null render target will disable color writes.
+	ID3D11RenderTargetView* renderTargets[1] = { 0 };
+	pDeviceContext->OMSetRenderTargets(1, renderTargets, pRenderTarget->Get_DSV());
+	pDeviceContext->ClearDepthStencilView(pRenderTarget->Get_DSV(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	// The shadow might might be at any slot, so clear all slots.
+	ID3D11ShaderResourceView* nullSRV[1] = { 0 };
+	pDeviceContext->PSSetShaderResources(0, 1, nullSRV);
+
+	return S_OK;
+}
+
 HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pDeviceContext)
 {
 	if (nullptr == m_pBackBufferView ||
 		nullptr == m_pDepthStencilView)
 		return E_FAIL;
-
-
-
 
 	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView, m_pDepthStencilView); // 장치에 백버퍼를 바인드하여 원복한다
 

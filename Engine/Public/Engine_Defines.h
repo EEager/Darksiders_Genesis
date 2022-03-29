@@ -148,4 +148,3 @@ enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B };
 #define COL_WAR_WEAPON L"WarWeapon"
 #define COL_WAR_BODY1 L"WarBody1"
 #define COL_WAR_BODY2 L"WarBody2"
-

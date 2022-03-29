@@ -126,6 +126,8 @@ _int CWar::LateTick(_float fTimeDelta)
 	// Renderer 
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_WAR, this)))
 		goto _EXIT;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		goto _EXIT;
 
 
 	// Collider 

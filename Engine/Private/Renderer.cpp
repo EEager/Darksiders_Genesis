@@ -299,6 +299,11 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Specular"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
+	// 광원 시선에서 바라본 깊이값들을 저장할 렌더타겟
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R24G8_TYPELESS, _float4(0.f, 0.f, 0.f, 0.f), CRenderTarget::RT_DEPTH_STENCIL)))
+		return E_FAIL;
+
+
 #ifdef _DEBUG
 #define WIDTH 150
 	/* Debug */
@@ -319,9 +324,15 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Specular"), WIDTH * 1, WIDTH * 1, WIDTH, WIDTH)))
 		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Shadow"), WIDTH * 0, WIDTH * 2, WIDTH, WIDTH)))
+		return E_FAIL;
 #endif // _DEBUG
 
 	/* MRT */
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow"))))
+		return E_FAIL;
+
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Normal"))))
@@ -396,15 +407,52 @@ HRESULT CRenderer::Add_PostRenderGroup(CGameObject* pGameObject)
 bool bDraw_Debug = true;
 #endif
 
+bool g_bUseShadowMap = false;
 HRESULT CRenderer::Draw()
 {
 	// SkyBox
  	if (FAILED(Render_Priority()))
 		return E_FAIL; 
 
-	if (FAILED(Render_NonAlpha()))
+
+#if 0 //ShadowMap Test
+	g_bUseShadowMap = true;
+	if (nullptr == m_pTarget_Manager)
 		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->BindDsvAndSetNullRenderTarget(m_pDeviceContext, TEXT("Target_Shadow"))))
+		return E_FAIL;
+
+	//for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_WAR])
+	//{
+	//	if (nullptr != pGameObject)
+	//	{
+	//		if (FAILED(pGameObject->Render()))
+	//			return E_FAIL;
+	//	}
+	//}
+
+	//for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
+	//{
+	//	if (nullptr != pGameObject)
+	//	{
+	//		if (FAILED(pGameObject->Render()))
+	//			return E_FAIL;
+	//	}
+	//}
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
+
+	// Restore default states
+	ClearRenderStates();
+
+	g_bUseShadowMap = false;
+#endif
+
+
+	if (FAILED(Render_NonAlpha()))
+		return E_FAIL;
 	// 빛연산을 여기서하자 : shade와 spec에 넣자.
 	if (FAILED(Render_LightAcc()))
 		return E_FAIL;
@@ -456,8 +504,10 @@ HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 
 	if (bDraw_Debug)
 	{
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Shadows"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Shadows"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Deferred"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_LightAcc"), 0, m_spriteBatch, m_spriteFont);
 	}

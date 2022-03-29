@@ -13,12 +13,14 @@ private:
 
 public:
 	ID3D11ShaderResourceView* Get_SRV(const _tchar* pTargetTag);
+	ID3D11DepthStencilView* Get_DSV(const _tchar* pTargetTag);
 
 public:
-	HRESULT Add_RenderTarget(const _tchar* pRenderTargetTag, ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor);
+	HRESULT Add_RenderTarget(const _tchar* pRenderTargetTag, ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor, CRenderTarget::RT_TYPE = CRenderTarget::RT_TYPE::RT_RENDER_TARGET);
 	HRESULT Add_MRT(const _tchar* pMRTTag, const _tchar* pRenderTargetTag);
 
 	HRESULT Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag);
+	HRESULT BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* pDeviceContext, const _tchar* pRenderTargetTag);
 	HRESULT End_MRT(ID3D11DeviceContext* pDeviceContext);
 
 #ifdef _DEBUG

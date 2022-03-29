@@ -77,7 +77,6 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 	if (diffuseFactor > 0.0f)
 	{
 		// -lightVec == normalize(L.Direction)
-		// -lightVec = float3(1, -1, 1)
 		float3 vReflect = normalize(reflect(-lightVec, normal.xyz));
 		float specFactor = pow(max(dot(-vReflect, -toEye), 0.0f), mat.vMtrlSpecular.w );
 
@@ -250,6 +249,14 @@ float CalcShadowFactor(SamplerComparisonState samShadow,
 	[unroll]
 	for (int i = 0; i < 9; ++i)
 	{
+		// depth(카메라시점의 픽셀거리)가 광원시점의 픽셀 거리보다 크면 그림자속에 있다.
+
+		// SampleCmpLevelZero 
+			// @1 : 비교표본추출기
+			// @2 : 텍스처 좌표
+			// @3 : 그림자 맵 표본과 비교할 기준값. 비교함수가 LESS_EQUAL인 상황에서 이 매개 변수에 depth를 지정하며ㅓㄴ
+					// 픽셀 깊이가 그림자맵의 값 이하이면 그림자밖에 있다. => return
+				
 		percentLit += shadowMap.SampleCmpLevelZero(samShadow,
 			shadowPosH.xy + offsets[i], depth).r;
 	}

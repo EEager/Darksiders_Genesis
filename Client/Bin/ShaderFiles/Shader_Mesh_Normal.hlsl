@@ -89,6 +89,24 @@ VS_OUT VS_MAIN(VS_IN In)
 }
 
 
+struct VS_SHADOW_OUT
+{
+	float4 vPosP : SV_POSITION;
+	float2 vTexUV  : TEXCOORD;
+};
+
+VS_SHADOW_OUT VS_SHADOW(VS_IN In)
+{
+	VS_SHADOW_OUT		Out = (VS_SHADOW_OUT)0;
+	matrix		matWV, matWVP;
+	matWV = mul(g_WorldMatrix, g_ViewMatrix);
+	matWVP = mul(matWV, g_ProjMatrix);
+	Out.vPosP = mul(vector(In.vPosL, 1.f), matWVP);
+	Out.vTexUV = In.vTexUV;
+	return Out;
+}
+
+
 // --------------------
 // PS
 // --------------------
@@ -391,5 +409,14 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN(); 
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
+	}
+
+	pass BuildShadowMap_Pass
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SHADOW()));
+		SetGeometryShader(NULL);
+		SetPixelShader(NULL);
+
+		SetRasterizerState(ShadowDepthNoCull);
 	}
 }

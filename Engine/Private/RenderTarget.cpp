@@ -10,48 +10,90 @@ CRenderTarget::CRenderTarget(ID3D11Device * pDevice, ID3D11DeviceContext * pDevi
 	Safe_AddRef(m_pDeviceContext);
 }
 
-HRESULT CRenderTarget::NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
+HRESULT CRenderTarget::NativeConstruct(_uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor, RT_TYPE eType)
 {
-	// Create Texture
-	D3D11_TEXTURE2D_DESC		TextureDesc;
-	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));	
 
-	TextureDesc.Width = iWidth;
-	TextureDesc.Height = iHeight;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = eFormat;
+	if (eType == RT_TYPE::RT_RENDER_TARGET)
+	{
 
-	TextureDesc.SampleDesc.Count = 1;
-	TextureDesc.SampleDesc.Quality = 0;
+		// Create Texture
+		D3D11_TEXTURE2D_DESC		TextureDesc;
+		ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		TextureDesc.Width = iWidth;
+		TextureDesc.Height = iHeight;
+		TextureDesc.MipLevels = 1;
+		TextureDesc.ArraySize = 1;
+		TextureDesc.Format = eFormat;
 
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pTexture)))
-		return E_FAIL;
+		TextureDesc.SampleDesc.Count = 1;
+		TextureDesc.SampleDesc.Quality = 0;
 
-	// Create Shader Resource View
-	D3D11_SHADER_RESOURCE_VIEW_DESC			SRVDesc;
-	ZeroMemory(&SRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+		TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
-	SRVDesc.Format = eFormat;
-	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MipLevels = 1;
+		if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pTexture)))
+			return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
-		return E_FAIL;
+		// Create Shader Resource View
+		D3D11_SHADER_RESOURCE_VIEW_DESC			SRVDesc;
+		ZeroMemory(&SRVDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 
-	// Create Render Target View 
-	D3D11_RENDER_TARGET_VIEW_DESC			RTVDesc;
-	ZeroMemory(&RTVDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+		SRVDesc.Format = eFormat;
+		SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+		SRVDesc.Texture2D.MipLevels = 1;
 
-	RTVDesc.Format = eFormat;
-	RTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;		
-	RTVDesc.Texture2D.MipSlice = 0;
+		if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture, &SRVDesc, &m_pSRV)))
+			return E_FAIL;
 
-	if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture, &RTVDesc, &m_pRTV)))
-		return E_FAIL;
+		// Create Render Target View 
+		D3D11_RENDER_TARGET_VIEW_DESC			RTVDesc;
+		ZeroMemory(&RTVDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+
+		RTVDesc.Format = eFormat;
+		RTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		RTVDesc.Texture2D.MipSlice = 0;
+
+		if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture, &RTVDesc, &m_pRTV)))
+			return E_FAIL;
+	}
+	else // RT_DEPTH_STENCIL
+	{
+		// Create Texture
+		D3D11_TEXTURE2D_DESC		TextureDesc;
+		ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+		TextureDesc.Width = iWidth;
+		TextureDesc.Height = iHeight;
+		TextureDesc.MipLevels = 1;
+		TextureDesc.ArraySize = 1;
+		TextureDesc.Format = eFormat;
+
+		TextureDesc.SampleDesc.Count = 1;
+		TextureDesc.SampleDesc.Quality = 0;
+
+		TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+		TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+		TextureDesc.CPUAccessFlags = 0;
+		TextureDesc.MiscFlags = 0;
+
+		if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pTexture)))
+			return E_FAIL;
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+		dsvDesc.Flags = 0;
+		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Texture2D.MipSlice = 0;
+		HR(m_pDevice->CreateDepthStencilView(m_pTexture, &dsvDesc, &m_pDSV));
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = TextureDesc.MipLevels;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		HR(m_pDevice->CreateShaderResourceView(m_pTexture, &srvDesc, &m_pSRV));
+	}
 
 	m_vClearColor = vClearColor;
 
@@ -147,11 +189,11 @@ HRESULT CRenderTarget::PostRender_DebugBuffer(CVIBuffer_Rect* pVIBuffer, _uint i
 }
 #endif // _DEBUG
 
-CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor)
+CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, _uint iWidth, _uint iHeight, DXGI_FORMAT eFormat, _float4 vClearColor, RT_TYPE eType)
 {
 	CRenderTarget*	pInstance = new CRenderTarget(pDevice, pDeviceContext);
 
-	if (FAILED(pInstance->NativeConstruct(iWidth, iHeight, eFormat, vClearColor)))
+	if (FAILED(pInstance->NativeConstruct(iWidth, iHeight, eFormat, vClearColor, eType)))
 	{
 		MSG_BOX("Failed To Creating CRenderTarget");
 		Safe_Release(pInstance);
@@ -163,6 +205,7 @@ void CRenderTarget::Free()
 {
 	Safe_Release(m_pRTV);
 	Safe_Release(m_pSRV);
+	Safe_Release(m_pDSV);
 	Safe_Release(m_pTexture);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pDeviceContext);

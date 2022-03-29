@@ -26,7 +26,6 @@ cbuffer cbPerObject
 	bool		g_UseMetalMap;
 
 	float		g_DissolvePwr;
-
 };
 
 cbuffer cbGameObject
@@ -76,12 +75,12 @@ struct VS_IN
 
 struct VS_OUT
 {
-	float4		vPosP : SV_POSITION;
-	float4		vNormalW : NORMAL;
-	float3		TangentW : TANGENT;
-	float2		vTexUV : TEXCOORD0;
-	float4		vPosW : TEXCOORD1;
-	float4		vPosPTexcoord : TEXCOORD2;
+	float4		vPosP : SV_POSITION; // 위치정보
+	float4		vNormalW : NORMAL; // 노말정보
+	float3		TangentW : TANGENT; // 탄젠트정보
+	float2		vTexUV : TEXCOORD0; // 텍스쳐좌표정보
+	float4		vPosW : TEXCOORD1; // 월드위치
+	float4		vPosPTexcoord : TEXCOORD2; // Depth Map 만들때 사용
 
 };
 
@@ -114,9 +113,29 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.TangentW = mul(In.vTangentL, (float3x3)g_WorldMatrix);
 	Out.vPosW = mul(vector(In.vPosL, 1.f), g_WorldMatrix);
 	Out.vPosPTexcoord = Out.vPosP;
+	// Generate projective tex-coords to project shadow map onto scene.
+	//Out.vShadowPosH = mul(float4(In.vPosL, 1.0f), g_ShadowTransform);
 
 	return Out;
 }
+
+struct VS_SHADOW_OUT
+{
+	float4 vPosP : SV_POSITION;
+	float2 vTexUV  : TEXCOORD;
+};
+
+VS_SHADOW_OUT VS_SHADOW(VS_IN In)
+{
+	VS_SHADOW_OUT		Out = (VS_SHADOW_OUT)0;
+	matrix		matWV, matWVP;
+	matWV = mul(g_WorldMatrix, g_ViewMatrix);
+	matWVP = mul(matWV, g_ProjMatrix);
+	Out.vPosP = mul(vector(In.vPosL, 1.f), matWVP);
+	Out.vTexUV = In.vTexUV;
+	return Out;
+}
+
 
 
 // --------------------
@@ -130,7 +149,6 @@ struct PS_IN
 	float2		vTexUV : TEXCOORD0;
 	float4		vPosW : TEXCOORD1;
 	float4		vPosPTexcoord : TEXCOORD2;
-
 };
 
 struct PS_DEFERRED_OUT
@@ -460,5 +478,14 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
+	}
+
+	pass BuildShadowMap_Pass
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SHADOW()));
+		SetGeometryShader(NULL);
+		SetPixelShader(NULL);
+
+		SetRasterizerState(ShadowDepthNoCull);
 	}
 }

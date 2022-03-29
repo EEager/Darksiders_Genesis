@@ -13,6 +13,8 @@ cbuffer Matrices
 {
 	matrix			g_TransformMatrix;
 	matrix			g_ProjMatrix;
+	matrix			g_ShadowTransform; // 그림자행렬
+
 };
 
 cbuffer InverseMatrices
@@ -42,6 +44,8 @@ texture2D		g_HitPowerTexture;
 
 texture2D		g_ShadeTexture;
 texture2D		g_SpecularTexture;
+
+Texture2D		g_ShadowMap;
 
 
 // ----------
@@ -124,7 +128,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 	// 각 오브젝트들이 저장한 Depth값을 가져오자.
 	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
-	vector vWorldPos = ToWorldPosition(vDepthDesc, In.vTexUV, g_ViewMatrixInverse, g_ProjMatrixInverse);
+	vector		vWorldPos = ToWorldPosition(vDepthDesc, In.vTexUV, g_ViewMatrixInverse, g_ProjMatrixInverse);
 
 	// -------------------------
 	// 빛연산 시작.
@@ -132,9 +136,16 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	vNormal = normalize(vNormal); 
 	float3 toEyeW = normalize(g_vCamPosition.xyz - vWorldPos.xyz); //toEyeW : 카메라 보는 벡터
 
+	// Start with a sum of zero. 
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Only the first light casts a shadow.
+	//float3 shadow = float3(1.0f, 1.0f, 1.0f);
+	// pin.ShadowPosH = vWorldPos를 VP그림자행렬(g_ShadowTransform)로 곱한위치이다.
+	// 그래서 뭘 던져주면되냐.. 
+	//shadow = CalcShadowFactor(samShadow, g_ShadowMap, );
 
 	// Sum the light contribution from each light source.
 	float4 A, D, S;
@@ -144,7 +155,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	spec += S;
 
 	Out.vShade = (ambient + diffuse);
-	Out.vShade.a = 1.f;
+	//Out.vShade.a = 1.f;
 	Out.vSpecular = spec;
 
 	return Out;
@@ -206,11 +217,8 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	// 먼저 War의 외곽선을 출력해야하는지 체크 하자
 	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vDepthDesc_War = g_DepthTexture_War.Sample(DefaultSampler, In.vTexUV);
-	if (vDepthDesc.r < vDepthDesc_War.r) // War 깊이가 더 멀리 있는 경우
-	{
-		Out.vColor = float4(1.f / 255.f, 249.f / 255.f, 254.f / 255.f, 1.f);
-		return Out;
-	}
+
+
 
 
 	vector		vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
@@ -219,6 +227,9 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	vector		vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexUV);
 	vector		vHitPower = g_HitPowerTexture.Sample(DefaultSampler, In.vTexUV);
 
+	//
+	// 기본 빛연산
+	//
 	Out.vColor = vDiffuse * vShade + vSpecular;
 	Out.vColor += vEmissive;
 	Out.vColor += vHitPower;
@@ -236,9 +247,16 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	{
 		fogLerp = saturate((-fHeight - 1.0f) / 100.f);
 	}
-
 	vector fogColor = vector(0.835, 0.509f, 0.235f, 1.0f); // 석양느낌
 	Out.vColor = lerp(Out.vColor, fogColor, fogLerp);
+
+	//
+	// War 깊이가 더 멀리 있는 경우
+	//
+	if (vDepthDesc.r < vDepthDesc_War.r) 
+	{
+		Out.vColor = float4(1.f / 255.f, 249.f / 255.f, 254.f / 255.f, 1.f);
+	}
 
 	return Out;
 }
