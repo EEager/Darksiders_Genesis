@@ -57,11 +57,17 @@ _int CEnviroment::LateTick(_float fTimeDelta)
 		return -1;
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-		goto _EXIT;
 
-	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
-		goto _EXIT;
+	float fRadian = XMVectorGetX(XMVector3Length(XMLoadFloat3(&static_cast<CModel*>(m_pModelCom)->Get_Extents()))) / 2.f;
+
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), fRadian))
+	{
+		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+			goto _EXIT;
+
+		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+			goto _EXIT;
+	}
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
 
