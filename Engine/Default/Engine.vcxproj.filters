@@ -166,6 +166,9 @@
     <Filter Include="01.Utility\04.Component\Components\Renderer\Shader">
       <UniqueIdentifier>{7c1fb4d2-c424-4d6b-82b1-086f1914690d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\10.Frustum">
+      <UniqueIdentifier>{1b1bd1c2-281e-4a14-b17f-bd2292542dec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -330,6 +333,9 @@
     <ClInclude Include="..\Public\VIBuffer_MonsterHp_PointGS.h">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointHpBar</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Frustum.h">
+      <Filter>01.Utility\10.Frustum</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -478,6 +484,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_MonsterHp_PointGS.cpp">
       <Filter>01.Utility\04.Component\Components\VIBuffer\Instance\Point_Instance\PointHpBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Frustum.cpp">
+      <Filter>01.Utility\10.Frustum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

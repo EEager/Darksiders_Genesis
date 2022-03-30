@@ -65,10 +65,17 @@ _int CFork::LateTick(_float fTimeDelta)
 	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-		goto _EXIT;
-	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
-		goto _EXIT;
+
+
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f))
+	{
+		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+			goto _EXIT;
+		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+			goto _EXIT;
+	}
+
+
 
 	// Collider 
 	pGameInstance->Add_Collision(this);

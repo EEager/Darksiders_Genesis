@@ -14,6 +14,8 @@
 #include "Picking.h"
 #include "Target_Manager.h"
 #include "Collider_Manager.h"
+#include "Frustum.h"
+
 
 // DirectX Utils
 #include "DXString.h"
@@ -93,6 +95,11 @@ public: /* For.Level_Manager */
 public: /* For.Picking */
 	HRESULT Transform_WorldSpaceToLocalSpace(class CTransform* pTransform);
 
+public: /* For.Frustum */
+	_bool isIn_WorldSpace(_fvector vWorldPos, _float fRadius = 0.f);
+
+
+
 private:
 	CGraphic_Device*			m_pGraphic_Device = nullptr;
 	CInput_Device*				m_pInput_Device = nullptr;
@@ -105,6 +112,8 @@ private:
 	CTarget_Manager*			m_pTarget_Manager = nullptr;
 	CPicking*					m_pPicking = nullptr;
 	CCollider_Manager*			m_pCollider_Manager = nullptr;
+	CFrustum*					m_pFrustum = nullptr;
+
 
 public:
 	static void Release_Engine();

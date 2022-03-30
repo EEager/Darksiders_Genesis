@@ -15,7 +15,9 @@ CGameInstance::CGameInstance()
 	, m_pPicking(CPicking::GetInstance())
 	, m_pTarget_Manager(CTarget_Manager::GetInstance())
 	, m_pCollider_Manager(CCollider_Manager::GetInstance())
+	, m_pFrustum(CFrustum::GetInstance())
 {
+	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pCollider_Manager);
 	Safe_AddRef(m_pTarget_Manager);
 	Safe_AddRef(m_pLight_Manager);
@@ -30,8 +32,11 @@ CGameInstance::CGameInstance()
 
 HRESULT CGameInstance::Initialize_Engine(HINSTANCE hInst, _uint iNumLevels, CGraphic_Device::GRAPHICDEVDESC GraphicDesc, ID3D11Device ** ppDevice, ID3D11DeviceContext ** ppDeviceContext)
 {
-	if (nullptr == m_pComponent_Manager || 
-		nullptr == m_pObject_Manager)
+	if (nullptr == m_pComponent_Manager ||
+		nullptr == m_pObject_Manager ||
+		nullptr == m_pGraphic_Device ||
+		nullptr == m_pInput_Device ||
+		nullptr == m_pFrustum)
 		return E_FAIL;
 
 	if (FAILED(m_pGraphic_Device->Ready_Graphic_Device(GraphicDesc.hWnd, GraphicDesc.eWinMode, GraphicDesc.iWinCX, GraphicDesc.iWinCY, ppDevice, ppDeviceContext)))
@@ -44,6 +49,9 @@ HRESULT CGameInstance::Initialize_Engine(HINSTANCE hInst, _uint iNumLevels, CGra
 		return E_FAIL;
 
 	if (FAILED(m_pObject_Manager->Reserve_Container(iNumLevels)))
+		return E_FAIL;
+
+	if (FAILED(m_pFrustum->NativeConstruct()))
 		return E_FAIL;
 
 	m_pPicking->Set_WindowHandle(GraphicDesc.hWnd);
@@ -67,6 +75,7 @@ _int CGameInstance::Tick_Engine(_float fTimeDelta)
 		return -1;
 
 	m_pPipeLine->Tick();
+	m_pFrustum->Update();
 	m_pPicking->Transform_ToWorldSpace();
 
 	if (0 > (iProgress = m_pObject_Manager->LateTick(fTimeDelta)))
@@ -351,6 +360,13 @@ HRESULT CGameInstance::Transform_WorldSpaceToLocalSpace(CTransform* pTransform)
 	return m_pPicking->Transform_WorldSpaceToLocalSpace(pTransform);
 }
 
+_bool CGameInstance::isIn_WorldSpace(_fvector vWorldPos, _float fRadius)
+{
+	if (nullptr == m_pFrustum)
+		return false;
+
+	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
+}
 
 void CGameInstance::Release_Engine()
 {
@@ -386,6 +402,9 @@ void CGameInstance::Release_Engine()
 	if (0 != CInput_Device::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CInput_Device ");
 
+	if (0 != CFrustum::GetInstance()->DestroyInstance())
+		MSG_BOX("Failed to Release CFrustum ");
+
 	if (0 != CGraphic_Device::GetInstance()->DestroyInstance())
 		MSG_BOX("Failed to Release CGraphic_Device ");
 	
@@ -394,6 +413,7 @@ void CGameInstance::Release_Engine()
 
 void CGameInstance::Free()
 {
+	Safe_Release(m_pFrustum);
 	Safe_Release(m_pCollider_Manager);
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pPicking);
