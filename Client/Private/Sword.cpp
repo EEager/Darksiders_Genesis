@@ -62,13 +62,13 @@ _int CSword::LateTick(_float fTimeDelta)
 
 HRESULT CSword::Render(_uint iPassIndex)
 {
-	if (FAILED(SetUp_ConstantTable()))
-		return E_FAIL;	
-
-#ifdef _DEBUG
-	// Collider 
-	__super::Render_Colliders();
-#endif
+//	if (FAILED(SetUp_ConstantTable()))
+//		return E_FAIL;	
+//
+//#ifdef _DEBUG
+//	// Collider 
+//	__super::Render_Colliders();
+//#endif
 	
 
 	return S_OK;

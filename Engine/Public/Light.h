@@ -6,6 +6,8 @@ BEGIN(Engine)
 
 class CLight final : public CBase
 {
+	friend class CLight_Manager;
+
 public:
 	CLight(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual ~CLight() = default;

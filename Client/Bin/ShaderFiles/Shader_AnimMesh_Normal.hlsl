@@ -131,7 +131,17 @@ VS_SHADOW_OUT VS_SHADOW(VS_IN In)
 	matrix		matWV, matWVP;
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
-	Out.vPosP = mul(vector(In.vPosL, 1.f), matWVP);
+
+	// 해당 정점에 영향을 주는 뼈들의 가중 변환 행렬 값을 구한다. 
+	float		fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+
+	matrix		BoneMatrix =
+		g_BoneMatrices.Bones[In.vBlendIndex.x] * In.vBlendWeight.x +
+		g_BoneMatrices.Bones[In.vBlendIndex.y] * In.vBlendWeight.y +
+		g_BoneMatrices.Bones[In.vBlendIndex.z] * In.vBlendWeight.z +
+		g_BoneMatrices.Bones[In.vBlendIndex.w] * fWeightW;
+	vector		vPosBone = mul(vector(In.vPosL, 1.f), BoneMatrix);
+	Out.vPosP = mul(vPosBone, matWVP);
 	Out.vTexUV = In.vTexUV;
 	return Out;
 }
@@ -450,6 +460,7 @@ PS_FOWARD_OUT PS_FORWARD_MAIN(PS_IN In)
 
 technique11	DefaultTechnique
 {
+	// #0
 	pass Deferred_Pass
 	{			
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -460,6 +471,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DEFERRED_MAIN();
 	}
 
+	// #1
 	pass Deferred_WarOnly_Pass // War만의 Depth를 따로 찍어줘야한다
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -470,6 +482,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DEFERRED_ONLY_WAR_MAIN();
 	}
 
+	// #2
 	// Api에서 render state 설정하자. War outline 같은거 그릴때 이 Pass를 수행
 	// War는 이것을 사용한다
 	pass Forward_ApiRenderState_Pass
@@ -480,11 +493,12 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
 
+	// #3
 	pass BuildShadowMap_Pass
 	{
-		SetVertexShader(CompileShader(vs_5_0, VS_SHADOW()));
-		SetGeometryShader(NULL);
-		SetPixelShader(NULL);
+		VertexShader = compile vs_5_0 VS_SHADOW();
+		GeometryShader = NULL;
+		PixelShader = NULL;
 
 		SetRasterizerState(ShadowDepthNoCull);
 	}

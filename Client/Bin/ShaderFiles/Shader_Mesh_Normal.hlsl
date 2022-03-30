@@ -98,6 +98,8 @@ struct VS_SHADOW_OUT
 VS_SHADOW_OUT VS_SHADOW(VS_IN In)
 {
 	VS_SHADOW_OUT		Out = (VS_SHADOW_OUT)0;
+
+	// 그림자 시점의 V, P는 Light_Manager가 가지고 있는 m_LightView, m_LightProj값이다. 
 	matrix		matWV, matWVP;
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
@@ -382,6 +384,7 @@ PS_FORWARD_OUT PS_FORWARD_MAIN(PS_IN In)
 
 technique11	DefaultTechnique
 {
+	// #0
 	pass Deferred_Pass
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -392,6 +395,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DEFERRED_MAIN();
 	}
 
+	// #1
 	pass Deferred_WarOnly_Pass // War만의 Depth를 따로 찍어줘야한다
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -402,6 +406,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DEFERRED_ONLY_WAR_MAIN();
 	}
 
+	// #2
 	// Api에서 render state 설정하자. outline 같은거 그릴때 이 Pass를 수행
 	pass Forward_ApiRenderState_Pass
 	{
@@ -411,11 +416,12 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_FORWARD_MAIN();
 	}
 
+	// #3
 	pass BuildShadowMap_Pass
 	{
-		SetVertexShader(CompileShader(vs_5_0, VS_SHADOW()));
-		SetGeometryShader(NULL);
-		SetPixelShader(NULL);
+		VertexShader = compile vs_5_0 VS_SHADOW();
+		GeometryShader = NULL;
+		PixelShader = NULL;
 
 		SetRasterizerState(ShadowDepthNoCull);
 	}

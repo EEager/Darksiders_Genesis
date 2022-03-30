@@ -222,8 +222,10 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 // Performs shadowmap test to determine if a pixel is in shadow.
 //---------------------------------------------------------------------------------------
 
-static const float SMAP_SIZE = 2048.0f;
-static const float SMAP_DX = 1.0f / SMAP_SIZE;
+static const float SMAP_SIZE_X = 1600.f;
+static const float SMAP_SIZE_Y = 900.f;
+static const float SMAP_DX = 1.0f / SMAP_SIZE_X;
+static const float SMAP_DY = 1.0f / SMAP_SIZE_Y;
 
 float CalcShadowFactor(SamplerComparisonState samShadow,
 	Texture2D shadowMap,
@@ -237,13 +239,14 @@ float CalcShadowFactor(SamplerComparisonState samShadow,
 
 	// Texel size.
 	const float dx = SMAP_DX;
+	const float dy = SMAP_DY;
 
 	float percentLit = 0.0f;
 	const float2 offsets[9] =
 	{
-		float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
+		float2(-dx,  -dy), float2(0.0f,  -dy), float2(dx,  -dy),
 		float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
-		float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
+		float2(-dx,  +dy), float2(0.0f,  +dy), float2(dx,  +dy)
 	};
 
 	[unroll]

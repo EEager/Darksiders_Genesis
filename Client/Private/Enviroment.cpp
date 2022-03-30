@@ -71,9 +71,9 @@ _EXIT:
 
 HRESULT CEnviroment::Render(_uint iPassIndex)
 {
-	if (FAILED(SetUp_ConstantTable()))
+	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;
-	
+
 	/* 장치에 월드변환 행렬을 저장한다. */
 	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
 	
@@ -83,10 +83,10 @@ HRESULT CEnviroment::Render(_uint iPassIndex)
 		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
 		m_pModelCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
-		m_pModelCom->Render(i, 0); // Deferred_Pass
+
+		m_pModelCom->Render(i, iPassIndex); 
 	}
 
-	// restore default states, as the SkyFX changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
 
@@ -128,34 +128,26 @@ HRESULT CEnviroment::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CEnviroment::SetUp_ConstantTable()
+HRESULT CEnviroment::SetUp_ConstantTable(_uint iPassIndex)
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
-
-	//// Bind Directional Light
-	//LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
-	//DirectionalLight mDirLight;
-	//mDirLight.Ambient = dirLightDesc.vAmbient;
-	//mDirLight.Diffuse = dirLightDesc.vDiffuse;
-	//mDirLight.Specular = dirLightDesc.vSpecular;
-	//mDirLight.Direction = dirLightDesc.vDirection;
-	//m_pModelCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
-
-	//// Bind Material
-	//m_pModelCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// Bind Transform
-	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
-
-	//// Bind Position
-	//_float4			vCamPosition;
-	//XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	//m_pModelCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+	if (iPassIndex == 3) // ShadowMap
+	{
+		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
+		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightView)), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightProj)), sizeof(_float4x4));
+	}
+	else
+	{
+		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	}
 
 	// 노멀맵할지 말지 선택을 여기서 하자
 	m_pModelCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));

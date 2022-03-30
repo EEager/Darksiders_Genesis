@@ -51,7 +51,7 @@ private:
 
 private:
 	HRESULT SetUp_Component();
-	HRESULT SetUp_ConstantTable();	
+	HRESULT SetUp_ConstantTable(_uint iPassIndex);	
 
 public:	
 	static CFork* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

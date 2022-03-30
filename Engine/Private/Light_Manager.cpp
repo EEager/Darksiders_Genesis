@@ -3,6 +3,9 @@
 #include "VIBuffer_Rect.h"
 #include "Target_Manager.h"
 #include "PipeLine.h"
+#include "GameInstance.h"
+#include "GameObject.h"
+#include "Transform.h"
 
 // "../Bin/ShaderFiles/Shader_Deferred.hlsl"
 
@@ -79,6 +82,51 @@ HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * 
 
 HRESULT CLight_Manager::Render()
 {
+	if (!m_Lights.empty())
+	{
+		// Only the first "main" light casts a shadow.
+		XMVECTOR lightDir = XMVector3Normalize(XMLoadFloat3(&m_Lights.front()->m_LightDesc.vDirection));
+
+		// 아래 정보는 전체 Scene 기준으로 변수를 설정하였음
+		// 빛타겟포지션
+		XMVECTOR targetPos = XMVectorSet(502.f, 32.f-80.f, 461.f+40.f, 1.0f);
+		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+		// 빛위치는 플레이어기준으로 계산 
+		_float SceneRadius = 470.f;
+		XMVECTOR lightPos = -2*SceneRadius * lightDir;
+
+		// 빛의 뷰스페이스 변환 행렬
+		XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
+
+		// Transform bounding sphere to light space.
+		XMFLOAT3 sphereCenterLS;
+		XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
+
+		// Ortho frustum in light space encloses scene.
+		float l = sphereCenterLS.x - SceneRadius;
+		float b = sphereCenterLS.y - SceneRadius;
+		float n = sphereCenterLS.z - SceneRadius;
+		float r = sphereCenterLS.x + SceneRadius;
+		float t = sphereCenterLS.y + SceneRadius;
+		float f = sphereCenterLS.z + SceneRadius;
+		XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+
+		// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+		XMMATRIX T(
+			0.5f, 0.0f, 0.0f, 0.0f,
+			0.0f, -0.5f, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 1.0f);
+
+		XMMATRIX S = V * P * T;
+
+		XMStoreFloat4x4(&m_LightView, V);
+		XMStoreFloat4x4(&m_LightProj, P);
+		XMStoreFloat4x4(&m_ShadowTransform, S);
+	}
+
+
 	CTarget_Manager* pTarget_Manager = GET_INSTANCE(CTarget_Manager);
 
 	// view포트 정보 행렬
@@ -108,6 +156,12 @@ HRESULT CLight_Manager::Render()
 
 	// Bind Material
 	m_pVIBuffer->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
+
+	// Bind for ShadowMap
+	// 각 오브젝트들이 저장한 그림자 깊이를 넘겨주자
+	m_pVIBuffer->Set_ShaderResourceView("g_ShadowMap", pTarget_Manager->Get_SRV(TEXT("Target_Shadow")));
+	// 그림자행렬을 넘겨주어, 오브젝트들의 그림자를 찍어주도록하자
+	m_pVIBuffer->Set_RawValue("g_ShadowTransform", &XMMatrixTranspose(XMLoadFloat4x4(&m_ShadowTransform)), sizeof(_matrix));
 
 	for (auto& pLight : m_Lights)
 	{

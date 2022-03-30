@@ -47,7 +47,7 @@ public:
 	HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 private:
-	void Render_Goblin();
+	void Render_Goblin(_uint iPassIndex);
 
 protected:
 	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());

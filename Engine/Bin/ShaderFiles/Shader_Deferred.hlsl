@@ -13,7 +13,7 @@ cbuffer Matrices
 {
 	matrix			g_TransformMatrix;
 	matrix			g_ProjMatrix;
-	matrix			g_ShadowTransform; // 그림자행렬
+	matrix			g_ShadowTransform; // 그림자행렬 VP
 
 };
 
@@ -104,6 +104,17 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
+// For ShadowMap Debug
+PS_OUT PS_MAIN2(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float4 c = g_TargetTexture.Sample(DefaultSampler, In.vTexUV).r*0.5f;
+	// draw as grayscale
+	Out.vColor = float4(c.rrr, 1);
+	return Out;
+}
+
 
 struct PS_OUT_DIRECTIONAL
 {
@@ -142,20 +153,23 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	// Only the first light casts a shadow.
-	//float3 shadow = float3(1.0f, 1.0f, 1.0f);
-	// pin.ShadowPosH = vWorldPos를 VP그림자행렬(g_ShadowTransform)로 곱한위치이다.
-	// 그래서 뭘 던져주면되냐.. 
-	//shadow = CalcShadowFactor(samShadow, g_ShadowMap, );
+	float shadow = 1.f;
+	// 3번째 인자는 물방울책에서 pin.ShadowPosH이다.
+	// 1) pin.ShadowPosH는 vs에서 vout.ShadowPosH = mul(float4(vin.PosL, 1.0f), gShadowTransform);
+	// 2) gShadowTransform는 world*shadowTransform
+	// 즉 vin.PosL * world*shadowTransform = vWorldPos * g_ShadowTransform
+	// 이 아니한가.. 
+	shadow = CalcShadowFactor(samShadow, g_ShadowMap, mul(vWorldPos, g_ShadowTransform));
 
 	// Sum the light contribution from each light source.
 	float4 A, D, S;
 	ComputeDirectionalLight(g_Material, g_DirLight, vNormal, toEyeW.xyz, A, D, S);
 	ambient += A;
-	diffuse += D;
-	spec += S;
+	diffuse += shadow * D;
+	spec += shadow * S;
 
 	Out.vShade = (ambient + diffuse);
-	//Out.vShade.a = 1.f;
+	Out.vShade.a = 1.f;
 	Out.vSpecular = spec;
 
 	return Out;
@@ -266,6 +280,7 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 
 technique11	DefaultTechnique
 {
+	// #0
 	pass DefaultPass
 	{			
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -277,6 +292,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
+	// #1
 	pass Light_Direction
 	{
 		SetBlendState(LightBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -288,6 +304,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_DIRECTIONAL();
 	}
 
+	// #2
 	pass Light_Point
 	{
 		SetBlendState(LightBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -299,6 +316,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_POINT();
 	}
 
+	// #3
 	pass FinalRender
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -308,6 +326,18 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_FINAL();
+	}
+
+	// #4 : ShadowMap 디버깅
+	pass ShadowMapDebug_Pass
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(NonZTestDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN2();
 	}
 
 }

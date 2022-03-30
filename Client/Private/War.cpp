@@ -138,11 +138,11 @@ _EXIT:
 	return _int();
 }
 
-
 HRESULT CWar::Render(_uint iPassIndex)
 {
-	War_Render(1); // Forward_ApiRenderState_Pass
-	//War_Outline_Render(0); // Forward_ApiRenderState_Pass
+	War_Render(iPassIndex); 
+		 
+	//War_Outline_Render(iPassIndex); // OutLine은 Deferred로 처리함
 
 	return S_OK;
 }

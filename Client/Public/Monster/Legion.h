@@ -38,7 +38,7 @@ public:
 	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 private:
-	HRESULT Render_Weapon(CModel* pModel, _float fRadian);
+	HRESULT Render_Weapon(CModel* pModel, _float fRadian, _uint iPassIndex);
 
 private:
 	CModel* m_pModelWeaponLCom = nullptr;

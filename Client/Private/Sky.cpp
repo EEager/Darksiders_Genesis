@@ -29,6 +29,8 @@ HRESULT CSky::NativeConstruct(void* pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(135.f));
+
 	return S_OK;
 }
 

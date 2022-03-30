@@ -154,7 +154,7 @@ HRESULT CGoblin_Armor::Render(_uint iPassIndex)
 	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 
-	Render_Goblin();
+	Render_Goblin(iPassIndex);
 	
 	return S_OK;
 }
@@ -197,7 +197,7 @@ HRESULT CGoblin_Armor::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique
 }
 
 
-void CGoblin_Armor::Render_Goblin()
+void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
@@ -244,7 +244,7 @@ void CGoblin_Armor::Render_Goblin()
 		{
 			m_pModelSpearCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 			m_pModelSpearCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelSpearCom->Render(i, 0);
+			m_pModelSpearCom->Render(i, iPassIndex);
 		}
 	}
 
@@ -280,7 +280,7 @@ void CGoblin_Armor::Render_Goblin()
 		{
 			m_pModelQuiverCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 			m_pModelQuiverCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelQuiverCom->Render(i, 0);
+			m_pModelQuiverCom->Render(i, iPassIndex);
 		}
 	}
 

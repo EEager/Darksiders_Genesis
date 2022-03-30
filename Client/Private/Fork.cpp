@@ -3,6 +3,7 @@
 
 #include "GameInstance.h"
 
+#include "Light_Manager.h"
 
 CFork::CFork(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
@@ -80,9 +81,9 @@ _EXIT:
 HRESULT CFork::Render(_uint iPassIndex)
 {
 
-	if (FAILED(SetUp_ConstantTable()))
+	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;
-	
+
 	/* 장치에 월드변환 행렬을 저장한다. */
 	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
 
@@ -91,7 +92,7 @@ HRESULT CFork::Render(_uint iPassIndex)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i, 0); // Deferred
+		m_pModelCom->Render(i, iPassIndex); // Deferred
 	}
 
 	// restore default states, as the SkyFX changes them in the effect file.
@@ -171,20 +172,29 @@ HRESULT CFork::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CFork::SetUp_ConstantTable()
+HRESULT CFork::SetUp_ConstantTable(_uint iPassIndex)
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// Bind Transform
-	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	if (iPassIndex == 3) // ShadowMap
+	{
+		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
+		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightView)), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightProj)), sizeof(_float4x4));
+	}
+	else
+	{
+		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	}
 
 	// Bind Dissolve 
-	dissolvePower += 0.002f; 
+	dissolvePower += 0.002f;
 	if (dissolvePower >= 1.f) // 1이면 다 사라졌다
 		dissolvePower = 0.f;
 	m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));

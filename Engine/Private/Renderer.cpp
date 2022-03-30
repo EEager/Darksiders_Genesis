@@ -300,6 +300,7 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 
 	// 광원 시선에서 바라본 깊이값들을 저장할 렌더타겟
+	// 일단은 타겟으로 바로 렌더타겟 설정하였다. ToDo: MRT 사용하여 다중그림자
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R24G8_TYPELESS, _float4(0.f, 0.f, 0.f, 0.f), CRenderTarget::RT_DEPTH_STENCIL)))
 		return E_FAIL;
 
@@ -407,7 +408,6 @@ HRESULT CRenderer::Add_PostRenderGroup(CGameObject* pGameObject)
 bool bDraw_Debug = true;
 #endif
 
-bool g_bUseShadowMap = false;
 HRESULT CRenderer::Draw()
 {
 	// SkyBox
@@ -415,39 +415,37 @@ HRESULT CRenderer::Draw()
 		return E_FAIL; 
 
 
-#if 0 //ShadowMap Test
-	g_bUseShadowMap = true;
+#if 1 //ShadowMap 
 	if (nullptr == m_pTarget_Manager)
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->BindDsvAndSetNullRenderTarget(m_pDeviceContext, TEXT("Target_Shadow"))))
 		return E_FAIL;
 
-	//for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_WAR])
-	//{
-	//	if (nullptr != pGameObject)
-	//	{
-	//		if (FAILED(pGameObject->Render()))
-	//			return E_FAIL;
-	//	}
-	//}
+ 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_WAR])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
+				return E_FAIL;
+		}
+	}
 
-	//for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
-	//{
-	//	if (nullptr != pGameObject)
-	//	{
-	//		if (FAILED(pGameObject->Render()))
-	//			return E_FAIL;
-	//	}
-	//}
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
-		return E_FAIL;
+	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
+				return E_FAIL;
+		}
+	}
 
 	// Restore default states
 	ClearRenderStates();
+	m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
 
-	g_bUseShadowMap = false;
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
 #endif
 
 
@@ -504,7 +502,7 @@ HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 
 	if (bDraw_Debug)
 	{
-		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Shadows"), 0);
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Shadows"), 4); // ShadowMapDebug_Pass
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Shadows"), 0, m_spriteBatch, m_spriteFont);
@@ -573,32 +571,6 @@ HRESULT CRenderer::Render_Priority_Terrain()
 
 HRESULT CRenderer::Render_NonAlpha()
 {
-#ifdef SHADOW_MAP_TEST
-	//mSmap->BindDsvAndSetNullRenderTarget(m_pDeviceContext);
-
-	//// DrawSceneToShadowMap(); 동작을 여기서 수행
-	//for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
-	//{
-	//	if (nullptr != pGameObject)
-	//	{
-	//		if (FAILED(pGameObject->Render()))
-	//			return E_FAIL;
-
-	//		Safe_Release(pGameObject);
-	//	}
-	//}
-
-	////
-	//// Restore the back and depth buffer to the OM stage.
-	////
-	//m_pDeviceContext->RSSetState(0);
-	//ID3D11RenderTargetView* renderTargets[1] = { CGraphic_Device::GetInstance()->Get_BackBufferRTV() };
-	//m_pDeviceContext->OMSetRenderTargets(1, renderTargets, CGraphic_Device::GetInstance()->Get_DepthStencilView());
-	//m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
-
-	//m_pDeviceContext->ClearRenderTargetView(CGraphic_Device::GetInstance()->Get_BackBufferRTV(), reinterpret_cast<const float*>(&Colors::Silver));
-	//m_pDeviceContext->ClearDepthStencilView(CGraphic_Device::GetInstance()->Get_DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-#endif
 	if (nullptr == m_pTarget_Manager)
 		return E_FAIL;
 
@@ -611,7 +583,7 @@ HRESULT CRenderer::Render_NonAlpha()
 	{
 		if (nullptr != pGameObject)
 		{
-			if (FAILED(pGameObject->Render()))
+			if (FAILED(pGameObject->Render(1))) // onlyWarPass
 				return E_FAIL;
 
 			Safe_Release(pGameObject);
@@ -624,7 +596,7 @@ HRESULT CRenderer::Render_NonAlpha()
 	{
 		if (nullptr != pGameObject)
 		{
-			if (FAILED(pGameObject->Render()))
+			if (FAILED(pGameObject->Render(0))) // deferredPass
 				return E_FAIL;
 
 			Safe_Release(pGameObject);

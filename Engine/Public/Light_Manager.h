@@ -4,7 +4,7 @@
 
 BEGIN(Engine)
 
-class CLight_Manager final : public CBase
+class ENGINE_DLL CLight_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CLight_Manager);
 public:
@@ -34,6 +34,11 @@ private:
 	class CVIBuffer_Rect* m_pVIBuffer = nullptr;
 	_float4x4						m_TransformMatrix;
 	_float4x4						m_OrthoMatrix;
+
+public:
+	_float4x4						m_LightView;
+	_float4x4						m_LightProj;
+	_float4x4						m_ShadowTransform;
 
 public:
 	virtual void Free() override;

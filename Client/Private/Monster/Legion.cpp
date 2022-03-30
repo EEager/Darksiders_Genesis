@@ -149,12 +149,12 @@ _int CLegion::LateTick(_float fTimeDelta)
 HRESULT CLegion::Render(_uint iPassIndex)
 {
 	// 모든 몬스터는 SetUp_ConstantTable, RenderColliders
-	if (CMonster::Render(0) < 0) 
+	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 
 	// Weapon Render : ToDo 최적화
-	Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90));
-	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90));
+	Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90), iPassIndex);
+	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90), iPassIndex);
 
 	return S_OK;
 }
@@ -198,7 +198,7 @@ HRESULT CLegion::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 }
 
 
-HRESULT CLegion::Render_Weapon(CModel* pModel, _float fRadian)
+HRESULT CLegion::Render_Weapon(CModel* pModel, _float fRadian, _uint iPassIndex)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -240,7 +240,7 @@ HRESULT CLegion::Render_Weapon(CModel* pModel, _float fRadian)
 	{
 		pModel->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 		pModel->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-		pModel->Render(i, 0);
+		pModel->Render(i, iPassIndex);
 	}
 
 	return S_OK;
