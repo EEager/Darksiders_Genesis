@@ -34,7 +34,7 @@ HRESULT CFork::NativeConstruct(void * pArg)
 		return E_FAIL;
 
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(80.f+2.f, 5.f, 446.f, 1.f));
+
 
 
 	return S_OK;
@@ -44,6 +44,8 @@ _int CFork::Tick(_float fTimeDelta)
 {
 	if (__super::Tick(fTimeDelta) < 0)
 		return -1;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(226.f + 2.f, 5.f, 426.f, 1.f));
 
 	// Init
 	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);

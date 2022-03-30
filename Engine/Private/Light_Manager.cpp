@@ -79,36 +79,60 @@ HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * 
 
 	return S_OK;
 }
-
+CGameObject* m_pTarget;
+CTransform* m_pTargetTransform;
 HRESULT CLight_Manager::Render()
 {
 	if (!m_Lights.empty())
 	{
+		// 타겟팅 설정하자
+		static bool targetingOnce = false;
+		if (!targetingOnce)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
+			if (pLayer_War)
+			{
+				m_pTarget = pLayer_War->front();
+				//Safe_AddRef(m_pTarget);
+				m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+				targetingOnce = true;
+			}
+			RELEASE_INSTANCE(CGameInstance)
+		}
+
 		// Only the first "main" light casts a shadow.
 		XMVECTOR lightDir = XMVector3Normalize(XMLoadFloat3(&m_Lights.front()->m_LightDesc.vDirection));
 
 		// 아래 정보는 전체 Scene 기준으로 변수를 설정하였음
 		// 빛타겟포지션
-		XMVECTOR targetPos = XMVectorSet(502.f, 32.f-80.f, 461.f+40.f, 1.0f);
+		//XMVECTOR targetPos = XMVectorSet(502.f, 32.f-80.f, 461.f+40.f, 1.0f);
+		XMVECTOR targetPos = m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) + XMVectorSet(0.f, 0.f, 0.f, 1.f);
 		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-		// 빛위치는 플레이어기준으로 계산 
-		_float SceneRadius = 470.f;
-		XMVECTOR lightPos = -2*SceneRadius * lightDir;
-
+		// 빛위치
+		_float SceneRadius = 20.f;
+		XMVECTOR lightPos = SceneRadius * -lightDir + targetPos;
+		  
 		// 빛의 뷰스페이스 변환 행렬
 		XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
 
 		// Transform bounding sphere to light space.
 		XMFLOAT3 sphereCenterLS;
 		XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
+		
+		
+		//SceneRadius = 10.f;
 
 		// Ortho frustum in light space encloses scene.
 		float l = sphereCenterLS.x - SceneRadius;
-		float b = sphereCenterLS.y - SceneRadius;
-		float n = sphereCenterLS.z - SceneRadius;
 		float r = sphereCenterLS.x + SceneRadius;
+
+		float b = sphereCenterLS.y - SceneRadius;
 		float t = sphereCenterLS.y + SceneRadius;
+
+		float n = sphereCenterLS.z - SceneRadius;
+		//sphereCenterLS.z - SceneRadius;
 		float f = sphereCenterLS.z + SceneRadius;
 		XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
