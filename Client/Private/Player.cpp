@@ -25,7 +25,6 @@ HRESULT CPlayer::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;	
 
-
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(80.f + rand()%10, 0.f, 446.f + rand() % 10, 1.f));
 
 	m_pModelCom->SetUp_Animation(rand()%24);

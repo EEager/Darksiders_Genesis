@@ -30,7 +30,6 @@ public:
 	virtual HRESULT Render(_uint iPassIndex = 0);
 	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
-
 private:
 	_float dissolvePower = 0.001f;
 
@@ -47,10 +46,6 @@ private:
 	CCollider*					m_pOBBCom = nullptr;
 	ComPtr<CNavigation>			m_pNaviCom = nullptr; // ComPtr Test
 	ComPtr<CTexture>			m_pDissolveTextureCom = nullptr;
-
-	// For.ImGui
-private:
-	int forkCloneIdx = 0;
 
 private:
 	HRESULT SetUp_Component();

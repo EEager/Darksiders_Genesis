@@ -1,0 +1,20 @@
+바리스타 애니메이션 정리 
+
+Ballista_A.ao 시 사용 애니메이션 
+	Balliista_A_Idle
+	Balliista_A_Load 마지막에서 대기까고 있다가
+	Balliista_A_Shoot
+	Ballista_A_Impact
+	
+	Ballista_A_Full 은 처음 애니메이션 씬 전환하면서 보여주자고+_+
+	
+
+Ballista_A_Destroyed.ao 시 사용 애니메이션 
+	Ballista_A_Explode 끝. 끝나면 그냥 대기 까는것으로 하면된다. 
+	
+	
+Ballista_A_Bolt.mo 
+	War 칼 같은 존재인데 어떤식으로 뼈에 붙여놓을지는 생각해보지말자 일단. 이것은 고블린 창던지는거 보고 따라하자
+
+
+

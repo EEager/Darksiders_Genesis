@@ -7,7 +7,6 @@
 #include "imgui_Manager.h"
 #endif
 
-int g_forkCloneIdx;
 CFork::CFork(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
@@ -15,7 +14,6 @@ CFork::CFork(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 
 CFork::CFork(const CFork& rhs)
 	: CGameObject(rhs)
-	, forkCloneIdx(g_forkCloneIdx++)
 {
 }
 
@@ -73,28 +71,28 @@ _int CFork::LateTick(_float fTimeDelta)
 	//_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 
+	// AddRenderGroup
 	bool AddRenderGroup = false;
 	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f))
 		AddRenderGroup = true;
 
 #ifdef USE_IMGUI
-	if (m_bUseImGui) 
+	// 디버깅이 필요하면 이거 넣어줘야한다
+	if (m_bUseImGui)
 		AddRenderGroup = true;
 #endif
 
 	if (AddRenderGroup)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-			goto _EXIT;
+			assert(0);
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
-			goto _EXIT;
+			assert(0);
 	}
-
 
 	// Collider 
 	pGameInstance->Add_Collision(this);
 
-_EXIT:
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
 }
@@ -135,10 +133,9 @@ HRESULT CFork::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Spr
 	if (m_bUseImGui) 
 	{
 		char TagTmp[32];
-		sprintf_s(TagTmp, "Fork Window##%d", forkCloneIdx);
+		sprintf_s(TagTmp, "Edit##%d", m_CloneIdx);
 		ImGui::Begin(TagTmp, &m_bUseImGui);
 		{
-	
 			float vec3f[3] = { 0,0,0 };
 			_vector temp = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 			vec3f[0] = XMVectorGetX(temp);

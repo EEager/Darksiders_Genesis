@@ -17,11 +17,16 @@
 #include "Sky.h"
 #include "PointEffect.h"
 #include "Enviroment.h"
+
+// Monster
 #include "Monster\Monster.h"
 #include "Monster\Legion.h"
 #include "Monster\Goblin_Armor.h"
 #include "Monster\FallenDog.h"
 #include "Monster\HollowLord.h"
+
+// Object
+#include "MapObject\Ballista.h"
 
 
 
@@ -36,7 +41,7 @@ CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 
 unsigned int APIENTRY EntryMain(void* pArg)
 {
-	CLoader*	pLoader = (CLoader*)pArg;
+	CLoader* pLoader = (CLoader*)pArg;
 
 	EnterCriticalSection(pLoader->Get_CriticalSection());
 
@@ -83,12 +88,36 @@ HRESULT CLoader::Loading_ForLogoLevel()
 
 HRESULT CLoader::Loading_ForGamePlayLevel()
 {
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
+	if (FAILED(Add_GameObject()))
+		return E_FAIL;
+	if (FAILED(Add_VIBuffer()))
+		return E_FAIL;
+	if (FAILED(Add_Texture()))
+		return E_FAIL;
+	if (FAILED(Add_Model()))
+		return E_FAIL;
 
-	// ===========================================================================
+	/* For.Prototype_Component_Navigation */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
+		CNavigation::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Data/NavigationData.dat")))))
+		return E_FAIL;
+
+	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY Load Completed!"));
+
+	m_isFinished = true;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLoader::Add_GameObject()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
 	/* GameObjects */
-	// ===========================================================================
 	wsprintf(m_szLoading, TEXT("Loading GameObjects"));
 	/* For.Prototype_GameObject_Terrain */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
@@ -165,27 +194,21 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CHollowLord::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	// Map Objects
-	/* For.Prototype_GameObject_DemonBallista */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_DemonBallista"),
-		CHollowLord::Create(m_pDevice, m_pDeviceContext))))
+	// Objects
+	/* For.Prototype_GameObject_Ballista */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista"),
+		CBallista::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
-	
 
+	RELEASE_INSTANCE(CGameInstance);
+	return S_OK;
+}
 
-	// ===========================================================================
+HRESULT CLoader::Add_VIBuffer()
+{
 	/* Componenets : VIBuffer */
-	// ===========================================================================
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	wsprintf(m_szLoading, TEXT("Loading Components VIBuffer"));
-
-	/* For.Prototype_Component_VIBuffer_Terrain */
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"), 
-	//	CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Light.hlsl"), TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
-	//	return E_FAIL;
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Terrain"),
-	//	CVIBuffer_Terrain::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Terrain_Shadow.hlsl"), X_MAPSIZE, Z_MAPSIZE))))
-	//	return E_FAIL;
-
 	/* For.Prototype_Component_VIBuffer_RectInstance */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_RectInstance"),
 		CVIBuffer_RectInstance::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_RectInstance.hlsl"), 20))))
@@ -209,15 +232,20 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	/* For.Prototype_Component_VIBuffer_Sphere */
 	// 이거 필요하면 CCell::Ready_DebugBuffer() 참조
 
+	RELEASE_INSTANCE(CGameInstance);
+	return S_OK;
+}
 
-	// ===========================================================================
+HRESULT CLoader::Add_Texture()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
 	/* Componenets : Textures */
-	// ===========================================================================
 	wsprintf(m_szLoading, TEXT("Loading Components Textures"));
 	/* For.Prototype_Component_Texture_Terrain */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"), 
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Terrain/Grass_%d.dds"), 2))))
-		return E_FAIL;	
+		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_Black */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Black"),
@@ -288,12 +316,15 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UIButtonBase_G.dds")))))
 		return E_FAIL;
 
+	RELEASE_INSTANCE(CGameInstance);
+	return S_OK;
 
+}
 
-	// ===========================================================================
-	/* Componenets : Model */
-	// ===========================================================================
-#ifndef ONLY_WAR
+HRESULT CLoader::Add_Model()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
 	// ▼ Test
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Fiona"));
 	_matrix		PivotMatrix = XMMatrixIdentity();
@@ -308,18 +339,16 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
-#endif
 
-#if 1
-	// ▼ War
-	/* For.Prototype_Component_Model_War */
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_War"));
+		// ▼ War
+		/* For.Prototype_Component_Model_War */
+		wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_War"));
 	_matrix		War_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(-90.f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War/", "War.fbx", War_PivotMat))))
 		return E_FAIL;
 
-	/* Prototype_Component_Model_War_Gauntlet */  
+	/* Prototype_Component_Model_War_Gauntlet */
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_War_Gauntlet"));
 	//애니메이션은 없지만, 다른 모델것을 사용하고 싶다. +뼈는 있다. War_Gauntlet의 애니메이션 행렬은 Model_War를 따라간다
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Gauntlet"),
@@ -332,12 +361,11 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Ruin/", "War_Ruin.fbx", War_PivotMat))))
 		return E_FAIL;
 
-	/* Prototype_Component_Model_War_Weapon */ 
+	/* Prototype_Component_Model_War_Weapon */
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_War_Weapon"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War_Weapon"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War_Weapon/", "War_Weapon.fbx", War_PivotMat))))
 		return E_FAIL;
-
 
 	// ▼ Monsters
 	/* For.Prototype_Component_Model_Legion*/
@@ -359,8 +387,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_R.fbx", Legion_PivotMat))))
 		return E_FAIL;
 
-
-
 	/* For.Prototype_Component_Model_Goblin_Armor*/
 	_matrix		Goblin_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Armor"));
@@ -379,7 +405,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		return E_FAIL;
 
 
-
 	/* For.Prototype_Component_Model_FallenDog*/
 	_matrix		FallenDog_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_FallenDog"));
@@ -394,8 +419,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_HollowLord"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/HollowLord/", "HollowLord.fbx", HollowLord_PivotMat))))
 		return E_FAIL;
-#endif
-
 
 	// ▼ Enviroment Models
 	/* For.Prototype_Component_Model_Enviroment1*/
@@ -419,37 +442,21 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 	// ▼ Map Objects Models
-	// 
-
-
-
-
-	// ===========================================================================
-	/* Componenets : Navigation */
-	// ===========================================================================
-	/* For.Prototype_Component_Navigation */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
-		CNavigation::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Data/NavigationData.dat")))))
+	/* For.Prototype_Component_Model_Ballista*/
+	_matrix		Ballista_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista.fbx", Ballista_PivotMat))))
 		return E_FAIL;
 
 
-	// ===========================================================================
-	/* Componenets : Colliders */
-	// ===========================================================================
-	// wsprintf(m_szLoading, TEXT("Loading Component Collider")); move to mainapp
-
-	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY Load Completed!"));
-
-	m_isFinished = true;
-
 	RELEASE_INSTANCE(CGameInstance);
-
 	return S_OK;
 }
 
-CLoader * CLoader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, LEVEL eNextLevel)
+CLoader* CLoader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, LEVEL eNextLevel)
 {
-	CLoader*		pInstance = new CLoader(pDevice, pDeviceContext);
+	CLoader* pInstance = new CLoader(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct(eNextLevel)))
 	{
@@ -465,7 +472,7 @@ void CLoader::Free()
 	WaitForSingleObject(m_hThread, INFINITE);
 
 	DeleteObject(m_hThread);
-	
+
 	DeleteCriticalSection(&m_CS);
 
 	CloseHandle(m_hThread);

@@ -160,8 +160,11 @@ public:
 	void Set_PrototypeTag(const _tchar* pPrototypeTag) { m_pPrototypeTag = pPrototypeTag; }
 
 #ifdef USE_IMGUI
+	// ImGUI에서 m_bUseImGui를 true로 바꾸면 m_CloneIdx 별로 구분되는 ImGUI:Begin 창을 보여주자
 public:
 	bool m_bUseImGui = false;
+protected:
+	int m_CloneIdx = 0;
 #endif
 
 protected:

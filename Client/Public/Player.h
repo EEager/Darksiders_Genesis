@@ -34,9 +34,6 @@ private:
 	CNavigation*				m_pNaviCom = nullptr;
 
 private:
-	ID3D11ShaderResourceView*	pSRV = nullptr;
-
-private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable();	
 

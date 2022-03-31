@@ -45,6 +45,13 @@ private:
 
 	_tchar					m_szLoading[MAX_PATH] = TEXT("Loading");
 	_bool					m_isFinished = false;
+	
+private:
+	HRESULT Add_GameObject();
+	HRESULT Add_VIBuffer();
+	HRESULT Add_Texture();
+	HRESULT Add_Model();
+
 
 public:
 	static CLoader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, LEVEL eNextLevel);

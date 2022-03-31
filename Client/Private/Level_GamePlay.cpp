@@ -40,6 +40,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	if (FAILED(Ready_Layer_Enviroment()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Object()))
+		return E_FAIL;
+
 	 
 	return S_OK;
 }
@@ -132,6 +135,19 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Enviroment3 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
+		return E_FAIL;
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Object()
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	/* For.Prototype_GameObject_Ballista */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista", TEXT("Prototype_GameObject_Ballista"))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

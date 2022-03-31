@@ -10,10 +10,16 @@ CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceCont
 
 }
 
+#ifdef USE_IMGUI
+int g_CloneIdx;
+#endif
 CGameObject::CGameObject(const CGameObject& rhs)
 	: m_pDeviceContext(rhs.m_pDeviceContext)
 	, m_pDevice(rhs.m_pDevice)
 	, m_tMtrlDesc(rhs.m_tMtrlDesc)
+#ifdef USE_IMGUI
+	, m_CloneIdx(g_CloneIdx++)
+#endif
 {
 	Safe_AddRef(m_pDeviceContext);
 	Safe_AddRef(m_pDevice);
