@@ -537,13 +537,8 @@ HRESULT CRenderer::Render_Shadow()
 		}
 	}
 
-	// Restore default states
-	ClearRenderStates();
-	m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
-
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
 		return E_FAIL;
-
 
 	// #2. 오브젝트들의 그림자를 찍는다.
 	if (FAILED(m_pTarget_Manager->BindDsvAndSetNullRenderTarget(m_pDeviceContext, TEXT("Target_Shadow_Obj"))))
