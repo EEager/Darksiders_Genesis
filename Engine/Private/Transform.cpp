@@ -25,6 +25,12 @@ void CTransform::Set_State(STATE eState, _fvector vState)
 	memcpy(&m_WorldMatrix.m[eState], &vTmp, sizeof(_float4));
 }
 
+// For.ImGUI
+void CTransform::Set_State(STATE eState, _float* v /*IN float vec3f[3]*/)
+{
+	Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&_float4(v[0], v[1], v[2], 1.f)));
+}
+
 void CTransform::Set_State_Lerp(STATE eState, _fvector vDst, _float fRatio, EasingLerp::EaseType eEaseType)
 {
 	_float4		vTmp;

@@ -47,7 +47,10 @@ private:
 	CCollider*					m_pOBBCom = nullptr;
 	ComPtr<CNavigation>			m_pNaviCom = nullptr; // ComPtr Test
 	ComPtr<CTexture>			m_pDissolveTextureCom = nullptr;
-	
+
+	// For.ImGui
+private:
+	int forkCloneIdx = 0;
 
 private:
 	HRESULT SetUp_Component();

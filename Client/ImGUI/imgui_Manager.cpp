@@ -724,30 +724,55 @@ void CImguiManager::ShowGameObjectManagerWindow()
 					strcpy_s(chIterLayerTag, DXString::WideToChar(iterLayer->first));
 					if (ImGui::TreeNode(DXString::Format("%s : ObjectNum(%zd)", chIterLayerTag, pGameObjectList->size()).c_str()))
 					{
-						if (ImGui::BeginListBox("##LayerList", ImVec2(-FLT_MIN, 4 * ImGui::GetTextLineHeightWithSpacing() + 5/*jjlee*/)))
+						Colored_Button_Begin();
+						if (ImGui::Button("Save"))
 						{
-							auto iterList = pGameObjectList->begin();
-							for (int n = 0; iterList != pGameObjectList->end(); iterList++, n++)
-							{
-								char selectedGameObjectPrototypeTag[MAX_TAG_LEN] = "";
-								strcpy_s(selectedGameObjectPrototypeTag, DXString::WideToChar((*iterList)->Get_PrototypeTag()));
-								bool is_selected = (m_Selected_GameObectIdx == n);
-								if (ImGui::Selectable(DXString::Format("%s(%d)", selectedGameObjectPrototypeTag, n).c_str(), &is_selected) == true)
-								{
-									m_Selected_GameObectIdx = n;
-									m_Selected_LayerIdx = i;
-									strcpy_s(m_Selected_PrototypeTag, selectedGameObjectPrototypeTag);
-									strcpy_s(m_Selected_LayerTag, chIterLayerTag);
-								}
-
-								if (is_selected) // 디폴트 ㅎ 
-								{
-									ImGui::SetItemDefaultFocus();
-								}
-							}
-
-							ImGui::EndListBox();
+							CObject_Manager::GetInstance()->Save_ObjectsToFile(iterLayer->first, LEVEL_GAMEPLAY);
 						}
+						ImGui::SameLine();
+						if (ImGui::Button("Load"))
+						{
+							CObject_Manager::GetInstance()->Load_ObjectsFromFile(iterLayer->first, LEVEL_GAMEPLAY);
+						}
+						Colored_Button_End();
+
+						auto iterList = pGameObjectList->begin();
+						for (int n = 0; iterList != pGameObjectList->end(); iterList++, n++)
+						{
+							char selectedGameObjectPrototypeTag[MAX_TAG_LEN] = ""; 
+							strcpy_s(selectedGameObjectPrototypeTag, DXString::WideToChar((*iterList)->Get_PrototypeTag()));
+							ImGui::Text("[%d] %s", n, selectedGameObjectPrototypeTag);
+							ImGui::SameLine();
+							char btnTagTmp[32];
+							sprintf_s(btnTagTmp, "Edit##%d", n);
+							ImGui::Checkbox(btnTagTmp, &(*iterList)->m_bUseImGui);
+						}
+
+#if 0 // List 방식
+						//if (ImGui::BeginListBox("##LayerList", ImVec2(-FLT_MIN, 4 * ImGui::GetTextLineHeightWithSpacing() + 5/*jjlee*/)))
+						//{
+						//	auto iterList = pGameObjectList->begin();
+						//	for (int n = 0; iterList != pGameObjectList->end(); iterList++, n++)
+						//	{
+						//		char selectedGameObjectPrototypeTag[MAX_TAG_LEN] = "";
+						//		strcpy_s(selectedGameObjectPrototypeTag, DXString::WideToChar((*iterList)->Get_PrototypeTag()));
+						//		bool is_selected = (m_Selected_GameObectIdx == n);
+						//		if (ImGui::Selectable(DXString::Format("(%d) %s", n, selectedGameObjectPrototypeTag).c_str(), &is_selected) == true)
+						//		{
+						//			m_Selected_GameObectIdx = n;
+						//			m_Selected_LayerIdx = i;
+						//			strcpy_s(m_Selected_PrototypeTag, selectedGameObjectPrototypeTag);
+						//			strcpy_s(m_Selected_LayerTag, chIterLayerTag);
+						//		}
+						//		if (is_selected) // 디폴트 ㅎ 
+						//		{
+						//			ImGui::SetItemDefaultFocus();
+						//		}
+						//	}
+
+						//	ImGui::EndListBox();
+						//}
+#endif
 
 						ImGui::TreePop();
 					}

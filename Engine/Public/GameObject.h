@@ -159,6 +159,11 @@ public:
 	const _tchar* Get_PrototypeTag() { return m_pPrototypeTag; }
 	void Set_PrototypeTag(const _tchar* pPrototypeTag) { m_pPrototypeTag = pPrototypeTag; }
 
+#ifdef USE_IMGUI
+public:
+	bool m_bUseImGui = false;
+#endif
+
 protected:
 	const _tchar* m_pPrototypeTag = nullptr;
 	const _tchar* m_pLayerTag = nullptr;

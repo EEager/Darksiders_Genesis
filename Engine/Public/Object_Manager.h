@@ -9,7 +9,7 @@
 
 BEGIN(Engine)
 
-class CObject_Manager final : public CBase
+class ENGINE_DLL CObject_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CObject_Manager)
 
@@ -22,6 +22,7 @@ public:
 	HRESULT Reserve_Container(_uint iNumLevels);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pPrototypeTag, void* pArg);
+	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pPrototypeTag, void* pArg, OUT CGameObject** pGameObject);
 	_int Tick(_float fTimeDelta);
 	_int LateTick(_float fTimeDelta);
 	HRESULT Clear_LevelLayers(_uint iLevelIndex);
@@ -51,6 +52,10 @@ private:
 private:
 	CGameObject* Find_Prototype(const _tchar* pPrototypeTag);
 	CLayer*	Find_Layer(_uint iLevelIndex, const _tchar* pLayerTag);
+
+public:
+	HRESULT Save_ObjectsToFile(const _tchar* pFilePath, _uint iLevelIndex);
+	HRESULT Load_ObjectsFromFile(const _tchar* pFilePath, _uint iLevelIndex);
 
 public:
 	virtual void Free() override;

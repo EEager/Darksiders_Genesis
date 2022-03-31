@@ -35,7 +35,20 @@ private:
 	class CGameInstance* m_pGameInstance = nullptr;
 	ID3D11Device* m_pGraphic_Device = nullptr;
 	ID3D11DeviceContext* m_pDevice_Context = nullptr;
-//
+
+private:
+	void CImguiManager::Colored_Button_Begin(int r = 180, int g = 100, int b = 0)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(r, g, b));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor(r - 50, g + 50, b));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor(r - 100, g, b));
+	}
+
+	void CImguiManager::Colored_Button_End()
+	{
+		ImGui::PopStyleColor(3);
+	}
+
 	// =========================================
 	// ¸¶¿ì½º en/disable
 private:
