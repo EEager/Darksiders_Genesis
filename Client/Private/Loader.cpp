@@ -164,6 +164,12 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_HollowLord"),
 		CHollowLord::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
+
+	// Map Objects
+	/* For.Prototype_GameObject_DemonBallista */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_DemonBallista"),
+		CHollowLord::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
 	
 
 
@@ -374,8 +380,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 
 
-
-
 	/* For.Prototype_Component_Model_FallenDog*/
 	_matrix		FallenDog_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_FallenDog"));
@@ -391,8 +395,6 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/HollowLord/", "HollowLord.fbx", HollowLord_PivotMat))))
 		return E_FAIL;
 #endif
-
-
 
 
 	// ¡å Enviroment Models
@@ -414,6 +416,10 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
+
+
+	// ¡å Map Objects Models
+	// 
 
 
 
