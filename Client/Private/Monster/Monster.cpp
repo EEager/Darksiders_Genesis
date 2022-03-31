@@ -76,7 +76,7 @@ _int CMonster::LateTick(_float fTimeDelta)
 HRESULT CMonster::Render(_uint iPassIndex)
 {
 	// 모든 몬스터는 아래와 같이 Render를 진행한다
-	if (FAILED(SetUp_ConstantTable()))
+	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;
 
 	_uint	iNumMaterials = m_pModelCom->Get_NumMaterials();
@@ -126,7 +126,7 @@ HRESULT CMonster::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CMonster::SetUp_ConstantTable()
+HRESULT CMonster::SetUp_ConstantTable(_uint iPassIndex)
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
@@ -147,8 +147,16 @@ HRESULT CMonster::SetUp_ConstantTable()
 
 	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	if (iPassIndex == 3) // shadow map
+	{
+		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+	}
+	else
+	{
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	}
 
 	// Bind Position
 	_float4			vCamPosition;

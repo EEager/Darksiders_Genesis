@@ -3,8 +3,6 @@
 
 #include "GameInstance.h"
 
-#include "Light_Manager.h"
-
 CFork::CFork(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {

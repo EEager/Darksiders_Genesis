@@ -59,7 +59,7 @@ protected:
 
 protected:
 	virtual HRESULT SetUp_Component();
-	virtual HRESULT SetUp_ConstantTable();	
+	virtual HRESULT SetUp_ConstantTable(_uint iPassIndex);
 
 public:	
 	static CMonster* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

@@ -229,8 +229,16 @@ void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 		XMStoreFloat4x4(&modelWorldMat, XMMatrixTranspose(TransformationMatrix));
 		m_pModelSpearCom->Set_RawValue("g_WorldMatrix", &modelWorldMat, sizeof(_float4x4));
 
-		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelSpearCom, "g_ViewMatrix");
-		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelSpearCom, "g_ProjMatrix");
+		if (iPassIndex == 3) // shadow map
+		{
+			m_pModelSpearCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+			m_pModelSpearCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+		}
+		else
+		{
+			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelSpearCom, "g_ViewMatrix");
+			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelSpearCom, "g_ProjMatrix");
+		}
 
 		// Bind Position
 		m_pModelSpearCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
@@ -265,8 +273,16 @@ void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 		XMStoreFloat4x4(&modelWorldMat, XMMatrixTranspose(TransformationMatrix));
 		m_pModelQuiverCom->Set_RawValue("g_WorldMatrix", &modelWorldMat, sizeof(_float4x4));
 
-		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelQuiverCom, "g_ViewMatrix");
-		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelQuiverCom, "g_ProjMatrix");
+		if (iPassIndex == 3) // shadow map
+		{
+			m_pModelQuiverCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+			m_pModelQuiverCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+		}
+		else
+		{
+			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelQuiverCom, "g_ViewMatrix");
+			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelQuiverCom, "g_ProjMatrix");
+		}
 
 		// Bind Position
 		m_pModelQuiverCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
