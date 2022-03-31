@@ -1,5 +1,6 @@
 #include "..\Public\GameInstance.h"
 #include "Timer_Manager.h"
+#include "Light_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -76,6 +77,8 @@ _int CGameInstance::Tick_Engine(_float fTimeDelta)
 
 	m_pPipeLine->Tick();
 	m_pFrustum->Update();
+	CLight_Manager::GetInstance()->Update(fTimeDelta);
+
 	m_pPicking->Transform_ToWorldSpace();
 
 	if (0 > (iProgress = m_pObject_Manager->LateTick(fTimeDelta)))

@@ -62,7 +62,7 @@ _int CEnviroment::LateTick(_float fTimeDelta)
 
 	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), fRadian))
 	{
-		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA_TERRAIN, this)))
 			goto _EXIT;
 
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
@@ -145,8 +145,8 @@ HRESULT CEnviroment::SetUp_ConstantTable(_uint iPassIndex)
 	if (iPassIndex == 3) // ShadowMap
 	{
 		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
-		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightView)), sizeof(_float4x4));
-		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightProj)), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Env_Light_View())), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Env_Light_Proj())), sizeof(_float4x4));
 	}
 	else
 	{

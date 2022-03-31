@@ -257,11 +257,14 @@ float CalcShadowFactor(SamplerComparisonState samShadow,
 		// SampleCmpLevelZero 
 			// @1 : 비교표본추출기
 			// @2 : 텍스처 좌표
-			// @3 : 그림자 맵 표본과 비교할 기준값. 비교함수가 LESS_EQUAL인 상황에서 이 매개 변수에 depth를 지정하며ㅓㄴ
-					// 픽셀 깊이가 그림자맵의 값 이하이면 그림자밖에 있다. => return
+			// @3 : 그림자 맵 표본과 비교할 기준값. 비교함수가 LESS_EQUAL인 상황이면, depth가 더 작으면 1리턴 
 				
-		percentLit += shadowMap.SampleCmpLevelZero(samShadow,
+		// 텍스처 좌표의 샘플링한 r값이 depth보다 작으면 0리턴. 크거나 같으면 1리턴
+		// 근데 만약 좌표를 벗어났으면? BorderColor랑 비교하겠지
+		float ret = shadowMap.SampleCmpLevelZero(samShadow,
 			shadowPosH.xy + offsets[i], depth).r;
+		ret = 1 - ret;
+		percentLit += ret;
 	}
 
 	return percentLit /= 9.0f;

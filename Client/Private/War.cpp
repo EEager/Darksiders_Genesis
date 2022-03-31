@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 #include "PipeLine.h"
 
+#include "Light_Manager.h"
+
 
 
 // In State_War.cpp
@@ -146,6 +148,8 @@ HRESULT CWar::Render(_uint iPassIndex)
 
 	return S_OK;
 }
+
+
 
 #ifdef _DEBUG
 #ifdef USE_IMGUI
@@ -496,7 +500,7 @@ HRESULT CWar::SetUp_BoneMatrix()
 
 
 
-HRESULT CWar::SetUp_Ruin_ConstantTable(bool drawOutLine)
+HRESULT CWar::SetUp_Ruin_ConstantTable(_uint iPassIndex, bool drawOutLine)
 {
 	if (nullptr == m_pModelCom_Ruin)
 		return E_FAIL;
@@ -517,8 +521,16 @@ HRESULT CWar::SetUp_Ruin_ConstantTable(bool drawOutLine)
 
 	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom_Ruin, "g_WorldMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW,m_pModelCom_Ruin, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ,m_pModelCom_Ruin, "g_ProjMatrix");
+	if (iPassIndex == 3)
+	{
+		m_pModelCom_Ruin->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+		m_pModelCom_Ruin->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+	}
+	else
+	{
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom_Ruin, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom_Ruin, "g_ProjMatrix");
+	}
 
 	// Bind Position
 	_float4			vCamPosition;
@@ -542,7 +554,7 @@ HRESULT CWar::SetUp_Ruin_ConstantTable(bool drawOutLine)
 
 
 
-HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
+HRESULT CWar::SetUp_ConstantTable(_uint iPssIndex, bool drawOutLine, int modelIdx)
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
@@ -563,8 +575,16 @@ HRESULT CWar::SetUp_ConstantTable(bool drawOutLine, int modelIdx)
 
 	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom[modelIdx], "g_WorldMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom[modelIdx], "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom[modelIdx], "g_ProjMatrix");
+	if (iPssIndex == 3) // ShadowMap
+	{
+		m_pModelCom[modelIdx]->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+		m_pModelCom[modelIdx]->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+	}
+	else
+	{
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom[modelIdx], "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom[modelIdx], "g_ProjMatrix");
+	}
 
 	// Bind Position
 	_float4			vCamPosition;
@@ -603,7 +623,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 	/* 장치에 월드변환 행렬을 저장한다. */
 	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
 	{
-		if (FAILED(SetUp_ConstantTable(false, modelIdx)))
+		if (FAILED(SetUp_ConstantTable(iPassIndex, false, modelIdx)))
 			return E_FAIL;
 
 		// iNumMaterials : 망토, 몸통
@@ -625,7 +645,7 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 	//
 	if (m_War_On_Ruin_State)
 	{
-		if (FAILED(SetUp_Ruin_ConstantTable(false)))
+		if (FAILED(SetUp_Ruin_ConstantTable(iPassIndex, false)))
 			return E_FAIL;
 		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
 		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
@@ -645,48 +665,48 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 
 HRESULT CWar::War_Outline_Render(_uint iPassIndex)
 {
-	// 
-	// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) 
-	// War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
-	// 
-	m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
+	//// 
+	//// 2. (스텐실버퍼가 0인경우에, 깊이테스트가 먼저 일어나므로 스텐실 버퍼를 못찍는 경우가 발생할 경우에) 
+	//// War 외곽선 Draw, Draw 순서는 : 지형->NONALPHA->War 순
+	//// 
+	//m_pDeviceContext->OMSetDepthStencilState(RenderStates::DrawReflectionDSS.Get(), 0);
 
-	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
-	{
-		if (FAILED(SetUp_ConstantTable(true, modelIdx)))
-			return E_FAIL;
+	//for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
+	//{
+	//	if (FAILED(SetUp_ConstantTable(true, modelIdx)))
+	//		return E_FAIL;
 
-		_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
-		for (_uint i = 0; i < iNumMaterials; ++i)
-		{
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+	//	_uint	iNumMaterials = m_pModelCom[modelIdx]->Get_NumMaterials();
+	//	for (_uint i = 0; i < iNumMaterials; ++i)
+	//	{
+	//		m_pModelCom[modelIdx]->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+	//		m_pModelCom[modelIdx]->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+	//		m_pModelCom[modelIdx]->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
 
 
-			m_pModelCom[modelIdx]->Render(i, iPassIndex); // Forward_ApiRenderState_Pass
-		}
-	}
+	//		m_pModelCom[modelIdx]->Render(i, iPassIndex); // Forward_ApiRenderState_Pass
+	//	}
+	//}
 
-	//
-	// 말 외곽선 렌더링
-	//
-	if (m_War_On_Ruin_State)
-	{
-		if (FAILED(SetUp_Ruin_ConstantTable(true)))
-			return E_FAIL;
-		auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
-		for (_uint i = 0; i < iNum_RuinMaterials; ++i)
-		{
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-			m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
-			m_pModelCom_Ruin->Render(i, iPassIndex); // Forward_ApiRenderState_Pass
-		}
-	}
+	////
+	//// 말 외곽선 렌더링
+	////
+	//if (m_War_On_Ruin_State)
+	//{
+	//	if (FAILED(SetUp_Ruin_ConstantTable(true)))
+	//		return E_FAIL;
+	//	auto iNum_RuinMaterials = m_pModelCom_Ruin->Get_NumMaterials();
+	//	for (_uint i = 0; i < iNum_RuinMaterials; ++i)
+	//	{
+	//		m_pModelCom_Ruin->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+	//		m_pModelCom_Ruin->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+	//		m_pModelCom_Ruin->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+	//		m_pModelCom_Ruin->Render(i, iPassIndex); // Forward_ApiRenderState_Pass
+	//	}
+	//}
 
-	// Restore default states
-	m_pRendererCom->ClearRenderStates();
+	//// Restore default states
+	//m_pRendererCom->ClearRenderStates();
 
 	return S_OK;
 }

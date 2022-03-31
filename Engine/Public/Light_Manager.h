@@ -22,6 +22,7 @@ public:
 	HRESULT NativeConstruct(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	HRESULT Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const LIGHTDESC& LightDesc);
 	HRESULT Render();
+	HRESULT Update(_float fTimeDelta);
 
 private:
 	list<class CLight*>				m_Lights;
@@ -35,10 +36,32 @@ private:
 	_float4x4						m_TransformMatrix;
 	_float4x4						m_OrthoMatrix;
 
+
+	// --------------------------------------------
+	// For.ShadowMapping
 public:
-	_float4x4						m_LightView;
-	_float4x4						m_LightProj;
-	_float4x4						m_ShadowTransform;
+	_float4x4* Get_Env_Light_View() { return &m_LightView_Env; }
+	_float4x4* Get_Env_Light_Proj() { return &m_LightProj_Env; }
+	_float4x4* Get_Env_Light_ShadowMat() { return &m_ShadowTransform_Env; }
+
+	_float4x4* Get_Objects_Light_View() {return &m_LightView_Objects;}
+	_float4x4* Get_Objects_Light_Proj() {return &m_LightProj_Objects;}
+	_float4x4* Get_Objects_Light_ShadowMat() {return &m_ShadowTransform_Objects;}
+
+private:
+	_float4x4						m_LightView_Env;
+	_float4x4						m_LightProj_Env;
+	_float4x4						m_ShadowTransform_Env;
+
+	_float4x4						m_LightView_Objects;
+	_float4x4						m_LightProj_Objects;
+	_float4x4						m_ShadowTransform_Objects;
+
+private:
+	class CGameObject* m_pTarget = nullptr;
+	class CTransform* m_pTargetTransform = nullptr;
+
+	// ----------------------------------------------------
 
 public:
 	virtual void Free() override;

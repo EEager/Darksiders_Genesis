@@ -300,8 +300,9 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 
 	// 광원 시선에서 바라본 깊이값들을 저장할 렌더타겟
-	// 일단은 타겟으로 바로 렌더타겟 설정하였다. ToDo: MRT 사용하여 다중그림자
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R24G8_TYPELESS, _float4(0.f, 0.f, 0.f, 0.f), CRenderTarget::RT_DEPTH_STENCIL)))
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow_Env"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R24G8_TYPELESS, _float4(1.f, 1.f, 1.f, 1.f), CRenderTarget::RT_DEPTH_STENCIL)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow_Obj"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R24G8_TYPELESS, _float4(1.f, 1.f, 1.f, 1.f), CRenderTarget::RT_DEPTH_STENCIL)))
 		return E_FAIL;
 
 
@@ -326,12 +327,16 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Specular"), WIDTH * 1, WIDTH * 1, WIDTH, WIDTH)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Shadow"), WIDTH * 0, WIDTH * 2, WIDTH, WIDTH)))
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Shadow_Env"), WIDTH * 0, WIDTH * 2, WIDTH, WIDTH)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Shadow_Obj"), WIDTH * 1, WIDTH * 2, WIDTH, WIDTH)))
 		return E_FAIL;
 #endif // _DEBUG
 
 	/* MRT */
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow"))))
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow_Env"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow_Obj"))))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
@@ -414,40 +419,9 @@ HRESULT CRenderer::Draw()
  	if (FAILED(Render_Priority()))
 		return E_FAIL; 
 
-
-#if 1 //ShadowMap 
-	if (nullptr == m_pTarget_Manager)
+	//ShadowMap 
+	if (FAILED(Render_Shadow()))
 		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->BindDsvAndSetNullRenderTarget(m_pDeviceContext, TEXT("Target_Shadow"))))
-		return E_FAIL;
-
- 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_WAR])
-	{
-		if (nullptr != pGameObject)
-		{
-			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
-				return E_FAIL;
-		}
-	}
-
-	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
-	{
-		if (nullptr != pGameObject)
-		{
-			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
-				return E_FAIL;
-		}
-	}
-
-	// Restore default states
-	ClearRenderStates();
-	m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
-		return E_FAIL;
-#endif
-
 
 	if (FAILED(Render_NonAlpha()))
 		return E_FAIL;
@@ -547,24 +521,58 @@ HRESULT CRenderer::Render_Priority()
 	return S_OK;
 }
 
-HRESULT CRenderer::Render_Priority_Terrain()
+// Shadow
+HRESULT CRenderer::Render_Shadow()
 {
-	/* 리스트 순회 */
+	// #1. 지형 그림자 깊이를 찍자
+	if (FAILED(m_pTarget_Manager->BindDsvAndSetNullRenderTarget(m_pDeviceContext, TEXT("Target_Shadow_Env"))))
+		return E_FAIL;
+
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_TERRAIN])
 	{
 		if (nullptr != pGameObject)
 		{
-			if (FAILED(pGameObject->Render()))
+			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
 				return E_FAIL;
-
-			Safe_Release(pGameObject);
 		}
 	}
 
-	m_RenderObjects[RENDER_NONALPHA_TERRAIN].clear();
+	// Restore default states
+	ClearRenderStates();
+	m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
+
+
+	// #2. 오브젝트들의 그림자를 찍는다.
+	if (FAILED(m_pTarget_Manager->BindDsvAndSetNullRenderTarget(m_pDeviceContext, TEXT("Target_Shadow_Obj"))))
+		return E_FAIL;
+
+	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_WAR])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
+				return E_FAIL;
+		}
+	}
+
+	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render(3))) // BuildShadowMap_Pass
+				return E_FAIL;
+		}
+	}
 
 	// Restore default states
 	ClearRenderStates();
+	m_pDeviceContext->RSSetViewports(1, CGraphic_Device::GetInstance()->Get_ViewPortDesc_Ptr());
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -590,6 +598,25 @@ HRESULT CRenderer::Render_NonAlpha()
 		}
 	}
 	m_RenderObjects[RENDER_NONALPHA_WAR].clear();
+	// Restore default states
+	ClearRenderStates();
+
+	// 지형찍는다.
+	/* 리스트 순회 */
+	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA_TERRAIN])
+	{
+		if (nullptr != pGameObject)
+		{
+			if (FAILED(pGameObject->Render()))
+				return E_FAIL;
+
+			Safe_Release(pGameObject);
+		}
+	}
+
+	m_RenderObjects[RENDER_NONALPHA_TERRAIN].clear();
+	// Restore default states
+	ClearRenderStates();
 	
 	// 위에서 War를 먼저 찍고 그 다음 다른 객체들을 찍도록 하자.
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])

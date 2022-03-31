@@ -41,8 +41,9 @@ private:
 
 private:
 	HRESULT Render_Priority();
+
+	HRESULT Render_Shadow();
 	
-	HRESULT Render_Priority_Terrain();
 	HRESULT Render_NonAlpha();
 	HRESULT Render_NonAlpha_War();
 	HRESULT Render_NonLight();

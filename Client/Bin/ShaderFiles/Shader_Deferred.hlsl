@@ -13,7 +13,8 @@ cbuffer Matrices
 {
 	matrix			g_TransformMatrix;
 	matrix			g_ProjMatrix;
-	matrix			g_ShadowTransform; // 그림자행렬 VP
+	matrix			g_ShadowTransform_Env; // 그림자행렬 VP
+	matrix			g_ShadowTransform_Objects; // 그림자행렬 VP
 
 };
 
@@ -45,7 +46,8 @@ texture2D		g_HitPowerTexture;
 texture2D		g_ShadeTexture;
 texture2D		g_SpecularTexture;
 
-Texture2D		g_ShadowMap;
+Texture2D		g_ShadowMap_Env;
+Texture2D		g_ShadowMap_Objects;
 
 
 // ----------
@@ -152,25 +154,42 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+	// -------------------------
+	// Shadow Mapping
+	// -------------------------
 	// Only the first light casts a shadow.
-	float shadow = 1.f;
-	// 3번째 인자는 물방울책에서 pin.ShadowPosH이다.
-	// 1) pin.ShadowPosH는 vs에서 vout.ShadowPosH = mul(float4(vin.PosL, 1.0f), gShadowTransform);
-	// 2) gShadowTransform는 world*shadowTransform
-	// 즉 vin.PosL * world*shadowTransform = vWorldPos * g_ShadowTransform
-	// 이 아니한가.. 
-	shadow = CalcShadowFactor(samShadow, g_ShadowMap, mul(vWorldPos, g_ShadowTransform));
+	// CalcShadowFactor 인자
+		// 3번째 인자는 물방울책에서 pin.ShadowPosH이다.
+		// 1) pin.ShadowPosH는 vs에서 vout.ShadowPosH = mul(float4(vin.PosL, 1.0f), gShadowTransform);
+		// 2) gShadowTransform는 world*shadowTransform
+		// 즉 vin.PosL * world*shadowTransform = vWorldPos * g_ShadowTransform
 
-	// Sum the light contribution from each light source.
 	float4 A, D, S;
+	float shadowEnv = 1.f;
+	float shadowObjects = 1.f;
+
 	ComputeDirectionalLight(g_Material, g_DirLight, vNormal, toEyeW.xyz, A, D, S);
+
+
+	// 각 오브젝트 그림자를 적용한다
+	{
+		shadowObjects = CalcShadowFactor(samShadow, g_ShadowMap_Objects, mul(vWorldPos, g_ShadowTransform_Objects));
+	}
+
+	// 먼저 지형 그림자를 적용한다 
+	{
+		shadowEnv = CalcShadowFactor(samShadow, g_ShadowMap_Env, mul(vWorldPos, g_ShadowTransform_Env));
+	}
+
+
 	ambient += A;
-	diffuse += shadow * D;
-	spec += shadow * S;
+	diffuse += min(shadowEnv, shadowObjects) * D; 
+	spec += min(shadowEnv, shadowObjects) * S;
 
 	Out.vShade = (ambient + diffuse);
 	Out.vShade.a = 1.f;
 	Out.vSpecular = spec;
+
 
 	return Out;
 }

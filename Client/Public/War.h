@@ -119,8 +119,8 @@ public:
 private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_BoneMatrix();
-	HRESULT SetUp_ConstantTable(bool drawOutLine, int modelIdx = 0);
-	HRESULT SetUp_Ruin_ConstantTable(bool drawOutLine);
+	HRESULT SetUp_ConstantTable(_uint iPssIndex, bool drawOutLine, int modelIdx = 0);
+	HRESULT SetUp_Ruin_ConstantTable(_uint iPassIndex, bool drawOutLine);
 
 	HRESULT War_Render(_uint iPassIndex = 0);
 	HRESULT War_Outline_Render(_uint iPassIndex = 0);

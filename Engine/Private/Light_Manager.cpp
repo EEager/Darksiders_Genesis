@@ -15,12 +15,12 @@ CLight_Manager::CLight_Manager()
 {
 }
 
-LIGHTDESC * CLight_Manager::Get_LightDesc(_uint iIndex)
+LIGHTDESC* CLight_Manager::Get_LightDesc(_uint iIndex)
 {
 	auto	iter = m_Lights.begin();
 
 	for (_uint i = 0; i < iIndex; ++i)
-		++iter;	
+		++iter;
 	if (iter == m_Lights.end())
 		return nullptr;
 
@@ -68,9 +68,9 @@ HRESULT CLight_Manager::NativeConstruct(ID3D11Device* pDevice, ID3D11DeviceConte
 	return S_OK;
 }
 
-HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const LIGHTDESC & LightDesc)
+HRESULT CLight_Manager::Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const LIGHTDESC& LightDesc)
 {
-	CLight*			pLight = CLight::Create(pDevice, pDeviceContext, LightDesc);
+	CLight* pLight = CLight::Create(pDevice, pDeviceContext, LightDesc);
 
 	if (nullptr == pLight)
 		return E_FAIL;
@@ -79,78 +79,119 @@ HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * 
 
 	return S_OK;
 }
-CGameObject* m_pTarget;
-CTransform* m_pTargetTransform;
-HRESULT CLight_Manager::Render()
+
+HRESULT CLight_Manager::Update(_float fTimeDelta)
 {
-	if (!m_Lights.empty())
+	// War 타겟팅을 하자
+	static bool targetingOnce = false;
+	if (!targetingOnce)
 	{
-		// 타겟팅 설정하자
-		static bool targetingOnce = false;
-		if (!targetingOnce)
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
+		if (pLayer_War)
 		{
-			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-			auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
-			if (pLayer_War)
-			{
-				m_pTarget = pLayer_War->front();
-				//Safe_AddRef(m_pTarget);
-				m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
-				targetingOnce = true;
-			}
-			RELEASE_INSTANCE(CGameInstance)
+			m_pTarget = pLayer_War->front();
+			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+			targetingOnce = true;
 		}
-
-		// Only the first "main" light casts a shadow.
-		XMVECTOR lightDir = XMVector3Normalize(XMLoadFloat3(&m_Lights.front()->m_LightDesc.vDirection));
-
-		// 아래 정보는 전체 Scene 기준으로 변수를 설정하였음
-		// 빛타겟포지션
-		//XMVECTOR targetPos = XMVectorSet(502.f, 32.f-80.f, 461.f+40.f, 1.0f);
-		XMVECTOR targetPos = m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) + XMVectorSet(0.f, 0.f, 0.f, 1.f);
-		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-		// 빛위치
-		_float SceneRadius = 20.f;
-		XMVECTOR lightPos = SceneRadius * -lightDir + targetPos;
-		  
-		// 빛의 뷰스페이스 변환 행렬
-		XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
-
-		// Transform bounding sphere to light space.
-		XMFLOAT3 sphereCenterLS;
-		XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
-		
-		
-		//SceneRadius = 10.f;
-
-		// Ortho frustum in light space encloses scene.
-		float l = sphereCenterLS.x - SceneRadius;
-		float r = sphereCenterLS.x + SceneRadius;
-
-		float b = sphereCenterLS.y - SceneRadius;
-		float t = sphereCenterLS.y + SceneRadius;
-
-		float n = sphereCenterLS.z - SceneRadius;
-		//sphereCenterLS.z - SceneRadius;
-		float f = sphereCenterLS.z + SceneRadius;
-		XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
-
-		// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-		XMMATRIX T(
-			0.5f, 0.0f, 0.0f, 0.0f,
-			0.0f, -0.5f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			0.5f, 0.5f, 0.0f, 1.0f);
-
-		XMMATRIX S = V * P * T;
-
-		XMStoreFloat4x4(&m_LightView, V);
-		XMStoreFloat4x4(&m_LightProj, P);
-		XMStoreFloat4x4(&m_ShadowTransform, S);
+		RELEASE_INSTANCE(CGameInstance)
 	}
 
 
+	// 첫번째 Directional 광원의 위치를 업데이트한다.
+	if (!m_Lights.empty())
+	{
+		XMVECTOR lightDir = XMVector3Normalize(XMLoadFloat3(&m_Lights.front()->m_LightDesc.vDirection));
+
+		// 광원 시점의 여러 Matrics 를 생성한다
+		// 먼저 Enviroment그림자를 만들기위한 행렬들을 생성한다.
+		{
+
+
+			// 빛타겟포지션
+			XMVECTOR targetPos = XMVectorSet(502.f, 32.f - 80.f, 461.f + 40.f, 1.0f);
+			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+			// 빛위치는 플레이어기준으로 계산 
+			_float SceneRadius = 470.f;
+			XMVECTOR lightPos = -2 * SceneRadius * lightDir + targetPos;
+
+			// 빛의 뷰스페이스 변환 행렬
+			XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
+
+			// Transform bounding sphere to light space.
+			XMFLOAT3 sphereCenterLS;
+			XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
+
+			// Ortho frustum in light space encloses scene.
+			float l = sphereCenterLS.x - SceneRadius;
+			float b = sphereCenterLS.y - SceneRadius;
+			float n = sphereCenterLS.z - SceneRadius;
+			float r = sphereCenterLS.x + SceneRadius;
+			float t = sphereCenterLS.y + SceneRadius;
+			float f = sphereCenterLS.z + SceneRadius;
+			XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+
+			// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+			XMMATRIX T(
+				0.5f, 0.0f, 0.0f, 0.0f,
+				0.0f, -0.5f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.5f, 0.5f, 0.0f, 1.0f);
+
+			XMMATRIX S = V * P * T;
+
+			XMStoreFloat4x4(&m_LightView_Env, V);
+			XMStoreFloat4x4(&m_LightProj_Env, P);
+			XMStoreFloat4x4(&m_ShadowTransform_Env, S);
+		}
+
+		// Object 그림자들을출력하기위해 확대가 필요하다 
+		{
+			// 빛타겟포지션
+			XMVECTOR targetPos = m_pTargetTransform->Get_State(CTransform::STATE_POSITION);
+			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+			// 빛위치는 플레이어기준으로 계산 
+			_float SceneRadius = 18.f;
+			XMVECTOR lightPos = -2 * SceneRadius * lightDir + targetPos;
+
+			// 빛의 뷰스페이스 변환 행렬
+			XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
+
+			// Transform bounding sphere to light space.
+			XMFLOAT3 sphereCenterLS;
+			XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
+
+			// Ortho frustum in light space encloses scene.
+			float l = sphereCenterLS.x - SceneRadius;
+			float b = sphereCenterLS.y - SceneRadius;
+			float n = sphereCenterLS.z - SceneRadius;
+			float r = sphereCenterLS.x + SceneRadius;
+			float t = sphereCenterLS.y + SceneRadius;
+			float f = sphereCenterLS.z + SceneRadius;
+			XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+
+			// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+			XMMATRIX T(
+				0.5f, 0.0f, 0.0f, 0.0f,
+				0.0f, -0.5f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.5f, 0.5f, 0.0f, 1.0f);
+
+			XMMATRIX S = V * P * T;
+
+			XMStoreFloat4x4(&m_LightView_Objects, V);
+			XMStoreFloat4x4(&m_LightProj_Objects, P);
+			XMStoreFloat4x4(&m_ShadowTransform_Objects, S);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CLight_Manager::Render()
+{
 	CTarget_Manager* pTarget_Manager = GET_INSTANCE(CTarget_Manager);
 
 	// view포트 정보 행렬
@@ -182,20 +223,26 @@ HRESULT CLight_Manager::Render()
 	m_pVIBuffer->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
 
 	// Bind for ShadowMap
-	// 각 오브젝트들이 저장한 그림자 깊이를 넘겨주자
-	m_pVIBuffer->Set_ShaderResourceView("g_ShadowMap", pTarget_Manager->Get_SRV(TEXT("Target_Shadow")));
-	// 그림자행렬을 넘겨주어, 오브젝트들의 그림자를 찍어주도록하자
-	m_pVIBuffer->Set_RawValue("g_ShadowTransform", &XMMatrixTranspose(XMLoadFloat4x4(&m_ShadowTransform)), sizeof(_matrix));
+	// 1)지형들이 저장한 그림자 깊이를 넘겨주자
+	m_pVIBuffer->Set_ShaderResourceView("g_ShadowMap_Env", pTarget_Manager->Get_SRV(TEXT("Target_Shadow_Env")));
+	// 2)각 오브젝트들이 저장한 그림자 깊이를 넘겨주자
+	m_pVIBuffer->Set_ShaderResourceView("g_ShadowMap_Objects", pTarget_Manager->Get_SRV(TEXT("Target_Shadow_Obj")));
+	// 3)그림자행렬을 넘겨주어, 오브젝트들의 그림자를 찍어주도록하자
+		// 먼저 지형 그림자 행렬 
+	m_pVIBuffer->Set_RawValue("g_ShadowTransform_Env", &XMMatrixTranspose(XMLoadFloat4x4(&m_ShadowTransform_Env)), sizeof(_matrix));
+		// 오브젝트들의 그림자 행렬
+	m_pVIBuffer->Set_RawValue("g_ShadowTransform_Objects", &XMMatrixTranspose(XMLoadFloat4x4(&m_ShadowTransform_Objects)), sizeof(_matrix));
 
 	for (auto& pLight : m_Lights)
 	{
 		pLight->Render(m_pVIBuffer);
-	}
+	}  
 
 	RELEASE_INSTANCE(CTarget_Manager);
 
 	return S_OK;
 }
+
 
 
 void CLight_Manager::Free()

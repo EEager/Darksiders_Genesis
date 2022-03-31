@@ -189,15 +189,14 @@ HRESULT CFork::SetUp_ConstantTable(_uint iPassIndex)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// Bind Transform
+	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	if (iPassIndex == 3) // ShadowMap
 	{
-		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
-		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightView)), sizeof(_float4x4));
-		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&CLight_Manager::GetInstance()->m_LightProj)), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
 	}
 	else
 	{
-		m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 	}

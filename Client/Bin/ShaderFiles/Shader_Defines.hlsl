@@ -62,7 +62,8 @@ SamplerComparisonState samShadow
 	AddressW = BORDER;
 	BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	ComparisonFunc = LESS;
+	//ComparisonFunc = LESS;
+	ComparisonFunc = GREATER;
 };
 
 
