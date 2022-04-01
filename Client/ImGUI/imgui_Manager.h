@@ -11,6 +11,7 @@ BEGIN(Engine)
 class CGameInstance;
 class CCollider;
 class CNavigation;
+class CTransform;
 END
 
 class CImguiManager
@@ -48,6 +49,9 @@ private:
 	{
 		ImGui::PopStyleColor(3);
 	}
+
+public:
+	void Transform_Control(class CTransform* pTransform, int cloneIdx, bool* pbUseImGui);
 
 	// =========================================
 	// ¸¶¿ì½º en/disable

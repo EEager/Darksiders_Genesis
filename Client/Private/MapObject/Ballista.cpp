@@ -45,11 +45,11 @@ _int CBallista::LateTick(_float fTimeDelta)
 
 	// AddRenderGroup
 	bool AddRenderGroup = false;
-	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f))
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 4.f))
 		AddRenderGroup = true;
 
 #ifdef USE_IMGUI
-	if (m_bUseImGui) // 음... 이거 고려해봐야할듯? 
+	if (m_bUseImGui)
 		AddRenderGroup = true;
 #endif
 
@@ -60,9 +60,6 @@ _int CBallista::LateTick(_float fTimeDelta)
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
 	}
-
-	//// Collider 
-	//pGameInstance->Add_Collision(this);
 
 	RELEASE_INSTANCE(CGameInstance);
 	return 0;
@@ -93,54 +90,7 @@ HRESULT CBallista::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr
 #ifdef USE_IMGUI
 	if (m_bUseImGui)
 	{
-		char TagTmp[32];
-		sprintf_s(TagTmp, "Edit##%d", m_CloneIdx);
-		ImGui::Begin(TagTmp, &m_bUseImGui);
-		{
-			float vec3f[3] = { 0,0,0 };
-			_vector temp = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-			vec3f[0] = XMVectorGetX(temp);
-			vec3f[1] = XMVectorGetY(temp);
-			vec3f[2] = XMVectorGetZ(temp);
-
-			// Position 
-			if (ImGui::DragFloat3("Position", vec3f, 1.f))
-			{
-				m_pTransformCom->Set_State(CTransform::STATE_POSITION, vec3f);
-			}
-
-			// Angle
-			{
-				static _float rotateSnap = 0.1f; // 10번하면 90도임
-				ImGui::InputFloat("Snap Angle", &rotateSnap, 0.1f);
-
-				if (ImGui::Button("Rt -X"))
-					m_pTransformCom->Turn({ 1.f,0.f,0.f }, -rotateSnap);
-				ImGui::SameLine();
-				if (ImGui::Button("Rt +X"))
-					m_pTransformCom->Turn({ 1.f,0.f,0.f }, rotateSnap);
-
-				if (ImGui::Button("Rt -Y"))
-					m_pTransformCom->Turn({ 0.f,1.f,0.f }, -rotateSnap);
-				ImGui::SameLine();
-				if (ImGui::Button("Rt +Y"))
-					m_pTransformCom->Turn({ 0.f,1.f,0.f }, rotateSnap);
-
-				if (ImGui::Button("Rt -Z"))
-					m_pTransformCom->Turn({ 0.f,0.f,1.f }, -rotateSnap);
-				ImGui::SameLine();
-				if (ImGui::Button("Rt +Z"))
-					m_pTransformCom->Turn({ 0.f,0.f,1.f }, rotateSnap);
-
-				if (ImGui::Button("Reset"))
-				{
-					m_pTransformCom->Set_State(CTransform::STATE::STATE_RIGHT, XMVectorSet(1.f, 0.f, 0.f, 0.f) * m_pTransformCom->Get_Scale(CTransform::STATE::STATE_RIGHT));
-					m_pTransformCom->Set_State(CTransform::STATE::STATE_UP, XMVectorSet(0.f, 1.f, 0.f, 0.f) * m_pTransformCom->Get_Scale(CTransform::STATE::STATE_UP));
-					m_pTransformCom->Set_State(CTransform::STATE::STATE_LOOK, XMVectorSet(0.f, 0.f, 1.f, 0.f) * m_pTransformCom->Get_Scale(CTransform::STATE::STATE_LOOK));
-				}
-			}
-		}
-		ImGui::End();
+		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
 	}
 #endif
 
@@ -150,7 +100,11 @@ HRESULT CBallista::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr
 HRESULT CBallista::SetUp_Component()
 {
 	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+	CTransform::TRANSFORMDESC		TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+	TransformDesc.fSpeedPerSec = 7.f;
+	TransformDesc.fRotationPerSec = XMConvertToRadians(10.0f);
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
 		return E_FAIL;
 
 	/* For.Com_Renderer*/
@@ -160,15 +114,6 @@ HRESULT CBallista::SetUp_Component()
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-
-	//// Collider 
-	///* For.Com_AABB */
-	//CCollider::COLLIDERDESC		ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-	//ColliderDesc.vPivot = _float3(1.f, 1.f, 1.f);
-	//ColliderDesc.vSize = _float3(2.f, 2.f, 2.f);
-	//ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
-	//__super::Add_Collider(&ColliderDesc, L"COL_MONSTER_BODY1");
 
 	return S_OK;
 }
@@ -198,9 +143,6 @@ HRESULT CBallista::SetUp_ConstantTable(_uint iPassIndex)
 
 	// Branch to Use Emissive Mapping
 	m_pModelCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
-
-	// 피격시 색상 변경할꺼다.
-	m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, 0.f, 0.f, 0.f), sizeof(_vector));
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;

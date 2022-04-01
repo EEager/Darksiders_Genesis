@@ -46,9 +46,6 @@ private:
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
 
-private:
-	_float m_fHitPower = 0.f;
-
 public:	
 	static CBallista* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;

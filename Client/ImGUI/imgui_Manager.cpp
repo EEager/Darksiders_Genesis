@@ -938,5 +938,58 @@ void CImguiManager::ShowNaviMeshControlWindow()
 	ImGui::End();
 }
 
+void CImguiManager::Transform_Control(class CTransform* pTransform, int cloneIdx, bool* pbUseImGui)
+{
+	char TagTmp[32];
+	sprintf_s(TagTmp, "Edit##%d", cloneIdx);
+	ImGui::Begin(TagTmp, pbUseImGui);
+	{
+		float vec3f[3] = { 0,0,0 };
+		_vector temp = pTransform->Get_State(CTransform::STATE_POSITION);
+		vec3f[0] = XMVectorGetX(temp);
+		vec3f[1] = XMVectorGetY(temp);
+		vec3f[2] = XMVectorGetZ(temp);
+
+		// Position 
+		if (ImGui::DragFloat3("Position", vec3f, 1.f))
+		{
+			pTransform->Set_State(CTransform::STATE_POSITION, vec3f);
+		}
+
+		// Angle
+		{
+			static _float rotateSnap = 0.1f; // 10번하면 90도임
+			ImGui::InputFloat("Snap Angle", &rotateSnap, 0.1f);
+
+			if (ImGui::Button("Rt -X"))
+				pTransform->Turn({ 1.f,0.f,0.f }, -rotateSnap);
+			ImGui::SameLine();
+			if (ImGui::Button("Rt +X"))
+				pTransform->Turn({ 1.f,0.f,0.f }, rotateSnap);
+
+			if (ImGui::Button("Rt -Y"))
+				pTransform->Turn({ 0.f,1.f,0.f }, -rotateSnap);
+			ImGui::SameLine();
+			if (ImGui::Button("Rt +Y"))
+				pTransform->Turn({ 0.f,1.f,0.f }, rotateSnap);
+
+			if (ImGui::Button("Rt -Z"))
+				pTransform->Turn({ 0.f,0.f,1.f }, -rotateSnap);
+			ImGui::SameLine();
+			if (ImGui::Button("Rt +Z"))
+				pTransform->Turn({ 0.f,0.f,1.f }, rotateSnap);
+
+			if (ImGui::Button("Reset"))
+			{
+				pTransform->Set_State(CTransform::STATE::STATE_RIGHT, XMVectorSet(1.f, 0.f, 0.f, 0.f) * pTransform->Get_Scale(CTransform::STATE::STATE_RIGHT));
+				pTransform->Set_State(CTransform::STATE::STATE_UP, XMVectorSet(0.f, 1.f, 0.f, 0.f) * pTransform->Get_Scale(CTransform::STATE::STATE_UP));
+				pTransform->Set_State(CTransform::STATE::STATE_LOOK, XMVectorSet(0.f, 0.f, 1.f, 0.f) * pTransform->Get_Scale(CTransform::STATE::STATE_LOOK));
+			}
+		}
+	}
+	ImGui::End();
+}
+
+
 
 #endif // USE_IMGUI

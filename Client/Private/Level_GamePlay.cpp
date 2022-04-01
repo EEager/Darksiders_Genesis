@@ -43,6 +43,12 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	if (FAILED(Ready_Layer_Object()))
 		return E_FAIL;
 
+	// Load Dat Files
+	{
+		// Layer_Ballista.dat 파일을 읽어서 해당 레이어에 추가한다
+		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Ballista", LEVEL_GAMEPLAY);
+	}
+
 	 
 	return S_OK;
 }

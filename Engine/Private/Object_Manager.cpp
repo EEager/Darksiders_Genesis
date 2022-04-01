@@ -310,12 +310,18 @@ HRESULT CObject_Manager::Save_ObjectsToFile(const _tchar* pLayerTag, _uint iLeve
 	return S_OK;
 }
 
-_tchar* ToLiteralTag(const _tchar* pTag)
+// 툴작업시 태그를 리터널 포인터로 변경하여 각 오브젝트들이 가지고 잇는 멤버변수에 할당해주자
+const _tchar* ToLiteralTag(const _tchar* pTag)
 {
-	if (!lstrcmpW(pTag, L"Prototype_GameObject_Fork"))
-		return L"Prototype_GameObject_Fork";
-	if (!lstrcmpW(pTag, L"Layer_Fork"))
-		return L"Layer_Fork";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Fork")) return L"Prototype_GameObject_Fork";
+	if (!lstrcmpW(pTag, L"Layer_Fork")) return L"Layer_Fork";
+
+	if (!lstrcmpW(pTag, L"Layer_Ballista"))	return L"Layer_Ballista";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Ballista"))	return L"Prototype_GameObject_Ballista";
+
+	assert(0);
+
+	return nullptr;
 }
 
 // 파일을 읽어 객체를 클론한다.
@@ -349,8 +355,8 @@ HRESULT CObject_Manager::Load_ObjectsFromFile(const _tchar* pLayerTag, _uint iLe
 
 #if 1 // HARD CODING
 		// 이렇게 로컬 포인터를 던져주면 스택 빠져나오면서 문제가 생기기 리터널 포인터로 만들어주자. 
-		_tchar* pLayerTag = ToLiteralTag(layerTag);
-		_tchar* pPrototypeTag = ToLiteralTag(prototypeTag);
+		const _tchar* pLayerTag = ToLiteralTag(layerTag);
+		const _tchar* pPrototypeTag = ToLiteralTag(prototypeTag);
 #endif
 		CGameObject* pGameObject = nullptr;
 		Add_GameObjectToLayer(iLevelIndex, pLayerTag, pPrototypeTag, nullptr, &pGameObject);

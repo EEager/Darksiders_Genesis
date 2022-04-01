@@ -194,7 +194,7 @@ HRESULT CLoader::Add_GameObject()
 		CHollowLord::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	// Objects
+	// Map Objects
 	/* For.Prototype_GameObject_Ballista */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista"),
 		CBallista::Create(m_pDevice, m_pDeviceContext))))
