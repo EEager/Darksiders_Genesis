@@ -45,7 +45,7 @@ _int CBallista::LateTick(_float fTimeDelta)
 
 	// AddRenderGroup
 	bool AddRenderGroup = false;
-	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 4.f))
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 6.f))
 		AddRenderGroup = true;
 
 #ifdef USE_IMGUI

@@ -121,11 +121,17 @@
     <Filter Include="02.GameObjects\MapObject">
       <UniqueIdentifier>{5d49c096-dcb1-4be9-a98f-88f2c201b71a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\MapObject\Fork">
-      <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\MapObject\Dynamic">
+      <UniqueIdentifier>{65fb60b5-e7d8-48c3-a024-b218a234ba12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\MapObject\Ballista">
+    <Filter Include="02.GameObjects\MapObject\Dynamic\Ballista">
       <UniqueIdentifier>{96ae260a-c9d0-4be2-aab3-c86a965612e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\MapObject\Static">
+      <UniqueIdentifier>{f69d6113-85e9-4687-aa03-15f2e7910ea1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\MapObject\Static\Fork">
+      <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +178,7 @@
       <Filter>98.Default</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Fork.h">
-      <Filter>02.GameObjects\MapObject\Fork</Filter>
+      <Filter>02.GameObjects\MapObject\Static\Fork</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Client_Extern.h">
       <Filter>98.Default</Filter>
@@ -253,7 +259,7 @@
       <Filter>96.ImGUI\Misc</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MapObject\Ballista.h">
-      <Filter>02.GameObjects\MapObject\Ballista</Filter>
+      <Filter>02.GameObjects\MapObject\Dynamic\Ballista</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -291,7 +297,7 @@
       <Filter>96.ImGUI\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Fork.cpp">
-      <Filter>02.GameObjects\MapObject\Fork</Filter>
+      <Filter>02.GameObjects\MapObject\Static\Fork</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\War.cpp">
       <Filter>02.GameObjects\Player\War</Filter>
@@ -366,7 +372,7 @@
       <Filter>96.ImGUI\Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\Ballista.cpp">
-      <Filter>02.GameObjects\MapObject\Ballista</Filter>
+      <Filter>02.GameObjects\MapObject\Dynamic\Ballista</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
