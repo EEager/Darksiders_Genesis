@@ -52,10 +52,12 @@ private:
 	const char*	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
 	const char*	m_pNextState = "Legion_Mesh.ao|Legion_Idle";
 
-	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
-	void DoState(float fTimeDelta); // m_eCurState Execute 
-	_float Get_Target_Dis(float fTimeDelta = 0.f);
-	_float GetDegree_Target();
+	virtual void UpdateState(); // m_eCurState Exit, m_eNextState Enter
+	virtual void DoGlobalState(float fTimeDelta);
+	virtual void DoState(float fTimeDelta); // m_eCurState Execute 
+	_float Get_Target_Dis(class CTransform* pTargetTransform);
+	_float GetDegree_Target(class CTransform* pTargetTransform);
+	_float GetDegree_Target_Ballista(class CTransform* pTargetTransform, class CTransform* pBallistaTransformCom);
 
 private:
 	const _float ATK_RANGE = 4.5f;
@@ -67,6 +69,8 @@ private:
 	_float m_fTimeIdle = 0.f;
 	_float m_fTimeKnockBackLoop = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
+
+	class CGameObject* m_pBallista = nullptr;
 	//----------------------------------------------
 
 private:

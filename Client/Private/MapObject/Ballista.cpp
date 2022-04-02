@@ -18,7 +18,6 @@ CBallista::CBallista(const CBallista & rhs)
 
 HRESULT CBallista::NativeConstruct_Prototype()
 {	
-
 	return S_OK;
 }
 
@@ -27,7 +26,7 @@ HRESULT CBallista::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pModelCom->SetUp_Animation("Ballista_A.ao|Ballista_A_Full");
+	m_pModelCom->SetUp_Animation("Ballista_A.ao|Balliista_A_Idle");
 
 	return S_OK;
 }
@@ -35,6 +34,24 @@ HRESULT CBallista::NativeConstruct(void * pArg)
 _int CBallista::Tick(_float fTimeDelta)
 {
 	m_pModelCom->Update_Animation(fTimeDelta);
+
+	// UpdateState
+	{
+		if (m_pCurState != m_pNextState)
+		{
+			_bool isLoop = false;
+
+			if (m_pNextState == "Ballista_A.ao|Balliista_A_Idle" ||
+				m_pNextState == "Ballista_A.ao|Ballista_A_Full"
+				)
+			{
+				isLoop = true;
+			}
+
+			m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+			m_pCurState = m_pNextState;
+		}
+	}
 
 	return _int();
 }

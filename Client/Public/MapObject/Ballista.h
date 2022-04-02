@@ -12,6 +12,7 @@ END
 BEGIN(Client)
 class CBallista final : public CGameObject
 {
+	friend class CLegion;
 
 private:
 	// 바리스타 화살
@@ -45,6 +46,12 @@ private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
+
+	// Legion 이 탑승중인지 아닌지 판단하자
+private:
+	_bool m_bLegionOn = false;
+	const char* m_pCurState = "Ballista_A.ao|Balliista_A_Idle";
+	const char* m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
 
 public:	
 	static CBallista* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

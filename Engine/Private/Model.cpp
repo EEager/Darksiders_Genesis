@@ -282,6 +282,17 @@ _bool CModel::Get_Animation_isFinished(const char* pNameKey)
 	return m_Animations[iAnimIndex]->Get_isFinished();
 }
 
+_uint CModel::Get_Current_KeyFrame_Index(const char* pNameKey)
+{
+	auto findIter = m_AniNameKey_IdxValue_Map.find(pNameKey);
+	assert(findIter != m_AniNameKey_IdxValue_Map.end());
+
+	_uint iAnimIndex = findIter->second;
+	assert(iAnimIndex < m_iNumAnimation);
+
+	return m_Animations[iAnimIndex]->GetCurIdx();
+}
+
 HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW, const char* pRootNodeName, CNavigation* pNaviCom, IN OBJECT_DIR eDir)
 {
 	if (TYPE_ANIM != m_eType) // TYPE_NONANIM, TYPE_ANIM_USE_OTHER 인경우에는 Update안한다. TYPE_ANIM_USE_OTHER 경우 Update 하면 2번 업데이트된다. 

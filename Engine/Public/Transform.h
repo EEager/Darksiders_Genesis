@@ -77,7 +77,12 @@ public:
 	void Turn(_fvector vAxis, _float fTimeDelta);
 	void TurnTo_AxisY_Degree(_float fDegreeGoal, _float fTimeDelta);
 	void LookAt_Lerp(_fvector vTargetPos, _float fRatio);
+
 	void LookAt(_fvector vTargetPos);
+	void LookAtBackward(_fvector vTargetPos);
+
+	void CTransform::Set_Look(_fvector vLook);
+	
 
 private:
 	_float4x4		m_WorldMatrix;

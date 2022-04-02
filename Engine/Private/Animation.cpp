@@ -81,6 +81,7 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 			matLatestTransform = ((*m_LatestChannels)[idx])->Get_TransformationMatrix(); // 이전 애니메이션과 보간하자
 
 		_uint		iCurrentKeyFrameIndex = m_Channels[idx]->Get_KeyFrameIndex();
+		m_iCurrentIdx = iCurrentKeyFrameIndex;
 
 		if (true == m_isFinished || m_isBeginFirst) // 마지막이거나, 첫 프레임인 경우, 첫번째 키프레임부터 시작한다. 
 		{

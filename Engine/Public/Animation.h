@@ -43,7 +43,7 @@ public:
 		m_isFinished = false;
 	}
 	// 해당 애니메이션이 끝나었느냐? 
-	_bool Get_isFinished() { return m_isFinished; int debug = 0;
+	_bool Get_isFinished() { return m_isFinished;
 	}
 
 private:
@@ -64,6 +64,13 @@ private:
 	_float			m_fTimeAcc = 0.0f;
 	_bool			m_bOnceFinished = false;
 	_bool			m_bOnceAnimated = false; // 애니메이션 가장~ 처음 것은 이전과 보간하지말자
+
+
+public:
+	_uint GetCurIdx() { return m_iCurrentIdx; }
+
+private:
+	_uint			m_iCurrentIdx = 0; // 현재 뼈들이 몇번째 키프레임 인덱스를 출력중인지.
 
 
 private:

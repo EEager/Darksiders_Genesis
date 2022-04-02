@@ -2,6 +2,8 @@
 #include "..\public\Monster\Legion.h"
 #include "GameInstance.h"
 
+#include "MapObject\Ballista.h"
+
 
 CLegion::CLegion(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CMonster(pDevice, pDeviceContext)
@@ -81,7 +83,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%30, 0.f, 431.f + rand() % 20, 1.f));
-	m_pModelCom->SetUp_Animation(m_pCurState, true);
+	m_pModelCom->SetUp_Animation(m_pCurState);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -91,8 +93,19 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 _int CLegion::Tick(_float fTimeDelta)
 {
-	if (CMonster::Tick(fTimeDelta) < 0)
-		return -1;
+	{
+		// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다
+		if (m_isDead)
+		{
+			// 죽기전에 바리스타 상태 초기화
+			static_cast<CBallista*>(m_pBallista)->m_bLegionOn = false;
+			static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+			return -1;
+		}
+
+		// 모든 몬스터는 Collider list 를 update해야한다
+		Update_Colliders(m_pTransformCom->Get_WorldMatrix());
+	}
 
 	// 타겟팅 설정하자
 	if (!m_bTargetingOnce)
@@ -119,7 +132,7 @@ _int CLegion::Tick(_float fTimeDelta)
 
 	// FSM
 	UpdateState();
-	CMonster::DoGlobalState(fTimeDelta);
+	DoGlobalState(fTimeDelta);
 	DoState(fTimeDelta);
 
 	// anim update : 로컬이동값 -> 월드이동반영
@@ -153,8 +166,12 @@ HRESULT CLegion::Render(_uint iPassIndex)
 		return -1;
 
 	// Weapon Render : ToDo 최적화
-	Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90), iPassIndex);
-	Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90), iPassIndex);
+
+	if (m_pBallista == nullptr)
+	{
+		Render_Weapon(m_pModelWeaponLCom, XMConvertToRadians(-90), iPassIndex);
+		Render_Weapon(m_pModelWeaponRCom, XMConvertToRadians(-90), iPassIndex);
+	}
 
 	return S_OK;
 }
@@ -284,11 +301,26 @@ void CLegion::UpdateState()
 	// --------------------------
 	// m_eNextState Enter
 	if (m_pNextState == "Legion_Mesh.ao|Legion_Idle" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Run_F"
+		m_pNextState == "Legion_Mesh.ao|Legion_Run_F" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Ballista_Full" 
+
 		)
 	{
 		isLoop = true;
 		m_eDir = OBJECT_DIR::DIR_F;
+	}
+	else if (
+		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" || 
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2" || 
+		m_pNextState == "Legion_Mesh.ao|Legion_Ballista_Idle"
+		)
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
 	}
 	// Atk States
 	else if (
@@ -300,18 +332,6 @@ void CLegion::UpdateState()
 	{
 		// 해당 상태에서 무기 콜라이더 키자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
-		m_eDir = OBJECT_DIR::DIR_F;
-		isLoop = false;
-	}
-	else if (
-		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" || 
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2"
-		)
-	{
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
@@ -330,6 +350,19 @@ void CLegion::UpdateState()
 	m_pCurState = m_pNextState;
 }
 
+void CLegion::DoGlobalState(float fTimeDelta)
+{
+	// 피격시 피 달게 하자 
+	if (m_bHitted)
+	{
+		m_fHitPower -= 0.01f;
+		if (m_fHitPower < 0)
+		{
+			m_fHitPower = 0.f;
+			m_bHitted = false;
+		}
+	}
+}
 
 // FSM
 void CLegion::DoState(float fTimeDelta)
@@ -337,28 +370,62 @@ void CLegion::DoState(float fTimeDelta)
 	//-----------------------------------------------------
 	if (m_pCurState == "Legion_Mesh.ao|Legion_Idle")
 	{
-		// 플레이어가 공격 반경 내에 있다면 공격. 근데 바로 하지는 말고 좀 쉬었다하자
-		_float disToTarget = Get_Target_Dis();
-		if (m_fTimeIdle < fTimeDelta && (disToTarget < ATK_RANGE))
+		// 바리스타 리스트 돌면서 근처에 있는 바리스타가 있는 경우 조종하러가자
+		if (m_pBallista == nullptr) // 이미 바리스타를 들고 있다면 무시~
 		{
-			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
-			int randNextState = rand() % 4;
-			if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
-			else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
-			else if (randNextState == 2) m_pNextState = "Legion_Mesh.ao|Legion_Attack_02";
-			else if (randNextState == 3) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Slam";
-	
-		}
-		else if (disToTarget < CHASE_RANGE)
-		{
-			// 플레이어가 추적 반경 안에 있다면 추적 
-			// 그러나 바로 추적하지 말고 1초정도 쉬었다가 추적하자
-			m_fTimeIdle += fTimeDelta;
-
-			if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY)
+			auto pList = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_Ballista");
+			for (auto pGameObject : *pList)
 			{
-				m_pNextState = "Legion_Mesh.ao|Legion_Run_F";
-				m_fTimeIdle = 0.f;
+				// 하지만 해당 바리스타에 누가 이미 탑승했다면 무시 
+				if (static_cast<CBallista*>(pGameObject)->m_bLegionOn)
+					continue;
+
+				// 근처에 있으면 그쪽으로 그냥 걸어가자 
+				CTransform* pBallistaTransformCom = static_cast<CTransform*>(pGameObject->Get_ComponentPtr(L"Com_Transform"));
+				if (pBallistaTransformCom == nullptr)
+					assert(0);
+
+				// 일정거리에 있는 발리스타를 탐색한다
+				if (XMVectorGetX(XMVector3Length(m_pTransformCom->Get_State(CTransform::STATE_POSITION) - pBallistaTransformCom->Get_State(CTransform::STATE_POSITION)))
+					< 45.f)
+				{
+					m_pBallista = pGameObject;
+					static_cast<CBallista*>(m_pBallista)->m_bLegionOn = true;
+					Safe_AddRef(m_pBallista);
+					break;
+				}
+			}
+		}
+
+		if (m_pBallista) // 바리스타가 있다면 그쪽으로 일단 걸어가자 
+		{
+			m_pNextState = "Legion_Mesh.ao|Legion_Run_F";
+		}
+		else
+		{
+			// 플레이어가 공격 반경 내에 있다면 공격. 근데 바로 하지는 말고 좀 쉬었다하자
+			_float disToTarget = Get_Target_Dis(m_pTargetTransform);
+			if (m_fTimeIdle < fTimeDelta && (disToTarget < ATK_RANGE))
+			{
+				m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
+				int randNextState = rand() % 4;
+				if (randNextState == 0)	m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
+				else if (randNextState == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
+				else if (randNextState == 2) m_pNextState = "Legion_Mesh.ao|Legion_Attack_02";
+				else if (randNextState == 3) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Slam";
+
+			}
+			else if (disToTarget < CHASE_RANGE)
+			{
+				// 플레이어가 추적 반경 안에 있다면 추적 
+				// 그러나 바로 추적하지 말고 1초정도 쉬었다가 추적하자
+				m_fTimeIdle += fTimeDelta;
+
+				if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY)
+				{
+					m_pNextState = "Legion_Mesh.ao|Legion_Run_F";
+					m_fTimeIdle = 0.f;
+				}
 			}
 		}
 
@@ -390,21 +457,56 @@ void CLegion::DoState(float fTimeDelta)
 	//-----------------------------------------------------
 	else if (m_pCurState == "Legion_Mesh.ao|Legion_Run_F")
 	{
-		// 추적하다가 공격 반경 내에 있다면 공격  
-		if (Get_Target_Dis() < ATK_RANGE)
+		if (m_pBallista) // 바리스타가 있다면 그쪽으로 추적하자. 
 		{
-			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
-			int randAtk = rand() % 4;
-			if (randAtk == 0) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
-			else if (randAtk == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
-			else if (randAtk == 2) m_pNextState = "Legion_Mesh.ao|Legion_Attack_02";
-			else if (randAtk == 3) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Slam";
+			CTransform* pBallistaTransformCom = static_cast<CTransform*>(m_pBallista->Get_ComponentPtr(L"Com_Transform"));
+
+			// 추적하다가 공격 반경 내에 있다면 발사 애니메이션 시작
+			if (Get_Target_Dis(pBallistaTransformCom) < 2.5f)
+			{
+				// Legion 방향은 바리스타가 바라보고 있는 방향으로
+				m_pTransformCom->Set_Look(pBallistaTransformCom->Get_State(CTransform::STATE_LOOK));
+				// Legion 위치는 바리스타를 바라본뒤
+				auto toPosition = pBallistaTransformCom->Get_State(CTransform::STATE_POSITION) 
+					+ m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * -2.5f /*왼쪽으로 조금옮기자*/
+					+ XMVectorSet(0.f, 1.f, 0.f, 0.f)/*위로 조금 옮기자*/ 
+					+ m_pTransformCom->Get_State(CTransform::STATE_LOOK) * -1.5f /*뒤쪽으로 조금 옮기자.*/;
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
+
+				// 바리스타도 애니메이션 바꿔주자. 
+				static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Ballista_A_Full";
+
+				// 바리스타 탈때는 높이 태우지말자
+				m_bHeight = false;
+
+				// Legion 애니메이션도 변경해줘야지
+				m_pNextState = "Legion_Mesh.ao|Legion_Ballista_Full";
+			}
+			// 추적은 바리스타 방향으로 돌면서 go Staright 
+			else
+			{
+				m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(pBallistaTransformCom), fTimeDelta * 10);
+				m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+			}
 		}
-		// 추적은 War 방향으로 돌면서 go Straight
 		else
 		{
-			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(), fTimeDelta * 10);
-			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+			// 추적하다가 공격 반경 내에 있다면 공격  
+			if (Get_Target_Dis(m_pTargetTransform) < ATK_RANGE)
+			{
+				m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
+				int randAtk = rand() % 4;
+				if (randAtk == 0) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Flurry";
+				else if (randAtk == 1) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Heavy";
+				else if (randAtk == 2) m_pNextState = "Legion_Mesh.ao|Legion_Attack_02";
+				else if (randAtk == 3) m_pNextState = "Legion_Mesh.ao|Legion_Atk_Slam";
+			}
+			// 추적은 War 방향으로 돌면서 go Straight
+			else
+			{
+				m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(m_pTargetTransform), fTimeDelta * 10);
+				m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+			}
 		}
 	}
 	//-----------------------------------------------------
@@ -422,7 +524,7 @@ void CLegion::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			_float disToTarget = Get_Target_Dis();
+			_float disToTarget = Get_Target_Dis(m_pTargetTransform);
 			if (disToTarget < ATK_RANGE)
 			{
 				m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
@@ -485,24 +587,66 @@ void CLegion::DoState(float fTimeDelta)
 			m_isDead = true;
 		}
 	}
+	// -----------------------------------------------------------------
+	/*else if (m_pCurState == "Legion_Mesh.ao|Legion_Ballista_Idle")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "Legion_Mesh.ao|Legion_Ballista_Full";
+		}
+	}*/
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Ballista_Full")
+	{
+		// 플레이어를 계속해서 추적하면서 위치를 변경한다. 돌리기 모션전까지 추적하다가 그 다음은 위치 변경안한다
+		_uint iKeyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
+		if (34 < iKeyFrameIdx && iKeyFrameIdx < 135)
+		{
+			// 먼저 바리스타 방향을 바꿔주자.
+			CTransform* pBallistaTransformCom = static_cast<CTransform*>(m_pBallista->Get_ComponentPtr(L"Com_Transform")); 
+			pBallistaTransformCom->TurnTo_AxisY_Degree(GetDegree_Target_Ballista(m_pTargetTransform, pBallistaTransformCom), fTimeDelta*5.f);
+
+			// Legion 방향은 바리스타가 바라보고 있는 방향으로
+			m_pTransformCom->Set_Look(pBallistaTransformCom->Get_State(CTransform::STATE_LOOK));
+			// Legion 위치는 바리스타를 바라본뒤
+			auto toPosition = pBallistaTransformCom->Get_State(CTransform::STATE_POSITION)
+				+ m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * -2.5f /*왼쪽으로 조금옮기자*/
+				+ XMVectorSet(0.f, 1.f, 0.f, 0.f)/*위로 조금 옮기자*/
+				+ m_pTransformCom->Get_State(CTransform::STATE_LOOK) * -1.5f /*뒤쪽으로 조금 옮기자.*/;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
+
+		}
+	}
 }
 
-_float CLegion::Get_Target_Dis(float fTimeDelta)
+_float CLegion::Get_Target_Dis(class CTransform* pTargetTransform)
 {
 	// 타겟간의 거리를 구한다
 	return XMVectorGetX(XMVector3Length(
-		m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) - 
+		pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) -
 		m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));
 }
 
-_float CLegion::GetDegree_Target()
+// targetPos과 내 위치간의 각도를 구하자.
+_float CLegion::GetDegree_Target(class CTransform* pTargetTransform)
 {
-	_vector targetPos = m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
+	_vector targetPos = pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
 	_vector myPos = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
 	_vector toTarget = XMVector4Normalize(targetPos - myPos);
 
 	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(toTarget,XMVectorSet(0.f, 0.f, 1.f, 0.f)) 
 		* (XMVectorGetX(toTarget) < 0.f ? -1.f : 1.f);
+	return XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
+}
+
+// Legion 이 가지고 있는 바리스타 중점<-->타겟 중점간의 각도를 구한다. 기준축은 -z축이다
+_float CLegion::GetDegree_Target_Ballista(class CTransform* pTargetTransform, class CTransform* pBallistaTransformCom)
+{
+	_vector targetPos = pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
+	_vector myPos = pBallistaTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
+	_vector toTarget = XMVector4Normalize(targetPos - myPos);
+
+	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(toTarget, XMVectorSet(0.f, 0.f, -1.f, 0.f))
+		* (XMVectorGetX(toTarget) < 0.f ? 1.f : -1.f);
 	return XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
 }
 
@@ -561,6 +705,7 @@ void CLegion::Free()
 {
 	Safe_Release(m_pVIHpBarGsBufferCom);
 	Safe_Release(m_pTarget);
+	Safe_Release(m_pBallista);
 	Safe_Release(m_pModelWeaponLCom);
 	Safe_Release(m_pModelWeaponRCom);
 	CMonster::Free();
