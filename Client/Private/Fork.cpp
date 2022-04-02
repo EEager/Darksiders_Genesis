@@ -35,10 +35,7 @@ HRESULT CFork::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(226.f + 2.f, 5.f, 426.f, 1.f));
-
-
-
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 5.f, 430.f, 1.f));
 
 	return S_OK;
 }

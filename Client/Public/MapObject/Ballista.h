@@ -46,6 +46,7 @@ private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
+	CModel* m_pModelGoblinCom = nullptr;
 
 	// Legion 이 탑승중인지 아닌지 판단하자
 private:

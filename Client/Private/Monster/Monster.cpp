@@ -132,19 +132,7 @@ HRESULT CMonster::SetUp_ConstantTable(_uint iPassIndex)
 		return E_FAIL;
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
-
-	// Bind Directional Light
-	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
-	DirectionalLight mDirLight;
-	mDirLight.Ambient = dirLightDesc.vAmbient;
-	mDirLight.Diffuse = dirLightDesc.vDiffuse;
-	mDirLight.Specular = dirLightDesc.vSpecular;
-	mDirLight.Direction = dirLightDesc.vDirection;
-	m_pModelCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
-
-	// Bind Material
-	m_pModelCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
-
+	
 	// Bind Transform
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	if (iPassIndex == 3) // shadow map
@@ -157,11 +145,6 @@ HRESULT CMonster::SetUp_ConstantTable(_uint iPassIndex)
 		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 	}
-
-	// Bind Position
-	_float4			vCamPosition;
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pModelCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
 
 	// Branch to Use Normal Mapping
 	m_pModelCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));

@@ -28,22 +28,23 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 
 	m_pModelCom->SetUp_Animation("Ballista_A.ao|Balliista_A_Idle");
 
+
 	return S_OK;
 }
 
 _int CBallista::Tick(_float fTimeDelta)
 {
-	// 키프레임 0일때 화살을 생성하자.
-	if (boltOnce == false && m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") == 0)
+	// 키프레임 1일때 화살을 생성하자.
+	// 그리고 고블린도 생성하자
+	if (boltOnce == false && m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") == 1)
 	{
 		if (FAILED(CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista_Bolt",
 			L"Prototype_GameObject_Ballista_Bolt", this)))
 			assert(0);
-
 		boltOnce = true;
 	}
 
-	// 키프레임 대충 10보다 클때 다시 락 풀고 
+	// 키프레임 대충 10 보다 클때 다시 락 풀고 
 	if (boltOnce)
 	{
 		if (m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") > 10)
@@ -53,6 +54,10 @@ _int CBallista::Tick(_float fTimeDelta)
 	}
 
 	m_pModelCom->Update_Animation(fTimeDelta);
+	if (m_pCurState == "Ballista_A.ao|Ballista_A_Full") // 바리스타 발사 동작중일때만 고블린 애니메이션 업데이트 하자
+	{
+		m_pModelGoblinCom->Update_Animation(fTimeDelta);
+	}
 
 	// UpdateState
 	{
@@ -68,6 +73,10 @@ _int CBallista::Tick(_float fTimeDelta)
 			}
 
 			m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+
+			if (m_pNextState == "Ballista_A.ao|Ballista_A_Full") // Idle일때는 대충 아무거나 던져서 발리스타 밑에 깔리게 끔하자.
+				m_pModelGoblinCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_Ballista_Full", isLoop);
+
 			m_pCurState = m_pNextState;
 		}
 	}
@@ -81,7 +90,7 @@ _int CBallista::LateTick(_float fTimeDelta)
 
 	// AddRenderGroup
 	bool AddRenderGroup = false;
-	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 6.f))
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 150.f))
 		AddRenderGroup = true;
 
 #ifdef USE_IMGUI
@@ -103,19 +112,63 @@ _int CBallista::LateTick(_float fTimeDelta)
 
 HRESULT CBallista::Render(_uint iPassIndex)
 {
-	if (FAILED(SetUp_ConstantTable(iPassIndex)))
-		return E_FAIL;
-
-	// Render
-	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
-
-	for (_uint i = 0; i < iNumMeshContainer; ++i)
+	// Render Ballista
 	{
-		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
-		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
-		m_pModelCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+		if (FAILED(SetUp_ConstantTable(iPassIndex)))
+			return E_FAIL;
 
-		m_pModelCom->Render(i, iPassIndex);
+		// Render
+		_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
+
+		for (_uint i = 0; i < iNumMeshContainer; ++i)
+		{
+			m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+
+			m_pModelCom->Render(i, iPassIndex);
+		}
+	}
+
+	// Render Goblin
+	if (m_pCurState == "Ballista_A.ao|Ballista_A_Full")
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		// Bind Transform
+		_float4x4	modelWorldMat;
+		_matrix goblinMat = XMMatrixRotationY(XMConvertToRadians(180)) * XMLoadFloat4x4(m_pTransformCom->Get_WorldFloat4x4Ptr());
+		XMStoreFloat4x4(&modelWorldMat, XMMatrixTranspose(goblinMat)); // 180도 y축으로 회전해서 바인드하자
+		m_pModelGoblinCom->Set_RawValue("g_WorldMatrix", &modelWorldMat, sizeof(_float4x4));
+		if (iPassIndex == 3) // shadow map
+		{
+			m_pModelGoblinCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+			m_pModelGoblinCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+		}
+		else
+		{
+			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelGoblinCom, "g_ViewMatrix");
+			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelGoblinCom, "g_ProjMatrix");
+		}
+
+		// Branch to Use Normal Mapping
+		m_pModelGoblinCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+
+		// Branch to Use Emissive Mapping
+		m_pModelGoblinCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+
+		RELEASE_INSTANCE(CGameInstance);
+
+		// Render
+		_uint	iNumMeshContainer = m_pModelGoblinCom->Get_NumMeshContainer();
+
+		for (_uint i = 0; i < iNumMeshContainer; ++i)
+		{
+			m_pModelGoblinCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+			m_pModelGoblinCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+			m_pModelGoblinCom->Set_ShaderResourceView("g_EmissiveTexture", i, aiTextureType_EMISSIVE);
+			m_pModelGoblinCom->Render(i, iPassIndex);
+		}
 	}
 
 	return S_OK;
@@ -151,6 +204,10 @@ HRESULT CBallista::SetUp_Component()
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_Model_Goblin */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Armor"), TEXT("Com_Model_Goblin"), (CComponent**)&m_pModelGoblinCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -221,6 +278,7 @@ void CBallista::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pModelGoblinCom);
 }
 
 
@@ -263,10 +321,10 @@ HRESULT CBallista_Bolt::NativeConstruct(void* pArg)
 		// 바리스타 볼트 충돌체
 		CCollider::COLLIDERDESC		ColliderDesc;
 		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
-		ColliderDesc.vPivot = _float3(0.f, 0.f, 0.f);
+		ColliderDesc.vPivot = _float3(0.f, -6.5f, -2.5f);
 		ColliderDesc.fRadius = 2.0f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
 
 		ZeroMemory(&m_spearDesc, sizeof(SPEARDESC));
 		m_spearDesc.pBoneMatrix = pBallistaModel->Get_CombinedMatrixPtr("Bone_BB_Bolt");
@@ -320,7 +378,6 @@ _int CBallista_Bolt::LateTick(_float fTimeDelta)
 
 	if (m_fLifeTime > 15) // 대충 3초 이상 살았으면 죽이자 
 		m_isDead = true;
-
 
 	if (1)
 	{
