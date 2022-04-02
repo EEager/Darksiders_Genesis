@@ -97,9 +97,12 @@ _int CLegion::Tick(_float fTimeDelta)
 		// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다
 		if (m_isDead)
 		{
-			// 죽기전에 바리스타 상태 초기화
-			static_cast<CBallista*>(m_pBallista)->m_bLegionOn = false;
-			static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+			// 바리스타 있는 경우, 죽기전에 바리스타 상태 초기화
+			if (m_pBallista)
+			{
+				static_cast<CBallista*>(m_pBallista)->m_bLegionOn = false;
+				static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+			}
 			return -1;
 		}
 
@@ -464,20 +467,23 @@ void CLegion::DoState(float fTimeDelta)
 			// 추적하다가 공격 반경 내에 있다면 발사 애니메이션 시작
 			if (Get_Target_Dis(pBallistaTransformCom) < 2.5f)
 			{
-				// Legion 방향은 바리스타가 바라보고 있는 방향으로
-				m_pTransformCom->Set_Look(pBallistaTransformCom->Get_State(CTransform::STATE_LOOK));
-				// Legion 위치는 바리스타를 바라본뒤
-				auto toPosition = pBallistaTransformCom->Get_State(CTransform::STATE_POSITION) 
-					+ m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * -2.5f /*왼쪽으로 조금옮기자*/
-					+ XMVectorSet(0.f, 1.f, 0.f, 0.f)/*위로 조금 옮기자*/ 
-					+ m_pTransformCom->Get_State(CTransform::STATE_LOOK) * -1.5f /*뒤쪽으로 조금 옮기자.*/;
-				m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
+				// 발사하기전 바리스타와 Legion 상태를 초기화 해주자
+				{
+					// Legion 방향은 바리스타가 바라보고 있는 방향으로
+					m_pTransformCom->Set_Look(pBallistaTransformCom->Get_State(CTransform::STATE_LOOK));
+					// Legion 위치는 바리스타를 바라본뒤
+					auto toPosition = pBallistaTransformCom->Get_State(CTransform::STATE_POSITION)
+						+ m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * -2.5f /*왼쪽으로 조금옮기자*/
+						+ XMVectorSet(0.f, 1.f, 0.f, 0.f)/*위로 조금 옮기자*/
+						+ m_pTransformCom->Get_State(CTransform::STATE_LOOK) * -1.5f /*뒤쪽으로 조금 옮기자.*/;
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
 
-				// 바리스타도 애니메이션 바꿔주자. 
-				static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Ballista_A_Full";
+					// 바리스타도 애니메이션 바꿔주자. 
+					static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Ballista_A_Full";
 
-				// 바리스타 탈때는 높이 태우지말자
-				m_bHeight = false;
+					// 바리스타 탈때는 높이 태우지말자
+					m_bHeight = false;
+				}
 
 				// Legion 애니메이션도 변경해줘야지
 				m_pNextState = "Legion_Mesh.ao|Legion_Ballista_Full";
@@ -588,18 +594,11 @@ void CLegion::DoState(float fTimeDelta)
 		}
 	}
 	// -----------------------------------------------------------------
-	/*else if (m_pCurState == "Legion_Mesh.ao|Legion_Ballista_Idle")
-	{
-		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
-		{
-			m_pNextState = "Legion_Mesh.ao|Legion_Ballista_Full";
-		}
-	}*/
 	else if (m_pCurState == "Legion_Mesh.ao|Legion_Ballista_Full")
 	{
 		// 플레이어를 계속해서 추적하면서 위치를 변경한다. 돌리기 모션전까지 추적하다가 그 다음은 위치 변경안한다
 		_uint iKeyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
-		if (34 < iKeyFrameIdx && iKeyFrameIdx < 135)
+		if (34 < iKeyFrameIdx && iKeyFrameIdx < 135) // 방향돌리는 애니메이션 
 		{
 			// 먼저 바리스타 방향을 바꿔주자.
 			CTransform* pBallistaTransformCom = static_cast<CTransform*>(m_pBallista->Get_ComponentPtr(L"Com_Transform")); 
@@ -613,7 +612,6 @@ void CLegion::DoState(float fTimeDelta)
 				+ XMVectorSet(0.f, 1.f, 0.f, 0.f)/*위로 조금 옮기자*/
 				+ m_pTransformCom->Get_State(CTransform::STATE_LOOK) * -1.5f /*뒤쪽으로 조금 옮기자.*/;
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
-
 		}
 	}
 }

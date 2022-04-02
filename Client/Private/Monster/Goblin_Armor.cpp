@@ -200,24 +200,10 @@ HRESULT CGoblin_Armor::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique
 void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	LIGHTDESC		dirLightDesc = *pGameInstance->Get_LightDesc(0);
-	DirectionalLight mDirLight;
-	mDirLight.Ambient = dirLightDesc.vAmbient;
-	mDirLight.Diffuse = dirLightDesc.vDiffuse;
-	mDirLight.Specular = dirLightDesc.vSpecular;
-	mDirLight.Direction = dirLightDesc.vDirection;
-
-	_float4			vCamPosition;
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
 
 	// Render Sphere
 	{
-		// Bind Directional Light
-
-		m_pModelSpearCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
-		// Bind Material
-		m_pModelSpearCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
-
+		// Bind Matrix
 		_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix);
 		_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix);
 		_matrix		PivotMatrix = XMLoadFloat4x4(&m_spearDesc.PivotMatrix);
@@ -240,9 +226,6 @@ void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelSpearCom, "g_ProjMatrix");
 		}
 
-		// Bind Position
-		m_pModelSpearCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
-
 		// Branch to Use Normal Mapping 
 		m_pModelSpearCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
 		m_pModelSpearCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
@@ -259,10 +242,7 @@ void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 
 	// Render Quiver
 	{
-		m_pModelQuiverCom->Set_RawValue("g_DirLight", &mDirLight, sizeof(DirectionalLight));
-		// Bind Material
-		m_pModelQuiverCom->Set_RawValue("g_Material", &m_tMtrlDesc, sizeof(MTRLDESC));
-
+		// Bind Matrix
 		_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_quiverDesc.pBoneMatrix);
 		_matrix		OffsetMatrix = XMLoadFloat4x4(&m_quiverDesc.OffsetMatrix);
 		_matrix		PivotMatrix = XMLoadFloat4x4(&m_quiverDesc.PivotMatrix);
@@ -283,9 +263,6 @@ void CGoblin_Armor::Render_Goblin(_uint iPassIndex)
 			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelQuiverCom, "g_ViewMatrix");
 			pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelQuiverCom, "g_ProjMatrix");
 		}
-
-		// Bind Position
-		m_pModelQuiverCom->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
 
 		// Branch to Use Normal Mapping 
 		m_pModelQuiverCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));

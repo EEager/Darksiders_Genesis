@@ -199,6 +199,10 @@ HRESULT CLoader::Add_GameObject()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista"),
 		CBallista::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
+	/* For.Prototype_GameObject_Ballista_Bolt */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista_Bolt"),
+		CBallista_Bolt::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
@@ -447,6 +451,11 @@ HRESULT CLoader::Add_Model()
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista.fbx", Ballista_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Ballista_Bolt*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista_Bolt"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Bolt"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/Ballista_Bolt/", "Ballista_Bolt.fbx", Ballista_PivotMat))))
 		return E_FAIL;
 
 
