@@ -81,7 +81,7 @@ public: /* For.Light_Manager */
 
 
 public: /* For.Collider_Manager */
-	void Add_Collision(class CGameObject* pGameObject);
+	void Add_Collision(class CGameObject* pGameObject, bool optimize = false, CTransform * pMyTransform = nullptr, const _tchar* pTargetObj = nullptr, _float lengthToAddCollider = 0.f);
 
 public: /* For.Level_Manager */
 	int Get_CurrentLevel() // Used in ImGUI

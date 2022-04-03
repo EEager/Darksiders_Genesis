@@ -97,7 +97,8 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 			return 0;
 
 		// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
-		pGameInstance->Add_Collision(this);
+		pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);
+
 	}
 
 	// 체력이 0이하가 되면 죽자. 

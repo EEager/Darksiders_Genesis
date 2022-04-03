@@ -26,8 +26,15 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pModelCom->SetUp_Animation("Ballista_A.ao|Balliista_A_Idle");
+	// 발리스타 몸통 충돌체
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	ColliderDesc.fRadius = 3.0f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
 
+	m_pModelCom->SetUp_Animation("Ballista_A.ao|Balliista_A_Idle");
 
 	return S_OK;
 }
@@ -81,6 +88,9 @@ _int CBallista::Tick(_float fTimeDelta)
 		}
 	}
 
+	// Collider Update
+	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
+
 	return _int();
 }
 
@@ -105,6 +115,9 @@ _int CBallista::LateTick(_float fTimeDelta)
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
 	}
+
+	// 플레이어가 근처에 있으면 Collider를 실행시키자.
+	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 50.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 	return 0;
@@ -312,13 +325,12 @@ HRESULT CBallista_Bolt::NativeConstruct(void* pArg)
 		m_pOwner = static_cast<CGameObject*>(pArg);
 	}
 
-	// SetUp_BoneMatrix
+	// 발리스타 볼트 충돌체
 	{
 		CModel* pBallistaModel = (CModel*)m_pOwner->Get_ComponentPtr(L"Com_Model");
 		if (nullptr == pBallistaModel)
 			assert(0);
 
-		// 바리스타 볼트 충돌체
 		CCollider::COLLIDERDESC		ColliderDesc;
 		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
 		ColliderDesc.vPivot = _float3(0.f, -6.5f, -2.5f);
@@ -386,6 +398,11 @@ _int CBallista_Bolt::LateTick(_float fTimeDelta)
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
 	}
+
+	// Collider 
+	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);
+
+	
 
 	RELEASE_INSTANCE(CGameInstance);
 	return 0;

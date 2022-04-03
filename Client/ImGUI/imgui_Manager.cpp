@@ -461,6 +461,22 @@ void CImguiManager::ShowCameraControlWindow()
 	// Camera Mode
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera Mode('V') :  %s\n", pCamera->Get_Type() == CCamera_Fly::MODE_FREE ? "FREE" : "WAR");
 
+	// Camera 
+	float vec3f[3] = { 0,0,0 };
+	vec3f[0] = pCamera->m_fRadius;
+	vec3f[1] = pCamera->m_fRadian;
+	vec3f[2] = pCamera->m_fHeight;
+
+	// Position 
+	ImGui::Text("Radius, Radian, Height");
+	if (ImGui::DragFloat3("##", vec3f, 1.f))
+	{
+		pCamera->m_fRadius = vec3f[0];
+		pCamera->m_fRadian = vec3f[1];
+		pCamera->m_fHeight = vec3f[2];
+	}
+
+	// Load And Save
 	ImGui::Text("Load And Save");
 	if (ImGui::Button("Save Camera Data"))
 	{

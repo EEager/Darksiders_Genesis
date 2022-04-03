@@ -30,7 +30,7 @@ private:
 private:
 	TYPE_MODE m_eType = MODE_FREE;
 
-private: // 타겟팅
+public: // 타겟팅
 	_bool m_bSetTargetOnce = false; // War 타겟팅을 Tick에서 하는데 한번만하자.
 	CWar* m_pWar = nullptr; // War 타겟포인터
 	_float m_fRadius = 13.1f; // 타겟간의 거리 

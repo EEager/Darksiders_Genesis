@@ -1,6 +1,7 @@
 #include "..\Public\GameInstance.h"
 #include "Timer_Manager.h"
 #include "Light_Manager.h"
+#include "GameObject.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -339,10 +340,17 @@ list<class CLight*>* CGameInstance::Get_LightList_Addr()
 	return m_pLight_Manager->Get_LightList_Addr();
 }
 
-void CGameInstance::Add_Collision(CGameObject* pGameObject)
+void CGameInstance::Add_Collision(CGameObject* pGameObject, bool optimize, CTransform* pMyTransform, const _tchar* pTargetLayer, _float lengthToAddCollider)
 {
 	if (m_pCollider_Manager == nullptr)
 		return;
+
+	if (optimize) // pTargetGameObject 와 거리가 일정거리 이하로 일때 콜라이더 매니져에 추가한다.
+	{
+		CTransform* pTargetTransform = static_cast<CTransform*>(m_pObject_Manager->Get_GameObject_CloneList(pTargetLayer, 3/*LEVEL_GAMEPLAY*/)->front()->Get_ComponentPtr(L"Com_Transform"));
+		if (XMVectorGetX(XMVector3Length(pTargetTransform->Get_State(CTransform::STATE_POSITION) - pMyTransform->Get_State(CTransform::STATE_POSITION))) > lengthToAddCollider)
+			return;
+	}
 
 	m_pCollider_Manager->Add_Collision(pGameObject);
 }
