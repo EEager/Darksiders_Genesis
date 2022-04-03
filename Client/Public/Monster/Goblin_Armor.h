@@ -61,9 +61,6 @@ private:
 	//----------------------------------------------
 	// FSM
 private:
-	const char* m_pCurState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
-	const char* m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
-
 	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
 	void DoState(float fTimeDelta); // m_eCurState Execute 
 
@@ -75,9 +72,6 @@ private:
 	const _float SPEAR_RANGE = 50.f;
 	const _float CHASE_RANGE = 60.f;
 	const _float IDLE_TIME_TO_ATK_DELAY = 1.5f;
-
-	CGameObject* m_pTarget = nullptr;
-	CTransform* m_pTargetTransform = nullptr;
 
 	_bool m_bNotSpearAtk = false;
 

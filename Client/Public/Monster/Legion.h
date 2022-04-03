@@ -48,12 +48,8 @@ private:
 
 	//----------------------------------------------
 	// FSM
-private: 
-	const char*	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
-	const char*	m_pNextState = "Legion_Mesh.ao|Legion_Idle";
-
+protected: 
 	virtual void UpdateState(); // m_eCurState Exit, m_eNextState Enter
-	virtual void DoGlobalState(float fTimeDelta);
 	virtual void DoState(float fTimeDelta); // m_eCurState Execute 
 	_float Get_Target_Dis(class CTransform* pTargetTransform);
 	_float GetDegree_Target(class CTransform* pTargetTransform);
@@ -64,8 +60,6 @@ private:
 	const _float CHASE_RANGE = 60.f;
 	const _float IDLE_TIME_TO_ATK_DELAY = 1.5f;
 
-	CGameObject* m_pTarget = nullptr;
-	CTransform* m_pTargetTransform = nullptr;
 	_float m_fTimeIdle = 0.f;
 	_float m_fTimeKnockBackLoop = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;

@@ -393,14 +393,14 @@ HRESULT CModel::Set_ShaderResourceView(const char* pConstantName, _uint iMateria
 	if (nullptr == m_pEffect)
 		return E_FAIL;
 
+	if (!m_Materials[iMaterialIndex].pTexture[eTextureType])
+		return E_FAIL;
+
 	ID3DX11EffectShaderResourceVariable* pVariable = m_pEffect->GetVariableByName(pConstantName)->AsShaderResource();
 	if (nullptr == pVariable)
 		return E_FAIL;
 
 	if (iMaterialIndex >= m_iNumMaterials)
-		return E_FAIL;
-
-	if (!m_Materials[iMaterialIndex].pTexture[eTextureType])
 		return E_FAIL;
 
 	return pVariable->SetResource(m_Materials[iMaterialIndex].pTexture[eTextureType]->Get_SRV());

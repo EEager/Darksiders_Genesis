@@ -23,7 +23,6 @@ HRESULT CLegion::NativeConstruct_Prototype()
 
 HRESULT CLegion::NativeConstruct(void * pArg)
 {
-
 	// 죽기직전에 날아가는 방향과 힘. y는 위쪽으로만 날아가게하자.
 	m_vFloatingDir = _float4(MathHelper::RandF(-1.f, 1.f), MathHelper::RandF(-0.1f, 1.f), MathHelper::RandF(-1.f, 1.f), 0.f);
 	m_fFloatingPwr = MathHelper::RandF(5.f, 7.f);
@@ -83,6 +82,11 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%30, 0.f, 431.f + rand() % 20, 1.f));
+
+	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
+	m_pNextState = "Legion_Mesh.ao|Legion_Idle";
+	m_pImpactState_F = "Legion_Mesh.ao|Legion_Impact_F";
+	m_pImpactState_B = "Legion_Mesh.ao|Legion_Impact_B";
 	m_pModelCom->SetUp_Animation(m_pCurState);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
@@ -106,36 +110,33 @@ _int CLegion::Tick(_float fTimeDelta)
 			return -1;
 		}
 
+		// 모든 몬스터는 타겟팅을 설정한다
+		if (!m_bTargetingOnce)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
+			if (pLayer_War)
+			{
+				m_pTarget = pLayer_War->front();
+				Safe_AddRef(m_pTarget);
+				m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+				m_bTargetingOnce = true;
+			}
+			else
+			{
+				RELEASE_INSTANCE(CGameInstance);
+				return 0;
+			}
+			RELEASE_INSTANCE(CGameInstance)
+		}
+
 		// 모든 몬스터는 Collider list 를 update해야한다
 		Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 	}
 
-	// 타겟팅 설정하자
-	if (!m_bTargetingOnce)
-	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
-		if (pLayer_War)
-		{
-			m_pTarget = pLayer_War->front();
-			Safe_AddRef(m_pTarget);
-			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
-			m_bTargetingOnce = true;
-		}
-		else
-		{
-			RELEASE_INSTANCE(CGameInstance);
-			return 0;
-		}
-		RELEASE_INSTANCE(CGameInstance)
-	}
-
-	// For Weapon Collider
-	//Update_Colliders();
-
 	// FSM
+	CMonster::DoGlobalState(fTimeDelta);
 	UpdateState();
-	DoGlobalState(fTimeDelta);
 	DoState(fTimeDelta);
 
 	// anim update : 로컬이동값 -> 월드이동반영
@@ -295,6 +296,9 @@ void CLegion::UpdateState()
 	{
 		// 해당 상태에서 무기 콜라이더 끄자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+
+		// 공격 상태 exit시 슈아 상태 끄자.
+		m_bSuperArmor = false;
 	}
 
 
@@ -315,13 +319,21 @@ void CLegion::UpdateState()
 	else if (
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" || 
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2" || 
-		m_pNextState == "Legion_Mesh.ao|Legion_Ballista_Idle"
+		m_pNextState == "Legion_Mesh.ao|Legion_Ballista_Idle" 
 		)
 	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
+	// 죽을때는 슈퍼아머상태로 둘까? TODO : 콤보 시험해보자
+	else if (
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
+		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2"
+		)
+	{
+		m_bSuperArmor = true;
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
@@ -335,6 +347,9 @@ void CLegion::UpdateState()
 	{
 		// 해당 상태에서 무기 콜라이더 키자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
+		// 공격 상태 enter시 슈아 상태 켜자.
+		m_bSuperArmor = true;
+
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
@@ -348,23 +363,23 @@ void CLegion::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_R;
 		isLoop = false;
 	}
+	// Impack States
+	else if (m_pNextState == m_pImpactState_B)
+	{
+		m_eDir = OBJECT_DIR::DIR_B;
+		isLoop = false;
+	}
+	else if (m_pNextState == m_pImpactState_F)
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
 
 	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+	//// 하지만 현재 상태가 피격 상태라면, 이전상태 업데이트는 하지 않는다. F->B->F->B 반복 이슈
+	//if (m_pCurState != m_pImpactState_B && m_pCurState != m_pImpactState_F)
+	//	m_pPreState = m_pCurState; // 피격 상태가 끝나면 이전상태(m_pPreState)로 다시 돌아간다. 
 	m_pCurState = m_pNextState;
-}
-
-void CLegion::DoGlobalState(float fTimeDelta)
-{
-	// 피격시 피 달게 하자 
-	if (m_bHitted)
-	{
-		m_fHitPower -= 0.01f;
-		if (m_fHitPower < 0)
-		{
-			m_fHitPower = 0.f;
-			m_bHitted = false;
-		}
-	}
 }
 
 // FSM
@@ -614,6 +629,16 @@ void CLegion::DoState(float fTimeDelta)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
 		}
 	}
+	//-------------------------------------------------------
+	// 피격 모션
+	else if (m_pCurState == m_pImpactState_F || m_pCurState == m_pImpactState_B)
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			//m_pNextState = m_pPreState; // 피격애니메이션 끝나면 이전상태로 돌려놓자.
+			m_pNextState = "Legion_Mesh.ao|Legion_Idle"; // 아.. 그냥 Idle로 가자..
+		}
+	}
 }
 
 _float CLegion::Get_Target_Dis(class CTransform* pTargetTransform)
@@ -702,7 +727,6 @@ CGameObject * CLegion::Clone(void* pArg)
 void CLegion::Free()
 {
 	Safe_Release(m_pVIHpBarGsBufferCom);
-	Safe_Release(m_pTarget);
 	Safe_Release(m_pBallista);
 	Safe_Release(m_pModelWeaponLCom);
 	Safe_Release(m_pModelWeaponRCom);

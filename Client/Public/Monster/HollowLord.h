@@ -27,10 +27,7 @@ public:
 
 	//----------------------------------------------
 	// FSM
-private:
-	const char* m_pCurState = "HollowLord.ao|HollowLord_Emerge";
-	const char* m_pNextState = "HollowLord.ao|HollowLord_Emerge";
-
+protected:
 	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
 	void DoState(float fTimeDelta); // m_eCurState Execute 
 
@@ -41,9 +38,6 @@ private:
 	const _float IDLE_TIME_TO_ATK_DELAY = 2.8f;
 	const _float ATK_RANGE = 10.f;
 	const _float INIT_RANGE = 50.f;
-
-	CGameObject* m_pTarget = nullptr;
-	CTransform* m_pTargetTransform = nullptr;
 
 	_bool m_bBattleStart = false;
 

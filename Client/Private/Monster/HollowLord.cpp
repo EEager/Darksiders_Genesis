@@ -12,22 +12,22 @@ CHollowLord::CHollowLord(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceCont
 {
 }
 
-CHollowLord::CHollowLord(const CHollowLord & rhs)
+CHollowLord::CHollowLord(const CHollowLord& rhs)
 	: CMonster(rhs)
 {
 }
 
 HRESULT CHollowLord::NativeConstruct_Prototype()
-{	
+{
 
 	return S_OK;
 }
 
-HRESULT CHollowLord::NativeConstruct(void * pArg)
+HRESULT CHollowLord::NativeConstruct(void* pArg)
 {
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
-		return E_FAIL;	
+		return E_FAIL;
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_HollowLord"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -46,6 +46,9 @@ HRESULT CHollowLord::NativeConstruct(void * pArg)
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(30.f));
 
 	// Init Anim State
+
+	m_pCurState = "HollowLord.ao|HollowLord_Emerge";
+	m_pNextState = "HollowLord.ao|HollowLord_Emerge";
 	m_pModelCom->SetUp_Animation("HollowLord.ao|HollowLord_Emerge", false);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
@@ -61,27 +64,8 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
 
-	// 타겟팅 설정하자
-	if (!m_bTargetingOnce)
-	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
-		if (pLayer_War)
-		{
-			m_pTarget = pLayer_War->front();
-			Safe_AddRef(m_pTarget);
-			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
-			m_bTargetingOnce = true;
-		}
-		else
-		{
-			RELEASE_INSTANCE(CGameInstance);
-			return 0;
-		}
-		RELEASE_INSTANCE(CGameInstance)
-	}
-
-	if (m_bBattleStart == false && Get_Target_Dis() > INIT_RANGE)
+	// 플레이어 거리 체크해서, 일정거리 이하로 들어올때 Lord를 등장시키자.
+	if (m_pTarget && m_bBattleStart == false && Get_Target_Dis() > INIT_RANGE)
 	{
 		m_pModelCom->SetUp_Animation("HollowLord.ao|HollowLord_Emerge", false);
 		return 0;
@@ -89,11 +73,9 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	else
 		m_bBattleStart = true;
 
-
-
 	// FSM
-	UpdateState();
 	CMonster::DoGlobalState(fTimeDelta);
+	UpdateState();
 	DoState(fTimeDelta);
 
 	// 로컬위치변화를 월행에 적용시키자 
@@ -204,7 +186,7 @@ void CHollowLord::DoState(float fTimeDelta)
 				else if (randNextState == 2) m_pNextState = "HollowLord.ao|HollowLord_Atk_Swipe_L";
 				else if (randNextState == 3) m_pNextState = "HollowLord.ao|HollowLord_Atk_Swipe_R";
 			}
-		}		
+		}
 	}
 	//-----------------------------------------------------
 	else if (
@@ -248,9 +230,9 @@ _float CHollowLord::GetDegree_Target()
 }
 
 
-CHollowLord * CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CHollowLord* CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-	CHollowLord*		pInstance = new CHollowLord(pDevice, pDeviceContext);
+	CHollowLord* pInstance = new CHollowLord(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
@@ -262,9 +244,9 @@ CHollowLord * CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pD
 }
 
 
-CGameObject * CHollowLord::Clone(void* pArg)
+CGameObject* CHollowLord::Clone(void* pArg)
 {
-	CHollowLord*		pInstance = new CHollowLord(*this);
+	CHollowLord* pInstance = new CHollowLord(*this);
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{
@@ -277,6 +259,5 @@ CGameObject * CHollowLord::Clone(void* pArg)
 
 void CHollowLord::Free()
 {
-	Safe_Release(m_pTarget);
 	CMonster::Free();
 }

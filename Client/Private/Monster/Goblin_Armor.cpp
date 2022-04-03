@@ -83,6 +83,10 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
 
 	// Init Anim State
+	m_pCurState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+	m_pImpactState_F = "Goblin_Armor_Mesh.ao|Goblin_SnS_Impact_F";
+	m_pImpactState_B = "Goblin_Armor_Mesh.ao|Goblin_SnS_Impact_B";
 	m_pModelCom->SetUp_Animation(m_pCurState, true);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
@@ -96,32 +100,9 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
 
-	// 타겟팅 설정하자
-	if (!m_bTargetingOnce)
-	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
-		if (pLayer_War)
-		{
-			m_pTarget = pLayer_War->front();
-			Safe_AddRef(m_pTarget);
-			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
-			m_bTargetingOnce = true;
-		}
-		else
-		{
-			RELEASE_INSTANCE(CGameInstance);
-			return 0;
-		}
-		RELEASE_INSTANCE(CGameInstance)
-	}
-
-	// For Weapon Collider
-	//Update_Colliders();
-
 	// FSM
-	UpdateState();
 	CMonster::DoGlobalState(fTimeDelta);
+	UpdateState();
 	DoState(fTimeDelta);
 
 
@@ -322,6 +303,8 @@ void CGoblin_Armor::UpdateState()
 	{
 		// 해당 상태 Exit시 무기 콜라이더 끄자.
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+		// 공격 상태 Exit시 슈퍼아퍼꺼야한다.
+		//m_bSuperArmor = false; 
 	}
 
 	// -----------------------------
@@ -333,6 +316,7 @@ void CGoblin_Armor::UpdateState()
 		isLoop = true;
 		m_eDir = OBJECT_DIR::DIR_F;
 	}
+	// Atk
 	else if (
 		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01" ||
 		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02" ||
@@ -341,20 +325,41 @@ void CGoblin_Armor::UpdateState()
 	{
 		// 해당 상태에서 무기 콜라이더 키고
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
+		// 공격 상태 enter시 슈아 상태
+		//m_bSuperArmor = true;
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
 	else if (
-		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back" ||
-		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_Death_01"
+		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back"
 		)
 	{
 		m_eDir = OBJECT_DIR::DIR_B;
 		isLoop = false;
 	}
-
+	else if (m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_Death_01")
+	{
+		m_bSuperArmor = true; // 죽을때는 슈퍼아머상태.
+		m_eDir = OBJECT_DIR::DIR_B;
+		isLoop = false;
+	}
+	// Impack States
+	else if (m_pNextState == m_pImpactState_B)
+	{
+		m_eDir = OBJECT_DIR::DIR_B;
+		isLoop = false;
+	}
+	else if (m_pNextState == m_pImpactState_F)
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
 
 	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+	// 하지만 현재 상태가 피격 상태라면, 이전상태 업데이트는 하지 않는다. F->B->F->B 반복 이슈
+	//if (m_pCurState != m_pImpactState_B && m_pCurState != m_pImpactState_F)
+	//	m_pPreState = m_pCurState; // 피격 상태가 끝나면 이전상태(m_pPreState)로 다시 돌아간다. 
+
 	m_pCurState = m_pNextState;
 }
 
@@ -455,6 +460,16 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 			m_isDead = true;
 		}
 	}
+	//-------------------------------------------------------
+	// 피격 모션
+	else if (m_pCurState == m_pImpactState_F || m_pCurState == m_pImpactState_B)
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			//m_pNextState = m_pPreState; // 피격애니메이션 끝나면 이전상태로 돌려놓자.
+			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle"; // 아.. 그냥 IDel로 가자
+		}
+	}
 }
 
 _float CGoblin_Armor::Get_Target_Dis(float fTimeDelta)
@@ -507,8 +522,6 @@ CGameObject * CGoblin_Armor::Clone(void* pArg)
 void CGoblin_Armor::Free()
 {
 	Safe_Release(m_pVIHpBarGsBufferCom);
-	Safe_Release(m_pTarget);
-
 	Safe_Release(m_pModelSpearCom);
 	Safe_Release(m_pModelQuiverCom);
 

@@ -36,6 +36,26 @@ _int CMonster::Tick(_float fTimeDelta)
 	if (m_isDead)
 		return -1;
 
+	// 모든 몬스터는 타겟팅을 설정한다
+	if (!m_bTargetingOnce)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		auto pLayer_War = pGameInstance->Get_GameObject_CloneList(TEXT("Layer_War"));
+		if (pLayer_War)
+		{
+			m_pTarget = pLayer_War->front();
+			Safe_AddRef(m_pTarget);
+			m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+			m_bTargetingOnce = true;
+		}
+		else
+		{
+			RELEASE_INSTANCE(CGameInstance);
+			return 0;
+		}
+		RELEASE_INSTANCE(CGameInstance)
+	}
+
 	// 모든 몬스터는 Collider list 를 update해야한다
 	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
@@ -161,12 +181,22 @@ HRESULT CMonster::SetUp_ConstantTable(_uint iPassIndex)
 	return S_OK;
 }
 
+bool CMonster::isTargetFront(CTransform* pTargetTransform)
+{
+	_vector toTarget = pTargetTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	
+	if (XMVectorGetX(XMVector3Dot(toTarget, m_pTransformCom->Get_State(CTransform::STATE_LOOK))) >= 0) // 타겟이 내 앞에 있다. 
+		return true;
+	return false;
+}
+
 void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 	// 몬스터 몸통과 플레이어 검이 충돌한 경우. 
 	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_MONSTER_BODY1 &&
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
+		// 피격 당했다. 
 		m_bHitted = true;
 		m_fHitPower = .8f;
 
@@ -174,6 +204,22 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 #ifdef _DEBUG
 		cout << DXString::WideToChar(this->m_pLayerTag) << ": " << m_tGameInfo.iHp << endl;
 #endif
+
+		// 피격시 피격모션으로 천이하자.
+		// 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
+		if (m_bSuperArmor == false)
+		{
+			if (m_pImpactState_B != nullptr || m_pImpactState_F != nullptr) // 피격 애니메이션 없으면 무시~
+			{
+				assert(m_pTargetTransform); // Something Wrong...
+				if (isTargetFront(m_pTargetTransform))
+					// 플레이어가 내 앞에 있으면 m_pImpactState_B, 아닌경우 m_pImpactState_F
+					m_pNextState = m_pImpactState_B;
+				else
+					m_pNextState = m_pImpactState_F;
+			}
+		}
+
 		return;
 	}
 }
@@ -190,9 +236,10 @@ void CMonster::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDe
 
 void CMonster::DoGlobalState(float fTimeDelta)
 {
-	// 피격시 피 달게 하자 
+	// 피격 중이다.
 	if (m_bHitted)
 	{
+		// 피격중이면 셰이더에 m_fHitPower를 던져, 피격 효과를 주자.
 		m_fHitPower -= 0.01f; 
 		if (m_fHitPower < 0)
 		{
@@ -235,6 +282,7 @@ void CMonster::Free()
 
 	__super::Free();
 
+	Safe_Release(m_pTarget);
 	Safe_Release(m_pNaviCom);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
