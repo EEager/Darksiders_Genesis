@@ -26,6 +26,9 @@ public:
 	virtual HRESULT Render(_uint iPassIndex = 0);
 	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
+public:
+	CTransform* Get_Transform() { return m_pTransformCom; }
+
 protected:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
@@ -56,6 +59,8 @@ protected:
 	const char* m_pPreState = nullptr; // ex) 이전상태를 저장하여, 피격후 전상태로 돌아갈 수 있도록하자
 	const char* m_pImpactState_F = nullptr; // 피격 애니메이션은 각 몬스터들이 NativeContruct에서 할당해주자
 	const char* m_pImpactState_B = nullptr; // 피격 애니메이션은 각 몬스터들이 NativeContruct에서 할당해주자
+
+public:
 	_bool m_bSuperArmor = false;
 	// ---------------------------------------------------- 
 

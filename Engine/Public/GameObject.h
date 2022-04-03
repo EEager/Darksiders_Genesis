@@ -48,67 +48,13 @@ protected:
 	typedef list <class CCollider*>		COLLIDERS;
 
 public:
-	list <class CCollider*>* Get_ColliderList()
-	{
-		return &m_ColliderList;
-	}
-
+	list <class CCollider*>* Get_ColliderList()	{ return &m_ColliderList; }
 	_bool isColliderListEmpty() { return m_ColliderList.empty(); }
-	HRESULT Add_Collider(CCollider::COLLIDERDESC* ColliderDesc, const _tchar* pColliderTag, bool initialDisable = false, _uint iLevel = 0, const _tchar* pColliderPrototypeTag = L"Prototype_Component_Collider")
-	{
-		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		CCollider* pCollider = static_cast<CCollider*>(pGameInstance->Clone_Component(iLevel, pColliderPrototypeTag, ColliderDesc));
-		pCollider->Set_Owner(this);
-		pCollider->Set_ColliderTag(pColliderTag);
-		pCollider->m_bColliderDisble = initialDisable;
-		m_ColliderList.push_back(pCollider);
-		RELEASE_INSTANCE(CGameInstance);
-		return S_OK;
-	}
-
-	// 특정 Tag의 콜라이더 속성을 변경한다.
-	void Set_Collider_Attribute(const _tchar* pColliderTag/*define 값을 넣어주자*/, _bool disable)
-	{
-		auto iter = m_ColliderList.begin();
-		for (iter; iter != m_ColliderList.end(); iter++)
-		{
-			if ((*iter)->Get_ColliderTag() == pColliderTag)
-			{
-				(*iter)->m_bColliderDisble = disable;
-				return;
-			}
-		}
-		return;
-	}
-
-	virtual void Release_Collider()
-	{
-		for (auto pCollider : m_ColliderList)
-		{
-			Safe_Release(pCollider);
-		}
-		m_ColliderList.clear();
-	}
-
-	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity())
-	{
-		for (auto pCollider : m_ColliderList)
-		{
-			if (!pCollider->m_bColliderDisble)
-				pCollider->Update(wolrdMatrix);
-		}
-		return 0;
-	}
-
-	virtual _int Render_Colliders()
-	{
-		for (auto pCollider : m_ColliderList)
-		{
-			if (!pCollider->m_bColliderDisble)
-				pCollider->Render();
-		}
-		return 0;
-	}
+	HRESULT Add_Collider(CCollider::COLLIDERDESC* ColliderDesc, const _tchar* pColliderTag, bool initialDisable = false, _uint iLevel = 0, const _tchar* pColliderPrototypeTag = L"Prototype_Component_Collider");
+	void Set_Collider_Attribute(const _tchar* pColliderTag/*define 값을 넣어주자*/, _bool disable); // 특정 Tag의 콜라이더 속성을 변경한다.
+	virtual void Release_Collider();
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());
+	virtual _int Render_Colliders();
 
 public:
 	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
@@ -120,25 +66,6 @@ public:
 	// GameInfo
 public:
 	GAMEINFO m_tGameInfo = {};
-
-	void SetHpPlus(int hp) {
-		//// 최대체력까지는 올리지말자
-		//m_tGameInfo.iHp += hp;
-		//if (m_tGameInfo.iHp >= m_tGameInfo.iMaxHp)
-		//	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
-		//else if (m_tGameInfo.iHp < 0)
-		//	m_tGameInfo.iHp = 0;
-	}
-
-	void SetEnergyPlus(int energy) {
-		//// 최대체력까지는 올리지말자
-		//m_tGameInfo.iEnergy += energy;
-		//if (m_tGameInfo.iEnergy >= m_tGameInfo.iMaxEnergy)
-		//	m_tGameInfo.iEnergy = m_tGameInfo.iMaxEnergy;
-		//else if (m_tGameInfo.iEnergy < 0)
-		//	m_tGameInfo.iEnergy = 0;
-	}
-
 	// ======================================================
 
 protected:

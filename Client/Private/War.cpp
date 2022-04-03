@@ -5,6 +5,7 @@
 #include "PipeLine.h"
 
 #include "Light_Manager.h"
+#include "Monster\Monster.h"
 
 
 
@@ -376,8 +377,42 @@ void CWar::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 	}
 }
 
+
+#define PUSH_LENGTH_MON 1.5f
+#define PUSH_LENGTH_BAl 3.f
 void CWar::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
+	// [밀어내기]
+	if (pSrc->Get_ColliderTag() == COL_WAR_BODY1)
+	{
+		// War 몸통 vs 몬스터 몸통인경우, 몬스터를 밀어낸다. 
+		if (pDst->Get_ColliderTag() == COL_MONSTER_BODY1 || pDst->Get_ColliderTag() == COL_MONSTER_BODY2)
+		{
+			CMonster* pMonster = static_cast<CMonster*>(pDst->Get_Owner());
+			CTransform* pMonTransform = pMonster->Get_Transform();
+			_vector toTarget = XMVectorSetY(pMonTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION), 0.f);
+			_float fLength = XMVectorGetX(XMVector3Length(toTarget));
+			if (fLength < 1.f)
+			{
+				// 하지만 몬스터가 슈퍼아머 상태라면 플레이어가 밀려난다 
+				if (pMonster->m_bSuperArmor)
+					m_pTransformCom->Go_Dir(toTarget, -fTimeDelta); // 플레이어가 밀려난다 
+				else
+					pMonTransform->Go_Dir(toTarget, fTimeDelta); // 몬스터가 밀려난다
+			}
+		}
+		// 하지만 바리스타 또는 보스인경우, War를 밀어낸다. 
+		else if (pDst->Get_ColliderTag() == COL_BALLISTA_BODY)
+		{
+			CTransform* pBallistaTrans = static_cast<CTransform*>(pDst->Get_Owner()->Get_ComponentPtr(L"Com_Transform"));
+			_float fLength = XMVectorGetX(XMVector3Length(pBallistaTrans->Get_State(CTransform::STATE_POSITION)
+				- m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+			if (fLength < PUSH_LENGTH_BAl)
+			{
+				m_pTransformCom->Go_Backward(fTimeDelta);
+			}
+		}
+	}
 }
 
 void CWar::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)

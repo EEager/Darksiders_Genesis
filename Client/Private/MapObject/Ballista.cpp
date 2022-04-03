@@ -32,7 +32,7 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 	ColliderDesc.vPivot = _float3(0.f, 0.f, 0.f);
 	ColliderDesc.fRadius = 3.0f;
 	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
+	__super::Add_Collider(&ColliderDesc, COL_BALLISTA_BODY);
 
 	m_pModelCom->SetUp_Animation("Ballista_A.ao|Balliista_A_Idle");
 

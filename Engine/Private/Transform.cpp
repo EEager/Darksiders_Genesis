@@ -186,6 +186,13 @@ void CTransform::Go_Right(_float fTimeDelta)
 	Set_State(CTransform::STATE_POSITION, vPosition);
 }
 
+void CTransform::Go_Dir(_fvector vDir, _float fTimeDelta)
+{
+	_vector		vPosition = Get_State(STATE_POSITION);
+	vPosition += XMVector3Normalize(vDir) * m_TransformDesc.fSpeedPerSec * fTimeDelta;
+	Set_State(CTransform::STATE_POSITION, vPosition);
+}
+
 void CTransform::Go_Straight_OnCamera(_float fTimeDelta, CNavigation* pNaviCom)
 {
 	_vector		vPosition = Get_State(STATE_POSITION);

@@ -84,6 +84,62 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const _tchar * pPrototypeT
 	return S_OK;
 }
 
+HRESULT CGameObject::Add_Collider(CCollider::COLLIDERDESC* ColliderDesc, const _tchar* pColliderTag, bool initialDisable, _uint iLevel, const _tchar* pColliderPrototypeTag)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	CCollider* pCollider = static_cast<CCollider*>(pGameInstance->Clone_Component(iLevel, pColliderPrototypeTag, ColliderDesc));
+	pCollider->Set_Owner(this);
+	pCollider->Set_ColliderTag(pColliderTag);
+	pCollider->m_bColliderDisble = initialDisable;
+	m_ColliderList.push_back(pCollider);
+	RELEASE_INSTANCE(CGameInstance);
+	return S_OK;
+}
+
+void CGameObject::Set_Collider_Attribute(const _tchar* pColliderTag/*define 값을 넣어주자*/, _bool disable)
+{
+	auto iter = m_ColliderList.begin();
+	for (iter; iter != m_ColliderList.end(); iter++)
+	{
+		if ((*iter)->Get_ColliderTag() == pColliderTag)
+		{
+			(*iter)->m_bColliderDisble = disable;
+			return;
+		}
+	}
+	return;
+}
+
+void CGameObject::Release_Collider()
+{
+	for (auto pCollider : m_ColliderList)
+	{
+		Safe_Release(pCollider);
+	}
+	m_ColliderList.clear();
+}
+
+_int CGameObject::Update_Colliders(_matrix wolrdMatrix)
+{
+	for (auto pCollider : m_ColliderList)
+	{
+		if (!pCollider->m_bColliderDisble)
+			pCollider->Update(wolrdMatrix);
+	}
+	return 0;
+}
+
+_int CGameObject::Render_Colliders()
+{
+	for (auto pCollider : m_ColliderList)
+	{
+		if (!pCollider->m_bColliderDisble)
+			pCollider->Render();
+	}
+	return 0;
+}
+
+
 void CGameObject::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 
