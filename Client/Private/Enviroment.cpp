@@ -56,9 +56,9 @@ _int CEnviroment::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return -1;
 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance); 
 
-	float fRadian = XMVectorGetX(XMVector3Length(XMLoadFloat3(&static_cast<CModel*>(m_pModelCom)->Get_Extents()))) / 2.5f;
+	float fRadian = XMVectorGetX(XMVector3Length(XMLoadFloat3(&static_cast<CModel*>(m_pModelCom)->Get_Extents()))) / 1.5f;
 
 	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), fRadian))
 	{

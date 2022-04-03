@@ -1,0 +1,26 @@
+Materials[1] =
+{
+    Materials[0] = MaterialInstanceConstant'/Game/Environment/Hell/Materials/Dn_HL_Inst_BallistaBolt_A.Dn_HL_Inst_BallistaBolt_A'
+}
+SourceModels[0] = {}
+StaticMaterials[1] =
+{
+    StaticMaterials[0] =
+    {
+        MaterialInterface = MaterialInstanceConstant'/Game/Environment/Hell/Materials/Dn_HL_Inst_BallistaBolt_A.Dn_HL_Inst_BallistaBolt_A'
+        MaterialSlotName = Dn_HL_Inst_BallistaBolt_A
+        UVChannelData =
+        {
+            bInitialized = true
+            bOverrideDensities = false
+            LocalUVDensities[4] = { 527.133, 695.611, 739.218, 0 }
+        }
+    }
+}
+Sockets[0] = {}
+ExtendedBounds =
+{
+    Origin = { X=1.47897, Y=-12.3303, Z=-8.01086e-05 }
+    BoxExtent = { X=62.0985, Y=475, Z=62.2371 }
+    SphereRadius = 476.673
+}
