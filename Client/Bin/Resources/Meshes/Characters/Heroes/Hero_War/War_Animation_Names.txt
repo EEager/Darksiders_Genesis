@@ -1,7 +1,0 @@
-"War_Mesh.ao|War_Idle"
-"War_Mesh.ao|War_Idle_Combat"
-"War_Mesh.ao|War_Idle_Combat_to_Idle"
-"War_Mesh.ao|War_Idle_to_Idle_Combat"
-"War_Mesh.ao|War_Run_F"
-"War_Mesh.ao|War_Run_F_Combat"
-
