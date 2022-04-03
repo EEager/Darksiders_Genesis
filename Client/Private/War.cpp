@@ -405,11 +405,11 @@ void CWar::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 		else if (pDst->Get_ColliderTag() == COL_BALLISTA_BODY)
 		{
 			CTransform* pBallistaTrans = static_cast<CTransform*>(pDst->Get_Owner()->Get_ComponentPtr(L"Com_Transform"));
-			_float fLength = XMVectorGetX(XMVector3Length(pBallistaTrans->Get_State(CTransform::STATE_POSITION)
-				- m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
+			_vector toTarget = XMVectorSetY(pBallistaTrans->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION), 0.f);
+			_float fLength = XMVectorGetX(XMVector3Length(toTarget));
 			if (fLength < PUSH_LENGTH_BAl)
 			{
-				m_pTransformCom->Go_Backward(fTimeDelta);
+				m_pTransformCom->Go_Dir(toTarget, -fTimeDelta); // 플레이어를 밀어내자
 			}
 		}
 	}
