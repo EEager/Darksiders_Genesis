@@ -392,25 +392,28 @@ void CLegion::DoState(float fTimeDelta)
 		if (m_pBallista == nullptr) // 이미 바리스타를 들고 있다면 무시~
 		{
 			auto pList = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_Ballista");
-			for (auto pGameObject : *pList)
+			if (pList && pList->empty() == false)
 			{
-				// 하지만 해당 바리스타에 누가 이미 탑승했다면 무시 
-				if (static_cast<CBallista*>(pGameObject)->m_bLegionOn)
-					continue;
-
-				// 근처에 있으면 그쪽으로 그냥 걸어가자 
-				CTransform* pBallistaTransformCom = static_cast<CTransform*>(pGameObject->Get_ComponentPtr(L"Com_Transform"));
-				if (pBallistaTransformCom == nullptr)
-					assert(0);
-
-				// 일정거리에 있는 발리스타를 탐색한다
-				if (XMVectorGetX(XMVector3Length(m_pTransformCom->Get_State(CTransform::STATE_POSITION) - pBallistaTransformCom->Get_State(CTransform::STATE_POSITION)))
-					< 45.f)
+				for (auto pGameObject : *pList)
 				{
-					m_pBallista = pGameObject;
-					static_cast<CBallista*>(m_pBallista)->m_bLegionOn = true;
-					Safe_AddRef(m_pBallista);
-					break;
+					// 하지만 해당 바리스타에 누가 이미 탑승했다면 무시 
+					if (static_cast<CBallista*>(pGameObject)->m_bLegionOn)
+						continue;
+
+					// 근처에 있으면 그쪽으로 그냥 걸어가자 
+					CTransform* pBallistaTransformCom = static_cast<CTransform*>(pGameObject->Get_ComponentPtr(L"Com_Transform"));
+					if (pBallistaTransformCom == nullptr)
+						assert(0);
+
+					// 일정거리에 있는 발리스타를 탐색한다
+					if (XMVectorGetX(XMVector3Length(m_pTransformCom->Get_State(CTransform::STATE_POSITION) - pBallistaTransformCom->Get_State(CTransform::STATE_POSITION)))
+						< 45.f)
+					{
+						m_pBallista = pGameObject;
+						static_cast<CBallista*>(m_pBallista)->m_bLegionOn = true;
+						Safe_AddRef(m_pBallista);
+						break;
+					}
 				}
 			}
 		}

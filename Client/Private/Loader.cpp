@@ -452,6 +452,12 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista.fbx", Ballista_PivotMat))))
 		return E_FAIL;
+	/* For.Prototype_Component_Model_Ballista_Destroyed*/
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista_Destroyed"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Destroyed"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista_Destroyed.fbx", Ballista_PivotMat))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_Model_Ballista_Bolt*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista_Bolt"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Bolt"),

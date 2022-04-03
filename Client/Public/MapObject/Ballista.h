@@ -43,10 +43,23 @@ private:
 	HRESULT SetUp_ConstantTable(_uint iPassIdx);
 
 private:
+	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+
+private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
+	CModel* m_pModelDestroyedCom = nullptr;
 	CModel* m_pModelGoblinCom = nullptr;
+
+private:
+	// FSM
+	_bool m_bHitted = false;
+	_float m_fHitPower = 0.f;
+	_bool m_bWillDead = false;
+
 
 	// Legion 이 탑승중인지 아닌지 판단하자
 private:
@@ -60,6 +73,19 @@ public:
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Ballsta_Bolt
 class CBallista_Bolt final : public CGameObject

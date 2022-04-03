@@ -36,27 +36,44 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 
 	m_pModelCom->SetUp_Animation("Ballista_A.ao|Balliista_A_Idle");
 
+	// GameInfo Init
+	m_tGameInfo.iAtt = 2;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iMaxHp = 8;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
+
 	return S_OK;
 }
 
 _int CBallista::Tick(_float fTimeDelta)
 {
-	// 키프레임 1일때 화살을 생성하자.
-	// 그리고 고블린도 생성하자
-	if (boltOnce == false && m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") == 1)
+	// 모든 몬스터는 죽으면 -1을 반환한다
+	if (m_isDead)
 	{
-		if (FAILED(CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista_Bolt",
-			L"Prototype_GameObject_Ballista_Bolt", this)))
-			assert(0);
-		boltOnce = true;
+		return -1;
 	}
 
-	// 키프레임 대충 10 보다 클때 다시 락 풀고 
-	if (boltOnce)
+	// 키프레임 1일때 화살을 생성하자.
+	// 그리고 고블린도 생성하자
+	// 그러나 죽을라고 할때는 하지말자
+	if (m_bWillDead == false)
 	{
-		if (m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") > 10)
+		if (boltOnce == false && m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") == 1)
 		{
-			boltOnce = false;
+			if (FAILED(CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista_Bolt",
+				L"Prototype_GameObject_Ballista_Bolt", this)))
+				assert(0);
+			boltOnce = true;
+		}
+
+		// 키프레임 대충 10 보다 클때 다시 락 풀고 
+		if (boltOnce)
+		{
+			if (m_pModelCom->Get_Current_KeyFrame_Index("Ballista_A.ao|Ballista_A_Full") > 10)
+			{
+				boltOnce = false;
+			}
 		}
 	}
 
@@ -66,25 +83,60 @@ _int CBallista::Tick(_float fTimeDelta)
 		m_pModelGoblinCom->Update_Animation(fTimeDelta);
 	}
 
+	// GlobalState
+	{
+		// 피격 중이다.
+		if (m_bHitted)
+		{
+			// 피격중이면 셰이더에 m_fHitPower를 던져, 피격 효과를 주자.
+			m_fHitPower -= 0.01f;
+			if (m_fHitPower < 0)
+			{
+				m_fHitPower = 0.f;
+				m_bHitted = false;
+			}
+		}
+	}
+
 	// UpdateState
 	{
 		if (m_pCurState != m_pNextState)
 		{
-			_bool isLoop = false;
+			_bool isLoop = true;
 
 			if (m_pNextState == "Ballista_A.ao|Balliista_A_Idle" ||
-				m_pNextState == "Ballista_A.ao|Ballista_A_Full"
+				m_pNextState == "Ballista_A.ao|Ballista_A_Full" 
 				)
-			{
 				isLoop = true;
-			}
+			else if (m_pNextState == "Ballista_A.ao|Ballista_A_Impact" ||
+					 m_pNextState == "Ballista_A_Destroyed.ao|Ballista_A_Explode")
+				isLoop = false;
 
 			m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
 
-			if (m_pNextState == "Ballista_A.ao|Ballista_A_Full") // Idle일때는 대충 아무거나 던져서 발리스타 밑에 깔리게 끔하자.
+			if (m_pNextState == "Ballista_A.ao|Ballista_A_Full") // Idle일때는 대충 아무거나 고블린이 던져서 발리스타 밑에 깔리게 끔하자.
 				m_pModelGoblinCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_Ballista_Full", isLoop);
 
 			m_pCurState = m_pNextState;
+		}
+	}
+
+	// DoState
+	{
+		// 아이들 상태에서 피격당하면 히트파워 주고, Impact로 보내자. 
+		if (m_pCurState == "Ballista_A.ao|Ballista_A_Impact")
+		{
+			if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+			{
+				m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+			}
+		}
+		else if (m_pCurState == "Ballista_A_Destroyed.ao|Ballista_A_Explode")
+		{
+			if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+			{
+				m_isDead = true;
+			}
 		}
 	}
 
@@ -97,6 +149,16 @@ _int CBallista::Tick(_float fTimeDelta)
 _int CBallista::LateTick(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// 체력이 0이하가 되면 죽자. 
+	// 바로 죽이지말고 죽는 모션 다 끝나면 죽이자
+	if (m_tGameInfo.iHp <= 0 && m_bWillDead == false)
+	{
+		m_bWillDead = true;
+		Safe_Release(m_pModelCom);
+		m_pModelCom = m_pModelDestroyedCom; // 터지는 모델로 변경
+		m_pNextState = "Ballista_A_Destroyed.ao|Ballista_A_Explode";
+	}
 
 	// AddRenderGroup
 	bool AddRenderGroup = false;
@@ -219,6 +281,10 @@ HRESULT CBallista::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+	/* For.Com_Model_Destroyed */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Destroyed"), TEXT("Com_Model_Destroyed"), (CComponent**)&m_pModelDestroyedCom)))
+		return E_FAIL;
+
 	/* For.Com_Model_Goblin */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Armor"), TEXT("Com_Model_Goblin"), (CComponent**)&m_pModelGoblinCom)))
 		return E_FAIL;
@@ -252,8 +318,40 @@ HRESULT CBallista::SetUp_ConstantTable(_uint iPassIndex)
 	// Branch to Use Emissive Mapping
 	m_pModelCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
 
+	// 피격시 색상 변경할꺼다.
+	m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, 0.f, 0.f, 0.f), sizeof(_vector));
+
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
+}
+
+void CBallista::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+	// 바리스타 몸통과 플레이어 검이 충돌한 경우. 
+	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_BALLISTA_BODY &&
+		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
+	{
+		// 피격 당했다. 
+		m_bHitted = true;
+		m_fHitPower = 1.f;
+
+		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
+#ifdef _DEBUG
+		cout << DXString::WideToChar(this->m_pLayerTag) << ": " << m_tGameInfo.iHp << endl;
+#endif
+		if (false == m_bWillDead)
+			m_pNextState = "Ballista_A.ao|Ballista_A_Impact";
+
+		return;
+	}
+}
+
+void CBallista::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+}
+
+void CBallista::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
 }
 
 
@@ -291,8 +389,46 @@ void CBallista::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pModelDestroyedCom);
 	Safe_Release(m_pModelGoblinCom);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // --------------------------------------------------------------------------------------
