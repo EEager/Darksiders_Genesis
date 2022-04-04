@@ -164,8 +164,14 @@ HRESULT CWar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Spri
 #ifdef _DEBUG
 #ifdef USE_IMGUI
 	if (m_bshow_naviMesh_window)
-#endif
 		m_pNaviCom->Render();
+
+	if (m_bUseImGui) // IMGUI 툴로 배치할거다
+	{
+		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
+	}
+
+#endif
 	__super::Render_Colliders();
 	//m_pRendererCom->ClearRenderStates();
 #endif // _DEBUG
@@ -405,11 +411,11 @@ void CWar::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 		else if (pDst->Get_ColliderTag() == COL_BALLISTA_BODY)
 		{
 			CTransform* pBallistaTrans = static_cast<CTransform*>(pDst->Get_Owner()->Get_ComponentPtr(L"Com_Transform"));
-			_vector toTarget = XMVectorSetY(pBallistaTrans->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION), 0.f);
-			_float fLength = XMVectorGetX(XMVector3Length(toTarget));
+			_float fLength = XMVectorGetX(XMVector3Length(pBallistaTrans->Get_State(CTransform::STATE_POSITION)
+				- m_pTransformCom->Get_State(CTransform::STATE_POSITION)));
 			if (fLength < PUSH_LENGTH_BAl)
 			{
-				m_pTransformCom->Go_Dir(toTarget, -fTimeDelta); // 플레이어를 밀어내자
+				m_pTransformCom->Go_Backward(fTimeDelta);
 			}
 		}
 	}

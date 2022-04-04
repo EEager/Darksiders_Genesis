@@ -914,14 +914,14 @@ void CImguiManager::ShowNaviMeshControlWindow()
 		// + 눌러서 위로 뛰우자
 		if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
 		{
-			m_yPickPos += 1.f;
+			m_yPickPos += .5f;
 			dirty = true;
 		}
 
 		// - 눌러서 아래로 보내자 
 		if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
 		{
-			m_yPickPos -= 1.f;
+			m_yPickPos -= .5f;
 			dirty = true;
 		}
 

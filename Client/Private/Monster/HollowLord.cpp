@@ -87,14 +87,14 @@ _int CHollowLord::Tick(_float fTimeDelta)
 
 _int CHollowLord::LateTick(_float fTimeDelta)
 {
-	// 모든 몬스터는 Height, Renderer, Add_Collider
+	// 모든 몬스터는 Height, Renderer, Add_Collider 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	// 플레이어와 일정거리 이하가 되면 그때부터 렌더링하자
 	if (m_bBattleStart == true)
 	{
-		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-			return 0;
+		//if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+		//	return 0;
 
 		// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
 		pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);

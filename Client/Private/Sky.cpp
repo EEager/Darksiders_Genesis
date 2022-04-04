@@ -36,14 +36,14 @@ HRESULT CSky::NativeConstruct(void* pArg)
 
 _int CSky::Tick(_float fTimeDelta)
 {
-#ifdef _DEBUG
-	// + 
-	if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
-		imgIdx += 1.f;
+#ifdef _DEBUG 
+	//// + 
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_EQUALS))
+	//	imgIdx += 1.f;
 
-	// - 
-	if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
-		imgIdx -= 1.f;
+	//// - 
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_MINUS))
+	//	imgIdx -= 1.f;
 #endif
 
 	return _int();

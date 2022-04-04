@@ -165,7 +165,7 @@ HRESULT CCell::Ready_DebugBuffer()
 
 
 	// 구매쉬 등록
-	m_pVIBufferSphere = CVIBuffer_Sphere::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Sphere.hlsl"), 0.1f);
+	m_pVIBufferSphere = CVIBuffer_Sphere::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Sphere.hlsl"), 0.15f);
 
 	return S_OK;
 }
