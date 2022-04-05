@@ -831,6 +831,9 @@ void CState_War_Atk_Light_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Light_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -892,6 +895,9 @@ void CState_War_Atk_Light_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
+
 }
 
 void CState_War_Atk_Light_01::Free()
@@ -921,7 +927,8 @@ void CState_War_Atk_Light_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Light_02::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -977,7 +984,8 @@ void CState_War_Atk_Light_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Light_02::Free()
@@ -1006,6 +1014,8 @@ void CState_War_Atk_Light_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Light_03::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1059,6 +1069,8 @@ void CState_War_Atk_Light_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Light_03::Free()
@@ -1090,6 +1102,8 @@ void CState_War_Atk_Light_04::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1144,6 +1158,8 @@ void CState_War_Atk_Light_04::Exit(CGameObject* pOwner, _float fTimeDelta)
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Light_04::Free()
@@ -1172,6 +1188,8 @@ void CState_War_Atk_Heavy_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1265,6 +1283,8 @@ void CState_War_Atk_Heavy_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Heavy_01::Free()
@@ -1293,6 +1313,8 @@ void CState_War_Atk_Heavy_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1349,6 +1371,8 @@ void CState_War_Atk_Heavy_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Heavy_02::Free()
@@ -1377,6 +1401,8 @@ void CState_War_Atk_Heavy_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1431,6 +1457,8 @@ void CState_War_Atk_Heavy_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Heavy_03::Free()
@@ -1456,6 +1484,8 @@ void CState_War_Jump::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 점프 셋팅
 	static_cast<CWar*>(pOwner)->Set_Jump();
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Jump::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1511,6 +1541,8 @@ void CState_War_Jump::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Jump::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Jump::Free()
@@ -1773,6 +1805,8 @@ void CState_War_Jump_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 점프 셋팅
 	static_cast<CWar*>(pOwner)->Set_Jump();
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Jump_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1828,6 +1862,8 @@ void CState_War_Jump_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Jump_Combat::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Jump_Combat::Free()
@@ -2041,6 +2077,8 @@ void CState_War_Jump_Double::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 점프 셋팅
 	static_cast<CWar*>(pOwner)->Set_Jump();
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Jump_Double::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2111,6 +2149,8 @@ void CState_War_Jump_Double::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
 	m_fFlightTime = 0.f;
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Jump_Double::Free()
@@ -2126,6 +2166,7 @@ void CState_War_Jump_Double::Free()
 CState_War_Atk_Air_Light_03_NoImpulse::CState_War_Atk_Air_Light_03_NoImpulse()
 {
 	m_pStateName = "CState_War_Atk_Air_Light_03_NoImpulse";
+
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Enter(CGameObject* pOwner, _float fTimeDelta)
@@ -2141,6 +2182,8 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Enter(CGameObject* pOwner, _float fT
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2174,6 +2217,8 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Exit(CGameObject* pOwner, _float fTi
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Free()
@@ -2202,7 +2247,8 @@ void CState_War_Atk_Air_Light_03_Fall::Enter(CGameObject* pOwner, _float fTimeDe
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2226,7 +2272,8 @@ void CState_War_Atk_Air_Light_03_Fall::Exit(CGameObject* pOwner, _float fTimeDel
 	static_cast<CWar*>(pOwner)->Set_DontTurn_OnlyMove(false);
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Free()
@@ -2313,7 +2360,8 @@ void CState_War_Wrath_BladeGeyser::Enter(CGameObject* pOwner, _float fTimeDelta)
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Wrath_BladeGeyser", false);
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2347,7 +2395,8 @@ void CState_War_Wrath_BladeGeyser::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Wrath_BladeGeyser::Free()
@@ -2374,6 +2423,8 @@ void CState_War_Atk_EarthSplitter_Charge_Start::Enter(CGameObject* pOwner, _floa
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_EarthSplitter_Charge_Start", false);
 	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(true);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2394,7 +2445,8 @@ void CState_War_Atk_EarthSplitter_Charge_Start::Exit(CGameObject* pOwner, _float
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(false);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Start::Free()
@@ -2417,6 +2469,8 @@ void CState_War_Atk_EarthSplitter_Charge_Loop::Enter(CGameObject* pOwner, _float
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Atk_EarthSplitter_Charge_Loop");// Loop
 	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(true);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Loop::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2436,6 +2490,8 @@ void CState_War_Atk_EarthSplitter_Charge_Loop::Exit(CGameObject* pOwner, _float 
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_DontMove_OnlyTurn(false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_EarthSplitter_Charge_Loop::Free()
@@ -2462,6 +2518,8 @@ void CState_War_Atk_EarthSplitter_Level1::Enter(CGameObject* pOwner, _float fTim
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2499,6 +2557,8 @@ void CState_War_Atk_EarthSplitter_Level1::Exit(CGameObject* pOwner, _float fTime
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
 
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_EarthSplitter_Level1::Free()
@@ -2523,6 +2583,8 @@ void CState_War_Atk_Flamebrand_Start::Enter(CGameObject* pOwner, _float fTimeDel
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Flamebrand_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2545,6 +2607,8 @@ void CState_War_Atk_Flamebrand_Start::Exit(CGameObject* pOwner, _float fTimeDelt
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Flamebrand_Start::Free()
@@ -2570,7 +2634,8 @@ void CState_War_Atk_Flamebrand::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Atk_Flamebrand::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2597,7 +2662,8 @@ void CState_War_Atk_Flamebrand::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_Atk_Flamebrand::Free()
@@ -2672,7 +2738,8 @@ void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
 	// 무적판정 넣거나.
 	// 잔상 애니메이션 효과 시작하는 변수 넣거나
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 내가 모든 키를 위임할꼬야
-
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2713,11 +2780,18 @@ void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 	CState::Exit();
 	m_fMoveLockTimeAcc = 0.f;
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false); // 내가 모든 키를 위임할꼬야
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 }
 
 void CState_War_DashTo_F::Free()
 {
 }
+
+
+
+
+
 
 
 // -------------------------------------------------
@@ -2993,6 +3067,9 @@ void CState_War_Horse_Mount_Standing::Enter(CGameObject* pOwner, _float fTimeDel
 	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SPEED);
 
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 움직이지마!
+
+		// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Horse_Mount_Standing::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3043,6 +3120,9 @@ void CState_War_Horse_Mount_Running::Enter(CGameObject* pOwner, _float fTimeDelt
 	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Mount_Running", false, false);//Not Loop
 
 	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SPEED);
+
+	// 슈퍼아머
+	g_pWar->m_bSuperArmor = true;
 }
 
 void CState_War_Horse_Mount_Running::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3086,6 +3166,9 @@ void CState_War_Horse_Dismount::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Dismount", false);// Not loop
 
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 움직이지마!
+
+		// 슈퍼아머
+	g_pWar->m_bSuperArmor = false;
 
 }
 

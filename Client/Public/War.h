@@ -139,9 +139,9 @@ private:
 #define HIT_FROM_RIGHT 2
 #define HIT_FROM_LEFT 3
 	void Set_Collision_Direction(CTransform* pDstTransform); // m_iHitDir를 Set 한다
-	_bool m_bSuperArmor = false; // 특정 애니메이션은 슈퍼아머상태이다. 밀려나지 않는다.
 
 public:
+	_bool m_bSuperArmor = false; // 특정 애니메이션은 슈퍼아머상태이다. 밀려나지 않는다.
 	int m_iHitDir = -1; // 어느방향에서 피격하였는지 알 수 있게하자. -1 : 아직 피격안당했다.
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 
