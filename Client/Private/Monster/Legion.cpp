@@ -4,6 +4,10 @@
 
 #include "MapObject\Ballista.h"
 
+#ifdef USE_IMGUI
+#include "imgui_Manager.h"
+#endif
+
 
 CLegion::CLegion(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CMonster(pDevice, pDeviceContext)
@@ -213,6 +217,13 @@ HRESULT CLegion::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 #ifdef _DEBUG
 	// 모든 몬스터는 Collider를 render한다
 	__super::Render_Colliders();
+#endif
+
+#ifdef USE_IMGUI
+	if (m_bUseImGui) // IMGUI 툴로 배치할거다
+	{
+		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
+	}
 #endif
 
 	return S_OK;

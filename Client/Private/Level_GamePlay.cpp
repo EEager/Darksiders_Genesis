@@ -136,9 +136,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
 		return E_FAIL;
-	///* For.Prototype_Component_Model_Enviroment2 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
-	//	return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment2 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
+		return E_FAIL;
 	///* For.Prototype_Component_Model_Enviroment3 */
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
 	//	return E_FAIL;
@@ -153,8 +153,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Object()
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
 	/* For.Prototype_GameObject_Ballista */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista", TEXT("Prototype_GameObject_Ballista"))))
-		return E_FAIL;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista", TEXT("Prototype_GameObject_Ballista"))))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

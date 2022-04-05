@@ -42,7 +42,7 @@ HRESULT CWar::NativeConstruct_Prototype()
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 	// Init GameInfo
-	m_tGameInfo.iAtt = 1.f;
+	m_tGameInfo.iAtt = 3.f;
 	m_tGameInfo.iEnergy = 10;
 	m_tGameInfo.iMaxHp = 20;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
@@ -682,7 +682,13 @@ HRESULT CWar::SetUp_ConstantTable(_uint iPssIndex, bool drawOutLine, int modelId
 	// Branch to Use Normal Mapping 
 	// 노멀맵할지 말지 선택을 여기서 하자
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
-	m_pModelCom[modelIdx]->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+	if (modelIdx == MODELTYPE_WEAPON) // 무기는 EmissiveMap 사용하지 말자 일단.
+	{
+		bool tempFalse = false;
+		m_pModelCom[modelIdx]->Set_RawValue("g_UseEmissiveMap", &tempFalse, sizeof(bool));
+	}
+	else
+		m_pModelCom[modelIdx]->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
 
 	// Outline 원형은 그리지않는다.
 	m_pModelCom[modelIdx]->Set_RawValue("g_DrawOutLine", &drawOutLine, sizeof(bool));

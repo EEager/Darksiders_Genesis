@@ -152,6 +152,11 @@ private:
 	_float m_fLifeTime = 0.f;
 
 public:
+	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+	virtual void OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+
+public:
 	static CGoblin_Spear* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;

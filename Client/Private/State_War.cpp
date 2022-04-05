@@ -2810,6 +2810,7 @@ void CState_War_Impact_From_Front_01::Enter(CGameObject* pOwner, _float fTimeDel
 	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
 	g_pWar->m_eDir = OBJECT_DIR::DIR_B;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Front_01", false);//Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Impact_From_Front_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2823,6 +2824,11 @@ void CState_War_Impact_From_Front_01::Execute(CGameObject* pOwner, _float fTimeD
 		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
 		return;
 	}
+
+	m_fMoveLockTimeAcc += fTimeDelta;
+
+	if (m_fMoveLockTimeAcc < .5f) // 1초 동안은 키입력되게 하지말자
+		return;
 
 	// [Event] 방향키 하나라도 누르게된다면
 	// [State]  -> CState_War_Run
@@ -2841,7 +2847,9 @@ void CState_War_Impact_From_Front_01::Execute(CGameObject* pOwner, _float fTimeD
 void CState_War_Impact_From_Front_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
-	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+	m_fMoveLockTimeAcc = 0.f;
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;	
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 }
 
 void CState_War_Impact_From_Front_01::Free()
@@ -2866,6 +2874,7 @@ void CState_War_Impact_From_Back_01::Enter(CGameObject* pOwner, _float fTimeDelt
 	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
 	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Back_01", false);//Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Impact_From_Back_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2879,7 +2888,10 @@ void CState_War_Impact_From_Back_01::Execute(CGameObject* pOwner, _float fTimeDe
 		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
 		return;
 	}
+	m_fMoveLockTimeAcc += fTimeDelta;
 
+	if (m_fMoveLockTimeAcc < .5f) // 1초 동안은 키입력되게 하지말자
+		return;
 	// [Event] 방향키 하나라도 누르게된다면
 	// [State]  -> CState_War_Run
 	bool dirty = false;
@@ -2897,7 +2909,9 @@ void CState_War_Impact_From_Back_01::Execute(CGameObject* pOwner, _float fTimeDe
 void CState_War_Impact_From_Back_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
-	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;	m_fMoveLockTimeAcc = 0.f;
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+
 }
 
 void CState_War_Impact_From_Back_01::Free()
@@ -2922,6 +2936,7 @@ void CState_War_Impact_From_Left_01::Enter(CGameObject* pOwner, _float fTimeDelt
 	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
 	g_pWar->m_eDir = OBJECT_DIR::DIR_R;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Left_01", false);//Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Impact_From_Left_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2935,7 +2950,10 @@ void CState_War_Impact_From_Left_01::Execute(CGameObject* pOwner, _float fTimeDe
 		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
 		return;
 	}
+	m_fMoveLockTimeAcc += fTimeDelta;
 
+	if (m_fMoveLockTimeAcc < .5f) // 1초 동안은 키입력되게 하지말자
+		return;
 	// [Event] 방향키 하나라도 누르게된다면
 	// [State]  -> CState_War_Run
 	bool dirty = false;
@@ -2953,7 +2971,8 @@ void CState_War_Impact_From_Left_01::Execute(CGameObject* pOwner, _float fTimeDe
 void CState_War_Impact_From_Left_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
-	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;	m_fMoveLockTimeAcc = 0.f;
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 }
 
 void CState_War_Impact_From_Left_01::Free()
@@ -2978,6 +2997,7 @@ void CState_War_Impact_From_Right_01::Enter(CGameObject* pOwner, _float fTimeDel
 	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
 	g_pWar->m_eDir = OBJECT_DIR::DIR_L;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Right_01", false);//Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 }
 
 void CState_War_Impact_From_Right_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2991,7 +3011,10 @@ void CState_War_Impact_From_Right_01::Execute(CGameObject* pOwner, _float fTimeD
 		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
 		return;
 	}
+	m_fMoveLockTimeAcc += fTimeDelta;
 
+	if (m_fMoveLockTimeAcc < .5f) // 1초 동안은 키입력되게 하지말자
+		return;
 	// [Event] 방향키 하나라도 누르게된다면
 	// [State]  -> CState_War_Run
 	bool dirty = false;
@@ -3009,7 +3032,8 @@ void CState_War_Impact_From_Right_01::Execute(CGameObject* pOwner, _float fTimeD
 void CState_War_Impact_From_Right_01::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
-	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;	m_fMoveLockTimeAcc = 0.f;
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 }
 
 void CState_War_Impact_From_Right_01::Free()

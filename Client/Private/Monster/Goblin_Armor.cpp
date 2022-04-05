@@ -674,7 +674,7 @@ _int CGoblin_Spear::LateTick(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	if (m_fLifeTime > 20.f) // 대충 15초 이상 살았으면 죽이자.
+	if (m_fLifeTime > 10.f) // 대충 15초 이상 살았으면 죽이자.
 		m_isDead = true;
 
 	if (1)
@@ -768,6 +768,23 @@ HRESULT CGoblin_Spear::SetUp_ConstantTable(_uint iPassIndex)
 	return S_OK;
 }
 
+
+void CGoblin_Spear::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+	if (pDst->Get_ColliderTag() == COL_WAR_BODY1)
+	{
+		m_isDead = true;
+	}
+	
+}
+
+void CGoblin_Spear::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+}
+
+void CGoblin_Spear::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+}
 
 CGoblin_Spear* CGoblin_Spear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

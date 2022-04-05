@@ -3,6 +3,8 @@
 
 #include "GameInstance.h"
 
+#include "imgui_Manager.h"
+
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
@@ -77,13 +79,26 @@ _int CMonster::LateTick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	}
 
-	// 모든 몬스터는 Nonalpha 그룹에서 render한다
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-		return 0;
+	// AddRenderGroup
+	bool AddRenderGroup = false;
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.f))
+		AddRenderGroup = true;
 
-	// 모든 몬스터는 Post Render를 진행한다 그룹에서 render한다
-	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
-		return 0;
+#ifdef USE_IMGUI
+	if (m_bUseImGui) // IMGUI 툴로 배치할거다
+		AddRenderGroup = true;
+#endif
+
+	if (AddRenderGroup)
+	{
+		// 모든 몬스터는 Nonalpha 그룹에서 render한다
+		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+			return 0;
+
+		// 모든 몬스터는 Post Render를 진행한다 그룹에서 render한다
+		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+			return 0;
+	}
 
 	// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
 	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);
@@ -119,6 +134,13 @@ HRESULT CMonster::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<
 #ifdef _DEBUG
 	// 모든 몬스터는 Collider를 render한다
 	__super::Render_Colliders();
+#endif
+
+#ifdef USE_IMGUI
+	if (m_bUseImGui) // IMGUI 툴로 배치할거다
+	{
+		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
+	}
 #endif
 
 	return S_OK;
