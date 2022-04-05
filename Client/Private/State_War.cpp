@@ -70,8 +70,10 @@ void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 	}
 
 
-	// [Event] 맞았다.
-	// [State] -> ToDo
+
+
+	// [Event] 계속 맞고 있다. 
+	// [State] HitPower를 계속 감소시키자
 	if (g_pWar->m_bHitted)
 	{
 		g_pWar->m_fHitPower -= 0.01f;
@@ -80,6 +82,29 @@ void CGlobal_State_War::Execute(CGameObject* pOwner, _float fTimeDelta)
 			g_pWar->m_fHitPower = 0.f;
 			g_pWar->m_bHitted = false;
 		}
+	}
+
+
+	// [Event] 피격당했을 경우 피격상태로 천이
+	// [State] m_iHitDir를 보고 어느 피격 모션으로 천이할지 결정한다
+	if (g_pWar->m_iHitDir != -1) // g_pWar->m_iHitDir 초기화는 각 피격 상태에서 해주자.
+	{
+		switch (g_pWar->m_iHitDir)
+		{
+		case HIT_FROM_FRONT:
+			g_pWar_State_Context->ChangeState(CState_War_Impact_From_Front_01::GetInstance());
+			break;
+		case HIT_FROM_BACK:
+			g_pWar_State_Context->ChangeState(CState_War_Impact_From_Back_01::GetInstance());
+			break;
+		case HIT_FROM_RIGHT:
+			g_pWar_State_Context->ChangeState(CState_War_Impact_From_Right_01::GetInstance());
+			break;
+		case HIT_FROM_LEFT:
+			g_pWar_State_Context->ChangeState(CState_War_Impact_From_Left_01::GetInstance());
+			break;
+		}
+		return;
 	}
 
 
@@ -2693,6 +2718,233 @@ void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_DashTo_F::Free()
 {
 }
+
+
+// -------------------------------------------------
+// #35
+// [State] CState_War_Impact_From_Front_01
+// [Infom] 앞에서 박았다. 뒤로 밀려난다.
+// -------------------------------------------------
+CState_War_Impact_From_Front_01::CState_War_Impact_From_Front_01()
+{
+	m_pStateName = "CState_War_Impact_From_Front_01";
+}
+
+void CState_War_Impact_From_Front_01::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
+	g_pWar->m_eDir = OBJECT_DIR::DIR_B;
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Front_01", false);//Not Loop
+}
+
+void CState_War_Impact_From_Front_01::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Impact_From_Front_01"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
+		return;
+	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Impact_From_Front_01::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+}
+
+void CState_War_Impact_From_Front_01::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #36
+// [State] CState_War_Impact_From_Back_01
+// [Infom] 앞에서 박았다. 뒤로 밀려난다.
+// -------------------------------------------------
+CState_War_Impact_From_Back_01::CState_War_Impact_From_Back_01()
+{
+	m_pStateName = "CState_War_Impact_From_Back_01";
+}
+
+void CState_War_Impact_From_Back_01::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Back_01", false);//Not Loop
+}
+
+void CState_War_Impact_From_Back_01::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Impact_From_Back_01"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
+		return;
+	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Impact_From_Back_01::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+}
+
+void CState_War_Impact_From_Back_01::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #37
+// [State] CState_War_Impact_From_Left_01
+// [Infom] 왼쪽에서 박았다. 오른쪽으로 밀려난다.
+// -------------------------------------------------
+CState_War_Impact_From_Left_01::CState_War_Impact_From_Left_01()
+{
+	m_pStateName = "CState_War_Impact_From_Left_01";
+}
+
+void CState_War_Impact_From_Left_01::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
+	g_pWar->m_eDir = OBJECT_DIR::DIR_R;
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Left_01", false);//Not Loop
+}
+
+void CState_War_Impact_From_Left_01::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Impact_From_Left_01"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
+		return;
+	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Impact_From_Left_01::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+}
+
+void CState_War_Impact_From_Left_01::Free()
+{
+}
+
+
+
+// -------------------------------------------------
+// #38
+// [State] CState_War_Impact_From_Right_01
+// [Infom] 오른쪽에서 박았다. 왼쪽으로 미ㅏ련난다 
+// -------------------------------------------------
+CState_War_Impact_From_Right_01::CState_War_Impact_From_Right_01()
+{
+	m_pStateName = "CState_War_Impact_From_Right_01";
+}
+
+void CState_War_Impact_From_Right_01::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
+	g_pWar->m_eDir = OBJECT_DIR::DIR_L;
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Right_01", false);//Not Loop
+}
+
+void CState_War_Impact_From_Right_01::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
+
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_Impact_From_Right_01"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle::GetInstance());
+		return;
+	}
+
+	// [Event] 방향키 하나라도 누르게된다면
+	// [State]  -> CState_War_Run
+	bool dirty = false;
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
+	dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
+	if (dirty)
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Run::GetInstance());
+		return;
+	}
+}
+
+void CState_War_Impact_From_Right_01::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
+}
+
+void CState_War_Impact_From_Right_01::Free()
+{
+}
+
+
+
+
 
 
 

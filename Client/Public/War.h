@@ -98,6 +98,9 @@ private:
 	_float4x4	m_WarPivotMat; // 말안타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님
 	_float4x4	m_WarRuinPivotMat; // 말타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님
 
+
+
+
 	// -----------------------------------------------------------------
 	// 아래 3개는 War 키 입력에 사용
 private:
@@ -130,6 +133,17 @@ private:
 	_float m_fHitPower = 0.f; // 몬스터 피격시. Render에서는 쉐이더로 노랗게, Tick에서는 체력감소하자
 	const _float HIT_DELAY = 5.f; // 피격 지속시간
 	_float m_fHitTimeAcc = 0.f;
+
+#define HIT_FROM_FRONT 0
+#define HIT_FROM_BACK 1
+#define HIT_FROM_RIGHT 2
+#define HIT_FROM_LEFT 3
+	void Set_Collision_Direction(CTransform* pDstTransform); // m_iHitDir를 Set 한다
+	_bool m_bSuperArmor = false; // 특정 애니메이션은 슈퍼아머상태이다. 밀려나지 않는다.
+
+public:
+	int m_iHitDir = -1; // 어느방향에서 피격하였는지 알 수 있게하자. -1 : 아직 피격안당했다.
+	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 
 
 public:

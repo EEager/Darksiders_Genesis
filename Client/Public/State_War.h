@@ -1074,6 +1074,94 @@ public:
 };
 
 
+// -------------------------------------------------
+// #35
+// [State] CState_War_Impact_From_Front_01
+// [Infom] 앞에서 충돌박았다. 뒤로 가진다.
+// -------------------------------------------------
+class CState_War_Impact_From_Front_01 final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Impact_From_Front_01)
+
+public:
+	CState_War_Impact_From_Front_01();
+	virtual ~CState_War_Impact_From_Front_01() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #36
+// [State] CState_War_Impact_From_Back_01
+// [Infom] 뒤에서 충돌박았다. 앞으로 가진다.
+// -------------------------------------------------
+class CState_War_Impact_From_Back_01 final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Impact_From_Back_01)
+
+public:
+	CState_War_Impact_From_Back_01();
+	virtual ~CState_War_Impact_From_Back_01() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #37
+// [State] CState_War_Impact_From_Left_01
+// [Infom] 왼쪽에서 박았다. 오른쪽으로 밀려난다.
+// -------------------------------------------------
+class CState_War_Impact_From_Left_01 final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Impact_From_Left_01)
+
+public:
+	CState_War_Impact_From_Left_01();
+	virtual ~CState_War_Impact_From_Left_01() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
+// -------------------------------------------------
+// #38
+// [State] CState_War_Impact_From_Right_01
+// [Infom] 앞에서 충돌박았다. 뒤로 가진다.
+// -------------------------------------------------
+class CState_War_Impact_From_Right_01 final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_Impact_From_Right_01)
+
+public:
+	CState_War_Impact_From_Right_01();
+	virtual ~CState_War_Impact_From_Right_01() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+public:
+	virtual void Free() final;
+};
+
 
 /* ------------------------------------------------------------------------------
 *

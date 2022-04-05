@@ -86,7 +86,7 @@ _int CWar::Tick(_float fTimeDelta)
 	else // War 기본
 	{
 		// War 월행포인터를 던져주어, 애니메이션 로컬 위치를 월행에 적용하도록하자 
-		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom);
+		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom, m_eDir);
 	}
 
 	// 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자
@@ -366,6 +366,50 @@ _int CWar::Update_Colliders(_matrix wolrdMatrix)
 	return 0;
 }
 
+
+/*
+War 기준으로 어디서 충돌했는지, m_iHitDir를 set하자.
+\   F  / 
+ \    /
+  \  /
+L  war R
+  /  \
+ /    \
+/   B  \
+*/
+
+void CWar::Set_Collision_Direction(CTransform* pDstTransform)
+{
+	_vector toTarget = pDstTransform->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	// Front
+	if (XMVectorGetX(XMVector3Dot(toTarget, m_pTransformCom->Get_State(CTransform::STATE_LOOK))) >= 0.525/*cos45*/)
+	{
+		m_iHitDir = HIT_FROM_FRONT;
+		return;
+	}
+
+	// Back
+	if (XMVectorGetX(XMVector3Dot(toTarget, m_pTransformCom->Get_State(CTransform::STATE_LOOK))) <= -0.525/*cos135*/)
+	{
+		m_iHitDir = HIT_FROM_BACK;
+		return;
+	}
+
+	// Right
+	if (XMVectorGetX(XMVector3Dot(toTarget, m_pTransformCom->Get_State(CTransform::STATE_RIGHT))) >= 0.525/*cos45*/)
+	{
+		m_iHitDir = HIT_FROM_RIGHT;
+		return;
+	}
+	// Left
+	if (XMVectorGetX(XMVector3Dot(toTarget, m_pTransformCom->Get_State(CTransform::STATE_RIGHT))) <= 0.525/*cos45*/)
+	{
+		m_iHitDir = HIT_FROM_LEFT;
+		return;
+	}
+}
+
 void CWar::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 	// 플레이어 몸통과 몬스터 검이 충돌한 경우. 
@@ -375,10 +419,18 @@ void CWar::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 		m_bHitted = true;
 		m_fHitPower = .65f;
 
-		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
+		CGameObject* pDstObj = pDst->Get_Owner();
+		m_tGameInfo.iHp -= pDstObj->m_tGameInfo.iAtt;
 #ifdef _DEBUG
 		cout << DXString::WideToChar(this->m_pLayerTag) << ": " << m_tGameInfo.iHp << endl;
 #endif
+		// 피격시 피격모션으로 천이하기 위해 어느 방향에서 피격되었는지 기록해주자.
+		// 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
+		if (m_bSuperArmor == false)
+		{
+			// 어느방향에서 맞았는지 m_iHitDir에 저장하자
+			Set_Collision_Direction(static_cast<CTransform*>(pDstObj->Get_ComponentPtr(L"Com_Transform")));
+		}
 		return;
 	}
 }
