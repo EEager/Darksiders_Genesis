@@ -91,7 +91,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		fTimeStack += (float)dt;
 
 #define MAX_FPS 144.f
-	//	if (TimerAcc >= 1.f / MAX_FPS)
+		if (TimerAcc >= 1.f / MAX_FPS)
 		{
 			TimerAcc = 0.0;
 			++iFPS;

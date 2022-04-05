@@ -293,7 +293,7 @@ _uint CModel::Get_Current_KeyFrame_Index(const char* pNameKey)
 	return m_Animations[iAnimIndex]->GetCurIdx();
 }
 
-HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW, const char* pRootNodeName, CNavigation* pNaviCom, IN OBJECT_DIR eDir)
+HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW, const char* pRootNodeName, CNavigation* pNaviCom, IN OBJECT_DIR eDir, int iChannelIdx)
 {
 	if (TYPE_ANIM != m_eType) // TYPE_NONANIM, TYPE_ANIM_USE_OTHER 인경우에는 Update안한다. TYPE_ANIM_USE_OTHER 경우 Update 하면 2번 업데이트된다. 
 		return S_OK;
@@ -302,7 +302,7 @@ HRESULT CModel::Update_Animation(_float fTimeDelta, OUT _float4x4* pMatW, const 
 		return E_FAIL;
 
 	/* 현재 애니메이션 상태에 맞는 뼈의 행렬들을 모두 갱신한다. */
-	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(fTimeDelta, m_isLoop);
+	m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrix(fTimeDelta, m_isLoop, iChannelIdx);
 
 	/* 노드들을 순회하면서 노드에 컴바인트 트랜스포메이션 행려을 만든다. */
 	for (auto& pHierarchyNode : m_HierarchyNodes)

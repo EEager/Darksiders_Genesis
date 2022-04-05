@@ -41,7 +41,7 @@ HRESULT CAnimation::NativeConstruct(char * pName, _double Duration, _double Tick
 - m_isBeginFirst :
 	State변경되면 채널들의 첫 키프레임부터 시작하도록하자.
 */
-HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
+HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop, int iChannelIdx)
 {
 	// 첫 프레임인 경우 이전 m_fTimeAcc 초기화
 	if (m_isBeginFirst == true)
@@ -81,7 +81,16 @@ HRESULT CAnimation::Update_TransformationMatrix(_float fTimeDelta, _bool isLoop)
 			matLatestTransform = ((*m_LatestChannels)[idx])->Get_TransformationMatrix(); // 이전 애니메이션과 보간하자
 
 		_uint		iCurrentKeyFrameIndex = m_Channels[idx]->Get_KeyFrameIndex();
-		m_iCurrentIdx = iCurrentKeyFrameIndex;
+
+		// api 에서 현재 iChannelIdx의 키프레임idx를 알고 싶어한다. 채워주자.
+		if (iChannelIdx == -1) // 아 몰라 그냥 마지막꺼 채워줘 ex) Ballista Full 애니메이션의 경우
+		{
+			m_iCurrentIdx = iCurrentKeyFrameIndex;
+		}
+		else if (iChannelIdx == idx) // ex) Goblin Spear 애니메이션의 경우
+		{
+			m_iCurrentIdx = iCurrentKeyFrameIndex;
+		}
 
 		if (true == m_isFinished || m_isBeginFirst) // 마지막이거나, 첫 프레임인 경우, 첫번째 키프레임부터 시작한다. 
 		{

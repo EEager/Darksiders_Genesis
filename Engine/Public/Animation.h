@@ -32,7 +32,9 @@ public:
 		return S_OK;
 	}
 
-	HRESULT Update_TransformationMatrix(_float fTimeDelta, _bool isLoop);
+	// iChannelIdx 의 현재 키프레임 인덱스를 m_iCurrentIdx에 저장하고 싶을때 싶을때 사용한다.
+	// -1이면 그냥 마지막꺼 대충 넣고, 아니면 해당 뼈 idx의 키프레임 값을 반환받자
+	HRESULT Update_TransformationMatrix(_float fTimeDelta, _bool isLoop, int iChannelIdx = -1);
 
 public:
 	// 애니메이션은 시작 키프레임부터 시작하자

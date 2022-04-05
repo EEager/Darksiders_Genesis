@@ -107,7 +107,12 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 
 
 	// anim update : 로컬이동값 -> 월드이동반영
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom, m_eDir);
+	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom, m_eDir, 0);
+
+//#ifdef _DEBUG
+//	_uint keyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
+//	cout << "[Tick] : " << m_pCurState << keyFrameIdx << endl;
+//#endif
 
 	return _int();
 }
@@ -368,6 +373,8 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 	//-----------------------------------------------------
 	if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle")
 	{
+		m_bSpearFired = false;
+
 		// 플레이어가 공격 반경 내에 있다면 공격하자
 		_float disToTarget = Get_Target_Dis();
 		if (disToTarget < ATK_RANGE) // 근접 거리 내면 공격하자
@@ -423,14 +430,62 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 	//-----------------------------------------------------
 	else if (
 		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_01" ||
-		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02" ||
-		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear")
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_02")
 	{
 		m_bNotSpearAtk = false;
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
 			//m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
 
+			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+		}
+	}
+	//-----------------------------------------------------
+	else if (
+		m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Attack_Spear")
+	{
+		m_bNotSpearAtk = false;
+
+//#ifdef _DEBUG
+//		cout << "[Attack_Spear] : " << keyFrameIdx << endl;
+//#endif
+		_uint keyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
+
+		// 1 프레임 일때 타겟팅한다.
+		if (keyFrameIdx == 1)
+		{
+			// 플레이어 몸통쯤을 타겟팅한다
+			XMStoreFloat4(&m_vTargetDir, (m_pTargetTransform->Get_State(CTransform::STATE_POSITION)+XMVectorSet(0.f, 0.5f, 0.f, 0.f)) - m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		}
+
+		// 29 키프레임 일때 창을 생성한다. 
+		if (m_bSpearFired == false && (keyFrameIdx == 29))
+		{
+			// Bind Matrix
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_spearDesc.pBoneMatrix);
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_spearDesc.OffsetMatrix);
+			_matrix		PivotMatrix = XMLoadFloat4x4(&m_spearDesc.PivotMatrix);
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_spearDesc.pTargetWorldMatrix);
+
+			// 이게 정답인가 보네...
+			_matrix		TransformationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) /** OffsetMatrix*/ * CombinedTransformationMatrix * PivotMatrix * TargetWorldMatrix;
+			_float4x4	modelWorldMat;
+			XMStoreFloat4x4(&modelWorldMat, TransformationMatrix);
+
+			CGoblin_Spear::CLONEDESC initGoblinSpear;
+			// 창의 위치를 던져준다. 
+			memcpy(&initGoblinSpear.initPos, (_float4*)modelWorldMat.m[3], sizeof(_float4));
+			// 창의 방향을 지정하여 던져주자. 
+			initGoblinSpear.initDir = m_vTargetDir;
+
+			if (FAILED(CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin_Spear",
+				L"Prototype_GameObject_Goblin_Spear", &initGoblinSpear)))
+				assert(0);
+			m_bSpearFired = true; // Idle 상태일때 풀거나, 피격되었을때 푼다.
+		}
+
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
 			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
 		}
 	}
@@ -464,6 +519,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 	// 피격 모션
 	else if (m_pCurState == m_pImpactState_F || m_pCurState == m_pImpactState_B)
 	{
+		m_bSpearFired = false; 
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
 			//m_pNextState = m_pPreState; // 피격애니메이션 끝나면 이전상태로 돌려놓자.
@@ -526,4 +582,225 @@ void CGoblin_Armor::Free()
 	Safe_Release(m_pModelQuiverCom);
 
 	CMonster::Free();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --------------------------------------------------------------------------------------
+// CGoblin_Spear
+
+
+CGoblin_Spear::CGoblin_Spear(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CGameObject(pDevice, pDeviceContext)
+{
+}
+
+CGoblin_Spear::CGoblin_Spear(const CGoblin_Spear& rhs)
+	: CGameObject(rhs)
+{
+}
+
+HRESULT CGoblin_Spear::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CGoblin_Spear::NativeConstruct(void* pArg)
+{
+	if (SetUp_Component())
+		return E_FAIL;
+
+	// pArg는 시작 위치, 방향
+	if (pArg)
+	{
+		CLONEDESC* goblinSpearInitDesc = (CLONEDESC*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&goblinSpearInitDesc->initPos));
+		m_pTransformCom->Set_Look(XMLoadFloat4(&goblinSpearInitDesc->initDir));
+	}
+
+	// 고블린 창 충돌체
+	{
+		/* For.GoblinSpear */
+		CCollider::COLLIDERDESC		ColliderDesc;
+		ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+		ColliderDesc.vPivot = _float3(0.f, 0.f, .5f);
+		ColliderDesc.fRadius = .25f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, false/*아이거 처음시작할때 콜라이더 끄면서 시작하는거임*/);
+	}
+
+	return S_OK;
+}
+
+_int CGoblin_Spear::Tick(_float fTimeDelta)
+{
+	if (m_isDead)
+		return -1;
+
+	m_fLifeTime += fTimeDelta;
+
+	// 고블린 창은 앞으로 날라가자.
+	m_pTransformCom->Go_Straight(fTimeDelta);
+
+	// 충돌체 위치 Update
+	{
+		// For Weapon Collider
+		for (auto pCollider : m_ColliderList)
+		{
+			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
+		}
+	}
+
+	return _int();
+}
+
+_int CGoblin_Spear::LateTick(_float fTimeDelta)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	if (m_fLifeTime > 20.f) // 대충 15초 이상 살았으면 죽이자.
+		m_isDead = true;
+
+	if (1)
+	{
+		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
+			assert(0);
+		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+			assert(0);
+	}
+
+	// Collider, Layer_War와 20.f 거리 이하인 경우에만 콜라이더매니져에 등록된다
+	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);
+
+
+
+	RELEASE_INSTANCE(CGameInstance);
+	return 0;
+}
+
+HRESULT CGoblin_Spear::Render(_uint iPassIndex)
+{
+	if (FAILED(SetUp_ConstantTable(iPassIndex)))
+		return E_FAIL;
+
+	// Render
+	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
+
+	for (_uint i = 0; i < iNumMeshContainer; ++i)
+	{
+		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+		m_pModelCom->Set_ShaderResourceView("g_NormalTexture", i, aiTextureType_NORMALS);
+
+		m_pModelCom->Render(i, iPassIndex);
+	}
+
+	return S_OK;
+}
+
+HRESULT CGoblin_Spear::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	CGameObject::Render_Colliders();
+
+	return S_OK;
+}
+
+HRESULT CGoblin_Spear::SetUp_Component()
+{
+	/* For.Com_Transform */
+	CTransform::TRANSFORMDESC		TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+	TransformDesc.fSpeedPerSec = 20.f;
+	TransformDesc.fRotationPerSec = XMConvertToRadians(10.0f);
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
+		return E_FAIL;
+
+	/* For.Com_Renderer*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+		return E_FAIL;
+
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Spear"), TEXT("Com_Model_Goblin_Spear"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CGoblin_Spear::SetUp_ConstantTable(_uint iPassIndex)
+{
+	if (nullptr == m_pModelCom)
+		return E_FAIL;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Matrix
+	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
+	if (iPassIndex == 3) // shadow map
+	{
+		m_pModelCom->Set_RawValue("g_ViewMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_View())), sizeof(_float4x4));
+		m_pModelCom->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(CLight_Manager::GetInstance()->Get_Objects_Light_Proj())), sizeof(_float4x4));
+	}
+	else
+	{
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	}
+
+	// Branch to Use Normal Mapping 
+	m_pModelCom->Set_RawValue("g_UseNormalMap", &g_bUseNormalMap, sizeof(bool));
+	m_pModelCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
+	RELEASE_INSTANCE(CGameInstance);
+	return S_OK;
+}
+
+
+CGoblin_Spear* CGoblin_Spear::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CGoblin_Spear* pInstance = new CGoblin_Spear(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CGoblin_Spear");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+
+CGameObject* CGoblin_Spear::Clone(void* pArg)
+{
+	CGoblin_Spear* pInstance = new CGoblin_Spear(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CGoblin_Spear");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CGoblin_Spear::Free()
+{
+	__super::Free();
+
+	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pModelCom);
 }
