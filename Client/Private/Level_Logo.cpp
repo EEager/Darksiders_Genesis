@@ -37,7 +37,7 @@ _int CLevel_Logo::Tick(_float fTimeDelta)
 			static_cast<CLogo_BackGround*>(m_pBackGround)->m_bPressedSpace = true;
 
 			// 씬체인지를 넣어주자
-			pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect"));
+			pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect1"));
 			m_bPressedSpace = true;
 		}
 
@@ -52,6 +52,17 @@ _int CLevel_Logo::Tick(_float fTimeDelta)
 
 		return 0;
 	}
+
+#ifdef _DEBUG
+	// E키를 눌러 시험하자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect2"));
+		RELEASE_INSTANCE(CGameInstance);
+
+	}
+#endif
 
 	return _int(0);
 }

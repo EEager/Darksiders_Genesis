@@ -65,20 +65,14 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 	}
+
+	// E키를 눌러 시험하자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
+	{
+		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect2"));
+	}
 	RELEASE_INSTANCE(CGameInstance);
 #endif
-
-	// Event Check
-		// War가 밟은 네비를 체크하여 이벤트를 만들어주자.
-		// 마치 배우들을 모아서 영화를 만드는 것과 비슷하다.
-	// #1. 몬스터 소환 : 첫번째 계단 전, 몬스터들을 소환한다. 
-
-	// #2. 바리스타 씬 장면 
-	// - 씬 넘어가는 UI 출력
-	// - 카메라 타겟 변경. 카메라 위치 변경.
-	// - 
-		// 카메라 lerp
-		// 
 
 	return _int(0);
 }

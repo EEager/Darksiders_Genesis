@@ -285,9 +285,14 @@ HRESULT CMainApp::Ready_GameObject_Prototype()
 	if (FAILED(m_pGameInstance->Add_GameObjectToLayer(LEVEL_STATIC, L"Layer_Mouse", TEXT("Prototype_GameObject_Mouse"))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_SceneChangeEffect */
-	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SceneChangeEffect"),
-		CSceneChangeEffect::Create(m_pDevice, m_pDeviceContext))))
+	/* For.Prototype_GameObject_SceneChangeEffect1 */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SceneChangeEffect1"),
+		CSceneChangeEffect1::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_SceneChangeEffect2 */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SceneChangeEffect2"),
+		CSceneChangeEffect2::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 
