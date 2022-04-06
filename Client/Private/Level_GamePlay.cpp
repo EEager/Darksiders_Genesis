@@ -49,6 +49,18 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Ballista", LEVEL_GAMEPLAY);
 	}
 
+	// Ready Event
+	{
+		// Push OnEvent1
+		m_queueEventCallBack.push(bind(&CLevel_GamePlay::OnEvent1, &CLevel_GamePlay(m_pDevice, m_pDeviceContext), placeholders::_1));
+		// Push OnEvent2
+		m_queueEventCallBack.push(bind(&CLevel_GamePlay::OnEvent2, &CLevel_GamePlay(m_pDevice, m_pDeviceContext), placeholders::_1));
+		// Push OnEvent3
+		m_queueEventCallBack.push(bind(&CLevel_GamePlay::OnEvent3, &CLevel_GamePlay(m_pDevice, m_pDeviceContext), placeholders::_1));
+		// Push OnEvent4
+		m_queueEventCallBack.push(bind(&CLevel_GamePlay::OnEvent4, &CLevel_GamePlay(m_pDevice, m_pDeviceContext), placeholders::_1));
+	}
+
 	 
 	return S_OK;
 }
@@ -73,6 +85,19 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	}
 	RELEASE_INSTANCE(CGameInstance);
 #endif
+
+
+	// Event Q에서 하나씩 꺼내 사용하자. 
+	// 이벤트가 없다면 넘기자.
+	if (m_queueEventCallBack.empty() == false)
+	{
+		auto pEvent = m_queueEventCallBack.front();
+		if (pEvent(fTimeDelta))
+		{
+			// 만약 완료 하였다. pop front
+			m_queueEventCallBack.pop();
+		}
+	}
 
 	return _int(0);
 }
@@ -305,6 +330,30 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 	RELEASE_INSTANCE(CGameInstance);
 
 	return S_OK;
+}
+
+bool CLevel_GamePlay::OnEvent1(_float fTimeDelta)
+{
+	printf("%s:%d\n", __func__, __LINE__);
+	return true;
+}
+
+bool CLevel_GamePlay::OnEvent2(_float fTimeDelta)
+{
+	printf("%s:%d\n", __func__, __LINE__);
+	return true;
+}
+
+bool CLevel_GamePlay::OnEvent3(_float fTimeDelta)
+{
+	printf("%s:%d\n", __func__, __LINE__);
+	return true;
+}
+
+bool CLevel_GamePlay::OnEvent4(_float fTimeDelta)
+{
+	printf("%s:%d\n", __func__, __LINE__);
+	return true;
 }
 
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

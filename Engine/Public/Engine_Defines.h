@@ -66,6 +66,8 @@ using namespace DirectX::PackedVector;
 #include <process.h>
 #include <sstream>
 #include <fstream>
+#include <queue>
+#include <functional>
 
 using namespace std;
 
