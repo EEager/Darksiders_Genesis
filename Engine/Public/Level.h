@@ -22,6 +22,9 @@ protected:
 	ID3D11DeviceContext*		m_pDeviceContext = nullptr;
 
 public:
+	bool	m_bGoToThe_NextLevel = false;
+
+public:
 	virtual void Free() override;
 };
 

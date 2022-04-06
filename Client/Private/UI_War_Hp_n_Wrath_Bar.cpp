@@ -187,8 +187,8 @@ HRESULT CUI_War_Hp_n_Wrath_Bar::SetUp_ConstantTable_WrathBar()
 		return E_FAIL;
 
 	_float4x4		WorldMatrix;
-	_float fSizeX = 114.f/1.5f;
-	_float fSizeY = 39.f / 1.5f;;
+	_float fSizeX = 114.f/ 1.5f;
+	_float fSizeY = 39.f / 1.5f;
 	_float fPosX = 158.f;
 	_float fPosY = 97.f;
 

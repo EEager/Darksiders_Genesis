@@ -52,6 +52,7 @@ public: /* For.Object_Manager */
 	class CGameObject* Get_War(int iLevelIndex = -1);
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pPrototypeTag, void* pArg = nullptr);	
+	HRESULT Add_GameObjectToLayer(OUT class CGameObject **pGameObjectClone, _uint iLevelIndex, const _tchar * pLayerTag, const _tchar * pPrototypeTag, void* pArg = nullptr);
 	class CComponent* Get_ComponentPtr(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pComponentTag, _uint iIndex = 0);
 
 	// Used In ImGUI
@@ -87,7 +88,7 @@ public: /* For.Level_Manager */
 	int Get_CurrentLevel() // Used in ImGUI
 	{
 		if (m_pLevel_Manager)
-			return m_pLevel_Manager->Get_CurrentLevel();
+			return m_pLevel_Manager->Get_CurrentLevelIdx();
 		return -1;
 	}
 	HRESULT Open_Level(_uint iLevelIndex, class CLevel* pNextLevel);

@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "Level.h"
 
+#include "GameObject.h"
+
 BEGIN(Client)
 
 class CLevel_Logo final : public CLevel
@@ -17,6 +19,11 @@ public:
 
 private:
 	HRESULT Ready_Layer_BackGround(const _tchar* pLayerTag);
+
+private:
+	class CGameObject* m_pBackGround = nullptr;
+
+	bool m_bPressedSpace = false;
 
 public:
 	static CLevel_Logo* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

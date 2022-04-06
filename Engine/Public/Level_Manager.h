@@ -7,7 +7,7 @@
 
 BEGIN(Engine)
 
-class CLevel_Manager final : public CBase
+class ENGINE_DLL CLevel_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CLevel_Manager)
 private:
@@ -21,7 +21,8 @@ public:
 	HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
 
 public: // Used in ImGUI
-	_uint Get_CurrentLevel() { return m_iCurrentLevelIndex; }
+	_uint Get_CurrentLevelIdx() { return m_iCurrentLevelIndex; }
+	class CLevel* Get_CurrentLevel() { return m_pCurrentLevel; }
 
 private:
 	class CLevel*				m_pCurrentLevel = nullptr;

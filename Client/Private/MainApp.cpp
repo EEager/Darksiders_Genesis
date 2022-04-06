@@ -11,6 +11,9 @@
 #include "Camera_Fly.h"
 #include "Mouse.h"
 
+// Effect
+#include "SceneChangeEffect.h"
+
 // ----------------------
 //	ImGUI
 // ----------------------
@@ -246,6 +249,11 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/T_DissolveMask_A.tga")))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_UI_MenuTransSlice1 */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MenuTransSlice1"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI_MenuTransSlice1.tga")))))
+		return E_FAIL;
+
 	// ======================================================================
 	// Collider
 	/* For.Prototype_Component_Colllider_AABB */
@@ -275,6 +283,11 @@ HRESULT CMainApp::Ready_GameObject_Prototype()
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Mouse"), CMouse::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 	if (FAILED(m_pGameInstance->Add_GameObjectToLayer(LEVEL_STATIC, L"Layer_Mouse", TEXT("Prototype_GameObject_Mouse"))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_SceneChangeEffect */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SceneChangeEffect"),
+		CSceneChangeEffect::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 

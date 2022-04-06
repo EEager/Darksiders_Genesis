@@ -133,6 +133,12 @@
     <Filter Include="02.GameObjects\MapObject\Static\Fork">
       <UniqueIdentifier>{c0f3ed93-c0c3-4ef7-9b33-04724e3b55fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\FadeInOut">
+      <UniqueIdentifier>{70197445-58d7-47ea-8dbd-5ad53400de0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\FadeInOut\SceneChangeEffect">
+      <UniqueIdentifier>{c51e21d6-b0b4-4d0d-8325-5b575c98f003}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -261,6 +267,9 @@
     <ClInclude Include="..\Public\MapObject\Ballista.h">
       <Filter>02.GameObjects\MapObject\Dynamic\Ballista</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SceneChangeEffect.h">
+      <Filter>02.GameObjects\FadeInOut\SceneChangeEffect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -373,6 +382,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\Ballista.cpp">
       <Filter>02.GameObjects\MapObject\Dynamic\Ballista</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\SceneChangeEffect.cpp">
+      <Filter>02.GameObjects\FadeInOut\SceneChangeEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -198,6 +198,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PointEffect.h" />
     <ClInclude Include="..\Public\RectEffect.h" />
+    <ClInclude Include="..\Public\SceneChangeEffect.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\State_War.h" />
     <ClInclude Include="..\Public\Sword.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PointEffect.cpp" />
     <ClCompile Include="..\Private\RectEffect.cpp" />
+    <ClCompile Include="..\Private\SceneChangeEffect.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\State_War.cpp" />
     <ClCompile Include="..\Private\Sword.cpp" />

@@ -35,6 +35,9 @@ private:
 	_float		m_fX, m_fY, m_fSizeX, m_fSizeY;	
 	_float4x4	m_ProjMatrix;
 
+public:
+	bool m_bPressedSpace = false;
+
 private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable();

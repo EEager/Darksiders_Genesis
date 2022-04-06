@@ -69,6 +69,8 @@ HRESULT CLogo_BackGround::Render(_uint iPassIndex)
 
 HRESULT CLogo_BackGround::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+	if (m_bPressedSpace)
+		return S_OK;
 	//#ifdef USE_IMGUI
 	//	wstring str = DXString::Format(L"FPS : %.0f", ImGui::GetIO().Framerate);
 	//#else
