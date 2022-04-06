@@ -42,7 +42,7 @@ _int CCamera_Fly::Tick(_float fTimeDelta)
 	{
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-		m_pWar = static_cast<CWar*>(pGameInstance->Get_War(LEVEL_GAMEPLAY));
+		Set_Target(static_cast<CWar*>(pGameInstance->Get_War(LEVEL_GAMEPLAY)));
 		m_bSetTargetOnce = true;
 		RELEASE_INSTANCE(CGameInstance);
 	}
@@ -76,7 +76,7 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_V))
 	{
-		m_eType = (TYPE_MODE)!(bool)m_eType;
+		m_eType = (CAMERA_MODE)!(bool)m_eType;
 	}
 
 	// 카메라 프리 모드일때는 움직여 다니자.
@@ -113,7 +113,7 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 			m_pTransform->Turn(m_pTransform->Get_State(CTransform::STATE_RIGHT), CONST_TIME_DELTA_F * MouseMove * 0.1f);
 		}
 	}
-	else if (m_eType == MODE_WAR)// 인게임에서는 카메라는 War 타겟팅
+	else if (m_eType == MODE_TARGET)// 타겟팅 카메라를 실행한다
 	{
 		/* 카메라의 움직임을 주면서 카메라 월드행렬을 갱신한다. */
 		if (pInput_Device->Key_Pressing(DIK_UP))
@@ -141,13 +141,13 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		}
 
 		// 카메라 룩백 Lerp 하게 
-		_vector vWarPos = m_pWar->Get_War_Pos();
-		m_pTransform->LookAt_Lerp(vWarPos, 0.05f);
+		_vector targetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
+		m_pTransform->LookAt_Lerp(targetPos, 0.05f);
 
 		// 위치 러프하게 
-		_float posX = m_fRadius * cosf(m_fRadian) + XMVectorGetX(vWarPos);
-		_float posY = m_fHeight + XMVectorGetY(vWarPos);
-		_float posZ = m_fRadius * sinf(m_fRadian) + XMVectorGetZ(vWarPos);
+		_float posX = m_fRadius * cosf(m_fRadian) + XMVectorGetX(targetPos);
+		_float posY = m_fHeight + XMVectorGetY(targetPos);
+		_float posZ = m_fRadius * sinf(m_fRadian) + XMVectorGetZ(targetPos);
 		m_pTransform->Set_State_Lerp(CTransform::STATE_POSITION, XMVectorSet(posX, posY, posZ, 1.f), 0.03f);
 	}
 }
@@ -180,4 +180,6 @@ CGameObject * CCamera_Fly::Clone(void * pArg)
 void CCamera_Fly::Free()
 {
 	__super::Free();
+
+	Safe_Release ( m_pTarget);
 }

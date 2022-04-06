@@ -84,8 +84,15 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	}
 
 
-	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%30, 0.f, 431.f + rand() % 20, 1.f));
+	// pArg는 보통 위치이다. w가 1인 _float4이다.
+	if (pArg)
+	{
+		_float4* ArgPos = (_float4*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(ArgPos));
+	}
+	else
+		// Init test
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand() % 30, 0.f, 431.f + rand() % 20, 1.f));
 
 	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
 	m_pNextState = "Legion_Mesh.ao|Legion_Idle";
@@ -500,7 +507,7 @@ void CLegion::DoState(float fTimeDelta)
 				{
 					// Legion 방향은 바리스타가 바라보고 있는 방향으로
 					m_pTransformCom->Set_Look(pBallistaTransformCom->Get_State(CTransform::STATE_LOOK));
-					// Legion 위치는 바리스타를 바라본뒤
+					// Legion 위치는 바리스타를 바라Oc본뒤
 					auto toPosition = pBallistaTransformCom->Get_State(CTransform::STATE_POSITION)
 						+ m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * -2.5f /*왼쪽으로 조금옮기자*/
 						+ XMVectorSet(0.f, 1.f, 0.f, 0.f)/*위로 조금 옮기자*/
