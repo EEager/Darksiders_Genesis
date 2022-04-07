@@ -64,6 +64,8 @@ private:
 	_float m_fTimeKnockBackLoop = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 
+	_bool m_bSpawning = false;
+
 
 public:
 	CGameObject* Get_Ballista() { return m_pBallista; }

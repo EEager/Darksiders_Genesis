@@ -95,7 +95,7 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand() % 30, 0.f, 431.f + rand() % 20, 1.f));
 
 	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
-	m_pNextState = "Legion_Mesh.ao|Legion_Idle";
+	m_pNextState = "Legion_Mesh.ao|Legion_Spawn_01"; // 소환하는것으로 시작.
 	m_pImpactState_F = "Legion_Mesh.ao|Legion_Impact_F";
 	m_pImpactState_B = "Legion_Mesh.ao|Legion_Impact_B";
 	m_pModelCom->SetUp_Animation(m_pCurState);
@@ -151,7 +151,15 @@ _int CLegion::Tick(_float fTimeDelta)
 	DoState(fTimeDelta);
 
 	// anim update : 로컬이동값 -> 월드이동반영
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom, m_eDir);
+	if (m_bSpawning == false)
+		m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom, m_eDir);
+	else // 몬스터 스폰상태에서는 위로 점프하는 것처럼 보여야한다. 월행에 반영하지 말자
+	{
+		_float4x4 forDontMoveInWorld;
+		XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
+		m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
+	}
+
 
 	return _int();
 }
@@ -300,6 +308,7 @@ void CLegion::UpdateState()
 		return;
 
 	_bool isLoop = false;
+	_bool useLastLerp = true;
 
 	// --------------------------
 	// --------------------------
@@ -317,6 +326,10 @@ void CLegion::UpdateState()
 
 		// 공격 상태 exit시 슈아 상태 끄자.
 		m_bSuperArmor = false;
+	}
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Spawn_01")
+	{
+		m_bSpawning = false;
 	}
 
 
@@ -392,12 +405,20 @@ void CLegion::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
+	// Spawn State
+	else if (m_pNextState == "Legion_Mesh.ao|Legion_Spawn_01")
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+		useLastLerp = false;
+		m_bSpawning = true;
+	}
 
-	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+	m_pModelCom->SetUp_Animation(m_pNextState, isLoop, useLastLerp);
 	//// 하지만 현재 상태가 피격 상태라면, 이전상태 업데이트는 하지 않는다. F->B->F->B 반복 이슈
 	//if (m_pCurState != m_pImpactState_B && m_pCurState != m_pImpactState_F)
-	//	m_pPreState = m_pCurState; // 피격 상태가 끝나면 이전상태(m_pPreState)로 다시 돌아간다. 
-	m_pCurState = m_pNextState;
+	//	m_pPreState = m_pCurState; // 피격 상태가 끝나면 이전상태(m_pPreState)로 다시 돌아간다.
+	m_pCurState = m_pNextState; 
 }
 
 // FSM
@@ -658,6 +679,15 @@ void CLegion::DoState(float fTimeDelta)
 		{
 			//m_pNextState = m_pPreState; // 피격애니메이션 끝나면 이전상태로 돌려놓자.
 			m_pNextState = "Legion_Mesh.ao|Legion_Idle"; // 아.. 그냥 Idle로 가자..
+		}
+	}
+	//--------------------------------------------------------
+	// Spawn
+	else if (m_pCurState == "Legion_Mesh.ao|Legion_Spawn_01")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "Legion_Mesh.ao|Legion_Idle";
 		}
 	}
 }

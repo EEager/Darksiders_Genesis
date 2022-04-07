@@ -136,7 +136,7 @@ using namespace Engine;
 // -----------------------
 // For HierachyNode
 // ------------------------
-enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B };
+enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B, DIR_U };
 
 
 // ------------------------

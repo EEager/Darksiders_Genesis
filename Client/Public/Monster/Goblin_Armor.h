@@ -81,6 +81,8 @@ private:
 	_bool m_bSpearFired = false;
 	_float4	m_vTargetDir;
 
+	_bool m_bSpawning = false;
+
 	//----------------------------------------------
 
 

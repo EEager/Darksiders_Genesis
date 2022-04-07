@@ -65,15 +65,15 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Ballista", LEVEL_GAMEPLAY);
 	}
 
-	// Ready Event
+	// Ready Level Event
 	{
-		// Push OnEvent1
+		// OnEvent1
 		m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
-		// Push OnEvent2
+		// OnEvent2
 		m_queueEventCallBack.push(bind(&OnEvent2, placeholders::_1));
-		// Push OnEvent3
+		// OnEvent3
 		m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
-		// Push OnEvent4
+		// OnEvent4 
 		m_queueEventCallBack.push(bind(&OnEvent4, placeholders::_1));
 
 	}
@@ -88,11 +88,12 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		return -1;
 
 #ifdef _DEBUG 
-	// R 키를 눌러서 Legion 을 생성하자
+	// R 키를 눌러서 Legion과 고블린을 생성하자
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (CInput_Device::GetInstance()->Key_Down(DIK_R))
 	{
 		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 	}
 
 	// E키를 눌러 시험하자
@@ -111,7 +112,7 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		auto pEvent = m_queueEventCallBack.front();
 		if (pEvent(fTimeDelta))
 		{
-			// 만약 완료 하였다. pop front
+			// 만약 해당 이벤트가 완료 하였다. pop front
 			m_queueEventCallBack.pop();
 		}
 	}
@@ -351,7 +352,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 }
 
 
-// 바리스타 첫 대면 장면. 퀘스트 추가까지.
+// 바리스타 첫 대면 장면. 퀘스트 추가는 ToDo.
 bool event1_event1;
 bool event1_event2;
 CGameObject* pEffect = nullptr;
@@ -398,6 +399,8 @@ bool OnEvent1(_float fTimeDelta)
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(&pLegion, LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(600.f, 21.7f, 402.0f, 1.f))))
+				return false;
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(601.f, 21.7f, 401.0f, 1.f))))
 				return false;
 
 			// 카메라 포지션 + lookAk + 타겟 설정

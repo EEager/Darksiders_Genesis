@@ -79,12 +79,19 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	}
 
 
-	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
+	// pArg는 보통 위치이다. w가 1인 _float4이다.
+	if (pArg)
+	{
+		_float4* ArgPos = (_float4*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(ArgPos));
+	}
+	else 
+		// Init Test
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
 
 	// Init Anim State
 	m_pCurState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
-	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
+	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Spawn"; // 소환하는것으로 시작.
 	m_pImpactState_F = "Goblin_Armor_Mesh.ao|Goblin_SnS_Impact_F";
 	m_pImpactState_B = "Goblin_Armor_Mesh.ao|Goblin_SnS_Impact_B";
 	m_pModelCom->SetUp_Animation(m_pCurState, true);
@@ -107,7 +114,14 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 
 
 	// anim update : 로컬이동값 -> 월드이동반영
+	if (m_bSpawning == false)
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom, m_eDir, 0);
+	else
+	{
+		_float4x4 forDontMoveInWorld;
+		XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
+		m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
+	}
 
 //#ifdef _DEBUG
 //	_uint keyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
@@ -297,6 +311,7 @@ void CGoblin_Armor::UpdateState()
 		return;
 
 	_bool isLoop = false;
+	_bool useLastLerp = true;
 
 	// -----------------------------
 	// m_pCurState Exit
@@ -310,6 +325,11 @@ void CGoblin_Armor::UpdateState()
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
 		// 공격 상태 Exit시 슈퍼아퍼꺼야한다.
 		//m_bSuperArmor = false; 
+	}
+	// 소환 종료
+	else if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Spawn")
+	{
+		m_bSpawning = false;
 	}
 
 	// -----------------------------
@@ -359,8 +379,16 @@ void CGoblin_Armor::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
+	// Spawn State
+	else if (m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Spawn")
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+		useLastLerp = false;
+		m_bSpawning = true;
+	}
 
-	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
+	m_pModelCom->SetUp_Animation(m_pNextState, isLoop, useLastLerp);
 	// 하지만 현재 상태가 피격 상태라면, 이전상태 업데이트는 하지 않는다. F->B->F->B 반복 이슈
 	//if (m_pCurState != m_pImpactState_B && m_pCurState != m_pImpactState_F)
 	//	m_pPreState = m_pCurState; // 피격 상태가 끝나면 이전상태(m_pPreState)로 다시 돌아간다. 
@@ -524,6 +552,15 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		{
 			//m_pNextState = m_pPreState; // 피격애니메이션 끝나면 이전상태로 돌려놓자.
 			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle"; // 아.. 그냥 IDel로 가자
+		}
+	}
+	//-------------------------------------------------------
+	// 소환시
+	else if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Spawn")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle"; 
 		}
 	}
 }

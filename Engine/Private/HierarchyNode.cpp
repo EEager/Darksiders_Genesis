@@ -86,6 +86,9 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 					case DIR_B:
 						XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[CTransform::STATE_LOOK])) * -offsetLength);
 						break;
+					case DIR_U:
+						XMStoreFloat4(&tmpOffset, XMVector4Normalize(XMLoadFloat4((_float4*)pMatW->m[CTransform::STATE_UP])) * offsetLength);
+						break;
 					default:
 						assert(0);
 						break;
