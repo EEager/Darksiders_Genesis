@@ -60,8 +60,8 @@ public:
 // 커튼이 올라갔다가. 내려간다. 아무런 기능을 하지 않는다. 그냥 화면 가리기 용도이다. 
 class CSceneChangeEffect2 final : public CGameObject
 {
-private:
-	enum TYPE { INCREASE, DESCENT };
+public:
+	enum EFFECT2_TYPE { INCREASE, DESCENT };
 
 private:
 	explicit CSceneChangeEffect2(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
@@ -84,6 +84,9 @@ private:
 	_float4x4	m_ProjMatrix;
 	_float4x4	m_ViewMatrix;
 
+public:
+	EFFECT2_TYPE Get_Type() { return m_eType; }
+
 private:
 	// 크기는 화면상에 출력될 픽셀들 크기입니다
 	const _float fSizeX = 600 * (900.f / 3600.f);
@@ -91,7 +94,7 @@ private:
 	_float	m_fTexturePosX = fSizeX / 2.f; // 초기 위치
 	_float	m_fTexturePosY = fSizeY / 2.f + 950.f; // 초기 위치는
 	const _float MAX_TEXTURE_POS_Y = 300.f; // 화면에 꽉채웠을 때의 Y 위치.
-	enum TYPE m_eType = INCREASE; // 초기엔 상승.
+	enum EFFECT2_TYPE m_eType = INCREASE; // 초기엔 상승.
 	bool m_bWillDead = false; // 마지막 한번을 출력하고 죽자
 
 private:

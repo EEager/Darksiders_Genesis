@@ -52,6 +52,10 @@ _int CUI_War_Hp_n_Wrath_Bar::LateTick(_float fTimeDelta)
 
 HRESULT CUI_War_Hp_n_Wrath_Bar::Render(_uint iPassIndex)
 {
+
+	if (m_bNotRender)
+		return S_OK;
+
 	// 1. UI_War_Base Ãâ·Â
 	if (FAILED(SetUp_ConstantTable_Base()))
 		return E_FAIL;

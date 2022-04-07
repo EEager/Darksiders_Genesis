@@ -94,6 +94,13 @@ protected:
 	int m_CloneIdx = 0;
 #endif
 
+	// Render 하지말자
+public:
+	void Set_NotRender(_bool b) { m_bNotRender = b; }
+
+protected:
+	_bool m_bNotRender = false;
+
 protected:
 	const _tchar* m_pPrototypeTag = nullptr;
 	const _tchar* m_pLayerTag = nullptr;

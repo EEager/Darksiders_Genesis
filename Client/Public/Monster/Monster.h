@@ -28,6 +28,9 @@ public:
 
 public:
 	CTransform* Get_Transform() { return m_pTransformCom; }
+	
+public:
+	CModel* Get_Model() { return m_pModelCom; }
 
 protected:	
 	CRenderer*					m_pRendererCom = nullptr;

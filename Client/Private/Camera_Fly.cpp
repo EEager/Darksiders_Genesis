@@ -79,7 +79,7 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		m_eType = (CAMERA_MODE)!(bool)m_eType;
 	}
 
-	// 카메라 프리 모드일때는 움직여 다니자.
+	// 카메라 프리 모드일때는 자유롭게 움직여 다니자.
 	if (m_eType == MODE_FREE)
 	{
 		if (pInput_Device->Key_Pressing(DIK_UP))
@@ -141,14 +141,22 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		}
 
 		// 카메라 룩백 Lerp 하게 
-		_vector targetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
-		m_pTransform->LookAt_Lerp(targetPos, 0.05f);
+		_vector targetPos;
+		if (m_bUseBoneMat) // 뼈행렬이 있는 경우 뼈행렬위치를 사용하자
+		{
+			targetPos = XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4x4(&m_matTransformation));
+		}
+		else // 아닌경우, 타겟 위치 값 사용
+		{
+			targetPos = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
+		}
+		m_pTransform->LookAt_Lerp(targetPos, m_fLookAtRatio);
 
 		// 위치 러프하게 
 		_float posX = m_fRadius * cosf(m_fRadian) + XMVectorGetX(targetPos);
 		_float posY = m_fHeight + XMVectorGetY(targetPos);
 		_float posZ = m_fRadius * sinf(m_fRadian) + XMVectorGetZ(targetPos);
-		m_pTransform->Set_State_Lerp(CTransform::STATE_POSITION, XMVectorSet(posX, posY, posZ, 1.f), 0.03f);
+		m_pTransform->Set_State_Lerp(CTransform::STATE_POSITION, XMVectorSet(posX, posY, posZ, 1.f), m_fPositionRatio);
 	}
 }
 

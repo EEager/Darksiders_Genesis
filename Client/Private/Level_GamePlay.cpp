@@ -6,6 +6,9 @@
 
 #include "Navigation.h"
 
+#include "SceneChangeEffect.h"
+#include "Monster/Legion.h"
+
 
 // -----------------------------
 // For.CallBack using in Event
@@ -349,7 +352,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 
 
 // 바리스타 첫 대면 장면. 퀘스트 추가까지.
-bool event1_Effect1;
+bool event1_event1;
+bool event1_event2;
+CGameObject* pEffect = nullptr;
+CGameObject* pLegion = nullptr;
 bool OnEvent1(_float fTimeDelta)
 {
 	// 조건 : War가 Navi 14번을 탈 때 이벤트를 실행한다
@@ -357,49 +363,149 @@ bool OnEvent1(_float fTimeDelta)
 	if (pWarNavi->m_iCurrentIndex != 14)
 		return false; 
 
-	if (event1_Effect1 == false)
+	if (event1_event1 == false)
 	{
 		// 씬전환 이펙트 실행
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect2"));
+		pGameInstance->Add_GameObjectToLayer(&pEffect, LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect2"));
+		Safe_AddRef(pEffect);
+		event1_event1 = true;
+
+		// UI 전부 Render 하지말자.
+		auto pUIList = pGameInstance->Get_GameObject_CloneList(L"Layer_UI");
+		for (auto& pUI : *pUIList)
+		{
+			pUI->Set_NotRender(true);
+		}
+
 		RELEASE_INSTANCE(CGameInstance);
+	} 
 
+	// Prototype_GameObject_SceneChangeEffect2 가 내려갈때 실행하자
+	if (pEffect && static_cast<CSceneChangeEffect2*>(pEffect)->Get_Type() == CSceneChangeEffect2::EFFECT2_TYPE::DESCENT)
+	{
+		// 이펙트 죽는것은 계속해서 체크를 ㅎ라자.
+		if (pEffect->IsDead()) // 죽었으면 Release하자.
+		{
+			Safe_Release(pEffect);
+		}
+
+		// 아래는 한번만 실행한다.
 		// Legion + 고블린 해당 위치에 생성. 
-		// 와 결국 시간으로 컨트롤 해야하는것인가? 
-		CGameObject* pLegion = nullptr;
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(&pLegion, LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(593.7f, 21.7f, 398.4f, 1.f))))
-			return false;
+		if (event1_event2 == false)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(&pLegion, LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(600.f, 21.7f, 402.0f, 1.f))))
+				return false;
 
-		// 카메라 포지션 + lookup 설정
-		auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();
-		pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(595.4f, 28.1f, 381.2f, 1.f));
-		static_cast<CCamera_Fly*>(m_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_TARGET); 
-		static_cast<CCamera_Fly*>(m_pCamera)->Set_Target(pLegion);
-		pCameraTransform->LookAt(static_cast<CTransform*>(pLegion->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION));
+			// 카메라 포지션 + lookAk + 타겟 설정
+			auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();
+			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(595.4f, 28.1f, 381.2f, 1.f));
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_TARGET);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Target(pLegion);
+			pCameraTransform->LookAt(static_cast<CTransform*>(pLegion->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION));
 
-		// 카메라 서서히 움직이기 
-		event1_Effect1 = true;
+			// 카메라 m_fRadius, m_fRadian, m_fHeight 설정
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radius(23.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radian(6.2f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Height(11.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Position_Ratio(0.001f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_LookAt_Ratio(0.001f);
+
+			// ToDo : 추가적으로 LightManager에서 Object 그림자도 변경하면좋다.. 
+			// 변경하였다. LightManager에서 카메라에 세팅된 타겟을 따라가도록말이다.
+
+			RELEASE_INSTANCE(CGameInstance);
+			event1_event2 = true;
+		}
 	}
-	printf("%s:%d\n", __func__, __LINE__);
-	return true;
+
+	// Legion이 가지고 있는 바리스타가 있는 경우 애니메이션 인덱스를 체크한다. 
+	if (pLegion == nullptr)
+		return false;
+
+	CGameObject* pLegion_Ballista = static_cast<CLegion*>(pLegion)->Get_Ballista();
+	if (pLegion_Ballista) // 만약 바리스타가 있는 경우
+	{
+		_uint iKeyFrameIdx = static_cast<CLegion*>(pLegion)->Get_Model()->Get_Current_KeyFrame_Index("Legion_Mesh.ao|Legion_Ballista_Full");
+
+		// 254 : 화살 발사하는 순간. 카메라가 화살을 따라가게 하자.
+		if (254 <= iKeyFrameIdx && iKeyFrameIdx < 300)
+		{ 
+			// 바리스타 모델을 가져와야한다.
+			CModel* pBallista_Model = static_cast<CModel*>(pLegion_Ballista->Get_ComponentPtr(L"Com_Model"));
+			CTransform* pBallista_Transform = static_cast<CTransform*>(pLegion_Ballista->Get_ComponentPtr(L"Com_Transform"));
+
+			// #1. 화살 발사를 했다. 카메라 타겟를 변경하자
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Target(pLegion_Ballista);
+
+			// 카메라 행렬 설정해주자. 발리스타의 화살을 따라가게 하고 싶기때문이다.
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&pBallista_Model->Get_OffsetMatrix("Bone_BB_Bolt")); 
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(pBallista_Model->Get_CombinedMatrixPtr("Bone_BB_Bolt")); 
+			_matrix		PivotMatrix = XMLoadFloat4x4(&pBallista_Model->Get_PivotMatrix_Bones());
+
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(pBallista_Transform->Get_WorldFloat4x4Ptr());
+			_matrix		TransformationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) * (CombinedTransformationMatrix * PivotMatrix) * TargetWorldMatrix;
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_BoneMat(true, TransformationMatrix);
+
+#if 0 // For.Test
+			// #2. 카메라 위치를 변경하자 - 바리스타 화살을 따라간다
+			auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();
+			_vector cameraPos = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+			cameraPos = XMVector3TransformCoord(cameraPos, TransformationMatrix);
+			pCameraTransform->Set_State(CTransform::STATE_POSITION, cameraPos);
+#endif
+			// #2. 카메라 m_fRadius, m_fRadian, m_fHeight 설정
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radius(17.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radian(3.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Height(8.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Position_Ratio(0.01f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_LookAt_Ratio(0.01f);
+		}
+		else if (iKeyFrameIdx >= 300) // 여기서 부터는 다시 플레이어로 가도록.
+		{
+			// #1. 화살 발사를 했다. 카메라 타겟을 다시 플레이어로 변경하자. 
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Target(static_cast<CWar*>(pGameInstance->Get_War(LEVEL_GAMEPLAY)));
+			// 카메라 뼈 행렬 사용안한다.
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_BoneMat(false, {});
+			RELEASE_INSTANCE(CGameInstance);
+
+			// #2. 카메라 m_fRadius, m_fRadian, m_fHeight 설정
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radius(22.060f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radian(3.109);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Height(13.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Position_Ratio(0.03f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_LookAt_Ratio(0.05f);
+
+			// #3. UI 다시 보이게.
+			auto pUIList = pGameInstance->Get_GameObject_CloneList(L"Layer_UI");
+			for (auto& pUI : *pUIList)
+				pUI->Set_NotRender(false);
+
+
+			// [이벤트 종료]
+			// 모든것이 완료하였다. Event1을 종료한다.
+			return true; 
+		}
+	}
+
+	return false;
 }
 
 // 모험의 서. 경치 보여주는 장면.
 bool OnEvent2(_float fTimeDelta)
 {
-	printf("%s:%d\n", __func__, __LINE__);
 	return true;
 }
 // 성 문앞에서, 몬스터 삼인방 나오는 장면. 
 bool OnEvent3(_float fTimeDelta)
 {
-	printf("%s:%d\n", __func__, __LINE__);
 	return true;
 }
 // 보스 씬.
 bool OnEvent4(_float fTimeDelta)
 {
-	printf("%s:%d\n", __func__, __LINE__);
 	return true;
 }
 

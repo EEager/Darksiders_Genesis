@@ -39,6 +39,18 @@ public:// Used in ImGUI
 	}
 	const CAMERADESC Get_Camera_Desc() const { return m_CameraDesc; }
 
+	// Å¸°Ù
+public:
+	void Set_Target(class CGameObject* pObj)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = pObj;
+		Safe_AddRef(m_pTarget);
+	}
+	CGameObject* Get_Target() { return m_pTarget; }
+protected:
+	class CGameObject* m_pTarget = nullptr;
+
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;
 	virtual void Free() override;

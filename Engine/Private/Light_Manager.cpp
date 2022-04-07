@@ -6,6 +6,7 @@
 #include "GameInstance.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Camera.h"
 
 // "../Bin/ShaderFiles/Shader_Deferred.hlsl"
 
@@ -112,7 +113,7 @@ HRESULT CLight_Manager::Update(_float fTimeDelta)
 			XMVECTOR targetPos = XMVectorSet(502.f, 32.f - 80.f, 461.f + 40.f, 1.0f);
 			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-			// 빛위치는 플레이어기준으로 계산 
+			// 빛위치는 전체적인 환경 기준으로 계산 
 			_float SceneRadius = 470.f;
 			XMVECTOR lightPos = -2 * SceneRadius * lightDir + targetPos;
 
@@ -149,10 +150,29 @@ HRESULT CLight_Manager::Update(_float fTimeDelta)
 		// Object 그림자들을출력하기위해 확대가 필요하다 
 		{
 			// 빛타겟포지션
-			XMVECTOR targetPos = m_pTargetTransform->Get_State(CTransform::STATE_POSITION);
+			// 카메라가 들고 있는 타겟을 기준으로 계산한다.
+			XMVECTOR targetPos;
+
+			auto pCameraList = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_Camera");
+
+			// 카메라가 있는 경우 카메라의 타겟 포지션을 기준으로.
+			if (pCameraList->empty() == false) 
+			{
+				// 카메라 타겟이 없으면 무시.
+				if (auto pCameraTarget = static_cast<CCamera*>(pCameraList->front())->Get_Target())
+				{
+					CTransform* pCameraTargetTransform = static_cast<CTransform*>(pCameraTarget->Get_ComponentPtr(L"Com_Transform"));
+					targetPos = pCameraTargetTransform->Get_State(CTransform::STATE_POSITION);
+				}
+			}
+			else // 카메라가 없는 경우 플레이어를 기준으로.
+			{
+				targetPos = m_pTargetTransform->Get_State(CTransform::STATE_POSITION);
+			}
+
 			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-			// 빛위치는 플레이어기준으로 계산 
+			// 빛위치계산 
 			_float SceneRadius = 18.f;
 			XMVECTOR lightPos = -2 * SceneRadius * lightDir + targetPos;
 
