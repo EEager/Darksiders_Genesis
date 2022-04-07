@@ -137,18 +137,6 @@ HRESULT CFork::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Spr
 	return S_OK;
 }
 
-void CFork::OnCollision_Enter(CGameObject* pDst, float fTimeDelta)
-{
-	
-}
-
-void CFork::OnCollision_Stay(CGameObject* pDst, float fTimeDelta)
-{
-}
-
-void CFork::OnCollision_Leave(CGameObject* pDst, float fTimeDelta)
-{
-}
 
 HRESULT CFork::SetUp_Component()
 {

@@ -139,6 +139,9 @@
     <Filter Include="02.GameObjects\FadeInOut\SceneChangeEffect">
       <UniqueIdentifier>{c51e21d6-b0b4-4d0d-8325-5b575c98f003}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\MapObject\Static\Breakables">
+      <UniqueIdentifier>{b03e5dd5-22d7-45ef-936c-319d934631b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -270,6 +273,9 @@
     <ClInclude Include="..\Public\SceneChangeEffect.h">
       <Filter>02.GameObjects\FadeInOut\SceneChangeEffect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject\Breakables.h">
+      <Filter>02.GameObjects\MapObject\Static\Breakables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -385,6 +391,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\SceneChangeEffect.cpp">
       <Filter>02.GameObjects\FadeInOut\SceneChangeEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject\Breakables.cpp">
+      <Filter>02.GameObjects\MapObject\Static\Breakables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

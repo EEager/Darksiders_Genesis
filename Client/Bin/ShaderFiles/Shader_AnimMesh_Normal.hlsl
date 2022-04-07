@@ -231,8 +231,7 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 		Out.vEmissive = g_EmissiveTexture.Sample(samLinear, In.vTexUV);
 
 	// -----------------------------
-	// #5. vEmissive : SV_TARGET3
-	// g_vHitPower ¸Ê Ãâ·Â
+	// #5. g_vHitPower : SV_TARGET4
 	Out.vHitPower += g_vHitPower;
 
 	return Out;

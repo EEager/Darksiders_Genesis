@@ -27,6 +27,7 @@
 
 // Object
 #include "MapObject\Ballista.h"
+#include "MapObject\Breakables.h"
 
 
 
@@ -207,6 +208,29 @@ HRESULT CLoader::Add_GameObject()
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista_Bolt"),
 		CBallista_Bolt::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
+
+	// Breakables
+	/* For.Prototype_GameObject_Breakable1 */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable1"),
+		CBreakable1::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+	///* For.Prototype_GameObject_Breakable2 */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable2"),
+	//	CBreakable2::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_Breakable3 */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable3"),
+	//	CBreakable3::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_Breakable4 */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable4"),
+	//	CBreakable4::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_Breakable5 */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable5"),
+	//	CBreakable5::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
@@ -423,26 +447,6 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/HollowLord/", "HollowLord.fbx", HollowLord_PivotMat))))
 		return E_FAIL;
 
-	// ¡å Enviroment Models
-	/* For.Prototype_Component_Model_Enviroment1*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
-	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
-
-	/* For.Prototype_Component_Model_Enviroment2*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
-
-	///* For.Prototype_Component_Model_Enviroment3*/
-	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3"));
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
-	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", EnviromentPivotMatrix))))
-	//	return E_FAIL;
-
 
 	// ¡å Map Objects Models
 	/* For.Prototype_Component_Model_Ballista*/
@@ -463,6 +467,55 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/Ballista_Bolt/", "Ballista_Bolt.fbx", Ballista_PivotMat))))
 		return E_FAIL;
 
+	// ¡å Breakables
+	_matrix		Breakables_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	/* For.Prototype_Component_Model_Breakable1 => Barrel */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable1"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable1"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barrel.fbx", Breakables_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Breakable2 => Crate */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable2"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable2"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Crate.fbx", Breakables_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Breakable3 => Barricade_A */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable3"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable3"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_A.fbx", Breakables_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Breakable4 => Barricade_B */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable4"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable4"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_B.fbx", Breakables_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Breakable5 => Barricade_C */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable5"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable5"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_C.fbx", Breakables_PivotMat))))
+		return E_FAIL;
+
+
+
+	// ¡å Enviroment Models
+	/* For.Prototype_Component_Model_Enviroment1*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
+	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Model_Enviroment2*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
+		return E_FAIL;
+
+	///* For.Prototype_Component_Model_Enviroment3*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;

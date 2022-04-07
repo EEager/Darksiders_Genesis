@@ -79,12 +79,12 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 
 	// Ready Monster Spawner
 	{
-		// MonsterSpanwer1
-		m_queueMonsterSpawner.push(bind(&MonsterSpanwer1, placeholders::_1));
-		// MonsterSpanwer2
-		m_queueMonsterSpawner.push(bind(&MonsterSpanwer2, placeholders::_1));
-		// MonsterSpanwer3
-		m_queueMonsterSpawner.push(bind(&MonsterSpanwer3, placeholders::_1));
+		//// MonsterSpanwer1
+		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer1, placeholders::_1));
+		//// MonsterSpanwer2
+		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer2, placeholders::_1));
+		//// MonsterSpanwer3
+		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer3, placeholders::_1));
 	}
 	 
 	return S_OK;
@@ -108,6 +108,13 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
 		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
+	}
+
+	// T키를 눌러서 Breakalbe 생성
+	if (CInput_Device::GetInstance()->Key_Down(DIK_T))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables", TEXT("Prototype_GameObject_Breakable1"))))
+			return E_FAIL;
 	}
 	RELEASE_INSTANCE(CGameInstance);
 #endif
@@ -215,6 +222,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Object()
 	/* For.Prototype_GameObject_Ballista */
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista", TEXT("Prototype_GameObject_Ballista"))))
 	//	return E_FAIL;
+
+	/* For.Prototype_GameObject_Breakable1 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables", TEXT("Prototype_GameObject_Breakable1"))))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -536,14 +547,17 @@ bool OnEvent4(_float fTimeDelta)
 // 순서대로 Spawn을 하자
 bool MonsterSpanwer1(_float fTimeDelta)
 {
+	return true;
 }
 
 bool MonsterSpanwer2(_float fTimeDelta)
 {
+	return true;
 }
 
 bool MonsterSpanwer3(_float fTimeDelta)
 {
+	return true;
 }
 
 

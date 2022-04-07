@@ -128,6 +128,7 @@ struct PS_DEFERRED_OUT
 	float4		vNormalW : SV_TARGET1;
 	float4		vDepthW : SV_TARGET2; 
 	float4		vEmissive : SV_TARGET3; 
+	float4		vHitPower : SV_TARGET4;
 };
 
 PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
@@ -189,6 +190,10 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 	// Emissive ¸Ê Ãâ·Â
 	if (g_UseEmissiveMap)
 		Out.vEmissive = g_EmissiveTexture.Sample(samLinear, In.vTexUV);
+
+	// -----------------------------
+	// #5. g_vHitPower : SV_TARGET4
+	Out.vHitPower = g_vHitPower;
 
 	return Out;
 }
