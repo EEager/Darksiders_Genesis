@@ -98,7 +98,7 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	// E키를 눌러 시험하자
 	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
-		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect2"));
+		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 	}
 	RELEASE_INSTANCE(CGameInstance);
 #endif
@@ -356,8 +356,10 @@ bool event1_event1;
 bool event1_event2;
 CGameObject* pEffect = nullptr;
 CGameObject* pLegion = nullptr;
+CGameObject* pSceneChangeEffect3 = nullptr;
 bool OnEvent1(_float fTimeDelta)
 {
+
 	// 조건 : War가 Navi 14번을 탈 때 이벤트를 실행한다
 	CNavigation* pWarNavi = static_cast<CNavigation*>(m_pWar->Get_ComponentPtr(L"Com_Navi"));
 	if (pWarNavi->m_iCurrentIndex != 14)
@@ -408,12 +410,16 @@ bool OnEvent1(_float fTimeDelta)
 			// 카메라 m_fRadius, m_fRadian, m_fHeight 설정
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radius(23.f);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radian(6.2f);
-			static_cast<CCamera_Fly*>(m_pCamera)->Set_Height(11.f);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Height(9.5f);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Position_Ratio(0.001f);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_LookAt_Ratio(0.001f);
 
 			// ToDo : 추가적으로 LightManager에서 Object 그림자도 변경하면좋다.. 
 			// 변경하였다. LightManager에서 카메라에 세팅된 타겟을 따라가도록말이다.
+
+
+			// 영화관 effect 추가
+			pGameInstance->Add_GameObjectToLayer(&pSceneChangeEffect3, LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 
 			RELEASE_INSTANCE(CGameInstance);
 			event1_event2 = true;
@@ -473,7 +479,7 @@ bool OnEvent1(_float fTimeDelta)
 
 			// #2. 카메라 m_fRadius, m_fRadian, m_fHeight 설정
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radius(22.060f);
-			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radian(3.109);
+			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radian(3.109f);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Height(13.f);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Position_Ratio(0.03f);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_LookAt_Ratio(0.05f);
@@ -483,6 +489,8 @@ bool OnEvent1(_float fTimeDelta)
 			for (auto& pUI : *pUIList)
 				pUI->Set_NotRender(false);
 
+			// #4. pSceneChangeEffect3 죽이자. 
+			static_cast<CSceneChangeEffect3*>(pSceneChangeEffect3)->Set_Will_Dead(true);
 
 			// [이벤트 종료]
 			// 모든것이 완료하였다. Event1을 종료한다.
@@ -493,17 +501,19 @@ bool OnEvent1(_float fTimeDelta)
 	return false;
 }
 
-// 모험의 서. 경치 보여주는 장면.
+//  모험의 서. 경치 보여주는 장면.
 bool OnEvent2(_float fTimeDelta)
 {
 	return true;
 }
+
 // 성 문앞에서, 몬스터 삼인방 나오는 장면. 
 bool OnEvent3(_float fTimeDelta)
 {
 	return true;
 }
-// 보스 씬.
+
+// 보스.
 bool OnEvent4(_float fTimeDelta)
 {
 	return true;

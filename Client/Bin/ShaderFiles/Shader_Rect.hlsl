@@ -8,6 +8,11 @@ cbuffer Matrices
 	matrix			g_ProjMatrix;
 };
 
+cbuffer Effects
+{
+	float			g_Alpha;
+};
+
 texture2D		g_DiffuseTexture;
 
 struct VS_IN
@@ -62,6 +67,16 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN2(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vColor.a = g_Alpha;
+
+	return Out;
+}
+
 
 
 technique11	DefaultTechnique
@@ -86,5 +101,16 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	pass ZIgnoreNAlphablending_AlphaControl
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(NonZTestNonZWriteDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN2();
 	}
 }

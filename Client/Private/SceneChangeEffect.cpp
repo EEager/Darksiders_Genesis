@@ -301,7 +301,7 @@ HRESULT CSceneChangeEffect2::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, 
 #ifdef USE_IMGUI
 	if (m_bUseImGui)
 	{
-		ImGui::Begin("CSceneChangeEffect");
+		ImGui::Begin("CSceneChangeEffect2");
 		{
 			if (ImGui::DragFloat("Position", &m_fTexturePosY));
 		}
@@ -383,6 +383,187 @@ CGameObject* CSceneChangeEffect2::Clone(void* pArg)
 }
 
 void CSceneChangeEffect2::Free()
+{
+
+	__super::Free();
+}
+
+
+
+// ----------------------------------------------------------
+// CSceneChangeEffect3
+CSceneChangeEffect3::CSceneChangeEffect3(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CGameObject(pDevice, pDeviceContext)
+{
+}
+
+CSceneChangeEffect3::CSceneChangeEffect3(const CSceneChangeEffect3& rhs)
+	: CGameObject(rhs),
+	m_ProjMatrix(rhs.m_ProjMatrix),
+	m_ViewMatrix(rhs.m_ViewMatrix),
+	m_pTextureCom(rhs.m_pTextureCom),
+	m_pRendererCom(rhs.m_pRendererCom),
+	m_pVIBufferCom(rhs.m_pVIBufferCom)
+{
+}
+
+HRESULT CSceneChangeEffect3::NativeConstruct_Prototype()
+{
+	if (SetUp_Component())
+		return E_FAIL;
+
+	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixTranspose(XMMatrixOrthographicLH(g_iWinCX, g_iWinCY, 0.f, 1.f)));
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
+
+	return S_OK;
+}
+
+HRESULT CSceneChangeEffect3::NativeConstruct(void* pArg)
+{
+
+	return S_OK;
+}
+
+_int CSceneChangeEffect3::Tick(_float fTimeDelta)
+{
+	if (m_isDead)
+		return -1;
+
+	if (m_bWillDead) // 누군가가 effect를 끈 경우, 알파 서서히 감소 시키자.
+	{
+		m_fTextureAlpha -= fTimeDelta; // 알파값 서서히 감소시키자
+		if (m_fTextureAlpha <= 0)
+		{
+			m_isDead = true; // 다음턴에 죽이자.
+			m_fTextureAlpha = 0.f;
+		}
+		return 0;
+	}
+
+	m_fTextureAlpha += fTimeDelta; // 알파값 서서히 증가시키자.
+	if (m_fTextureAlpha > 1.f)
+		m_fTextureAlpha = 1.f;
+
+	return _int();
+}
+
+_int CSceneChangeEffect3::LateTick(_float fTimeDelta)
+{
+	if (nullptr == m_pRendererCom)
+		return -1;
+
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this)))
+		return 0;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		return 0;
+
+
+	return _int();
+}
+
+HRESULT CSceneChangeEffect3::Render(_uint iPassIndex)
+{
+	if (FAILED(SetUp_ConstantTable(fSizeY/2.f, m_fTextureAlpha)))
+		return E_FAIL;
+	m_pVIBufferCom->Render(2); // 2 : ZIgnoreNAlphablending And Alpha Control
+
+	if (FAILED(SetUp_ConstantTable(g_iWinCY - fSizeY / 2.f, m_fTextureAlpha)))
+		return E_FAIL;
+	m_pVIBufferCom->Render(2); // 2 : ZIgnoreNAlphablending And Alpha Control
+
+	return S_OK;
+}
+
+HRESULT CSceneChangeEffect3::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+
+#ifdef USE_IMGUI
+	if (m_bUseImGui)
+	{
+		ImGui::Begin("CSceneChangeEffect3");
+		{
+			if (ImGui::DragFloat("Position", &m_fTexturePosY));
+		}
+		ImGui::End();
+	}
+#endif
+	return S_OK;
+}
+
+HRESULT CSceneChangeEffect3::SetUp_Component()
+{
+	/* For.Com_Renderer*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)m_pRendererCom.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), (CComponent**)m_pVIBufferCom.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Texture*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Black"), TEXT("Com_Texture"), (CComponent**)m_pTextureCom.GetAddressOf())))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CSceneChangeEffect3::SetUp_ConstantTable(_float positionY, _float alpha)
+{
+	if (nullptr == m_pVIBufferCom)
+		return E_FAIL;
+
+	_float4x4		WorldMatrix;
+	// postion은 중심점위치입니다.
+	_float fPosX = g_iWinCX >> 1;
+	_float fPosY = positionY;
+
+	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
+	WorldMatrix._11 = fSizeX;
+	WorldMatrix._22 = fSizeY;
+	WorldMatrix._41 = fPosX - (g_iWinCX >> 1);
+	WorldMatrix._42 = -fPosY + (g_iWinCY >> 1);
+
+	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));
+
+	m_pVIBufferCom->Set_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4));
+	m_pVIBufferCom->Set_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4));
+	m_pVIBufferCom->Set_RawValue("g_ProjMatrix", &m_ProjMatrix, sizeof(_float4x4));
+	m_pVIBufferCom->Set_RawValue("g_Alpha", &alpha, sizeof(_float));
+
+	// 1번이 Black이다.
+	if (FAILED(m_pTextureCom->SetUp_OnShader(m_pVIBufferCom.Get(), "g_DiffuseTexture", 1)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+CSceneChangeEffect3* CSceneChangeEffect3::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CSceneChangeEffect3* pInstance = new CSceneChangeEffect3(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CSceneChangeEffect3");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CSceneChangeEffect3::Clone(void* pArg)
+{
+	CSceneChangeEffect3* pInstance = new CSceneChangeEffect3(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CSceneChangeEffect3");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CSceneChangeEffect3::Free()
 {
 
 	__super::Free();

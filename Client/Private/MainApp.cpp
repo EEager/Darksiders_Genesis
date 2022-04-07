@@ -230,6 +230,12 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 
 	// ======================================================================
 	// Textures
+
+	/* For.Prototype_Component_Texture_Black */
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Black"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Default/Black_%d.tga"), 2))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_Texture_Logo */
 	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Logo"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Logo/DSG_Loading_Title.dds")))))
 		return E_FAIL;
@@ -293,6 +299,11 @@ HRESULT CMainApp::Ready_GameObject_Prototype()
 	/* For.Prototype_GameObject_SceneChangeEffect2 */
 	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SceneChangeEffect2"),
 		CSceneChangeEffect2::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_SceneChangeEffect3 */
+	if (FAILED(m_pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SceneChangeEffect3"),
+		CSceneChangeEffect3::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 
