@@ -212,7 +212,7 @@ HRESULT CLoader::Add_GameObject()
 	// Breakables
 	/* For.Prototype_GameObject_Breakable1 */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable1"),
-		CBreakable1::Create(m_pDevice, m_pDeviceContext))))
+		CBreakableBase::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 	///* For.Prototype_GameObject_Breakable2 */
 	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable2"),

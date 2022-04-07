@@ -8,30 +8,30 @@
 #include "imgui_Manager.h"
 #endif
 
-CBreakable1::CBreakable1(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CBreakableBase::CBreakableBase(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
 }
 
-CBreakable1::CBreakable1(const CBreakable1& rhs)
+CBreakableBase::CBreakableBase(const CBreakableBase& rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CBreakable1::NativeConstruct_Prototype()
+HRESULT CBreakableBase::NativeConstruct_Prototype()
 {	
 	return S_OK;
 }
 
-HRESULT CBreakable1::NativeConstruct(void * pArg)
+HRESULT CBreakableBase::NativeConstruct(void * pArg)
 {
 	// GameInfo Init
-	m_tGameInfo.iMaxHp = 4; // 2방맞고 펑
+	m_tGameInfo.iMaxHp = 4; 
 	m_tGameInfo.iEnergy = rand() % 10 + 1;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 1;
 
-	if (SetUp_Component())
+	if (CBreakableBase::SetUp_Component(TEXT("Prototype_Component_Model_Breakable1")))
 		return E_FAIL;
 
 	// Test
@@ -40,7 +40,7 @@ HRESULT CBreakable1::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-_int CBreakable1::Tick(_float fTimeDelta)
+_int CBreakableBase::Tick(_float fTimeDelta)
 {
 	if (m_isDead)
 		return -1;
@@ -68,7 +68,7 @@ _int CBreakable1::Tick(_float fTimeDelta)
 	return _int();
 }
 
-_int CBreakable1::LateTick(_float fTimeDelta)
+_int CBreakableBase::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return -1;
@@ -101,14 +101,14 @@ _int CBreakable1::LateTick(_float fTimeDelta)
 	}
 
 	// Collider 
-	pGameInstance->Add_Collision(this);
+	pGameInstance->Add_Collision(this, true, m_pTransformCom.Get(), L"Layer_War", 8.f);
 
 
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
 }
 
-HRESULT CBreakable1::Render(_uint iPassIndex)
+HRESULT CBreakableBase::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;
@@ -124,7 +124,7 @@ HRESULT CBreakable1::Render(_uint iPassIndex)
 	return S_OK;
 }
 
-HRESULT CBreakable1::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+HRESULT CBreakableBase::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
 #ifdef _DEBUG
 	// Collider 
@@ -142,7 +142,7 @@ HRESULT CBreakable1::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_p
 }
 
 
-void CBreakable1::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+void CBreakableBase::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 	// 플레이어 칼과 충돌했다.
 	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_MONSTER_BODY1 &&
@@ -156,17 +156,17 @@ void CBreakable1::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTim
 	}
 }
 
-void CBreakable1::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+void CBreakableBase::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 
 }
 
-void CBreakable1::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+void CBreakableBase::OnCollision_Leave(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 
 }
 
-HRESULT CBreakable1::SetUp_Component()
+HRESULT CBreakableBase::SetUp_Component(const _tchar* pModelProtoTag)
 {
 	/* For.Com_Transform */
 	CTransform::TRANSFORMDESC		TransformDesc;
@@ -183,9 +183,8 @@ HRESULT CBreakable1::SetUp_Component()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable1"), TEXT("Com_Model"), (CComponent**)m_pModelCom.GetAddressOf())))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, pModelProtoTag, TEXT("Com_Model"), (CComponent**)m_pModelCom.GetAddressOf())))
 		return E_FAIL;
-
 
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
@@ -198,7 +197,7 @@ HRESULT CBreakable1::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CBreakable1::SetUp_ConstantTable(_uint iPassIndex)
+HRESULT CBreakableBase::SetUp_ConstantTable(_uint iPassIndex)
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
@@ -232,13 +231,13 @@ HRESULT CBreakable1::SetUp_ConstantTable(_uint iPassIndex)
 }
 
 
-CBreakable1 * CBreakable1::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CBreakableBase * CBreakableBase::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-	CBreakable1*		pInstance = new CBreakable1(pDevice, pDeviceContext);
+	CBreakableBase*		pInstance = new CBreakableBase(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
-		MSG_BOX("Failed to Created CBreakable1");
+		MSG_BOX("Failed to Created CBreakableBase");
 		Safe_Release(pInstance);
 	}
 
@@ -246,20 +245,20 @@ CBreakable1 * CBreakable1::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pD
 }
 
 
-CGameObject * CBreakable1::Clone(void* pArg)
+CGameObject * CBreakableBase::Clone(void* pArg)
 {
-	CBreakable1*		pInstance = new CBreakable1(*this);
+	CBreakableBase*		pInstance = new CBreakableBase(*this);
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{
-		MSG_BOX("Failed to Created CBreakable1");
+		MSG_BOX("Failed to Created CBreakableBase");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CBreakable1::Free()
+void CBreakableBase::Free()
 {
 	__super::Free();
 }
