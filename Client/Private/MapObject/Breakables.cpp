@@ -57,11 +57,6 @@ _int CBreakableBase::Tick(_float fTimeDelta)
 		}
 	}
 
-	// Init
-	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-	m_pTransformCom->Turn(XMVectorSet(1.f, 0.f, 0.f, 0.f), fTimeDelta*2);
-	m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 0.f), fTimeDelta*3);
-
 	// Collider 
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 

@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 
 #include "MapObject\Ballista.h"
+#include "Camera_Fly.h"
 
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
@@ -93,6 +94,10 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	else
 		// Init test
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand() % 30, 0.f, 431.f + rand() % 20, 1.f));
+
+	// 카메라 위치를 바라보게한다.
+	CTransform* pCameraTransform = static_cast<CTransform*>(static_cast<CCamera*>(CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_Camera")->front())->Get_Camera_Transform());
+	m_pTransformCom->LookAt(XMVectorSetY(pCameraTransform->Get_State(CTransform::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION))));
 
 	m_pCurState = "Legion_Mesh.ao|Legion_Idle";
 	m_pNextState = "Legion_Mesh.ao|Legion_Spawn_01"; // 소환하는것으로 시작.

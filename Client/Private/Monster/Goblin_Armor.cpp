@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\public\Monster\Goblin_Armor.h"
 #include "GameInstance.h"
+#include "Camera.h"
 
 
 CGoblin_Armor::CGoblin_Armor(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -88,6 +89,10 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	else 
 		// Init Test
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%10, 0.f, 431.f + rand() % 10, 1.f));
+
+	// 카메라 위치를 바라보게한다.
+	CTransform* pCameraTransform = static_cast<CTransform*>(static_cast<CCamera*>(CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_Camera")->front())->Get_Camera_Transform());
+	m_pTransformCom->LookAt(XMVectorSetY(pCameraTransform->Get_State(CTransform::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION))));
 
 	// Init Anim State
 	m_pCurState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Idle";
