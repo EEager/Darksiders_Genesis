@@ -75,9 +75,17 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 		m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
 		// OnEvent4 
 		m_queueEventCallBack.push(bind(&OnEvent4, placeholders::_1));
-
 	}
 
+	// Ready Monster Spawner
+	{
+		// MonsterSpanwer1
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer1, placeholders::_1));
+		// MonsterSpanwer2
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer2, placeholders::_1));
+		// MonsterSpanwer3
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer3, placeholders::_1));
+	}
 	 
 	return S_OK;
 }
@@ -352,6 +360,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 }
 
 
+// ---------------------------------------------------
 // 바리스타 첫 대면 장면. 퀘스트 추가는 ToDo.
 bool event1_event1;
 bool event1_event2;
@@ -521,6 +530,22 @@ bool OnEvent4(_float fTimeDelta)
 {
 	return true;
 }
+
+
+// ---------------------------------------------------
+// 순서대로 Spawn을 하자
+bool MonsterSpanwer1(_float fTimeDelta)
+{
+}
+
+bool MonsterSpanwer2(_float fTimeDelta)
+{
+}
+
+bool MonsterSpanwer3(_float fTimeDelta)
+{
+}
+
 
 CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

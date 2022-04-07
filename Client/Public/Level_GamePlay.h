@@ -29,7 +29,9 @@ public:
 	HRESULT Ready_Layer_Object();
 
 private:
-	 queue<function<bool(_float deltaTime)>> m_queueEventCallBack; // 이벤트 콜백함수를 담고 있는 DB
+	 queue<function<bool(_float deltaTime)>> m_queueEventCallBack; // 이벤트 콜백함수를 담고 있는 Q
+	 queue<function<bool(_float deltaTime)>> m_queueMonsterSpawner; // 몬스터 스폰해주는 Q
+
 public:
 	static CLevel_GamePlay* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual void Free() override;
