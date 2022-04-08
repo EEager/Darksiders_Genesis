@@ -76,11 +76,10 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	// FSM
 	CMonster::DoGlobalState(fTimeDelta);
 	UpdateState();
-	DoState(fTimeDelta);
-
 	// 로컬위치변화를 월행에 적용시키자 
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_HL_Root", m_pNaviCom, m_eDir);
 
+	DoState(fTimeDelta);
 
 	return _int();
 }

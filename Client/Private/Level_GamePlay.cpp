@@ -444,6 +444,7 @@ bool OnEvent1(_float fTimeDelta)
 		if (event1_event2 == false)
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			// Layer_Legion 생성 
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(&pLegion, LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(600.f, 21.7f, 402.0f, 1.f))))
 				return false;
 			//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(601.f, 21.7f, 401.0f, 1.f))))
@@ -460,7 +461,10 @@ bool OnEvent1(_float fTimeDelta)
 			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(595.4f, 28.1f, 381.2f, 1.f));
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_TARGET);
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Target(pLegion);
-			pCameraTransform->LookAt(static_cast<CTransform*>(pLegion->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION));
+			auto pLegionTransform = static_cast<CTransform*>(pLegion->Get_ComponentPtr(L"Com_Transform"));
+			pCameraTransform->LookAt(pLegionTransform->Get_State(CTransform::STATE_POSITION));
+			// Legion 이 카메라를 바라보도록하자.
+			pLegionTransform->LookAt(XMVectorSetY(pCameraTransform->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pCameraTransform->Get_State(CTransform::STATE_POSITION))));
 
 			// 카메라 m_fRadius, m_fRadian, m_fHeight 설정
 			static_cast<CCamera_Fly*>(m_pCamera)->Set_Radius(23.f);

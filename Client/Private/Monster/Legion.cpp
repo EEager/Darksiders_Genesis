@@ -150,20 +150,26 @@ _int CLegion::Tick(_float fTimeDelta)
 		Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 	}
 
+
+
 	// FSM
 	CMonster::DoGlobalState(fTimeDelta);
 	UpdateState();
+	// Update_Animation
+	{
+		if (m_bSpawning == false)
+			m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom, m_eDir);
+		else
+		{
+			// 몬스터 스폰상태에서는 위로 점프하는 것처럼 보여야한다. 월행에 반영하지 말자
+			_float4x4 forDontMoveInWorld;
+			XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
+			m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
+		}
+	}
 	DoState(fTimeDelta);
 
-	// anim update : 로컬이동값 -> 월드이동반영
-	if (m_bSpawning == false)
-		m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "_Ctrl_World", m_pNaviCom, m_eDir);
-	else // 몬스터 스폰상태에서는 위로 점프하는 것처럼 보여야한다. 월행에 반영하지 말자
-	{
-		_float4x4 forDontMoveInWorld;
-		XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
-		m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
-	}
+
 
 
 	return _int();

@@ -99,7 +99,7 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_SnS_Spawn"; // 소환하는것으로 시작.
 	m_pImpactState_F = "Goblin_Armor_Mesh.ao|Goblin_SnS_Impact_F";
 	m_pImpactState_B = "Goblin_Armor_Mesh.ao|Goblin_SnS_Impact_B";
-	m_pModelCom->SetUp_Animation(m_pCurState, true);
+	m_pModelCom->SetUp_Animation(m_pCurState);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -115,18 +115,19 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 	// FSM
 	CMonster::DoGlobalState(fTimeDelta);
 	UpdateState();
-	DoState(fTimeDelta);
 
-
-	// anim update : 로컬이동값 -> 월드이동반영
-	if (m_bSpawning == false)
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom, m_eDir, 0);
-	else
+	// Update_Animation
 	{
-		_float4x4 forDontMoveInWorld;
-		XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
-		m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
+		if (m_bSpawning == false)
+			m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_Goblin_Root", m_pNaviCom, m_eDir, 0);
+		else
+		{
+			_float4x4 forDontMoveInWorld;
+			XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
+			m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
+		}
 	}
+	DoState(fTimeDelta);
 
 //#ifdef _DEBUG
 //	_uint keyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
@@ -336,6 +337,9 @@ void CGoblin_Armor::UpdateState()
 	{
 		m_bSpawning = false;
 	}
+
+
+
 
 	// -----------------------------
 	// m_pNextState Enter
