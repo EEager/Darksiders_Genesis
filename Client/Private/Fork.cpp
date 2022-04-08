@@ -88,7 +88,7 @@ _int CFork::LateTick(_float fTimeDelta)
 	}
 
 	// Collider 
-	pGameInstance->Add_Collision(this);
+	//pGameInstance->Add_Collision(this);
 
 
 	RELEASE_INSTANCE(CGameInstance);

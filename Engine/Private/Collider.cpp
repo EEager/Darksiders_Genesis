@@ -26,6 +26,7 @@ CCollider::CCollider(const CCollider& rhs)
 void CCollider::OnCollision_Enter(CCollider* pDst, _float fTimeDelta)
 {
 	m_isCollision = true;
+	m_bColliderNeedEnter = false; // WA 느낌인데.. 여러마리가 동시에 충돌중인상태에서 WAr공격 누르면 맨 처음 충돌중인아이만 Enter를 다시 타게된다.
 	m_pOwner->OnCollision_Enter(this, pDst, fTimeDelta);
 }
 

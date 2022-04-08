@@ -90,7 +90,7 @@ _int CPlayer::LateTick(_float fTimeDelta)
 	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 		return 0;
 
-	// Collider 
+	// Collider  
 	pGameInstance->Add_Collision(this);
 
 	RELEASE_INSTANCE(CGameInstance);

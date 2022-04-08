@@ -62,6 +62,7 @@ private:
 	UINT			m_iID; // 충돌체 고유한 ID 값
 	const _tchar* m_pColliderTag = L"";
 	_bool m_bColliderDisble = true;
+	_bool m_bColliderNeedEnter = false;
 	// =====================
 
 

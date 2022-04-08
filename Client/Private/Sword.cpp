@@ -52,8 +52,6 @@ _int CSword::LateTick(_float fTimeDelta)
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 		return 0;
 
-	// Collider 
-	pGameInstance->Add_Collision(this);
 
 	RELEASE_INSTANCE(CGameInstance);	
 

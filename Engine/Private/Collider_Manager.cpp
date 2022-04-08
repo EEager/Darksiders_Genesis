@@ -25,7 +25,7 @@ void CCollider_Manager::Collision(float fTimeDelta)
 		return;
 	}
 
-	// iter 2개를 이용하여 m_CollisionList에 등록된 GameObject를 빈틈없이 순회하자 
+	// iter 2개를 이용하여 m_CollisionList에 등록된 GameObject를 빈틈없이 순회하자  
 	list<CGameObject*>::iterator iter;
 	list<CGameObject*>::iterator iterEnd = m_CollisionList.end();
 	--iterEnd;
@@ -61,38 +61,35 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 	// CGameObject가 가지고 있는 CCollider 끼리 충돌체크를 확인하다
 	for (auto& pSrc : *pSrcList)
 	{
-
-
+		if (pSrc->m_bColliderDisble)
+			continue;
 		for (auto& pDst : *pDstList)
 		{
-			// Disable 상태라면 continue
-			if (pSrc->m_bColliderDisble || pDst->m_bColliderDisble)
-			{
-				// 하나라도 disalbe 상태라면 map에서 지워주자.
-				COLLIDER_ID ID;
-				ID.Src_id = pSrc->Get_ID();
-				ID.Dst_id = pDst->Get_ID();
-				map<ULONGLONG, bool>::iterator iter = m_mapColInfo.find(ID.ID);
-				if (iter != m_mapColInfo.end()) 
-				{
-					m_mapColInfo.erase(iter);
-				}
+			if (pDst->m_bColliderDisble)
 				continue;
-			}
 
 			COLLIDER_ID ID;
+			map<ULONGLONG, bool>::iterator iter;
 			ID.Src_id = pSrc->Get_ID();
 			ID.Dst_id = pDst->Get_ID();
-			map<ULONGLONG, bool>::iterator iter = m_mapColInfo.find(ID.ID);
+			iter = m_mapColInfo.find(ID.ID);
 			if (iter == m_mapColInfo.end()) // 처음 등록된 상태
 			{
 				m_mapColInfo.insert(make_pair(ID.ID, false));
 				iter = m_mapColInfo.find(ID.ID);
 			}
+			else // 기록이 있는 상태 
+			{
+				// 상황 : War칼이 바리스타 몸통 콜라이더 안에 있는경우, 계속 공격해도 공격판정이안된다.
+				// 콜라이더 하나라도 다시 Enter 콜이 필요한경우, m_mapColInfo 기록을 말소해주자.
+				if (pSrc->m_bColliderNeedEnter || pDst->m_bColliderNeedEnter)
+				{
+					iter->second = false; // 말소해주자
+				}
+			}
 
 			if (CheckCollision(pSrc, pDst, fTimeDelta)) // 둘이 충돌했다.
 			{
-
 				// 만약 충돌상태에서 한쪽이 죽은 상태라면, LEAVE 콜백 해주도록 하자
 				if (pSrc->Get_Owner()->IsDead() || pDst->Get_Owner()->IsDead())
 				{
@@ -106,8 +103,10 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 				// #1. 처음 막 충돌된 상태
 				if (iter->second == false)
 				{
-					// 서로 상대방을 충돌 목록으로 추가한다. 
+					// 서로 상대방을 충돌 목록으로 추가한다.  
 					iter->second = true;
+
+					pDst->m_bColliderNeedEnter = false;
 
 					// 오브젝트들의 콜라이더콜백함수를 호출하자
 					pSrc->OnCollision_Enter(pDst, fTimeDelta);
