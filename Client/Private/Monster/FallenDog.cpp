@@ -25,6 +25,13 @@ HRESULT CFallenDog::NativeConstruct_Prototype()
 
 HRESULT CFallenDog::NativeConstruct(void * pArg)
 {
+	// GameInfo Init
+	m_tGameInfo.iAtt = 2;
+	m_tGameInfo.iEnergy = rand() % 10 + 10;
+	m_tGameInfo.iMaxHp = 40;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 10;
+
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
 		return E_FAIL;	
@@ -41,9 +48,18 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
 
-	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%20, 0.f, 431.f + rand() % 20, 1.f));
-	m_pModelCom->SetUp_Animation((_uint)0);
+	// pArg는 보통 위치이다. w가 1인 _float4이다.
+	if (pArg)
+	{
+		_float4* ArgPos = (_float4*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(ArgPos));
+	}
+	else
+		// Init test
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%20, 0.f, 431.f + rand() % 20, 1.f));
+
+	m_pCurState = "FallenDog_Mesh.ao|Legion_Idle";
+	m_pNextState = "FallenDog_Mesh.ao|FallenDog_Spawn_Channel"; // 소환하는것으로 시작.
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -57,11 +73,14 @@ _int CFallenDog::Tick(_float fTimeDelta)
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
 
+	// 
+	// FSM
+	// 
+	CMonster::DoGlobalState(fTimeDelta);
+	UpdateState();
 	// update animation
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom);
-
-	// for test
-	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 0.001f);
+	DoState(fTimeDelta);
 
 	return _int();
 }
@@ -72,9 +91,9 @@ _int CFallenDog::LateTick(_float fTimeDelta)
 	if (CMonster::LateTick(fTimeDelta) < 0)
 		return -1;
 
-	//// 체력이 0이하가 되면 죽자. 
-	//if (m_tGameInfo.iHp <= 0)
-	//	m_isDead = true;
+	// 체력이 0이하가 되면 죽자. 
+	if (m_tGameInfo.iHp <= 0)
+		m_isDead = true;
 
 	return _int();
 }
@@ -88,6 +107,42 @@ HRESULT CFallenDog::Render(_uint iPassIndex)
 	return S_OK;
 }
 
+
+void CFallenDog::UpdateState()
+{
+	if (m_pCurState == m_pNextState)
+		return;
+
+	// m_pCurState Exit
+
+	// m_pNextState Enter
+	_bool isLoop = true;
+	_bool useLastLerp = true;
+	if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Idle")
+	{
+		isLoop = true;
+	}
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Spawn_Channel")
+	{
+		isLoop = false;
+		useLastLerp = false;	
+		m_bSpawning = true;
+	}
+	m_pModelCom->SetUp_Animation(m_pNextState, isLoop, useLastLerp);
+
+	m_pCurState = m_pNextState;
+}
+
+void CFallenDog::DoState(float fTimeDelta)
+{
+	if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Spawn")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
+		}
+	}
+}
 
 CFallenDog * CFallenDog::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

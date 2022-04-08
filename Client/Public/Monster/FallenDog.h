@@ -25,6 +25,17 @@ public:
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iPassIndex = 0);
 
+	//
+	// FSM
+	// 
+protected:
+	virtual void UpdateState(); 
+	virtual void DoState(float fTimeDelta); 
+
+private:
+	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
+	_bool m_bSpawning = false;
+
 public:	
 	static CFallenDog* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;
