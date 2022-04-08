@@ -148,6 +148,7 @@ enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B, DIR_U };
 #define COL_MONSTER_BODY2 L"MonsterBody2"
 
 #define COL_BALLISTA_BODY L"BallistaBody"
+#define COL_BREAKABLE_BODY L"BreakableBody"
 
 #define COL_WAR_WEAPON L"WarWeapon"
 #define COL_WAR_BODY1 L"WarBody1"

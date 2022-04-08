@@ -63,6 +63,10 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	{
 		// Layer_Ballista.dat 파일을 읽어서 해당 레이어에 추가한다
 		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Ballista", LEVEL_GAMEPLAY);
+
+		// Breakables를 추가한다. 
+		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables", LEVEL_GAMEPLAY);
+		
 	}
 
 	// Ready Level Event
@@ -110,10 +114,30 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 	}
 
-	// T키를 눌러서 Breakalbe 생성
-	if (CInput_Device::GetInstance()->Key_Down(DIK_T))
+	// Breakalbe 설치하자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_2))
 	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables", TEXT("Prototype_GameObject_Breakable1"))))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
+			return E_FAIL;
+	}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_3))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable2"))))
+			return E_FAIL;
+	}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_4))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable3"))))
+			return E_FAIL;
+	}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_5))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable4"))))
+			return E_FAIL;
+	}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_6))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable5"))))
 			return E_FAIL;
 	}
 	RELEASE_INSTANCE(CGameInstance);
@@ -206,9 +230,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment2 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
 		return E_FAIL;
-	///* For.Prototype_Component_Model_Enviroment3 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
-	//	return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment3 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -222,10 +246,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Object()
 	/* For.Prototype_GameObject_Ballista */
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Ballista", TEXT("Prototype_GameObject_Ballista"))))
 	//	return E_FAIL;
-
-	/* For.Prototype_GameObject_Breakable1 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables", TEXT("Prototype_GameObject_Breakable1"))))
-		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -420,8 +440,8 @@ bool OnEvent1(_float fTimeDelta)
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(&pLegion, LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(600.f, 21.7f, 402.0f, 1.f))))
 				return false;
-			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(601.f, 21.7f, 401.0f, 1.f))))
-				return false;
+			//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(601.f, 21.7f, 401.0f, 1.f))))
+			//	return false;
 
 			// 카메라 포지션 + lookAk + 타겟 설정
 			auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();

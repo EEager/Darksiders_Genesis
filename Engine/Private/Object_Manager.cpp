@@ -319,6 +319,13 @@ const _tchar* ToLiteralTag(const _tchar* pTag)
 	if (!lstrcmpW(pTag, L"Layer_Ballista"))	return L"Layer_Ballista";
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_Ballista"))	return L"Prototype_GameObject_Ballista";
 
+	if (!lstrcmpW(pTag, L"Layer_Breakables"))	return L"Layer_Breakables";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable1"))	return L"Prototype_GameObject_Breakable1";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable2"))	return L"Prototype_GameObject_Breakable2";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable3"))	return L"Prototype_GameObject_Breakable3";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable4"))	return L"Prototype_GameObject_Breakable4";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable5"))	return L"Prototype_GameObject_Breakable5";
+
 	assert(0);
 
 	return nullptr;

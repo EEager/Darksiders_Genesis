@@ -462,7 +462,7 @@ void CWar::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 					pMonTransform->Go_Dir(toTarget, fTimeDelta); // 몬스터가 밀려난다
 			}
 		}
-		// 하지만 바리스타 또는 보스인경우, War를 밀어낸다. 
+		// 하지만 바리스타 또는 보스인경우, War를 밀어낼때, War가 움직이지 않게 뒤로 가도록한다.
 		else if (pDst->Get_ColliderTag() == COL_BALLISTA_BODY)
 		{
 			CTransform* pBallistaTrans = static_cast<CTransform*>(pDst->Get_Owner()->Get_ComponentPtr(L"Com_Transform"));
@@ -471,6 +471,17 @@ void CWar::OnCollision_Stay(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 			if (fLength < PUSH_LENGTH_BAl)
 			{
 				m_pTransformCom->Go_Backward(fTimeDelta);
+			}
+		}
+		// 부셔지는 것들이라면. 플레이어를 밀려낸다
+		else if (pDst->Get_ColliderTag() == COL_BREAKABLE_BODY)
+		{
+			CTransform* pBreakableTrans = static_cast<CTransform*>(pDst->Get_Owner()->Get_ComponentPtr(L"Com_Transform"));
+			_vector toTarget = XMVectorSetY(pBreakableTrans->Get_State(CTransform::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE_POSITION), 0.f);
+			_float fLength = XMVectorGetX(XMVector3Length(toTarget));
+			if (fLength < PUSH_LENGTH_BAl)
+			{
+				m_pTransformCom->Go_Dir(toTarget, -fTimeDelta); // 플레이어가 밀려난다 
 			}
 		}
 	}

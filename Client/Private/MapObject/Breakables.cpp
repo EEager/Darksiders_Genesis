@@ -140,7 +140,7 @@ HRESULT CBreakableBase::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, uniqu
 void CBreakableBase::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 	// 플레이어 칼과 충돌했다.
-	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_MONSTER_BODY1 &&
+	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_BREAKABLE_BODY &&
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		// 피격 당했다. 
@@ -181,14 +181,6 @@ HRESULT CBreakableBase::SetUp_Component(const _tchar* pModelProtoTag)
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, pModelProtoTag, TEXT("Com_Model"), (CComponent**)m_pModelCom.GetAddressOf())))
 		return E_FAIL;
 
-	/* For.Com_Sphere */
-	CCollider::COLLIDERDESC		ColliderDesc;
-	ColliderDesc.vPivot = _float3(0.f, 1.f, 0.f);
-	ColliderDesc.fRadius = 0.75f;
-	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
-
-
 	return S_OK;
 }
 
@@ -225,7 +217,6 @@ HRESULT CBreakableBase::SetUp_ConstantTable(_uint iPassIndex)
 	return S_OK;
 }
 
-
 CBreakableBase * CBreakableBase::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
 	CBreakableBase*		pInstance = new CBreakableBase(pDevice, pDeviceContext);
@@ -238,7 +229,6 @@ CBreakableBase * CBreakableBase::Create(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	return pInstance;
 }
-
 
 CGameObject * CBreakableBase::Clone(void* pArg)
 {
@@ -257,3 +247,514 @@ void CBreakableBase::Free()
 {
 	__super::Free();
 }
+
+
+
+// ----------------------------------------------------------------
+// CBreakable1
+
+CBreakable1::CBreakable1(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CBreakableBase(pDevice, pDeviceContext)
+{
+}
+
+CBreakable1::CBreakable1(const CBreakable1& rhs)
+	: CBreakableBase(rhs)
+{
+}
+
+HRESULT CBreakable1::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CBreakable1::NativeConstruct(void* pArg)
+{
+	// GameInfo Init
+	m_tGameInfo.iMaxHp = 4;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
+
+	if (CBreakableBase::SetUp_Component(TEXT("Prototype_Component_Model_Breakable1")))
+		return E_FAIL;
+
+	// Test
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+
+	/* For.Com_Sphere */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, .0f, 0.f);
+	ColliderDesc.fRadius = 0.75f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_BREAKABLE_BODY);
+
+	return S_OK;
+}
+
+_int CBreakable1::Tick(_float fTimeDelta)
+{
+	if (CBreakableBase::Tick(fTimeDelta) < 0)
+		return -1;
+
+	return _int();
+}
+
+_int CBreakable1::LateTick(_float fTimeDelta)
+{
+	if (CBreakableBase::LateTick(fTimeDelta) < 0)
+		return -1;
+	return 0;
+}
+
+HRESULT CBreakable1::Render(_uint iPassIndex)
+{
+	if (CBreakableBase::Render(iPassIndex) < 0)
+		return -1;
+	return S_OK;
+}
+
+HRESULT CBreakable1::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	CBreakableBase::PostRender(m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
+CBreakable1* CBreakable1::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CBreakable1* pInstance = new CBreakable1(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CBreakable1");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CBreakable1::Clone(void* pArg)
+{
+	CBreakable1* pInstance = new CBreakable1(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CBreakable1");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CBreakable1::Free()
+{
+	CBreakableBase::Free();
+}
+
+// --------------------------------------------------------------
+// CBreakable2
+CBreakable2::CBreakable2(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CBreakableBase(pDevice, pDeviceContext)
+{
+}
+
+CBreakable2::CBreakable2(const CBreakable2& rhs)
+	: CBreakableBase(rhs)
+{
+}
+
+HRESULT CBreakable2::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CBreakable2::NativeConstruct(void* pArg)
+{
+	// GameInfo Init
+	m_tGameInfo.iMaxHp = 4;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
+
+	if (CBreakableBase::SetUp_Component(TEXT("Prototype_Component_Model_Breakable2")))
+		return E_FAIL;
+
+	// Test
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+
+	/* For.Com_Sphere */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, .0f, 0.f);
+	ColliderDesc.fRadius = 0.75f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_BREAKABLE_BODY);
+
+	return S_OK;
+}
+
+_int CBreakable2::Tick(_float fTimeDelta)
+{
+	if (CBreakableBase::Tick(fTimeDelta) < 0)
+		return -1;
+
+	return _int();
+}
+
+_int CBreakable2::LateTick(_float fTimeDelta)
+{
+	if (CBreakableBase::LateTick(fTimeDelta) < 0)
+		return -1;
+	return 0;
+}
+
+HRESULT CBreakable2::Render(_uint iPassIndex)
+{
+	if (CBreakableBase::Render(iPassIndex) < 0)
+		return -1;
+	return S_OK;
+}
+
+HRESULT CBreakable2::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	CBreakableBase::PostRender(m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
+CBreakable2* CBreakable2::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CBreakable2* pInstance = new CBreakable2(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CBreakable2");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CBreakable2::Clone(void* pArg)
+{
+	CBreakable2* pInstance = new CBreakable2(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CBreakable2");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CBreakable2::Free()
+{
+	CBreakableBase::Free();
+}
+
+// --------------------------------------------------------------
+// CBreakable3
+CBreakable3::CBreakable3(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CBreakableBase(pDevice, pDeviceContext)
+{
+}
+
+CBreakable3::CBreakable3(const CBreakable3& rhs)
+	: CBreakableBase(rhs)
+{
+}
+
+HRESULT CBreakable3::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CBreakable3::NativeConstruct(void* pArg)
+{
+	// GameInfo Init
+	m_tGameInfo.iMaxHp = 4;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
+
+	if (CBreakableBase::SetUp_Component(TEXT("Prototype_Component_Model_Breakable3")))
+		return E_FAIL;
+
+	// Test
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+
+	/* For.Com_Sphere */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, .5f, 0.f);
+	ColliderDesc.fRadius = 1.25f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_BREAKABLE_BODY);
+
+	return S_OK;
+}
+
+_int CBreakable3::Tick(_float fTimeDelta)
+{
+	if (CBreakableBase::Tick(fTimeDelta) < 0)
+		return -1;
+
+	return _int();
+}
+
+_int CBreakable3::LateTick(_float fTimeDelta)
+{
+	if (CBreakableBase::LateTick(fTimeDelta) < 0)
+		return -1;
+	return 0;
+}
+
+HRESULT CBreakable3::Render(_uint iPassIndex)
+{
+	if (CBreakableBase::Render(iPassIndex) < 0)
+		return -1;
+	return S_OK;
+}
+
+HRESULT CBreakable3::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	CBreakableBase::PostRender(m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
+CBreakable3* CBreakable3::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CBreakable3* pInstance = new CBreakable3(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CBreakable3");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CBreakable3::Clone(void* pArg)
+{
+	CBreakable3* pInstance = new CBreakable3(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CBreakable3");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CBreakable3::Free()
+{
+	CBreakableBase::Free();
+}
+
+
+// --------------------------------------------------------------
+// CBreakable4
+CBreakable4::CBreakable4(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CBreakableBase(pDevice, pDeviceContext)
+{
+}
+
+CBreakable4::CBreakable4(const CBreakable4& rhs)
+	: CBreakableBase(rhs)
+{
+}
+
+HRESULT CBreakable4::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CBreakable4::NativeConstruct(void* pArg)
+{
+	// GameInfo Init
+	m_tGameInfo.iMaxHp = 4;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
+
+	if (CBreakableBase::SetUp_Component(TEXT("Prototype_Component_Model_Breakable4")))
+		return E_FAIL;
+
+	// Test
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+
+	/* For.Com_Sphere */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, .5f, 0.f);
+	ColliderDesc.fRadius = 2.0f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_BREAKABLE_BODY);
+
+	return S_OK;
+}
+
+_int CBreakable4::Tick(_float fTimeDelta)
+{
+	if (CBreakableBase::Tick(fTimeDelta) < 0)
+		return -1;
+
+	return _int();
+}
+
+_int CBreakable4::LateTick(_float fTimeDelta)
+{
+	if (CBreakableBase::LateTick(fTimeDelta) < 0)
+		return -1;
+	return 0;
+}
+
+HRESULT CBreakable4::Render(_uint iPassIndex)
+{
+	if (CBreakableBase::Render(iPassIndex) < 0)
+		return -1;
+	return S_OK;
+}
+
+HRESULT CBreakable4::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	CBreakableBase::PostRender(m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
+CBreakable4* CBreakable4::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CBreakable4* pInstance = new CBreakable4(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CBreakable4");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CBreakable4::Clone(void* pArg)
+{
+	CBreakable4* pInstance = new CBreakable4(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CBreakable4");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CBreakable4::Free()
+{
+	CBreakableBase::Free();
+}
+
+
+// --------------------------------------------------------------
+// CBreakable5
+CBreakable5::CBreakable5(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CBreakableBase(pDevice, pDeviceContext)
+{
+}
+
+CBreakable5::CBreakable5(const CBreakable5& rhs)
+	: CBreakableBase(rhs)
+{
+}
+
+HRESULT CBreakable5::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CBreakable5::NativeConstruct(void* pArg)
+{
+	// GameInfo Init
+	m_tGameInfo.iMaxHp = 4;
+	m_tGameInfo.iEnergy = rand() % 10 + 1;
+	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
+	m_tGameInfo.iSoul = rand() % 10 + 1;
+
+	if (CBreakableBase::SetUp_Component(TEXT("Prototype_Component_Model_Breakable5")))
+		return E_FAIL;
+
+	// Test
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+
+	/* For.Com_Sphere */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ColliderDesc.vPivot = _float3(0.f, 1.f, 0.f);
+	ColliderDesc.fRadius = 0.75f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_BREAKABLE_BODY);
+
+	return S_OK;
+}
+
+_int CBreakable5::Tick(_float fTimeDelta)
+{
+	if (CBreakableBase::Tick(fTimeDelta) < 0)
+		return -1;
+
+	return _int();
+}
+
+_int CBreakable5::LateTick(_float fTimeDelta)
+{
+	if (CBreakableBase::LateTick(fTimeDelta) < 0)
+		return -1;
+	return 0;
+}
+
+HRESULT CBreakable5::Render(_uint iPassIndex)
+{
+	if (CBreakableBase::Render(iPassIndex) < 0)
+		return -1;
+	return S_OK;
+}
+
+HRESULT CBreakable5::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	CBreakableBase::PostRender(m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
+CBreakable5* CBreakable5::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CBreakable5* pInstance = new CBreakable5(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CBreakable5");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CBreakable5::Clone(void* pArg)
+{
+	CBreakable5* pInstance = new CBreakable5(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CBreakable5");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CBreakable5::Free()
+{
+	CBreakableBase::Free();
+}
+
