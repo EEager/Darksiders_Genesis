@@ -932,12 +932,13 @@ void CImguiManager::ShowNaviMeshControlWindow()
 			dirty = true;
 		}
 		
-		if (dirty)
-		{
-			auto pTerrain = m_pGameInstance->Get_GameObject_CloneList(TEXT("Layer_BackGround"))->front();
-			CTransform* pTransform = static_cast<CTransform*>(pTerrain->Get_ComponentPtr(L"Com_Transform"));
-			pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetY(pTransform->Get_State(CTransform::STATE_POSITION), m_yPickPos));
-		}
+		// 지형 높이 올리자. => 근데 사용안한다 이거.
+		//if (dirty)
+		//{
+		//	auto pTerrain = m_pGameInstance->Get_GameObject_CloneList(TEXT("Layer_BackGround"))->front();
+		//	CTransform* pTransform = static_cast<CTransform*>(pTerrain->Get_ComponentPtr(L"Com_Transform"));
+		//	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetY(pTransform->Get_State(CTransform::STATE_POSITION), m_yPickPos));
+		//}
 
 		if (ImGui::Button("Save Cells"))
 		{

@@ -442,6 +442,9 @@ bool OnEvent1(_float fTimeDelta)
 				return false;
 			//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(601.f, 21.7f, 401.0f, 1.f))))
 			//	return false;
+			
+			// Layer_Breakables_1 목록들도 이때 생성하자.
+			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables_1", LEVEL_GAMEPLAY);
 
 			// 카메라 포지션 + lookAk + 타겟 설정
 			auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();

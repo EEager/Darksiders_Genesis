@@ -35,7 +35,7 @@ HRESULT CBreakableBase::NativeConstruct(void * pArg)
 		return E_FAIL;
 
 	// Test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(643.f, 10.f, 243.f, 1.f));
 
 	return S_OK;
 }
@@ -280,7 +280,7 @@ HRESULT CBreakable1::NativeConstruct(void* pArg)
 		return E_FAIL;
 
 	// Test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(643.f, 10.f, 243.f, 1.f));
 
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
@@ -381,7 +381,7 @@ HRESULT CBreakable2::NativeConstruct(void* pArg)
 		return E_FAIL;
 
 	// Test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(643.f, 10.f, 243.f, 1.f));
 
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
@@ -482,7 +482,7 @@ HRESULT CBreakable3::NativeConstruct(void* pArg)
 		return E_FAIL;
 
 	// Test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(643.f, 10.f, 243.f, 1.f));
 
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
@@ -584,7 +584,7 @@ HRESULT CBreakable4::NativeConstruct(void* pArg)
 		return E_FAIL;
 
 	// Test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(643.f, 10.f, 243.f, 1.f));
 
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
@@ -686,7 +686,7 @@ HRESULT CBreakable5::NativeConstruct(void* pArg)
 		return E_FAIL;
 
 	// Test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 1.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(643.f, 10.f, 243.f, 1.f));
 
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
