@@ -78,6 +78,17 @@ _vector CTransform::Get_State(STATE eState)
 	return Get_State_Vec(eState);
 }
 
+void CTransform::Set_Scale(_float3 vScale)
+{
+	_vector		vRight = XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * vScale.x;
+	_vector		vUp = XMVector3Normalize(Get_State(CTransform::STATE_UP)) * vScale.y;
+	_vector		vLook = XMVector3Normalize(Get_State(CTransform::STATE_LOOK)) * vScale.z;
+
+	Set_State(CTransform::STATE_RIGHT, vRight);
+	Set_State(CTransform::STATE_UP, vUp);
+	Set_State(CTransform::STATE_LOOK, vLook);
+}
+
 _vector CTransform::Get_State_Vec(STATE eState)
 {
 	return XMLoadFloat4((_float4*)&m_WorldMatrix.m[eState]);

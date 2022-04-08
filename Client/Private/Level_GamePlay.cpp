@@ -114,30 +114,36 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 	}
 
-	// Breakalbe 설치하자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_2))
+	//// Breakalbe 설치하자
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_2))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
+	//		return E_FAIL;
+	//}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_3))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable2"))))
+	//		return E_FAIL;
+	//}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_4))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable3"))))
+	//		return E_FAIL;
+	//}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_5))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable4"))))
+	//		return E_FAIL;
+	//}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_6))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable5"))))
+	//		return E_FAIL;
+	//}
+
+	if (CInput_Device::GetInstance()->Key_Down(DIK_7))
 	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
-			return E_FAIL;
-	}
-	if (CInput_Device::GetInstance()->Key_Down(DIK_3))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable2"))))
-			return E_FAIL;
-	}
-	if (CInput_Device::GetInstance()->Key_Down(DIK_4))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable3"))))
-			return E_FAIL;
-	}
-	if (CInput_Device::GetInstance()->Key_Down(DIK_5))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable4"))))
-			return E_FAIL;
-	}
-	if (CInput_Device::GetInstance()->Key_Down(DIK_6))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable5"))))
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SoulBarrier", TEXT("Prototype_GameObject_SoulBarrier"))))
 			return E_FAIL;
 	}
 	RELEASE_INSTANCE(CGameInstance);
@@ -445,6 +451,9 @@ bool OnEvent1(_float fTimeDelta)
 			
 			// Layer_Breakables_1 목록들도 이때 생성하자.
 			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables_1", LEVEL_GAMEPLAY);
+
+			// Layer_SoulBarrier 목록들도 이때 생성하자.
+			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_SoulBarrier", LEVEL_GAMEPLAY);
 
 			// 카메라 포지션 + lookAk + 타겟 설정
 			auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();

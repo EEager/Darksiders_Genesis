@@ -179,7 +179,7 @@ _int CBallista::LateTick(_float fTimeDelta)
 	}
 
 	// 플레이어가 근처에 있으면 Collider를 실행시키자.
-	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 50.f);
+	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 25.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 	return 0;

@@ -190,6 +190,7 @@
     <ClInclude Include="..\public\MainApp.h" />
     <ClInclude Include="..\Public\MapObject\Ballista.h" />
     <ClInclude Include="..\Public\MapObject\Breakables.h" />
+    <ClInclude Include="..\Public\MapObject\SoulBarrier.h" />
     <ClInclude Include="..\Public\Monster\FallenDog.h" />
     <ClInclude Include="..\Public\Monster\Goblin_Armor.h" />
     <ClInclude Include="..\Public\Monster\HollowLord.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="..\private\MainApp.cpp" />
     <ClCompile Include="..\Private\MapObject\Ballista.cpp" />
     <ClCompile Include="..\Private\MapObject\Breakables.cpp" />
+    <ClCompile Include="..\Private\MapObject\SoulBarrier.cpp" />
     <ClCompile Include="..\Private\Monster\FallenDog.cpp" />
     <ClCompile Include="..\Private\Monster\Goblin_Armor.cpp" />
     <ClCompile Include="..\Private\Monster\HollowLord.cpp" />

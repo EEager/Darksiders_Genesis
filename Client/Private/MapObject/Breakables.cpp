@@ -77,7 +77,7 @@ _int CBreakableBase::LateTick(_float fTimeDelta)
 	// AddRenderGroup
 	{
 		bool AddRenderGroup = false;
-		if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 2.f))
+		if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 7.f))
 			AddRenderGroup = true;
 
 #ifdef USE_IMGUI

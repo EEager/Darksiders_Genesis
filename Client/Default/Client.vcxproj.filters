@@ -142,6 +142,9 @@
     <Filter Include="02.GameObjects\MapObject\Static\Breakables">
       <UniqueIdentifier>{b03e5dd5-22d7-45ef-936c-319d934631b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\MapObject\Dynamic\SoulBarrier">
+      <UniqueIdentifier>{e08ee936-32e3-4e23-a670-a265f6d02e38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -276,6 +279,9 @@
     <ClInclude Include="..\Public\MapObject\Breakables.h">
       <Filter>02.GameObjects\MapObject\Static\Breakables</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject\SoulBarrier.h">
+      <Filter>02.GameObjects\MapObject\Dynamic\SoulBarrier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -394,6 +400,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\Breakables.cpp">
       <Filter>02.GameObjects\MapObject\Static\Breakables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject\SoulBarrier.cpp">
+      <Filter>02.GameObjects\MapObject\Dynamic\SoulBarrier</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

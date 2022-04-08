@@ -327,6 +327,9 @@ const _tchar* ToLiteralTag(const _tchar* pTag)
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable4"))	return L"Prototype_GameObject_Breakable4";
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_Breakable5"))	return L"Prototype_GameObject_Breakable5";
 
+	if (!lstrcmpW(pTag, L"Layer_SoulBarrier"))	return L"Layer_SoulBarrier";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_SoulBarrier"))	return L"Prototype_GameObject_SoulBarrier";
+
 	assert(0);
 
 	return nullptr;

@@ -61,13 +61,24 @@ void CCollider_Manager::Collision(CGameObject* pSrc, CGameObject* pDst, float fT
 	// CGameObject가 가지고 있는 CCollider 끼리 충돌체크를 확인하다
 	for (auto& pSrc : *pSrcList)
 	{
-		if (pSrc->m_bColliderDisble)
-			continue;
+
 
 		for (auto& pDst : *pDstList)
 		{
-			if (pDst->m_bColliderDisble)
+			// Disable 상태라면 continue
+			if (pSrc->m_bColliderDisble || pDst->m_bColliderDisble)
+			{
+				// 하나라도 disalbe 상태라면 map에서 지워주자.
+				COLLIDER_ID ID;
+				ID.Src_id = pSrc->Get_ID();
+				ID.Dst_id = pDst->Get_ID();
+				map<ULONGLONG, bool>::iterator iter = m_mapColInfo.find(ID.ID);
+				if (iter != m_mapColInfo.end()) 
+				{
+					m_mapColInfo.erase(iter);
+				}
 				continue;
+			}
 
 			COLLIDER_ID ID;
 			ID.Src_id = pSrc->Get_ID();

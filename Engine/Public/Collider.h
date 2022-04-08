@@ -45,6 +45,7 @@ public:
 	class CGameObject* Get_Owner(){	return m_pOwner;}
 	void Set_Owner(class CGameObject* pOwner){m_pOwner = pOwner;}
 	UINT Get_ID() { return m_iID; }
+	void Add_ID() { m_iID++; }
 	COL_TYPE Get_ColliderType() { return m_ColliderDesc.eColType; }
 	void Set_ColliderTag(const _tchar* p) { m_pColliderTag = p; }
 	const _tchar* Get_ColliderTag() { return m_pColliderTag; }

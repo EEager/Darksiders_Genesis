@@ -619,7 +619,7 @@ HRESULT CModel::Create_Animation()
 	{
 		aiAnimation* pAnim = m_pScene->mAnimations[i];
 
-		CAnimation* pAnimation = CAnimation::Create(pAnim->mName.data, pAnim->mDuration, pAnim->mTicksPerSecond);
+		CAnimation* pAnimation = CAnimation::Create(pAnim->mName.data, pAnim->mDuration, pAnim->mTicksPerSecond * 1.1f);
 		if (nullptr == pAnimation)
 			return E_FAIL;
 

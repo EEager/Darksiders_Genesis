@@ -28,6 +28,7 @@
 // Object
 #include "MapObject\Ballista.h"
 #include "MapObject\Breakables.h"
+#include "MapObject\SoulBarrier.h"
 
 
 
@@ -207,6 +208,12 @@ HRESULT CLoader::Add_GameObject()
 	/* For.Prototype_GameObject_Ballista_Bolt */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista_Bolt"),
 		CBallista_Bolt::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	// CSoulBarrier
+	/* For.Prototype_GameObject_SoulBarrier */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SoulBarrier"),
+		CSoulBarrier::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 	// Breakables
@@ -465,6 +472,14 @@ HRESULT CLoader::Add_Model()
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista_Bolt"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Bolt"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/Ballista_Bolt/", "Ballista_Bolt.fbx", Ballista_PivotMat))))
+		return E_FAIL;
+
+	// SoulBarrier
+	/* For.Prototype_Component_Model_SoulBarrier */
+	_matrix		SoulBarrier_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_SoulBarrier"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SoulBarrier"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/SoulBarrier/", "SoulBarrier.fbx", SoulBarrier_PivotMat))))
 		return E_FAIL;
 
 	// ¡å Breakables

@@ -104,6 +104,7 @@ void CGameObject::Set_Collider_Attribute(const _tchar* pColliderTag/*define °ªÀ»
 		if ((*iter)->Get_ColliderTag() == pColliderTag)
 		{
 			(*iter)->m_bColliderDisble = disable;
+
 			return;
 		}
 	}
