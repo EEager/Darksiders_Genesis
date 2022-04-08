@@ -49,6 +49,9 @@ private:
 	const char* m_pCurState = "Ballista_A.ao|Balliista_A_Idle";
 	const char* m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
 
+private:
+	_bool	m_bInitAnimation = false;
+
 public:	
 	static CSoulBarrier* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;

@@ -167,6 +167,7 @@ _int CLegion::Tick(_float fTimeDelta)
 			m_pModelCom->Update_Animation(fTimeDelta, &forDontMoveInWorld);
 		}
 	}
+	// Update_Animation => DoState 순서입니다.
 	DoState(fTimeDelta);
 
 

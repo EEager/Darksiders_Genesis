@@ -34,7 +34,8 @@ HRESULT CSoulBarrier::NativeConstruct(void* pArg)
 	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 	__super::Add_Collider(&ColliderDesc, COL_BALLISTA_BODY);
 
-	m_pModelCom->SetUp_Animation("Dn_SoulBarrier.ao|Dn_SoulBarrier_Activate");
+	m_pCurState = "Dn_SoulBarrier.ao|Dn_SoulBarrier_Idle";
+	m_pNextState = "Dn_SoulBarrier.ao|Dn_SoulBarrier_Activate"; // Activate하는 것으로 시작.
 
 	// GameInfo Init
 	m_tGameInfo.iMaxHp = 14; // 5대
@@ -52,14 +53,11 @@ HRESULT CSoulBarrier::NativeConstruct(void* pArg)
 
 _int CSoulBarrier::Tick(_float fTimeDelta)
 {
-
 	// 모든 몬스터는 죽으면 -1을 반환한다
 	if (m_isDead)
 	{
 		return -1;
 	}
-
-	m_pModelCom->Update_Animation(fTimeDelta);
 
 	// GlobalState
 	{
@@ -82,6 +80,7 @@ _int CSoulBarrier::Tick(_float fTimeDelta)
 		{
 			_bool isLoop = true;
 			if (m_pNextState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Death" || 
+				m_pNextState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Activate" ||
 				m_pNextState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Impact")
 			{
 				isLoop = false;
@@ -92,12 +91,19 @@ _int CSoulBarrier::Tick(_float fTimeDelta)
 		}
 	}
 
+	// Update Animation
+	if (m_bInitAnimation) // 이벤트 씬에서 set해주자.
+		m_pModelCom->Update_Animation(fTimeDelta);
+
+
 	// DoState
 	{
-		// 아이들 상태에서 피격당하면 히트파워 주고, Impact로 보내자. 
 		if (m_pCurState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Activate")
 		{
-			
+			if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+			{
+				m_pNextState = "Dn_SoulBarrier.ao|Dn_SoulBarrier_Idle";
+			}
 		}
 		else if (m_pCurState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Death")
 		{
@@ -115,7 +121,7 @@ _int CSoulBarrier::Tick(_float fTimeDelta)
 		}
 	}
 
-	// Collider Update
+	//ColliderUpdate
 	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	return _int();

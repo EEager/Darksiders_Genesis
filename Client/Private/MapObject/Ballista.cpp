@@ -39,7 +39,7 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 1;
-	m_tGameInfo.iMaxHp = 8;
+	m_tGameInfo.iMaxHp = 15; //5´ë
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 1;
 

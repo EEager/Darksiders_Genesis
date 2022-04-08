@@ -455,7 +455,7 @@ bool OnEvent1(_float fTimeDelta)
 
 			// Layer_SoulBarrier 목록들도 이때 생성하자.
 			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_SoulBarrier", LEVEL_GAMEPLAY);
-
+			 
 			// 카메라 포지션 + lookAk + 타겟 설정
 			auto pCameraTransform = static_cast<CCamera_Fly*>(m_pCamera)->Get_Camera_Transform();
 			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(595.4f, 28.1f, 381.2f, 1.f));
