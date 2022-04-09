@@ -92,7 +92,7 @@ _int CSoulBarrier::Tick(_float fTimeDelta)
 	}
 
 	// Update Animation
-	//if (m_bInitAnimation) // 이벤트 씬에서 set해주자.
+	if (m_bInitAnimation) // 이벤트 씬에서 set해주자.
 		m_pModelCom->Update_Animation(fTimeDelta);
 
 

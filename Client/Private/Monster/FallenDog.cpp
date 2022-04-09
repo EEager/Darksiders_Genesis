@@ -59,7 +59,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%20, 0.f, 431.f + rand() % 20, 1.f));
 
 	m_pCurState = "FallenDog_Mesh.ao|Legion_Idle";
-	m_pNextState = "FallenDog_Mesh.ao|FallenDog_Spawn_Channel"; // 소환하는것으로 시작.
+	m_pNextState = "FallenDog_Mesh.ao|FallenDog_Sleeping"; // 소환하는것으로 시작.
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));

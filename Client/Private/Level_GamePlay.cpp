@@ -8,6 +8,7 @@
 
 #include "SceneChangeEffect.h"
 #include "Monster/Legion.h"
+#include "MapObject\SoulBarrier.h"
 
 
 // -----------------------------
@@ -72,7 +73,7 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	// Ready Level Event
 	{
 		// OnEvent1
-		//m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
+		m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
 		// OnEvent2
 		m_queueEventCallBack.push(bind(&OnEvent2, placeholders::_1));
 		// OnEvent3
@@ -106,7 +107,7 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"), &_float4(618.f, 12.47f, 152.0f, 1.f));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"), &_float4(618.f, 12.47f, 152.0f, 1.f));
 	}
 
 	// E키를 눌러 시험하자
@@ -453,6 +454,13 @@ bool OnEvent1(_float fTimeDelta)
 			// Layer_Legion 생성 
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(&pLegion, LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(600.f, 21.7f, 402.0f, 1.f))))
 				return false;
+
+			// Layer_FallenDog 생성
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"), &_float4(618.f, 12.47f, 152.0f, 1.f))))
+				assert(0);
+
+			// Layer_SoulBarrier 생성
+			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_SoulBarrier", LEVEL_GAMEPLAY);
 			
 			// Layer_Breakables_1 목록들도 이때 생성하자.
 			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables_1", LEVEL_GAMEPLAY);
@@ -573,8 +581,7 @@ bool event3_0;
 bool event3_1;
 bool event3_2;
 _float event3TimeAcc;
-CGameObject* pFallenDog = nullptr;
-
+CGameObject* pSoulBarrier = nullptr;
 bool OnEvent3(_float fTimeDelta)
 {
 	// [이벤트 시작]
@@ -613,46 +620,41 @@ bool OnEvent3(_float fTimeDelta)
 		}
 
 		// 아래는 한번만 실행한다.
-		// 1) Dog1마리 + Legion2마리 생성
-		// 2) SoulBarrier 생성
+		// Legion2마리 생성
 		if (event3_2 == false)
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 			
-			// 1)
-			if (FAILED(pGameInstance->Add_GameObjectToLayer(&pFallenDog, LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"), &_float4(618.f, 12.47f, 152.0f, 1.f))))
-				assert(0);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(611.f, 11.6f, 154.0f, 1.f))))
 				assert(0);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(624.f, 11.6f, 149.0f, 1.f))))
 				assert(0);
 
-			// 2) Layer_SoulBarrier 
-			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_SoulBarrier", LEVEL_GAMEPLAY);
+			auto pSoulBarrier = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_SoulBarrier")->front();
 
-			// 카메라 타겟은 pFallenDog로 위치 설정. 
+			// 카메라 타겟은 pSoulBarrier로 위치 설정. 
 			// 카메라 포지션 + lookAk + 타겟 설정
 			auto pCameraTransform = static_cast<CCamera_Fly*>(g_pCamera)->Get_Camera_Transform();
-			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(615.2f, 19.5f, 175.2f, 1.f));
+			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(613.7f, 22.5f, 170.f, 1.f));
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_TARGET);
-			static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(pFallenDog);
-			auto pFallenDogTransform = static_cast<CTransform*>(pFallenDog->Get_ComponentPtr(L"Com_Transform"));
-			pCameraTransform->LookAt(pFallenDogTransform->Get_State(CTransform::STATE_POSITION));
-			// FallenDog 이 War를 바라보도록하자.
-			auto pWarTransform = static_cast<CTransform*>(g_pWar->Get_ComponentPtr(L"Com_Transform"));
-			pFallenDogTransform->LookAt(XMVectorSetY(pWarTransform->Get_State(CTransform::STATE_POSITION), XMVectorGetY(pWarTransform->Get_State(CTransform::STATE_POSITION))));
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(pSoulBarrier);
+			auto pSoulBarrierTransform = static_cast<CTransform*>(pSoulBarrier->Get_ComponentPtr(L"Com_Transform"));
+			pCameraTransform->LookAt(pSoulBarrierTransform->Get_State(CTransform::STATE_POSITION));
+	
 			// 카메라 m_fRadius, m_fRadian, m_fHeight 설정
-			static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(24.f);
-			static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.7f);
-			static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(16.f);
-			static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.001f);
-			static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(0.001f);
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(19.f);
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.611f);
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(13.f);
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(1.f);
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(1.f);
 
 			// 영화관 effect 추가
 			pGameInstance->Add_GameObjectToLayer(&pSceneChangeEffect3, LEVEL_GAMEPLAY, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 
 			event3_2 = true;
 			RELEASE_INSTANCE(CGameInstance);
+
+			return false; // 한번 틱돌리자.
 		}
 	}
 
@@ -660,22 +662,28 @@ bool OnEvent3(_float fTimeDelta)
 		return false;
 
 	// [이벤트 종료]
-	// 대충 3초 뒤...
-	event3TimeAcc += fTimeDelta;
+	event3TimeAcc += fTimeDelta; 
+
+	if (0.5f < event3TimeAcc && event3TimeAcc < 0.7f)
+	{
+		auto pSoulBarrier = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_SoulBarrier")->front();
+		static_cast<CSoulBarrier*>(pSoulBarrier)->InitAnimation();
+	}
+
 	if (event3TimeAcc > 7.f)
 	{
-		// 이벤트가 종료되었으니 다시 원복.
+		// 이벤트가 종료되었으니 원복.
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(static_cast<CWar*>(g_pWar));
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(22.060f);
-		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(3.109f);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.97f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(13.f);
-		static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.03f);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.03f); 
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(0.05f);
 
-		// pSceneChangeEffect3 죽이자. 영화관 이펙트를 죽이자.
+		// 영화관 이펙트를 죽이자.
 		static_cast<CSceneChangeEffect3*>(pSceneChangeEffect3)->Set_Will_Dead(true);
 
-		//UI 다시 보이게.
+		// UI 다시 보이게.
 		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 		auto pUIList = pGameInstance->Get_GameObject_CloneList(L"Layer_UI");
 		for (auto& pUI : *pUIList)
@@ -689,11 +697,11 @@ bool OnEvent3(_float fTimeDelta)
 
 	// 이벤트 종료 전까지 계속 실행되는것.
 	// #2. 카메라 m_fRadius, m_fRadian, m_fHeight 설정
-	static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(17.f);
-	static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(3.f);
-	static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(8.f);
-	static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.01f);
-	static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(0.01f);
+	static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(30.f);
+	static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.611f);
+	static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(12.f);
+	static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.001f);
+	static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(0.001f);
 
 	return false;
 }

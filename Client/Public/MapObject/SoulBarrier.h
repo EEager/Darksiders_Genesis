@@ -49,6 +49,9 @@ private:
 	const char* m_pCurState = "Ballista_A.ao|Balliista_A_Idle";
 	const char* m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
 
+public:
+	void InitAnimation() { m_bInitAnimation = true; }
+
 private:
 	_bool	m_bInitAnimation = false;
 
