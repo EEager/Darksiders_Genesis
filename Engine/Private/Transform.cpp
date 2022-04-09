@@ -350,6 +350,7 @@ void CTransform::TurnTo_AxisY_Degree(_float fDegreeGoal/*Always Plus*/, _float f
 
 	_vector		vRight = Get_State(CTransform::STATE_RIGHT);
 	_vector		vUp = Get_State(CTransform::STATE_UP);
+	vLook = Get_State(CTransform::STATE_LOOK);
 
 	vRight = XMVector3TransformNormal(vRight, RotationMatrix);
 	vUp = XMVector3TransformNormal(vUp, RotationMatrix);

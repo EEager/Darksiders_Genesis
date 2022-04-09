@@ -17,6 +17,8 @@ cbuffer Monster
 {
 	float			g_fMonsterHpUVX;
 	float			g_fHpBarHeight;
+	vector			g_vHpBarColorBorder; // 빨간색
+	vector			g_vHpBarColor;
 };
 
 struct VS_IN
@@ -138,13 +140,13 @@ PS_OUT PS_MAIN(PS_IN In)
 		In.vTexUV.y >= (1.f - uvOffsetY)
 		)
 	{
-		Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
+		Out.vColor = g_vHpBarColorBorder;
 	}
 	
 	// 몬스터 현재 체력은 빨간색.
 	if (In.vTexUV.x <= (uvOffsetX + g_fMonsterHpUVX))
 	{
-		Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
+		Out.vColor = g_vHpBarColor;
 	}
 	
 

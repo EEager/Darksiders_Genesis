@@ -106,14 +106,16 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"));
 	}
 
 	// E키를 눌러 시험하자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
-	{
-		pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
-	}
+	
+	// 영화관 이펙트를 시험하자
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_E))
+	//{
+	//	pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
+	//}
 
 	//// Breakalbe 설치하자
 	//if (CInput_Device::GetInstance()->Key_Down(DIK_2))
@@ -149,7 +151,6 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	//}
 	RELEASE_INSTANCE(CGameInstance);
 #endif
-
 
 	// Event Q에서 하나씩 꺼내 사용하자. 
 	// 이벤트가 없다면 넘기자.

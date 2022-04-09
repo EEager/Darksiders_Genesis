@@ -229,19 +229,20 @@ HRESULT CLegion::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 
 
 		// Bind 몬스터 현재 체력비율을 UV x 좌표로 넘겨주자. ex) 0.01 ~ 0.99 이니깐 80% 면 (0.99 - 0.01) * 0.8;
-#define MAX_LEN_HP (0.99f - 0.01f)
 		_float fCurHpRatio = (_float)m_tGameInfo.iHp / (_float)m_tGameInfo.iMaxHp;
 		_float fUVx = MAX_LEN_HP * fCurHpRatio;
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
 
 		_float fHpBarHeight = 2.4f;
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_vHpBarColor", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
 
 		m_pVIHpBarGsBufferCom->Render(0);
 		RELEASE_INSTANCE(CGameInstance);
+		m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 	}
 
-	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 
 #ifdef _DEBUG
 	// 모든 몬스터는 Collider를 render한다

@@ -64,6 +64,7 @@ protected:
 	const char* m_pImpactState_B = nullptr; // 피격 애니메이션은 각 몬스터들이 NativeContruct에서 할당해주자
 
 public:
+#define MAX_LEN_HP (0.99f - 0.01f)
 	_bool m_bSuperArmor = false;
 	// ---------------------------------------------------- 
 

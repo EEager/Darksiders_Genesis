@@ -2,10 +2,9 @@
 #include "..\public\Monster\FallenDog.h"
 #include "GameInstance.h"
 
-// 아래 3개정도만 수정하면되네 
-// 1. 모델Com
-// 2. master bone name
-// 3. collider 
+#ifdef USE_IMGUI
+#include "imgui_Manager.h"
+#endif
 
 CFallenDog::CFallenDog(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CMonster(pDevice, pDeviceContext)
@@ -34,6 +33,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 
 	// 속도
 	m_fSpeed = 5.f;
+	m_bSuperArmor = true;
 
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
@@ -41,6 +41,10 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_FallenDog"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_MonsterHp_PointGS"), TEXT("Com_VIBuffer"), (CComponent**)m_pVIHpBarGsBufferCom.GetAddressOf())))
 		return E_FAIL;
 
 	/* For.Collider */
@@ -69,6 +73,10 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
 
+
+	// 크기는 2배로 키우자 
+	m_pTransformCom->Set_Scale(_float3(2.f, 2.f, 2.f));
+
 	return S_OK;
 }
 
@@ -81,21 +89,28 @@ void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTime
 		// 피격 당했다. 
 		m_bHitted = true;
 		m_fHitPower = .8f;
+		m_fStiffness -= 2.5f;
 
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
 
-		// 피격시 피격모션으로 천이하자.
-		// 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
-		if (m_bSuperArmor == false)
+		// 경직도가 0이 되면 애니메이션을 변경한다.
+		if (m_fStiffness <= 0)
 		{
-			if (m_pImpactState_B != nullptr || m_pImpactState_F != nullptr) // 피격 애니메이션 없으면 무시~
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F";
+		} 
+		else // 피격 모션
+		{
+			if (m_bSuperArmor == false) // 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
 			{
-				assert(m_pTargetTransform); // Something Wrong...
-				if (isTargetFront(m_pTargetTransform))
-					// 플레이어가 내 앞에 있으면 m_pImpactState_B, 아닌경우 m_pImpactState_F
-					m_pNextState = m_pImpactState_B;
-				else
-					m_pNextState = m_pImpactState_F;
+				if (m_pImpactState_B != nullptr || m_pImpactState_F != nullptr) // 피격 애니메이션 없으면 무시~
+				{
+					assert(m_pTargetTransform); // Something Wrong...
+					if (isTargetFront(m_pTargetTransform))
+						// 플레이어가 내 앞에 있으면 m_pImpactState_B, 아닌경우 m_pImpactState_F
+						m_pNextState = m_pImpactState_B;
+					else
+						m_pNextState = m_pImpactState_F;
+				}
 			}
 		}
 
@@ -112,7 +127,7 @@ _int CFallenDog::Tick(_float fTimeDelta)
 	// 
 	// FSM
 	// 
-	CMonster::DoGlobalState(fTimeDelta);
+	DoGlobalState(fTimeDelta);
 	UpdateState();
 	// update animation
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom, m_eDir);
@@ -143,6 +158,78 @@ HRESULT CFallenDog::Render(_uint iPassIndex)
 	return S_OK;
 }
 
+HRESULT CFallenDog::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	if (m_tGameInfo.iHp != m_tGameInfo.iMaxHp) // 피가 좀 달면 보여주자
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		//---------------------
+		// HP Bar Render
+		// Bind Transform
+		m_pTransformCom->Bind_OnShader(m_pVIHpBarGsBufferCom.Get(), "g_WorldMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pVIHpBarGsBufferCom.Get(), "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pVIHpBarGsBufferCom.Get(), "g_ProjMatrix");
+		// Bind Position
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_vector));
+
+		// Bind 몬스터 현재 체력비율을 UV x 좌표로 넘겨주자. ex) 0.01 ~ 0.99 이니깐 80% 면 (0.99 - 0.01) * 0.8;
+		_float fCurHpRatio = (_float)m_tGameInfo.iHp / (_float)m_tGameInfo.iMaxHp;
+		_float fUVx = MAX_LEN_HP * fCurHpRatio;
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
+		_float fHpBarHeight = 3.25f;
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColor", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
+		m_pVIHpBarGsBufferCom.Get()->Render(0);
+		m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
+
+		//---------------------
+		// Stiffness Bar Render
+		// Bind Transform
+		_float fCurStiffnessRatio = (_float)m_fStiffness / (_float)MAX_STIFFNESS;
+		fUVx = MAX_LEN_HP * fCurStiffnessRatio;
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fMonsterHpUVX", &fUVx, sizeof(_float));
+		fHpBarHeight = 3.4f;
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(.5f, .5f, .5f, 1.f), sizeof(_vector));
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColor", &XMVectorSet(.5f, .5f, .5f, 1.f), sizeof(_vector));
+
+		m_pVIHpBarGsBufferCom.Get()->Render(0);
+		m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
+		RELEASE_INSTANCE(CGameInstance);
+	}
+
+#ifdef _DEBUG
+	// 모든 몬스터는 Collider를 render한다
+	__super::Render_Colliders();
+#endif
+
+#ifdef USE_IMGUI
+	if (m_bUseImGui) // IMGUI 툴로 배치할거다
+	{
+		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
+	}
+#endif
+
+	return S_OK;
+}
+
+void CFallenDog::DoGlobalState(float fTimeDelta)
+{
+	// 피격 중이다.
+	if (m_bHitted)
+	{
+		// 피격중이면 셰이더에 m_fHitPower를 던져, 피격 효과를 주자.
+		m_fHitPower -= 0.01f;
+		if (m_fHitPower < 0)
+		{
+			m_fHitPower = 0.f;
+			m_bHitted = false;
+		}
+	}
+}
+
 
 void CFallenDog::UpdateState()
 {
@@ -158,7 +245,7 @@ void CFallenDog::UpdateState()
 		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R" ||
 		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 	{
-		m_bSuperArmor = false;
+		//m_bSuperArmor = false;
 	}
 
 	// -----------------------------------------------------------------
@@ -174,21 +261,14 @@ void CFallenDog::UpdateState()
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Breath" ||
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt" ||
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" ||
-		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R")
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R" ||
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 	{
 		// 플레이어 바라보게 한뒤. 공격수행.
 		m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 		isLoop = false;
 		m_eDir = OBJECT_DIR::DIR_F;
-		m_bSuperArmor = true;
-	}
-	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
-	{
-		// 플레이어 바라보게 한뒤. 공격수행.
-		m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
-		isLoop = false;
-		m_eDir = OBJECT_DIR::DIR_U;
-		m_bSuperArmor = true;
+		//m_bSuperArmor = true;
 	}
 	// Impact State
 	else if (m_pNextState == m_pImpactState_B)
@@ -201,6 +281,7 @@ void CFallenDog::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
 	}
+	// ---
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Evade_L")
 	{
 		m_eDir = OBJECT_DIR::DIR_L;
@@ -209,6 +290,12 @@ void CFallenDog::UpdateState()
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Evade_R")
 	{
 		m_eDir = OBJECT_DIR::DIR_R;
+		isLoop = false;
+	}
+	// ---
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F")
+	{
+		m_eDir = OBJECT_DIR::DIR_B;
 		isLoop = false;
 	}
 
@@ -319,6 +406,16 @@ void CFallenDog::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
+		}
+	}
+	//-----------------------------------------------------------
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			// Stiffness 복구. 
+			m_fStiffness = MAX_STIFFNESS;
 			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
 		}
 	}
