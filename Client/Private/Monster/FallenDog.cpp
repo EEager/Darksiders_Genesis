@@ -28,9 +28,12 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 10;
-	m_tGameInfo.iMaxHp = 40;
+	m_tGameInfo.iMaxHp = 100;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
+
+	// 속도
+	m_fSpeed = 5.f;
 
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
@@ -59,12 +62,45 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(85.f + rand()%20, 0.f, 431.f + rand() % 20, 1.f));
 
 	m_pCurState = "FallenDog_Mesh.ao|Legion_Idle";
-	m_pNextState = "FallenDog_Mesh.ao|FallenDog_Sleeping"; // 소환하는것으로 시작.
+	m_pNextState = "FallenDog_Mesh.ao|FallenDog_Sleeping"; // 자는 것으로 시작.
+	m_pImpactState_F = "FallenDog_Mesh.ao|FallenDog_Impact_Front";
+	m_pImpactState_B = "FallenDog_Mesh.ao|FallenDog_Impact_Back";
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
 
 	return S_OK;
+}
+
+void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
+{
+	// 몬스터 몸통과 플레이어 검이 충돌한 경우. 
+	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_MONSTER_BODY1 &&
+		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
+	{
+		// 피격 당했다. 
+		m_bHitted = true;
+		m_fHitPower = .8f;
+
+		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
+
+		// 피격시 피격모션으로 천이하자.
+		// 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
+		if (m_bSuperArmor == false)
+		{
+			if (m_pImpactState_B != nullptr || m_pImpactState_F != nullptr) // 피격 애니메이션 없으면 무시~
+			{
+				assert(m_pTargetTransform); // Something Wrong...
+				if (isTargetFront(m_pTargetTransform))
+					// 플레이어가 내 앞에 있으면 m_pImpactState_B, 아닌경우 m_pImpactState_F
+					m_pNextState = m_pImpactState_B;
+				else
+					m_pNextState = m_pImpactState_F;
+			}
+		}
+
+		return;
+	}
 }
 
 _int CFallenDog::Tick(_float fTimeDelta)
@@ -79,7 +115,7 @@ _int CFallenDog::Tick(_float fTimeDelta)
 	CMonster::DoGlobalState(fTimeDelta);
 	UpdateState();
 	// update animation
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom);
+	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom, m_eDir);
 	DoState(fTimeDelta);
 
 	return _int();
@@ -113,29 +149,173 @@ void CFallenDog::UpdateState()
 	if (m_pCurState == m_pNextState)
 		return;
 
+	// -----------------------------------------------------------------
 	// m_pCurState Exit
+	if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo" ||
+		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Breath" ||
+		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt" ||
+		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" ||
+		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R" ||
+		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
+	{
+		m_bSuperArmor = false;
+	}
 
+	// -----------------------------------------------------------------
 	// m_pNextState Enter
 	_bool isLoop = true;
-	_bool useLastLerp = true;
-	if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Idle")
-	{
-		isLoop = true;
-	}
-	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Spawn_Channel")
+	if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Sleeping_GetUp" || 
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 	{
 		isLoop = false;
-		useLastLerp = false;	
-		m_bSpawning = true;
 	}
-	m_pModelCom->SetUp_Animation(m_pNextState, isLoop, useLastLerp);
+	// Atk State
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo" ||
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Breath" ||
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt" ||
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" ||
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R")
+	{
+		// 플레이어 바라보게 한뒤. 공격수행.
+		m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
+		isLoop = false;
+		m_eDir = OBJECT_DIR::DIR_F;
+		m_bSuperArmor = true;
+	}
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
+	{
+		// 플레이어 바라보게 한뒤. 공격수행.
+		m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
+		isLoop = false;
+		m_eDir = OBJECT_DIR::DIR_U;
+		m_bSuperArmor = true;
+	}
+	// Impact State
+	else if (m_pNextState == m_pImpactState_B)
+	{
+		m_eDir = OBJECT_DIR::DIR_B;
+		isLoop = false;
+	}
+	else if (m_pNextState == m_pImpactState_F)
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Evade_L")
+	{
+		m_eDir = OBJECT_DIR::DIR_L;
+		isLoop = false;
+	}
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Evade_R")
+	{
+		m_eDir = OBJECT_DIR::DIR_R;
+		isLoop = false;
+	}
+
+
+	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
 
 	m_pCurState = m_pNextState;
 }
 
 void CFallenDog::DoState(float fTimeDelta)
 {
-	if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Spawn")
+	// -----------------------------------------------------------------
+	// 자다가 플레이어가 근처에 오면 일어난 뒤, 점프 공격한번해주자.
+	if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Sleeping")
+	{
+		_float disToTarget = Get_Target_Dis(m_pTargetTransform);
+		if (disToTarget <= WAKEUP_RANGE)
+		{
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Sleeping_GetUp";
+			return;
+		}
+	}
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Sleeping_GetUp")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam";
+		}
+	}
+	// ------------------------------------------------------------------
+	// Idle
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Idle")
+	{
+		m_fTimeIdle += fTimeDelta;
+		// 플레이어가 반경 내에 있다면 공격하거나 추적. 근데 바로 하지는 말고 좀 쉬었다가 하자.
+		if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY)
+		{
+			_float disToTarget = Get_Target_Dis(m_pTargetTransform);
+			if (disToTarget < ATK_RANGE)
+			{
+				ChangeToAtkStateRandom();
+				m_fTimeIdle = 0.f;
+			}
+			else if (disToTarget < CHASE_RANGE)
+			{
+				// 플레이어가 추적 반경 안에 있다면 추적 
+				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Run_F";
+				m_fTimeIdle = 0.f;
+			}
+		}
+	}
+	// -----------------------------------------------------------------------
+	// Atk States
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo" ||
+		     m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Breath" ||
+		     m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam" ||
+		     m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt" ||
+		     m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" ||
+		     m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			// 아이들, Evade
+			int randState = rand() % 3;
+			if (randState==0)
+				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
+			else if (randState == 1)
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Evade_L";
+			else if (randState == 2)
+				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Evade_R";
+		}
+	}
+	// ----------------------------------------------------------------------
+	// Run
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Run_F")
+	{
+		// 추적하다가 공격 반경 내에 있다면 공격  
+		if (Get_Target_Dis(m_pTargetTransform) < ATK_RANGE)
+		{
+			ChangeToAtkStateRandom();
+		}
+		// 추적은 War 방향으로 돌면서 go Straight
+		else
+		{
+			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(m_pTargetTransform), fTimeDelta * 10);
+			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
+		}
+	}
+	//-------------------------------------------------------
+	// 피격 모션
+	else if (m_pCurState == m_pImpactState_F || m_pCurState == m_pImpactState_B)
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle"; 
+		}
+	}
+	//-------------------------------------------------------
+	// Evade
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Evade_L")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
+		}
+	}
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Evade_R")
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
@@ -143,6 +323,19 @@ void CFallenDog::DoState(float fTimeDelta)
 		}
 	}
 }
+
+int g_rand; // 어쩌피 1마리만 소환할꺼라 ㅎㅎ 임시로 이렇게 합니다.
+void CFallenDog::ChangeToAtkStateRandom()
+{
+	int randNextState = g_rand; g_rand = (g_rand + 1) % 6;
+	if (randNextState == 0)		 m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo";
+	else if (randNextState == 1) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Breath";
+	else if (randNextState == 2) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam";
+	else if (randNextState == 3) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt";
+	else if (randNextState == 4) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L";
+	else if (randNextState == 5) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R";
+}
+
 
 CFallenDog * CFallenDog::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

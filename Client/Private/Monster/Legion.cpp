@@ -39,7 +39,9 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 1;
 
+	// 속도.
 	m_fSpeed = 8.f;
+
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다. 
 	if (CMonster::NativeConstruct(pArg))
 		return E_FAIL;	
@@ -406,7 +408,7 @@ void CLegion::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_R;
 		isLoop = false;
 	}
-	// Impack States
+	// Impact States
 	else if (m_pNextState == m_pImpactState_B)
 	{
 		m_eDir = OBJECT_DIR::DIR_B;
@@ -702,26 +704,6 @@ void CLegion::DoState(float fTimeDelta)
 			m_pNextState = "Legion_Mesh.ao|Legion_Idle";
 		}
 	}
-}
-
-_float CLegion::Get_Target_Dis(class CTransform* pTargetTransform)
-{
-	// 타겟간의 거리를 구한다
-	return XMVectorGetX(XMVector3Length(
-		pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) -
-		m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));
-}
-
-// targetPos과 내 위치간의 각도를 구하자.
-_float CLegion::GetDegree_Target(class CTransform* pTargetTransform)
-{
-	_vector targetPos = pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
-	_vector myPos = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
-	_vector toTarget = XMVector4Normalize(targetPos - myPos);
-
-	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(toTarget,XMVectorSet(0.f, 0.f, 1.f, 0.f)) 
-		* (XMVectorGetX(toTarget) < 0.f ? -1.f : 1.f);
-	return XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
 }
 
 // Legion 이 가지고 있는 바리스타 중점<-->타겟 중점간의 각도를 구한다. 기준축은 -z축이다

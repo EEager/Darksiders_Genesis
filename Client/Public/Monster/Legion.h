@@ -51,8 +51,6 @@ private:
 protected: 
 	virtual void UpdateState(); // m_eCurState Exit, m_eNextState Enter
 	virtual void DoState(float fTimeDelta); // m_eCurState Execute 
-	_float Get_Target_Dis(class CTransform* pTargetTransform);
-	_float GetDegree_Target(class CTransform* pTargetTransform);
 	_float GetDegree_Target_Ballista(class CTransform* pTargetTransform, class CTransform* pBallistaTransformCom);
 
 private:

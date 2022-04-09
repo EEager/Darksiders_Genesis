@@ -413,7 +413,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		m_bSpearFired = false;
 
 		// 플레이어가 공격 반경 내에 있다면 공격하자
-		_float disToTarget = Get_Target_Dis();
+		_float disToTarget = Get_Target_Dis(m_pTargetTransform);
 		if (disToTarget < ATK_RANGE) // 근접 거리 내면 공격하자
 		{
 			m_fTimeIdle += fTimeDelta;
@@ -530,7 +530,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 	else if (m_pCurState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Run_F")
 	{
 		// 추적하다가 공격 반경 내에 있다면 공격  
-		if (Get_Target_Dis() < ATK_RANGE)
+		if (Get_Target_Dis(m_pTargetTransform) < ATK_RANGE)
 		{
 			m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 			int randAtk = rand() % 2;
@@ -540,7 +540,7 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		// 추적은 War 방향으로 돌면서 go Straight
 		else
 		{
-			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(), fTimeDelta * 10);
+			m_pTransformCom->TurnTo_AxisY_Degree(GetDegree_Target(m_pTargetTransform), fTimeDelta * 10);
 			m_pTransformCom->Go_Straight(fTimeDelta, m_pNaviCom);
 		}
 	}
@@ -573,26 +573,6 @@ void CGoblin_Armor::DoState(float fTimeDelta)
 		}
 	}
 }
-
-_float CGoblin_Armor::Get_Target_Dis(float fTimeDelta)
-{
-	// 타겟간의 거리를 구한다
-	return XMVectorGetX(XMVector3Length(
-		m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) -
-		m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));
-}
-
-_float CGoblin_Armor::GetDegree_Target()
-{
-	_vector targetPos = m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
-	_vector myPos = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
-	_vector toTarget = XMVector4Normalize(targetPos - myPos);
-
-	XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(toTarget, XMVectorSet(0.f, 0.f, 1.f, 0.f))
-		* (XMVectorGetX(toTarget) < 0.f ? -1.f : 1.f);
-	return XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
-}
-
 
 CGoblin_Armor * CGoblin_Armor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

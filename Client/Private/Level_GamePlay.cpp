@@ -67,7 +67,6 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 
 		// Breakables를 추가한다. 
 		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables", LEVEL_GAMEPLAY);
-		
 	}
 
 	// Ready Level Event
@@ -107,7 +106,7 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
-		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"), &_float4(618.f, 12.47f, 152.0f, 1.f));
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"));
 	}
 
 	// E키를 눌러 시험하자
@@ -143,11 +142,11 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	//		return E_FAIL;
 	//}
 
-	if (CInput_Device::GetInstance()->Key_Down(DIK_7))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SoulBarrier", TEXT("Prototype_GameObject_SoulBarrier"))))
-			return E_FAIL;
-	}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_7))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SoulBarrier", TEXT("Prototype_GameObject_SoulBarrier"))))
+	//		return E_FAIL;
+	//}
 	RELEASE_INSTANCE(CGameInstance);
 #endif
 
@@ -399,6 +398,33 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 }
 
 
+CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CLevel_GamePlay* pInstance = new CLevel_GamePlay(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct()))
+	{
+		MSG_BOX("Failed to Created CLevel_GamePlay");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CLevel_GamePlay::Free()
+{
+	__super::Free();
+
+	Safe_Release(g_pWar);
+	Safe_Release(g_pCamera);
+}
+
+
+
+
+
+
+
 // ---------------------------------------------------
 // 바리스타 첫 대면 장면. 퀘스트 추가는 ToDo.
 bool event1_event0;
@@ -435,7 +461,7 @@ bool OnEvent1(_float fTimeDelta)
 
 		event1_event1 = true;
 		RELEASE_INSTANCE(CGameInstance);
-	} 
+	}
 
 	// Prototype_GameObject_SceneChangeEffect2 가 내려갈때 실행하자
 	if (pEffect && static_cast<CSceneChangeEffect2*>(pEffect)->Get_Type() == CSceneChangeEffect2::EFFECT2_TYPE::DESCENT)
@@ -461,10 +487,10 @@ bool OnEvent1(_float fTimeDelta)
 
 			// Layer_SoulBarrier 생성
 			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_SoulBarrier", LEVEL_GAMEPLAY);
-			
+
 			// Layer_Breakables_1 목록들도 이때 생성하자.
 			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables_1", LEVEL_GAMEPLAY);
-			 
+
 			// 카메라 포지션 + lookAk + 타겟 설정
 			auto pCameraTransform = static_cast<CCamera_Fly*>(g_pCamera)->Get_Camera_Transform();
 			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(595.4f, 28.1f, 381.2f, 1.f));
@@ -505,7 +531,7 @@ bool OnEvent1(_float fTimeDelta)
 
 		// 254 : 화살 발사하는 순간. 카메라가 화살을 따라가게 하자.
 		if (254 <= iKeyFrameIdx && iKeyFrameIdx < 300)
-		{ 
+		{
 			// 바리스타 모델을 가져와야한다.
 			CModel* pBallista_Model = static_cast<CModel*>(pLegion_Ballista->Get_ComponentPtr(L"Com_Model"));
 			CTransform* pBallista_Transform = static_cast<CTransform*>(pLegion_Ballista->Get_ComponentPtr(L"Com_Transform"));
@@ -514,8 +540,8 @@ bool OnEvent1(_float fTimeDelta)
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(pLegion_Ballista);
 
 			// 카메라 행렬 설정해주자. 발리스타의 화살을 따라가게 하고 싶기때문이다.
-			_matrix		OffsetMatrix = XMLoadFloat4x4(&pBallista_Model->Get_OffsetMatrix("Bone_BB_Bolt")); 
-			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(pBallista_Model->Get_CombinedMatrixPtr("Bone_BB_Bolt")); 
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&pBallista_Model->Get_OffsetMatrix("Bone_BB_Bolt"));
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(pBallista_Model->Get_CombinedMatrixPtr("Bone_BB_Bolt"));
 			_matrix		PivotMatrix = XMLoadFloat4x4(&pBallista_Model->Get_PivotMatrix_Bones());
 
 			_matrix		TargetWorldMatrix = XMLoadFloat4x4(pBallista_Transform->Get_WorldFloat4x4Ptr());
@@ -562,9 +588,9 @@ bool OnEvent1(_float fTimeDelta)
 
 			// [이벤트 종료]
 			// 모든것이 완료하였다. Event1을 종료한다.
-			return true; 
+			return true;
 		}
-	}
+}
 
 	return false;
 }
@@ -624,7 +650,7 @@ bool OnEvent3(_float fTimeDelta)
 		if (event3_2 == false)
 		{
 			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-			
+
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(611.f, 11.6f, 154.0f, 1.f))))
 				assert(0);
 			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(624.f, 11.6f, 149.0f, 1.f))))
@@ -640,7 +666,7 @@ bool OnEvent3(_float fTimeDelta)
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(pSoulBarrier);
 			auto pSoulBarrierTransform = static_cast<CTransform*>(pSoulBarrier->Get_ComponentPtr(L"Com_Transform"));
 			pCameraTransform->LookAt(pSoulBarrierTransform->Get_State(CTransform::STATE_POSITION));
-	
+
 			// 카메라 m_fRadius, m_fRadian, m_fHeight 설정
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(19.f);
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.611f);
@@ -662,22 +688,22 @@ bool OnEvent3(_float fTimeDelta)
 		return false;
 
 	// [이벤트 종료]
-	event3TimeAcc += fTimeDelta; 
+	event3TimeAcc += fTimeDelta;
 
-	if (0.5f < event3TimeAcc && event3TimeAcc < 0.7f)
+	if (0.7f < event3TimeAcc && event3TimeAcc < 0.9f)
 	{
 		auto pSoulBarrier = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_SoulBarrier")->front();
 		static_cast<CSoulBarrier*>(pSoulBarrier)->InitAnimation();
 	}
 
-	if (event3TimeAcc > 7.f)
+	if (event3TimeAcc > 9.f)
 	{
 		// 이벤트가 종료되었으니 원복.
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(static_cast<CWar*>(g_pWar));
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(22.060f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.97f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(13.f);
-		static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.03f); 
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.03f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(0.05f);
 
 		// 영화관 이펙트를 죽이자.
@@ -730,24 +756,3 @@ bool MonsterSpanwer3(_float fTimeDelta)
 	return true;
 }
 
-
-CLevel_GamePlay* CLevel_GamePlay::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
-{
-	CLevel_GamePlay* pInstance = new CLevel_GamePlay(pDevice, pDeviceContext);
-
-	if (FAILED(pInstance->NativeConstruct()))
-	{
-		MSG_BOX("Failed to Created CLevel_GamePlay");
-		Safe_Release(pInstance);
-	}
-
-	return pInstance;
-}
-
-void CLevel_GamePlay::Free()
-{
-	__super::Free();
-
-	Safe_Release(g_pWar);
-	Safe_Release(g_pCamera);
-}

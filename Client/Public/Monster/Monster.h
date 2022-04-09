@@ -69,6 +69,25 @@ public:
 
 protected:
 	bool isTargetFront(class CTransform* pObj);
+	_float Get_Target_Dis(class CTransform* pTargetTransform)
+	{
+		// 타겟간의 거리를 구한다
+		return XMVectorGetX(XMVector3Length(
+			pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) -
+			m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));
+	}
+
+	// targetPos과 내 위치간의 각도를 구하자.
+	_float GetDegree_Target(class CTransform* pTargetTransform)
+	{
+		_vector targetPos = pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION);
+		_vector myPos = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
+		_vector toTarget = XMVector4Normalize(targetPos - myPos);
+
+		XMVECTOR curVecAngleVec = XMVector3AngleBetweenVectors(toTarget, XMVectorSet(0.f, 0.f, 1.f, 0.f))
+			* (XMVectorGetX(toTarget) < 0.f ? -1.f : 1.f);
+		return XMConvertToDegrees(XMVectorGetX(curVecAngleVec));
+	}
 
 public:
 	// Collider

@@ -223,9 +223,6 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		m_fHitPower = .8f;
 
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
-#ifdef _DEBUG
-		cout << DXString::WideToChar(this->m_pLayerTag) << ": " << m_tGameInfo.iHp << endl;
-#endif
 
 		// 피격시 피격모션으로 천이하자.
 		// 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 

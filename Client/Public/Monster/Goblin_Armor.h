@@ -64,9 +64,6 @@ private:
 	void UpdateState(); // m_eCurState Exit, m_eNextState Enter
 	void DoState(float fTimeDelta); // m_eCurState Execute 
 
-	_float Get_Target_Dis(float fTimeDelta = 0.f);
-	_float GetDegree_Target();
-
 private:
 	const _float ATK_RANGE = 5.5f;
 	const _float SPEAR_RANGE = 50.f;

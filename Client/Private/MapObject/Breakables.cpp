@@ -253,6 +253,7 @@ void CBreakableBase::Free()
 // ----------------------------------------------------------------
 // CBreakable1
 
+// ÆøÅº
 CBreakable1::CBreakable1(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CBreakableBase(pDevice, pDeviceContext)
 {
@@ -354,6 +355,7 @@ void CBreakable1::Free()
 
 // --------------------------------------------------------------
 // CBreakable2
+// »óÀÚ
 CBreakable2::CBreakable2(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CBreakableBase(pDevice, pDeviceContext)
 {
@@ -386,7 +388,7 @@ HRESULT CBreakable2::NativeConstruct(void* pArg)
 	/* For.Com_Sphere */
 	CCollider::COLLIDERDESC		ColliderDesc;
 	ColliderDesc.vPivot = _float3(0.f, .0f, 0.f);
-	ColliderDesc.fRadius = 0.75f;
+	ColliderDesc.fRadius = 1.25f;
 	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 	__super::Add_Collider(&ColliderDesc, COL_BREAKABLE_BODY);
 
