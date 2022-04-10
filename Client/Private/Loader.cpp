@@ -31,6 +31,7 @@
 #include "MapObject\SoulBarrier.h"
 #include "MapObject\BrokenCorner.h"
 #include "MapObject\SpikeGate.h"
+#include "MapObject\Flag.h"
 
 
 
@@ -250,6 +251,11 @@ HRESULT CLoader::Add_GameObject()
 	/* For.Prototype_GameObject_BrokenCorner */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_SpikeGate"),
 		CSpikeGate::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Flag_A */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Flag_A"),
+		CFlag_A::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 
@@ -587,6 +593,12 @@ HRESULT CLoader::Add_Model()
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_SpikeGate"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SpikeGate"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/SpikeGate/", "SpikeGate.fbx", Dynamic_PivotMat))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Model_Flag_A */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Flag_A"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Flag_A"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Flag/", "Flag_A.fbx", Dynamic_PivotMat))))
 		return E_FAIL;
 
 

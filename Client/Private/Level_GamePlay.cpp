@@ -21,6 +21,7 @@ bool OnEvent1(_float fTimeDelta); // 바리스타 첫 대면 장면. 퀘스트 추가까지.
 bool OnEvent2(_float fTimeDelta); // 모험의 서. 경치 보여주는 장면.
 bool OnEvent3(_float fTimeDelta); // 성 문앞에서, 몬스터 삼인방 나오는 장면. 
 bool OnEvent4(_float fTimeDelta); // 보스 씬.
+bool OnEvent5(_float fTimeDelta); // 보스 씬.
 // ------------------------------
 
 
@@ -68,6 +69,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 
 		// Breakables를 추가한다. 
 		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Breakables", LEVEL_GAMEPLAY);
+
+		// Layer_Flag_A
+		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Flag_A", LEVEL_GAMEPLAY);
 	}
 
 	// Ready Level Event
@@ -111,7 +115,8 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
 
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SpikeGate", TEXT("Prototype_GameObject_SpikeGate"));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SpikeGate", TEXT("Prototype_GameObject_SpikeGate"));
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Flag_A", TEXT("Prototype_GameObject_Flag_A"));
 	}
 
 	// E키를 눌러 시험하자
@@ -828,7 +833,7 @@ bool OnEvent4(_float fTimeDelta)
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_TARGET);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(static_cast<CWar*>(g_pWar));
 
-		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(23.276);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(23.276f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.586f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(13.f);
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.03f);

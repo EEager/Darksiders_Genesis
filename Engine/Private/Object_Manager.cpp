@@ -339,6 +339,9 @@ const _tchar* ToLiteralTag(const _tchar* pTag)
 	if (!lstrcmpW(pTag, L"Layer_SpikeGate"))	return L"Layer_SpikeGate";
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_SpikeGate"))	return L"Prototype_GameObject_SpikeGate";
 
+	if (!lstrcmpW(pTag, L"Layer_Flag_A"))	return L"Layer_Flag_A";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_Flag_A"))	return L"Prototype_GameObject_Flag_A";
+
 	assert(0);
 
 	return nullptr;

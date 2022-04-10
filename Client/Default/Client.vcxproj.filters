@@ -151,6 +151,9 @@
     <Filter Include="02.GameObjects\MapObject\Dynamic\SpikeGate">
       <UniqueIdentifier>{d6dfe212-d1f9-4dd4-846e-6ca52df0705d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\MapObject\Dynamic\Flag">
+      <UniqueIdentifier>{708abfd3-21a8-43d0-b5a9-296d37f12c99}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -294,6 +297,9 @@
     <ClInclude Include="..\Public\MapObject\SpikeGate.h">
       <Filter>02.GameObjects\MapObject\Dynamic\SpikeGate</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject\Flag.h">
+      <Filter>02.GameObjects\MapObject\Dynamic\Flag</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -421,6 +427,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\SpikeGate.cpp">
       <Filter>02.GameObjects\MapObject\Dynamic\SpikeGate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject\Flag.cpp">
+      <Filter>02.GameObjects\MapObject\Dynamic\Flag</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

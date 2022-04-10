@@ -191,6 +191,7 @@
     <ClInclude Include="..\Public\MapObject\Ballista.h" />
     <ClInclude Include="..\Public\MapObject\Breakables.h" />
     <ClInclude Include="..\Public\MapObject\BrokenCorner.h" />
+    <ClInclude Include="..\Public\MapObject\Flag.h" />
     <ClInclude Include="..\Public\MapObject\SoulBarrier.h" />
     <ClInclude Include="..\Public\MapObject\SpikeGate.h" />
     <ClInclude Include="..\Public\Monster\FallenDog.h" />
@@ -237,6 +238,7 @@
     <ClCompile Include="..\Private\MapObject\Ballista.cpp" />
     <ClCompile Include="..\Private\MapObject\Breakables.cpp" />
     <ClCompile Include="..\Private\MapObject\BrokenCorner.cpp" />
+    <ClCompile Include="..\Private\MapObject\Flag.cpp" />
     <ClCompile Include="..\Private\MapObject\SoulBarrier.cpp" />
     <ClCompile Include="..\Private\MapObject\SpikeGate.cpp" />
     <ClCompile Include="..\Private\Monster\FallenDog.cpp" />
