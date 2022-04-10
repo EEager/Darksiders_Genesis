@@ -454,7 +454,7 @@ void CLegion::DoState(float fTimeDelta)
 			auto pList = CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_Ballista");
 			if (pList && pList->empty() == false)
 			{
-				for (auto pGameObject : *pList)
+				for (auto& pGameObject : *pList)
 				{
 					// 하지만 해당 바리스타에 누가 이미 탑승했다면 무시 
 					if (static_cast<CBallista*>(pGameObject)->m_bLegionOn)
@@ -727,7 +727,7 @@ _float CLegion::GetDegree_Target_Ballista(class CTransform* pTargetTransform, cl
 
 _int CLegion::Update_Colliders(_matrix wolrdMatrix/*not used*/)
 {
-	for (auto pCollider : m_ColliderList)
+	for (auto& pCollider : m_ColliderList)
 	{
 		if (pCollider->Get_ColliderTag() == COL_MONSTER_WEAPON)
 		{

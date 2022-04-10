@@ -14,6 +14,18 @@ BEGIN(Client)
 class CFallenDog final : public CMonster
 {
 private:
+	typedef struct tagWeaponDesc
+	{
+		_float4x4		OffsetMatrix;
+		_float4x4* pBoneMatrix;
+		_float4x4		PivotMatrix;
+		_float4x4* pTargetWorldMatrix;
+	}WEAPONDESC;
+	WEAPONDESC		m_DogRightHandDesc;
+	WEAPONDESC		m_DogLeftHandDesc;
+	WEAPONDESC		m_DogFaceDesc;
+
+private:
 	explicit CFallenDog(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	explicit CFallenDog(const CFallenDog& rhs);
 	virtual ~CFallenDog() = default;
@@ -35,6 +47,8 @@ protected:
 	virtual void DoGlobalState(float fTimeDelta);
 	virtual void UpdateState(); 
 	virtual void DoState(float fTimeDelta); 
+	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());
+
 
 private:
 	void ChangeToAtkStateRandom(); // 6가지 공격 패턴을 랜덤하게 수행하자.

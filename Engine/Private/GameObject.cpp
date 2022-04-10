@@ -114,7 +114,7 @@ void CGameObject::Set_Collider_Attribute(const _tchar* pColliderTag/*define °ªÀ»
 
 void CGameObject::Release_Collider()
 {
-	for (auto pCollider : m_ColliderList)
+	for (auto& pCollider : m_ColliderList)
 	{
 		Safe_Release(pCollider);
 	}
@@ -123,7 +123,7 @@ void CGameObject::Release_Collider()
 
 _int CGameObject::Update_Colliders(_matrix wolrdMatrix)
 {
-	for (auto pCollider : m_ColliderList)
+	for (auto& pCollider : m_ColliderList)
 	{
 		if (!pCollider->m_bColliderDisble)
 			pCollider->Update(wolrdMatrix);
@@ -133,7 +133,7 @@ _int CGameObject::Update_Colliders(_matrix wolrdMatrix)
 
 _int CGameObject::Render_Colliders()
 {
-	for (auto pCollider : m_ColliderList)
+	for (auto& pCollider : m_ColliderList)
 	{
 		if (!pCollider->m_bColliderDisble)
 			pCollider->Render();

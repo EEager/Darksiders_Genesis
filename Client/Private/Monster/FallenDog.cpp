@@ -28,7 +28,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 10;
-	m_tGameInfo.iMaxHp =  100;
+	m_tGameInfo.iMaxHp = 1;// 100;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
 
@@ -55,6 +55,45 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	ColliderDesc.vSize = _float3(3.f, 3.5f, 3.f);
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 	__super::Add_Collider(&ColliderDesc, COL_MONSTER_BODY1);
+
+	// For Weapon
+	{
+		/* For.Dog Right Hand */
+		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); // For Test
+		ColliderDesc.fRadius = 1.f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+
+		ZeroMemory(&m_DogRightHandDesc, sizeof(WEAPONDESC));
+		m_DogRightHandDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Hand_R_FD");
+		m_DogRightHandDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_Hand_R_FD");
+		m_DogRightHandDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
+		m_DogRightHandDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
+
+		/* For.Dog Left Hand */
+		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); // For Test
+		ColliderDesc.fRadius = 1.f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+
+		ZeroMemory(&m_DogLeftHandDesc, sizeof(WEAPONDESC));
+		m_DogLeftHandDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Hand_L_FD");
+		m_DogLeftHandDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_Hand_L_FD");
+		m_DogLeftHandDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
+		m_DogLeftHandDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
+
+		/* For.Dog Face */
+		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); // For Test
+		ColliderDesc.fRadius = 1.f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+
+		ZeroMemory(&m_DogFaceDesc, sizeof(WEAPONDESC));
+		m_DogFaceDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Face_FD");
+		m_DogFaceDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_Face_FD");
+		m_DogFaceDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
+		m_DogFaceDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
+	}
 
 	// pArg´Â º¸Åë À§Ä¡ÀÌ´Ù. w°¡ 1ÀÎ _float4ÀÌ´Ù.
 	if (pArg)
@@ -408,13 +447,14 @@ void CFallenDog::DoState(float fTimeDelta)
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
 			// ¾ÆÀÌµé, Evade
-			int randState = rand() % 3;
-			if (randState==0)
-				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
-			else if (randState == 1)
+			int randState = rand() % 4;
+			if (randState == 1)
 			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Evade_L";
 			else if (randState == 2)
 				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Evade_R";
+			else
+				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
+
 		}
 	}
 	// ----------------------------------------------------------------------
@@ -480,13 +520,61 @@ void CFallenDog::DoState(float fTimeDelta)
 
 void CFallenDog::ChangeToAtkStateRandom()
 {
-	int randNextState = m_AtkRandNum; m_AtkRandNum = (m_AtkRandNum + 1) % 6;
+	int randNextState = m_AtkRandNum; m_AtkRandNum = (m_AtkRandNum + 1) % 4;
 	if (randNextState == 0)		 m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo";
-	else if (randNextState == 1) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Breath";
-	else if (randNextState == 2) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam";
-	else if (randNextState == 3) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt";
-	else if (randNextState == 4) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L";
-	else if (randNextState == 5) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R";
+	//else if (randNextState == 1) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Breath";
+	//else if (randNextState == 2) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam";
+	else if (randNextState == 1) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt";
+	else if (randNextState == 2) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L";
+	else if (randNextState == 3) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R";
+}
+
+_int CFallenDog::Update_Colliders(_matrix wolrdMatrix/*not used*/)
+{
+	int idx = 0;
+	for (auto& pCollider : m_ColliderList)
+	{
+		if (idx == 1) // ¿À¸¥ÂÊ ÆÈ
+		{
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_DogRightHandDesc.OffsetMatrix); // »À->Á¤Á¡
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_DogRightHandDesc.pBoneMatrix); // Root->»À 
+			_matrix		PivotMatrix = XMLoadFloat4x4(&m_DogRightHandDesc.PivotMatrix);
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_DogRightHandDesc.pTargetWorldMatrix); // just legion's world matrix
+			_matrix		TransformationMatrix =
+				(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix¸¦ ¾È°öÇÏ´Ï°£ ¹º°¡ µÇ´Â°Å °°´Ù... ¿Ö?
+				TargetWorldMatrix;
+			pCollider->Update(TransformationMatrix);
+		}
+		else if (idx == 2) // ¿ÞÂÊ ÆÈ
+		{
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_DogLeftHandDesc.OffsetMatrix); // »À->Á¤Á¡
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_DogLeftHandDesc.pBoneMatrix); // Root->»À 
+			_matrix		PivotMatrix = XMLoadFloat4x4(&m_DogLeftHandDesc.PivotMatrix);
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_DogLeftHandDesc.pTargetWorldMatrix); // just legion's world matrix
+			_matrix		TransformationMatrix =
+				(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix¸¦ ¾È°öÇÏ´Ï°£ ¹º°¡ µÇ´Â°Å °°´Ù... ¿Ö?
+				TargetWorldMatrix;
+			pCollider->Update(TransformationMatrix);
+		}
+		else if (idx == 3) // »Ô
+		{
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_DogFaceDesc.OffsetMatrix); // »À->Á¤Á¡
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_DogFaceDesc.pBoneMatrix); // Root->»À 
+			_matrix		PivotMatrix = XMLoadFloat4x4(&m_DogFaceDesc.PivotMatrix);
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_DogFaceDesc.pTargetWorldMatrix); // just legion's world matrix
+			_matrix		TransformationMatrix =
+				(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix¸¦ ¾È°öÇÏ´Ï°£ ¹º°¡ µÇ´Â°Å °°´Ù... ¿Ö?
+				TargetWorldMatrix;
+			pCollider->Update(TransformationMatrix);
+		}
+		else // idx == 0 ¸öÅë
+		{
+			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
+		}
+		idx++;
+	}
+
+	return 0;
 }
 
 CFallenDog * CFallenDog::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

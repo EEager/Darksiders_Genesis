@@ -32,7 +32,7 @@ _int CPointEffect::Tick(_float fTimeDelta)
 {
 
 
-	m_pModelCom->Update(fTimeDelta);
+	//m_pModelCom->Update(fTimeDelta);
 	
 	return _int();
 }
@@ -42,16 +42,16 @@ _int CPointEffect::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return -1;
 
-	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
+	//CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 
-	CTransform*		pTarget = (CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_War"), TEXT("Com_Transform"));
+	//CTransform*		pTarget = (CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_War"), TEXT("Com_Transform"));
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTarget->Get_State(CTransform::STATE_POSITION));
-		
-	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this)))
-		return 0; 
-	 
-	RELEASE_INSTANCE(CGameInstance);	
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTarget->Get_State(CTransform::STATE_POSITION));
+	//	
+	//if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this)))
+	//	return 0; 
+	// 
+	//RELEASE_INSTANCE(CGameInstance);	
 
 
 	return _int();

@@ -46,7 +46,6 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(30.f));
 
 	// Init Anim State
-
 	m_pCurState = "HollowLord.ao|HollowLord_Emerge";
 	m_pNextState = "HollowLord.ao|HollowLord_Emerge";
 	m_pModelCom->SetUp_Animation("HollowLord.ao|HollowLord_Emerge", false);
