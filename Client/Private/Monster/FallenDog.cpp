@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\public\Monster\FallenDog.h"
 #include "GameInstance.h"
+#include "War.h"
 
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
@@ -27,7 +28,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 10;
-	m_tGameInfo.iMaxHp = 100;
+	m_tGameInfo.iMaxHp =  100;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
 
@@ -74,8 +75,9 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
 
 
-	// 크기는 2배로 키우자 
-	m_pTransformCom->Set_Scale(_float3(2.f, 2.f, 2.f));
+	// 크기는 1.5배로 키우자
+	m_pTransformCom->Set_Scale(_float3(1.5f, 1.5f, 1.5f));
+
 
 	return S_OK;
 }
@@ -93,23 +95,26 @@ void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTime
 
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
 
-		// 경직도가 0이 되면 애니메이션을 변경한다.
-		if (m_fStiffness <= 0)
+		if (m_bWillDead == false)
 		{
-			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F";
-		} 
-		else // 피격 모션
-		{
-			if (m_bSuperArmor == false) // 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
+			// 경직도가 0이 되면 애니메이션을 변경한다.
+			if (m_fStiffness <= 0)
 			{
-				if (m_pImpactState_B != nullptr || m_pImpactState_F != nullptr) // 피격 애니메이션 없으면 무시~
+				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F";
+			}
+			else // 피격 모션
+			{
+				if (m_bSuperArmor == false) // 하지만 슈퍼아머 상태에서는 피격상태로 천이가 안된다. 데미지만 입는다. 
 				{
-					assert(m_pTargetTransform); // Something Wrong...
-					if (isTargetFront(m_pTargetTransform))
-						// 플레이어가 내 앞에 있으면 m_pImpactState_B, 아닌경우 m_pImpactState_F
-						m_pNextState = m_pImpactState_B;
-					else
-						m_pNextState = m_pImpactState_F;
+					if (m_pImpactState_B != nullptr || m_pImpactState_F != nullptr) // 피격 애니메이션 없으면 무시~
+					{
+						assert(m_pTargetTransform); // Something Wrong...
+						if (isTargetFront(m_pTargetTransform))
+							// 플레이어가 내 앞에 있으면 m_pImpactState_B, 아닌경우 m_pImpactState_F
+							m_pNextState = m_pImpactState_B;
+						else
+							m_pNextState = m_pImpactState_F;
+					}
 				}
 			}
 		}
@@ -123,14 +128,36 @@ _int CFallenDog::Tick(_float fTimeDelta)
 	// 모든 몬스터는 Collider list 를 update해야한다
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
-
 	// 
 	// FSM
 	// 
 	DoGlobalState(fTimeDelta);
 	UpdateState();
-	// update animation
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom, m_eDir);
+
+	if (m_bExecutionAnimEnd == false) // 처형 애니메이션 끝나면 움직이지말고 가만히 있다.
+	{
+		// update animation
+		if (m_bExecutionAnim) // 처형모션일때는 월행 움직이지말자.
+		{
+			_float4x4 forDontMoveInWorld;
+			XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
+			m_pModelCom->Update_Animation(fTimeDelta);
+		}
+		else
+		{
+			m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom, m_eDir);
+		}
+	}
+	else
+	{
+		m_fFinalDeadTime += fTimeDelta;
+		if (m_fFinalDeadTime > 3.f)
+		{
+			// 몇초뒤에 진짜로 죽자. 
+			m_isDead = true;
+			m_fFinalDeadTime = 0.f;
+		}
+	}
 	DoState(fTimeDelta);
 
 	return _int();
@@ -142,9 +169,12 @@ _int CFallenDog::LateTick(_float fTimeDelta)
 	if (CMonster::LateTick(fTimeDelta) < 0)
 		return -1;
 
-	// 체력이 0이하가 되면 죽자. 
-	if (m_tGameInfo.iHp <= 0)
-		m_isDead = true;
+	// 체력이 0이하가 되면 처형 모션을 진행하자.
+	if (m_tGameInfo.iHp <= 0 && m_bWillDead == false)
+	{
+		m_bWillDead = true;
+		m_pNextState = "FallenDog_Mesh.ao|FallenDog_IA_Death_War";
+	}
 
 	return _int();
 }
@@ -298,6 +328,25 @@ void CFallenDog::UpdateState()
 		m_eDir = OBJECT_DIR::DIR_B;
 		isLoop = false;
 	}
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
+	{
+		// War 또한 처형 모션으로 바꿔주자.
+		static_cast<CWar*>(m_pTarget)->Get_StateMachine()->ChangeState(CState_War_IA_Death_FallenDog::GetInstance());
+		m_bExecutionAnim = true; // 처형일때는 월행 움직이지말자.
+		isLoop = false;
+
+		// War 기준으로 Dog 위치를 조정하자.
+		{	
+			// War와 마주보게 한다.
+			m_pTransformCom->Set_Look(-1*m_pTargetTransform->Get_State(CTransform::STATE_LOOK));
+
+			auto toPosition = m_pTargetTransform->Get_State(CTransform::STATE_POSITION)
+				+ m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * .55f
+				+ m_pTransformCom->Get_State(CTransform::STATE_LOOK) * -.2f
+				+ XMVectorSet(0.f, -1.f, 0.f, 0.f);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, toPosition);
+		}
+	}
 
 
 	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
@@ -419,12 +468,19 @@ void CFallenDog::DoState(float fTimeDelta)
 			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
 		}
 	}
+	//-----------------------------------------------------------
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_bExecutionAnimEnd = true;
+		}
+	}
 }
 
-int g_rand; // 어쩌피 1마리만 소환할꺼라 ㅎㅎ 임시로 이렇게 합니다.
 void CFallenDog::ChangeToAtkStateRandom()
 {
-	int randNextState = g_rand; g_rand = (g_rand + 1) % 6;
+	int randNextState = m_AtkRandNum; m_AtkRandNum = (m_AtkRandNum + 1) % 6;
 	if (randNextState == 0)		 m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo";
 	else if (randNextState == 1) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Breath";
 	else if (randNextState == 2) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam";
@@ -432,7 +488,6 @@ void CFallenDog::ChangeToAtkStateRandom()
 	else if (randNextState == 4) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L";
 	else if (randNextState == 5) m_pNextState = "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R";
 }
-
 
 CFallenDog * CFallenDog::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

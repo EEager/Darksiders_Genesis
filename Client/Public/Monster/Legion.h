@@ -71,6 +71,7 @@ private:
 private:
 	_float4 m_vFloatingDir; // 죽기전에 날아가는 방향. Nativecontstruct에서 정의해주ㅏ
 	_float m_fFloatingPwr; // 죽기전에 날아가는 힘.
+	_float m_fKnockBack_Start_Height = 0.f;
 
 
 protected:

@@ -372,8 +372,14 @@ void CLegion::UpdateState()
 		isLoop = false;
 	}
 	// 죽을때는 슈퍼아머상태로 둘까? TODO : 콤보 시험해보자
+	else if (m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start")
+	{
+		m_fKnockBack_Start_Height = XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION)) - 1.f;
+		m_bSuperArmor = true;
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+	}
 	else if (
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Start" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2"
@@ -623,7 +629,7 @@ void CLegion::DoState(float fTimeDelta)
 	{
 		m_bHeight = false;
 		// 죽기직전에 날가가도록하자 0.15f 높이만큼의 땅에 닿으면() 그 다음 상태로 천이한다
-		if (m_pTransformCom->MomentumWithGravity(XMLoadFloat4(&m_vFloatingDir), m_fFloatingPwr, fTimeDelta, 0.15f) == false)
+		if (m_pTransformCom->MomentumWithGravity(XMLoadFloat4(&m_vFloatingDir), m_fFloatingPwr, fTimeDelta, m_fKnockBack_Start_Height) == false)
 		{
 			m_bHeight = true;
 			m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Land";
@@ -642,7 +648,7 @@ void CLegion::DoState(float fTimeDelta)
 	else if (m_pCurState == "Legion_Mesh.ao|Legion_Knockback_Loop1")
 	{
 		// 죽기직전에 날가가도록하자 0.15f 높이만큼의 땅에 닿으면() 그 다음 상태로 천이한다
-		if (m_pTransformCom->MomentumWithGravity(XMLoadFloat4(&m_vFloatingDir), m_fFloatingPwr, fTimeDelta, 0.15f) == false)
+		if (m_pTransformCom->MomentumWithGravity(XMLoadFloat4(&m_vFloatingDir), m_fFloatingPwr, fTimeDelta, m_fKnockBack_Start_Height) == false)
 		{
 			m_bHeight = true;
 			m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Land";
@@ -651,7 +657,7 @@ void CLegion::DoState(float fTimeDelta)
 	else if (m_pCurState == "Legion_Mesh.ao|Legion_Knockback_Loop2")
 	{
 		// 죽기직전에 날가가도록하자 0.15f 높이만큼의 땅에 닿으면() 그 다음 상태로 천이한다
-		if (m_pTransformCom->MomentumWithGravity(XMLoadFloat4(&m_vFloatingDir), m_fFloatingPwr, fTimeDelta, 0.15f) == false)
+		if (m_pTransformCom->MomentumWithGravity(XMLoadFloat4(&m_vFloatingDir), m_fFloatingPwr, fTimeDelta, m_fKnockBack_Start_Height) == false)
 		{
 			m_bHeight = true;
 			m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Land";

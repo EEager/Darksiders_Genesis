@@ -49,10 +49,18 @@ private:
 
 	_float m_fTimeIdle = 0.f; // 아이들상태에서 어느정도 대기를 해주자. 바로 공격하지는말자.
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
+	_uint m_AtkRandNum = 0;
+	
+	
+public:
 	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);
+
 
 private:
 	_float m_fStiffness = 10.f; // 0이되면, 그로기 상태에 빠진다.
+	_float m_fFinalDeadTime = 0.f; // DeadPose에서 몇초뒤에 진짜로 죽는다.
+	_bool m_bExecutionAnim = false;
+	_bool m_bExecutionAnimEnd = false;
 
 public:	
 	static CFallenDog* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

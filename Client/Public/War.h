@@ -47,6 +47,7 @@ public:
 
 public:
 	_vector Get_War_Pos(); // used in camera_fly
+	CStateMachine* Get_StateMachine() { return m_pStateMachineCom; }
 
 private:
 	CRenderer*		m_pRendererCom = nullptr;
@@ -98,8 +99,8 @@ private:
 	_float4x4	m_WarPivotMat; // 말안타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님
 	_float4x4	m_WarRuinPivotMat; // 말타고 있을때의 War Model한테 적용할매트릭스를 잠시 저잦장. 참고로 War_Ruin_Model꺼 아님
 
-
-
+public:
+	_bool m_bDontMoveInWorld = false;
 
 	// -----------------------------------------------------------------
 	// 아래 3개는 War 키 입력에 사용

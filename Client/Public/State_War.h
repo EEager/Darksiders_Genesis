@@ -1167,6 +1167,27 @@ public:
 	virtual void Free() final;
 };
 
+// -------------------------------------------------
+// #39
+// [State] CState_War_IA_Death_FallenDog
+// [Infom] FallenDog 처형모션
+// -------------------------------------------------
+class CState_War_IA_Death_FallenDog final : public CState
+{
+	DECLATRE_STATIC_SINGLETON(CState_War_IA_Death_FallenDog)
+
+public:
+	CState_War_IA_Death_FallenDog();
+	virtual ~CState_War_IA_Death_FallenDog() {}
+
+public:
+	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+public:
+	virtual void Free() final;
+};
+
 
 /* ------------------------------------------------------------------------------
 *

@@ -89,7 +89,14 @@ _int CWar::Tick(_float fTimeDelta)
 	else // War 기본
 	{
 		// War 월행포인터를 던져주어, 애니메이션 로컬 위치를 월행에 적용하도록하자 
-		m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom, m_eDir);
+		if (m_bDontMoveInWorld == false)
+		{
+			m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom, m_eDir);
+		}
+		else
+		{
+			m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta);
+		}
 	}
 
 	// 해당 점프 상태는 m_pStateMachineCom->Tick에서 채워주자

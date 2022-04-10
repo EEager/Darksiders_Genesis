@@ -3040,13 +3040,50 @@ void CState_War_Impact_From_Right_01::Free()
 {
 }
 
+// -------------------------------------------------
+// #39 
+// [State] CState_War_IA_Death_FallenDog
+// [Infom] FallenDog 처형모션
+// -------------------------------------------------
+CState_War_IA_Death_FallenDog::CState_War_IA_Death_FallenDog()
+{
+	m_pStateName = "CState_War_IA_Death_FallenDog";
+}
 
+void CState_War_IA_Death_FallenDog::Enter(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Enter();
+	g_pWar->m_iHitDir = -1; // 초기화를 시켜주어 계속해서 이 상태로 오지 않게끔하자.
+	g_pWar->m_bSuperArmor = true;
+	g_pWar->m_bDontMoveInWorld = true; // 애니메이션동안 월드 움직이지말자.
+	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_IA_Death_FallenDog", false);//Not Loop
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+}
 
+void CState_War_IA_Death_FallenDog::Execute(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Execute(pOwner, fTimeDelta);
 
+	// [Event] 애니메이션 종료
+	// [State]  -> CState_War_Idle_Combat
+	if (g_pWar_Model_Context->Get_Animation_isFinished("War_Mesh.ao|War_IA_Death_FallenDog"))
+	{
+		g_pWar_State_Context->ChangeState(CState_War_Idle_Combat::GetInstance());
+		return;
+	}
+}
 
+void CState_War_IA_Death_FallenDog::Exit(CGameObject* pOwner, _float fTimeDelta)
+{
+	CState::Exit();
+	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
+	g_pWar->m_bDontMoveInWorld = false;
+	g_pWar->m_bSuperArmor = false;
+}
 
-
-
+void CState_War_IA_Death_FallenDog::Free()
+{
+}
 
 
 
