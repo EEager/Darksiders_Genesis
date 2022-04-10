@@ -73,11 +73,11 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	// Ready Level Event
 	{
 		// OnEvent1
-		m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
-		// OnEvent2
-		m_queueEventCallBack.push(bind(&OnEvent2, placeholders::_1));
-		// OnEvent3
-		m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
+		//m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
+		//// OnEvent2
+		//m_queueEventCallBack.push(bind(&OnEvent2, placeholders::_1));
+		//// OnEvent3
+		//m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
 		// OnEvent4 
 		m_queueEventCallBack.push(bind(&OnEvent4, placeholders::_1));
 	}
@@ -394,10 +394,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 	//for (int i = 0; i < 2; i++)
 	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog"))))
 	//		return E_FAIL;
-
-	/* For.Prototype_GameObject_HollowLord*/
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_HollowLord", TEXT("Prototype_GameObject_HollowLord"))))
-		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -741,9 +737,119 @@ bool OnEvent3(_float fTimeDelta)
 
 // ---------------------------------------------------
 // 보스씬.
+bool event4_0;
+bool event4_1;
+bool event4_2;
+_float m_event4_TimeAcc;
+
 bool OnEvent4(_float fTimeDelta)
 {
-	return true;
+	// [이벤트 시작]
+	// War가 Navi 120번을 탈 때 이벤트를 실행한다
+	if (event4_0 == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 120)
+			return false;
+		event4_0 = true;
+	}
+
+
+	// 씬전환 이펙트 실행
+	if (event4_1 == false)
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		pGameInstance->Add_GameObjectToLayer(&pEffect, LEVEL_GAMEPLAY, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect2"));
+		Safe_AddRef(pEffect);
+		// UI 전부 Render 하지말자.
+		auto pUIList = pGameInstance->Get_GameObject_CloneList(L"Layer_UI");
+		for (auto& pUI : *pUIList)
+		{
+			pUI->Set_NotRender(true);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		event4_1 = true;
+	}
+
+	// Prototype_GameObject_SceneChangeEffect2 가 내려갈때 실행하자
+	if (pEffect && static_cast<CSceneChangeEffect2*>(pEffect)->Get_Type() == CSceneChangeEffect2::EFFECT2_TYPE::DESCENT)
+	{
+		// 이펙트 죽는것은 계속해서 체크를 해서 위에 Safe_AddRef 한것을 해제해주자.
+		if (pEffect->IsDead()) // 죽었으면 Release하자.
+		{
+			Safe_Release(pEffect);
+		}
+
+		// 보스 생성 + 카메라 위치 조정
+		if (event4_2 == false)
+		{
+			CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+			// Layer_HollowLord 생성
+			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_HollowLord", LEVEL_GAMEPLAY);
+
+			// Layer_BrokenCorner 생성
+			CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_BrokenCorner", LEVEL_GAMEPLAY);
+
+			// 카메라 타겟은 Free로.  
+			// 카메라 포지션, LookAt Set
+			auto pCameraTransform = static_cast<CCamera_Fly*>(g_pCamera)->Get_Camera_Transform();
+			pCameraTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(574.f, 24.f, 82.3f, 1.f));
+			pCameraTransform->LookAt(XMVectorSet(583.9f, 13.6f, 39.6f, 1.f));
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_FREE);
+			static_cast<CCamera_Fly*>(g_pCamera)->Set_Camera_Speed(1.f);
+			static_cast<CTransform*>( g_pWar->Get_ComponentPtr(L"Com_Transform") )->Set_State(CTransform::STATE_POSITION, XMVectorSet(585.f, 9.5f, 75.804f, 1.f));
+
+			// 영화관 effect 추가
+			pGameInstance->Add_GameObjectToLayer(&pSceneChangeEffect3, LEVEL_GAMEPLAY, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
+
+			// Light Manager가 가지고 있는 OBJ_SHADOW 반경 변경. m_fSceneRadius 
+			CLight_Manager::GetInstance()->m_fSceneRadius = 36.f;
+
+			event4_2 = true;
+			RELEASE_INSTANCE(CGameInstance);
+			return false; // 한번 틱 돌리자.
+		}
+	}
+
+	if (event4_2 == false)
+		return false;
+
+	// 카메라 서서히 뒤로 빼면서. 시간으로 계산하자. 몇초뒤에 이벤트 종료.
+	auto pCameraTransform = static_cast<CCamera_Fly*>(g_pCamera)->Get_Camera_Transform();
+	pCameraTransform->Go_Backward(fTimeDelta * 1.f);
+	m_event4_TimeAcc += fTimeDelta;
+	if (m_event4_TimeAcc > 9.5f) 
+	{
+		// 이벤트가 종료되었으니 카메라 원복.
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_TARGET);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(static_cast<CWar*>(g_pWar));
+
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radius(23.276);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Radian(1.586f);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Height(13.f);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Position_Ratio(0.03f);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_LookAt_Ratio(0.05f);
+		static_cast<CCamera_Fly*>(g_pCamera)->Set_Camera_Speed(15.f);
+
+
+		// 영화관 이펙트를 죽이자.
+		static_cast<CSceneChangeEffect3*>(pSceneChangeEffect3)->Set_Will_Dead(true);
+
+		// UI 다시 보이게.
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		auto pUIList = pGameInstance->Get_GameObject_CloneList(L"Layer_UI");
+		for (auto& pUI : *pUIList)
+			pUI->Set_NotRender(false);
+		RELEASE_INSTANCE(CGameInstance);
+
+		// [이벤트 종료]
+		// 모든것이 완료하였다. Event4을 종료한다.
+		return true;
+	}
+
+
+
+	return false;
 }
 
 

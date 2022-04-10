@@ -42,12 +42,12 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	__super::Add_Collider(&ColliderDesc, L"HollowBody");
 
 	// Init test
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -7.f, 467.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(614.f, 11.f, 142.f, 1.f));
 
 	// Init Anim State
 	m_pCurState = "HollowLord.ao|HollowLord_Emerge";
 	m_pNextState = "HollowLord.ao|HollowLord_Emerge";
-	m_pModelCom->SetUp_Animation("HollowLord.ao|HollowLord_Emerge", false);
+	m_pModelCom->SetUp_Animation("HollowLord.ao|HollowLord_Emerge", false, false);
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
@@ -55,7 +55,7 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	// 높이 태우지말자
 	m_bHeight = false;
 
-	m_bBattleStart = true; // Test.. 삭제해야한다.
+	m_pTransformCom->Set_Scale(_float3(0.5f * 1.5f, 0.5f * 1.5f, 0.5f * 1.5f));
 
 
 	return S_OK;
@@ -66,12 +66,6 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	// 모든 몬스터는 Collider list 를 update해야한다
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
-	m_pTransformCom->Set_Scale(_float3(0.5f * 1.5f, 0.5f * 1.5f, 0.5f * 1.5f));
-
-
-	// 전투 시작은 Level_GamePlay에서 event3이 해주자.
-	if (m_bBattleStart == false)
-		return 0;
 
 	// FSM
 	CMonster::DoGlobalState(fTimeDelta);
@@ -85,9 +79,6 @@ _int CHollowLord::Tick(_float fTimeDelta)
 
 _int CHollowLord::LateTick(_float fTimeDelta)
 {
-	if (m_bBattleStart == false)
-		return 0;
-
 	// 모든 몬스터는 Height, Renderer, Add_Collider
 	if (CMonster::LateTick(fTimeDelta) < 0)
 		return -1;
@@ -152,6 +143,7 @@ void CHollowLord::UpdateState()
 }
 
 
+int randNextState;
 void CHollowLord::DoState(float fTimeDelta)
 {
 	//-----------------------------------------------------
@@ -161,26 +153,13 @@ void CHollowLord::DoState(float fTimeDelta)
 		// idle 상태에서 잠시 쉬었다가 공격하자 
 		if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY)
 		{
-			//m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
-
-			_float disToTarget = Get_Target_Dis(m_pTargetTransform);
-
-			// 거리가 어느 정도 멀면 원거리 공격
-			if (disToTarget > ATK_RANGE)
-			{
-				int randNextState = rand() % 2;
-				if (randNextState == 0)	m_pNextState = "HollowLord.ao|HollowLord_Atk_Barrage";
-				else if (randNextState == 1) m_pNextState = "HollowLord.ao|HollowLord_Atk_DoubleSlam";
-			}
-			else // 근접 범위내면 근접 공격을 하자
-			{
-				// 일단은 랜덤하게 : TODO : 플레이어 방향 체크해서 레훅, 라훅 하는것으로
-				int randNextState = rand() % 4;
-				if (randNextState == 0)	m_pNextState = "HollowLord.ao|HollowLord_Atk_Slam_L";
-				else if (randNextState == 1) m_pNextState = "HollowLord.ao|HollowLord_Atk_Slam_R";
-				else if (randNextState == 2) m_pNextState = "HollowLord.ao|HollowLord_Atk_Swipe_L";
-				else if (randNextState == 3) m_pNextState = "HollowLord.ao|HollowLord_Atk_Swipe_R";
-			}
+			if (randNextState == 0)	m_pNextState = "HollowLord.ao|HollowLord_Atk_Barrage";
+			else if (randNextState == 1) m_pNextState = "HollowLord.ao|HollowLord_Atk_DoubleSlam";
+			else if (randNextState == 2)	m_pNextState = "HollowLord.ao|HollowLord_Atk_Slam_L";
+			else if (randNextState == 3) m_pNextState = "HollowLord.ao|HollowLord_Atk_Slam_R";
+			else if (randNextState == 4) m_pNextState = "HollowLord.ao|HollowLord_Atk_Swipe_L";
+			else if (randNextState == 5) m_pNextState = "HollowLord.ao|HollowLord_Atk_Swipe_R";
+			randNextState = (randNextState + 1) % 6; // 순차적으로 하나씩 수행하자.
 		}
 	}
 	//-----------------------------------------------------

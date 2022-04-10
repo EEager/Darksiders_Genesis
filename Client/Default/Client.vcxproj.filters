@@ -145,6 +145,9 @@
     <Filter Include="02.GameObjects\MapObject\Dynamic\SoulBarrier">
       <UniqueIdentifier>{e08ee936-32e3-4e23-a670-a265f6d02e38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\MapObject\Dynamic\BrokenCorner">
+      <UniqueIdentifier>{4946eb8f-dff3-4789-a08e-2a5edab110f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -282,6 +285,9 @@
     <ClInclude Include="..\Public\MapObject\SoulBarrier.h">
       <Filter>02.GameObjects\MapObject\Dynamic\SoulBarrier</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject\BrokenCorner.h">
+      <Filter>02.GameObjects\MapObject\Dynamic\BrokenCorner</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -403,6 +409,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\SoulBarrier.cpp">
       <Filter>02.GameObjects\MapObject\Dynamic\SoulBarrier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject\BrokenCorner.cpp">
+      <Filter>02.GameObjects\MapObject\Dynamic\BrokenCorner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

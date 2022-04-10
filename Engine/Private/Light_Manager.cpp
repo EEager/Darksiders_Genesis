@@ -174,7 +174,8 @@ HRESULT CLight_Manager::Update(_float fTimeDelta)
 
 			// 빛위치계산 
 			//_float SceneRadius = 18.f;
-			_float SceneRadius = 36.f;
+			//_float SceneRadius = 36.f;
+			_float SceneRadius = m_fSceneRadius;
 			XMVECTOR lightPos = -2 * SceneRadius * lightDir + targetPos;
 
 			// 빛의 뷰스페이스 변환 행렬

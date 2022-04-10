@@ -29,6 +29,7 @@
 #include "MapObject\Ballista.h"
 #include "MapObject\Breakables.h"
 #include "MapObject\SoulBarrier.h"
+#include "MapObject\BrokenCorner.h"
 
 
 
@@ -236,6 +237,12 @@ HRESULT CLoader::Add_GameObject()
 	/* For.Prototype_GameObject_Breakable5 */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Breakable5"),
 		CBreakable5::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	// CBrokenCorner
+	/* For.Prototype_GameObject_BrokenCorner */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_BrokenCorner"),
+		CBrokenCorner::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 
@@ -558,6 +565,14 @@ HRESULT CLoader::Add_Model()
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable8"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable8"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_F.fbx", Breakables_PivotMat))))
+		return E_FAIL;
+
+	// BrokenCorner
+	/* For.Prototype_Component_Model_BrokenCorner */
+	_matrix		BrokenCorner_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_BrokenCorner"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_BrokenCorner"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/BrokenCorner/", "BrokenCorner.fbx", BrokenCorner_PivotMat))))
 		return E_FAIL;
 
 

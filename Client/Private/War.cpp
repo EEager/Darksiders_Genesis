@@ -61,7 +61,8 @@ HRESULT CWar::NativeConstruct(void * pArg)
 
 	// 이벤트 시험
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(670.f, 0.f, 306.f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(254.f, 0.f, 451.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(619.f, 0.f, 157.f, 1.f)); // Event3
+
 	// Navigation
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
 

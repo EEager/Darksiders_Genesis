@@ -259,7 +259,8 @@ void CImguiManager::Initialize(ID3D11Device* pGraphic_Device, ID3D11DeviceContex
 	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsClassic();
 
-	io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontDefault();
+	io.Fonts->AddFontFromFileTTF("../ImGui/D2Coding.ttc", 13.5f, NULL);
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(g_hWnd);

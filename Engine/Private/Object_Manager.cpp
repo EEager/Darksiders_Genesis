@@ -330,6 +330,12 @@ const _tchar* ToLiteralTag(const _tchar* pTag)
 	if (!lstrcmpW(pTag, L"Layer_SoulBarrier"))	return L"Layer_SoulBarrier";
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_SoulBarrier"))	return L"Prototype_GameObject_SoulBarrier";
 
+	if (!lstrcmpW(pTag, L"Layer_HollowLord"))	return L"Layer_HollowLord";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_HollowLord"))	return L"Prototype_GameObject_HollowLord";
+
+	if (!lstrcmpW(pTag, L"Layer_BrokenCorner"))	return L"Layer_BrokenCorner";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_BrokenCorner"))	return L"Prototype_GameObject_BrokenCorner";
+
 	assert(0);
 
 	return nullptr;

@@ -34,11 +34,9 @@ protected:
 	void DoState(float fTimeDelta); // m_eCurState Execute 
 
 private:
-	const _float IDLE_TIME_TO_ATK_DELAY = 2.8f;
+	const _float IDLE_TIME_TO_ATK_DELAY = 5.6f;
 	const _float ATK_RANGE = 10.f;
 	const _float INIT_RANGE = 50.f;
-
-	_bool m_bBattleStart = false;
 
 	_float m_fTimeIdle = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;

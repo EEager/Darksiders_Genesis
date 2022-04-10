@@ -61,6 +61,9 @@ private:
 	class CGameObject* m_pTarget = nullptr;
 	class CTransform* m_pTargetTransform = nullptr;
 
+public:
+	_float m_fSceneRadius = 18.f;
+
 	// ----------------------------------------------------
 
 public:
