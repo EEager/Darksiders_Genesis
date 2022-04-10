@@ -9,6 +9,7 @@
 #include "SceneChangeEffect.h"
 #include "Monster/Legion.h"
 #include "MapObject\SoulBarrier.h"
+#include "Enviroment.h"
 
 
 // -----------------------------
@@ -106,7 +107,7 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	{
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
 	}
 
 	// E키를 눌러 시험하자
@@ -145,7 +146,7 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	//}
 
 	//if (CInput_Device::GetInstance()->Key_Down(DIK_7))
-	//{
+	//{ 
 	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SoulBarrier", TEXT("Prototype_GameObject_SoulBarrier"))))
 	//		return E_FAIL;
 	//}
@@ -241,6 +242,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment3 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
 		return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment4 */
+	CGameObject* pEnviroment4 = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment4")))
+		return E_FAIL;
+	static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -596,13 +602,13 @@ bool OnEvent1(_float fTimeDelta)
 	return false;
 }
 
-//  모험의 서. 경치 보여주는 장면.
+//  모험의 서. 경치 보여주는 장면. 하지말자
 bool OnEvent2(_float fTimeDelta)
 {
 	return true;
 }
 
-
+// ---------------------------------------------------
 // 성 문앞에서, Dog 몬스터 나오는 장면.
 bool event3_0;
 bool event3_1;
@@ -733,7 +739,8 @@ bool OnEvent3(_float fTimeDelta)
 	return false;
 }
 
-// 보스.
+// ---------------------------------------------------
+// 보스씬.
 bool OnEvent4(_float fTimeDelta)
 {
 	return true;

@@ -58,7 +58,15 @@ _int CEnviroment::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance); 
 
-	float fRadian = XMVectorGetX(XMVector3Length(XMLoadFloat3(&static_cast<CModel*>(m_pModelCom)->Get_Extents()))) / 1.5f;
+	float fRadian;
+	if (m_fCullingRadian < 0)
+	{
+		fRadian = XMVectorGetX(XMVector3Length(XMLoadFloat3(&static_cast<CModel*>(m_pModelCom)->Get_Extents()))) / 1.5f;
+	}
+	else
+	{
+		fRadian = m_fCullingRadian; 
+	}
 
 	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), fRadian))
 	{

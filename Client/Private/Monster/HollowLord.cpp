@@ -43,7 +43,6 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 
 	// Init test
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(125.f, -7.f, 467.f, 1.f));
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(30.f));
 
 	// Init Anim State
 	m_pCurState = "HollowLord.ao|HollowLord_Emerge";
@@ -52,6 +51,11 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
+
+	// 높이 태우지말자
+	m_bHeight = false;
+
+	m_bBattleStart = true; // Test.. 삭제해야한다.
 
 
 	return S_OK;
@@ -62,22 +66,18 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	// 모든 몬스터는 Collider list 를 update해야한다
 	if (CMonster::Tick(fTimeDelta) < 0)
 		return -1;
+	m_pTransformCom->Set_Scale(_float3(0.5f * 1.5f, 0.5f * 1.5f, 0.5f * 1.5f));
 
-	// 플레이어 거리 체크해서, 일정거리 이하로 들어올때 Lord를 등장시키자.
-	if (m_pTarget && m_bBattleStart == false && Get_Target_Dis() > INIT_RANGE)
-	{
-		m_pModelCom->SetUp_Animation("HollowLord.ao|HollowLord_Emerge", false);
+
+	// 전투 시작은 Level_GamePlay에서 event3이 해주자.
+	if (m_bBattleStart == false)
 		return 0;
-	}
-	else
-		m_bBattleStart = true;
 
 	// FSM
 	CMonster::DoGlobalState(fTimeDelta);
 	UpdateState();
-	// 로컬위치변화를 월행에 적용시키자 
+	// 로컬위치변화를 월행에 적용시키자
 	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_HL_Root", m_pNaviCom, m_eDir);
-
 	DoState(fTimeDelta);
 
 	return _int();
@@ -85,38 +85,34 @@ _int CHollowLord::Tick(_float fTimeDelta)
 
 _int CHollowLord::LateTick(_float fTimeDelta)
 {
-	// 모든 몬스터는 Height, Renderer, Add_Collider 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	if (m_bBattleStart == false)
+		return 0;
 
-	// 플레이어와 일정거리 이하가 되면 그때부터 렌더링하자
-	if (m_bBattleStart == true)
-	{
-		//if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
-		//	return 0;
-
-		// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
-		pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);
-
-	}
-
-	// 체력이 0이하가 되면 죽자. 
-	//if (m_tGameInfo.iHp <= 0)
-	//	m_isDead = true;
-
-
-	RELEASE_INSTANCE(CGameInstance);
+	// 모든 몬스터는 Height, Renderer, Add_Collider
+	if (CMonster::LateTick(fTimeDelta) < 0)
+		return -1;
 
 	return _int();
 }
 
 HRESULT CHollowLord::Render(_uint iPassIndex)
 {
-	// 모든 몬스터는 SetUp_ConstantTable, RenderColliders
+	// 모든 몬스터는 SetUp_ConstantTable, m_pModelCom Render
 	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 
 	return S_OK;
 }
+
+
+HRESULT CHollowLord::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	// collider Render And ImGUI Render
+	CMonster::PostRender(m_spriteBatch, m_spriteFont);
+
+	return S_OK;
+}
+
 
 void CHollowLord::UpdateState()
 {
@@ -167,7 +163,7 @@ void CHollowLord::DoState(float fTimeDelta)
 		{
 			//m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION));
 
-			_float disToTarget = Get_Target_Dis();
+			_float disToTarget = Get_Target_Dis(m_pTargetTransform);
 
 			// 거리가 어느 정도 멀면 원거리 공격
 			if (disToTarget > ATK_RANGE)
@@ -204,9 +200,8 @@ void CHollowLord::DoState(float fTimeDelta)
 			m_pNextState = "HollowLord.ao|HollowLord_Idle";
 		}
 	}
-	else if (
-		m_pCurState == "HollowLord.ao|HollowLord_Emerge"
-		)
+	////-----------------------------------------------------
+	else if (m_pCurState == "HollowLord.ao|HollowLord_Emerge")
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
@@ -214,20 +209,6 @@ void CHollowLord::DoState(float fTimeDelta)
 		}
 	}
 }
-
-_float CHollowLord::Get_Target_Dis(float fTimeDelta)
-{
-	// 타겟간의 거리를 구한다
-	return XMVectorGetX(XMVector3Length(
-		m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION) -
-		m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION)));
-}
-
-_float CHollowLord::GetDegree_Target()
-{
-	return _float();
-}
-
 
 CHollowLord* CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

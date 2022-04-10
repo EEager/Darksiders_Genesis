@@ -38,6 +38,12 @@ private:
 
 	_tchar m_szModelName[MAX_PATH] = { 0, };
 
+
+public:
+	void Set_CullingRadian(_float r) { m_fCullingRadian = r; }
+private:
+	_float m_fCullingRadian = -1.f;
+
 private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable(_uint iPassIndex);
