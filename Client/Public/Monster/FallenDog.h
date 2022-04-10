@@ -58,7 +58,7 @@ private:
 	const _float CHASE_RANGE = 60.f;
 	const _float ATK_RANGE = 6.5f;
 	const _float IDLE_TIME_TO_ATK_DELAY = 1.f; 
-	const _float MAX_STIFFNESS = 17.5f; 
+	const _float MAX_STIFFNESS = 15.f; // 5대 맞으면 그로기 상태
 
 
 	_float m_fTimeIdle = 0.f; // 아이들상태에서 어느정도 대기를 해주자. 바로 공격하지는말자.
@@ -71,7 +71,7 @@ public:
 
 
 private:
-	_float m_fStiffness = 10.f; // 0이되면, 그로기 상태에 빠진다.
+	_float m_fStiffness = MAX_STIFFNESS; // 0이되면, 그로기 상태에 빠진다.
 	_float m_fFinalDeadTime = 0.f; // DeadPose에서 몇초뒤에 진짜로 죽는다.
 	_bool m_bExecutionAnim = false;
 	_bool m_bExecutionAnimEnd = false;
