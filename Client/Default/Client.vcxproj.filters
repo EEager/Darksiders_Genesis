@@ -148,6 +148,9 @@
     <Filter Include="02.GameObjects\MapObject\Dynamic\BrokenCorner">
       <UniqueIdentifier>{4946eb8f-dff3-4789-a08e-2a5edab110f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\MapObject\Dynamic\SpikeGate">
+      <UniqueIdentifier>{d6dfe212-d1f9-4dd4-846e-6ca52df0705d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -288,6 +291,9 @@
     <ClInclude Include="..\Public\MapObject\BrokenCorner.h">
       <Filter>02.GameObjects\MapObject\Dynamic\BrokenCorner</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject\SpikeGate.h">
+      <Filter>02.GameObjects\MapObject\Dynamic\SpikeGate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -412,6 +418,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\BrokenCorner.cpp">
       <Filter>02.GameObjects\MapObject\Dynamic\BrokenCorner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject\SpikeGate.cpp">
+      <Filter>02.GameObjects\MapObject\Dynamic\SpikeGate</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

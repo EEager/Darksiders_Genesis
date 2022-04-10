@@ -336,6 +336,9 @@ const _tchar* ToLiteralTag(const _tchar* pTag)
 	if (!lstrcmpW(pTag, L"Layer_BrokenCorner"))	return L"Layer_BrokenCorner";
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_BrokenCorner"))	return L"Prototype_GameObject_BrokenCorner";
 
+	if (!lstrcmpW(pTag, L"Layer_SpikeGate"))	return L"Layer_SpikeGate";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_SpikeGate"))	return L"Prototype_GameObject_SpikeGate";
+
 	assert(0);
 
 	return nullptr;

@@ -80,6 +80,8 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 		//m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
 		// OnEvent4 
 		m_queueEventCallBack.push(bind(&OnEvent4, placeholders::_1));
+		// #5
+		m_queueEventCallBack.push(bind(&OnEvent5, placeholders::_1));
 	}
 
 	// Ready Monster Spawner
@@ -103,11 +105,13 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 #ifdef _DEBUG 
 	// R 키를 눌러서 Legion과 고블린을 생성하자
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	if (CInput_Device::GetInstance()->Key_Down(DIK_R))
+	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
+
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SpikeGate", TEXT("Prototype_GameObject_SpikeGate"));
 	}
 
 	// E키를 눌러 시험하자
@@ -797,7 +801,7 @@ bool OnEvent4(_float fTimeDelta)
 			pCameraTransform->LookAt(XMVectorSet(583.9f, 13.6f, 39.6f, 1.f));
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Type(CCamera_Fly::CAMERA_MODE::MODE_FREE);
 			static_cast<CCamera_Fly*>(g_pCamera)->Set_Camera_Speed(1.f);
-			static_cast<CTransform*>( g_pWar->Get_ComponentPtr(L"Com_Transform") )->Set_State(CTransform::STATE_POSITION, XMVectorSet(585.f, 9.5f, 75.804f, 1.f));
+			static_cast<CTransform*>( g_pWar->Get_ComponentPtr(L"Com_Transform") )->Set_State(CTransform::STATE_POSITION, XMVectorSet(582.548f, 9.5f, 70.709f, 1.f));
 
 			// 영화관 effect 추가
 			pGameInstance->Add_GameObjectToLayer(&pSceneChangeEffect3, LEVEL_GAMEPLAY, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
@@ -840,6 +844,7 @@ bool OnEvent4(_float fTimeDelta)
 		auto pUIList = pGameInstance->Get_GameObject_CloneList(L"Layer_UI");
 		for (auto& pUI : *pUIList)
 			pUI->Set_NotRender(false);
+
 		RELEASE_INSTANCE(CGameInstance);
 
 		// [이벤트 종료]
@@ -848,6 +853,23 @@ bool OnEvent4(_float fTimeDelta)
 	}
 
 
+
+	return false;
+}
+
+
+// --------------------------------------------------------
+// OnEvent4가 끝나고 1초 뒤에 SpikeGate를 불러오자. 
+_float OnEvent5_timeAcc;
+bool OnEvent5(_float fTimeDelta)
+{
+	OnEvent5_timeAcc += fTimeDelta;
+	if (OnEvent5_timeAcc > 1.f)
+	{
+		// Layer Spike 불러오자
+		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_SpikeGate", LEVEL_GAMEPLAY);
+		return true;
+	}
 
 	return false;
 }
