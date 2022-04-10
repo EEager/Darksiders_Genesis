@@ -463,6 +463,13 @@ void CFallenDog::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
+			if (m_bFirstGoIdle == false) // 맨처음에는 Idle로 가게하자
+			{
+				m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
+				m_bFirstGoIdle = true;
+				return;
+			}
+
 			// 아이들, Evade
 			int randState = rand() % 4;
 			if (randState == 1)

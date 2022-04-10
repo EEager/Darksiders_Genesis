@@ -64,6 +64,7 @@ private:
 	_float m_fTimeIdle = 0.f; // 아이들상태에서 어느정도 대기를 해주자. 바로 공격하지는말자.
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 	_uint m_AtkRandNum = 0;
+	_bool m_bFirstGoIdle = false;
 	
 	
 public:
