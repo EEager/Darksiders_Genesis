@@ -106,7 +106,7 @@ void CGameObject::Set_Collider_Attribute(const _tchar* pColliderTag/*define °ªÀ»
 			if (!disable)
 				(*iter)->m_bColliderNeedEnter = true;
 			(*iter)->m_bColliderDisble = disable;
-			return;
+			//return;
 		}
 	}
 	return;

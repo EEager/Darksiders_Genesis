@@ -28,13 +28,12 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 10;
-	m_tGameInfo.iMaxHp = 1;// 100;
+	m_tGameInfo.iMaxHp = 100;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
 
 	// 속도
 	m_fSpeed = 5.f;
-	m_bSuperArmor = true;
 
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
@@ -62,7 +61,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); // For Test
 		ColliderDesc.fRadius = 1.f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
 
 		ZeroMemory(&m_DogRightHandDesc, sizeof(WEAPONDESC));
 		m_DogRightHandDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Hand_R_FD");
@@ -74,7 +73,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); // For Test
 		ColliderDesc.fRadius = 1.f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
 
 		ZeroMemory(&m_DogLeftHandDesc, sizeof(WEAPONDESC));
 		m_DogLeftHandDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Hand_L_FD");
@@ -86,7 +85,7 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); // For Test
 		ColliderDesc.fRadius = 1.f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
-		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
+		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
 
 		ZeroMemory(&m_DogFaceDesc, sizeof(WEAPONDESC));
 		m_DogFaceDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_Face_FD");
@@ -314,7 +313,15 @@ void CFallenDog::UpdateState()
 		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R" ||
 		m_pCurState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 	{
-		//m_bSuperArmor = false;
+		// 해당 상태에서 무기 콜라이더 끄자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+	}
+	// 슈퍼아머 다시 On 하자
+	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Evade_L" ||
+			 m_pCurState == "FallenDog_Mesh.ao|FallenDog_Evade_R" || 
+			 m_pCurState == "FallenDog_Mesh.ao|FallenDog_Idle")
+	{
+		m_bSuperArmor = true;
 	}
 
 	// -----------------------------------------------------------------
@@ -337,7 +344,9 @@ void CFallenDog::UpdateState()
 		m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
 		isLoop = false;
 		m_eDir = OBJECT_DIR::DIR_F;
-		//m_bSuperArmor = true;
+		
+		// 해당 상태에서 무기 콜라이더 키자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
 	}
 	// Impact State
 	else if (m_pNextState == m_pImpactState_B)
@@ -351,15 +360,23 @@ void CFallenDog::UpdateState()
 		isLoop = false;
 	}
 	// ---
+	// Idle
+	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Idle")
+	{
+		m_bSuperArmor = false;
+	}
+	// ---
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Evade_L")
 	{
 		m_eDir = OBJECT_DIR::DIR_L;
 		isLoop = false;
+		m_bSuperArmor = false; 
 	}
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Evade_R")
 	{
 		m_eDir = OBJECT_DIR::DIR_R;
 		isLoop = false;
+		m_bSuperArmor = false;
 	}
 	// ---
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F")
