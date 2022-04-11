@@ -100,7 +100,9 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 	// Enviroment인경우. m_iNumVertices == 6짜리는 Always Enviroment의 기준점이 된다. 
 	// pModel 에게 Set해주자.
 	bool isEnviromentBase = false;
-	if (!strncmp(pMesh->mName.data, "Enviroment", strlen("Enviroment")) && m_iNumVertices == 6)
+	if ( 
+		(!strncmp(pMesh->mName.data, "Enviroment", strlen("Enviroment")) || !strncmp(pMesh->mName.data, "Foliage", strlen("Foliage")))
+		&& m_iNumVertices == 6)
 	{
 		XMStoreFloat3(&pModel->m_vEnviromentBase, XMVector3TransformCoord(XMLoadFloat3(&_float3(pMesh->mVertices[0].x, pMesh->mVertices[0].y, pMesh->mVertices[0].z)), PivotMatrix));
 		isEnviromentBase = true;
