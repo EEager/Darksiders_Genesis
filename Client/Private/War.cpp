@@ -57,11 +57,11 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	XMStoreFloat4x4(&m_WarRuinPivotMat, XMMatrixScaling(0.01f, 0.01f, 0.01f));
 
 	// 초기 위치
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(17.f, 0.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(17.f, 0.f, 430.f, 1.f));
 
 	// 이벤트 시험
 	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(670.f, 0.f, 306.f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(619.f, 0.f, 157.f, 1.f)); // Event3
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(619.f, 0.f, 157.f, 1.f)); // Event3
 
 	// Navigation
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));

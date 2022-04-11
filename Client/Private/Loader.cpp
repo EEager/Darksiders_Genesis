@@ -32,6 +32,7 @@
 #include "MapObject\BrokenCorner.h"
 #include "MapObject\SpikeGate.h"
 #include "MapObject\Flag.h"
+#include "MapObject\Trees.h"
 
 
 
@@ -241,6 +242,37 @@ HRESULT CLoader::Add_GameObject()
 		CBreakable5::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	// Trees
+
+	// ¡å STATIC Meshes Trees
+	/* For.Prototype_Component_Model_TreeA */
+	_matrix		Trees_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_TreeA"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Trees/", "TreeA.fbx", Trees_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_TreeB */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_TreeB"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Trees/", "TreeB.fbx", Trees_PivotMat))))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_TreeC */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_TreeC"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Trees/", "TreeC.fbx", Trees_PivotMat))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_TreeA */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TreeA"),
+		CTreeA::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_TreeB */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TreeB"),
+		CTreeB::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+	/* For.Prototype_GameObject_TreeC */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_TreeC"),
+		CTreeC::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 	// ¡å Dynamic
 	// CBrokenCorner
 	/* For.Prototype_GameObject_BrokenCorner */
@@ -408,7 +440,12 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Model_Foliage1*/
+	/* For.Prototype_Component_Model_Foliage...*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage0"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage0"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage0.fbx", EnviromentPivotMatrix))))
+		return E_FAIL;
+
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage1"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage1"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage1.fbx", EnviromentPivotMatrix))))
@@ -622,6 +659,9 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Flag_A"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Flag/", "Flag_A.fbx", Dynamic_PivotMat))))
 		return E_FAIL;
+
+
+
 
 
 

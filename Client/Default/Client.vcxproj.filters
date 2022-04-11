@@ -154,6 +154,9 @@
     <Filter Include="02.GameObjects\MapObject\Dynamic\Flag">
       <UniqueIdentifier>{708abfd3-21a8-43d0-b5a9-296d37f12c99}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\MapObject\Static\Trees">
+      <UniqueIdentifier>{d8ebd296-dda2-4d23-be88-f0bff094d48c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -300,6 +303,9 @@
     <ClInclude Include="..\Public\MapObject\Flag.h">
       <Filter>02.GameObjects\MapObject\Dynamic\Flag</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\MapObject\Trees.h">
+      <Filter>02.GameObjects\MapObject\Static\Trees</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -430,6 +436,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\Flag.cpp">
       <Filter>02.GameObjects\MapObject\Dynamic\Flag</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MapObject\Trees.cpp">
+      <Filter>02.GameObjects\MapObject\Static\Trees</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

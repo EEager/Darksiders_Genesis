@@ -72,6 +72,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 
 		// Layer_Flag_A
 		//CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Flag_A", LEVEL_GAMEPLAY);
+
+		// Layer_Trees를 추가한다. 
+		CObject_Manager::GetInstance()->Load_ObjectsFromFile(L"Layer_Trees", LEVEL_GAMEPLAY);
 	}
 
 	// Ready Level Event
@@ -117,6 +120,23 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_SpikeGate", TEXT("Prototype_GameObject_SpikeGate"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Flag_A", TEXT("Prototype_GameObject_Flag_A"));
+	}
+
+	// Trees 설치하자
+	if (CInput_Device::GetInstance()->Key_Down(DIK_2))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT ("Prototype_GameObject_TreeA"))))
+			return E_FAIL;
+	}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_3))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT("Prototype_GameObject_TreeB"))))
+			return E_FAIL;
+	}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_4))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT("Prototype_GameObject_TreeC"))))
+			return E_FAIL;
 	}
 
 	// E키를 눌러 시험하자
@@ -257,20 +277,23 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 		return E_FAIL;
 	static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
 
+	/* For.Prototype_Component_Model_Foliage0 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage0")))
+		return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage1 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage1")))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage1")))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage2 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage2")))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage2")))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage3 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage3")))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage3")))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage4 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage4")))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage4")))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage5 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage5")))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage5")))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage6 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage6")))

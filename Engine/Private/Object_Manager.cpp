@@ -342,6 +342,12 @@ const _tchar* ToLiteralTag(const _tchar* pTag)
 	if (!lstrcmpW(pTag, L"Layer_Flag_A"))	return L"Layer_Flag_A";
 	if (!lstrcmpW(pTag, L"Prototype_GameObject_Flag_A"))	return L"Prototype_GameObject_Flag_A";
 
+	if (!lstrcmpW(pTag, L"Layer_Trees"))	return L"Layer_Trees";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_TreeA"))	return L"Prototype_GameObject_TreeA";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_TreeB"))	return L"Prototype_GameObject_TreeB";
+	if (!lstrcmpW(pTag, L"Prototype_GameObject_TreeC"))	return L"Prototype_GameObject_TreeC";
+
+
 	assert(0);
 
 	return nullptr;
