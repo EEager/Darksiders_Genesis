@@ -116,8 +116,8 @@ HRESULT CTarget_Manager::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* pDev
 	D3D11_VIEWPORT mViewport;
 	mViewport.TopLeftX = 0.0f;
 	mViewport.TopLeftY = 0.0f;
-	mViewport.Width = static_cast<float>(1600);
-	mViewport.Height = static_cast<float>(900);
+	mViewport.Width = static_cast<float>(SHADOWMAP_SIZE_X);
+	mViewport.Height = static_cast<float>(SHADOWMAP_SIZE_Y);
 	mViewport.MinDepth = 0.0f;
 	mViewport.MaxDepth = 1.0f;
 	pDeviceContext->RSSetViewports(1, &mViewport);

@@ -153,3 +153,10 @@ enum OBJECT_DIR { DIR_L, DIR_R, DIR_F, DIR_B, DIR_U };
 #define COL_WAR_WEAPON L"WarWeapon"
 #define COL_WAR_BODY1 L"WarBody1"
 #define COL_WAR_BODY2 L"WarBody2"
+
+// -------------------
+// 그림자 렌더타겟 크기 : 높을 수록 멀리 찍어도 해상도가 증가한다
+// -------------------
+#define SHADOWMAP_SIZE_X		6400
+#define SHADOWMAP_SIZE_Y		3600
+#define SHADOWMAP_INIT_RADIUS   40.f

@@ -80,14 +80,14 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	// Ready Level Event
 	{
 		// OnEvent1
-		//m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
-		//// OnEvent2
-		//m_queueEventCallBack.push(bind(&OnEvent2, placeholders::_1));
-		//// OnEvent3
-		//m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
+		m_queueEventCallBack.push(bind(&OnEvent1, placeholders::_1));
+		// OnEvent2
+		m_queueEventCallBack.push(bind(&OnEvent2, placeholders::_1));
+		// OnEvent3
+		m_queueEventCallBack.push(bind(&OnEvent3, placeholders::_1));
 		// OnEvent4 
 		m_queueEventCallBack.push(bind(&OnEvent4, placeholders::_1));
-		// #5
+		// OnEvent5
 		m_queueEventCallBack.push(bind(&OnEvent5, placeholders::_1));
 	}
 
@@ -855,7 +855,7 @@ bool OnEvent4(_float fTimeDelta)
 			pGameInstance->Add_GameObjectToLayer(&pSceneChangeEffect3, LEVEL_GAMEPLAY, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 
 			// Light Manager가 가지고 있는 OBJ_SHADOW 반경 변경. m_fSceneRadius 
-			CLight_Manager::GetInstance()->m_fSceneRadius = 36.f;
+			//CLight_Manager::GetInstance()->m_fSceneRadius = 36.f;
 
 			event4_2 = true;
 			RELEASE_INSTANCE(CGameInstance);

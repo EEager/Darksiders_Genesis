@@ -222,8 +222,9 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 // Performs shadowmap test to determine if a pixel is in shadow.
 //---------------------------------------------------------------------------------------
 
-static const float SMAP_SIZE_X = 1600.f;
-static const float SMAP_SIZE_Y = 900.f;
+// SMAP_SIZE_X은 Engind_Defines.h에 정의되어있다. 
+static const float SMAP_SIZE_X = 6400.f;
+static const float SMAP_SIZE_Y = 3600.f;
 static const float SMAP_DX = 1.0f / SMAP_SIZE_X;
 static const float SMAP_DY = 1.0f / SMAP_SIZE_Y;
 
