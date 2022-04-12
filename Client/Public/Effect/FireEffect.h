@@ -32,12 +32,16 @@ public:
 private:	
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
-	CTexture*					m_pTextureCom = nullptr;
+	CTexture*					m_pTextureDiffuse = nullptr;
+	CTexture*					m_pTextureNoise = nullptr;
+	CTexture*					m_pTextureAlpha = nullptr;
 	CVIBuffer_RectInstance*		m_pModelCom = nullptr;
 
 private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable();	
+
+	_float m_fMyTimeDelta = 0.f;
 
 public:	
 	static CFireEffect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);

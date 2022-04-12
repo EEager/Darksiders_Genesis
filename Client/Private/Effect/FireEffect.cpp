@@ -30,7 +30,9 @@ HRESULT CFireEffect::NativeConstruct(void * pArg)
 
 _int CFireEffect::Tick(_float fTimeDelta)
 {
-	m_pModelCom->Update(fTimeDelta);
+	//m_pModelCom->Update(fTimeDelta);
+
+	m_fMyTimeDelta += fTimeDelta;
 	
 	return _int();
 }
@@ -79,13 +81,15 @@ HRESULT CFireEffect::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	/* For.Com_Texture_Diffuse */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_fire01"), TEXT("Com_Texture_Diffuse"), (CComponent**)&m_pTextureDiffuse)))
 		return E_FAIL;
-
-	///* For.Com_Texture */
-	//if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-	//	return E_FAIL;
+	/* For.Com_Texture_Noise */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise01"), TEXT("Com_Texture_Noise"), (CComponent**)&m_pTextureNoise)))
+		return E_FAIL;
+	/* For.Com_Texture_Alpha */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha01"), TEXT("Com_Texture_Alpha"), (CComponent**)&m_pTextureAlpha)))
+		return E_FAIL;
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_RectInstance"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -105,26 +109,43 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
 
+	// For.소프트 렌더링
 	m_pModelCom->Set_ShaderResourceView("g_DepthTexture", pGameInstance->Get_RenderTarget_SRV(TEXT("Target_Depth_Cur")));
-	m_pTextureCom->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture"); 
+
+	m_pTextureDiffuse->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture"); 
+	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture"); 
+	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture"); 
 
 	// From Dx11Demo_33
 	// Distortion 효과를 적용하자.
 	{
 		// 세 가지 다른 노이즈 텍스처에 대해 세 가지 스크롤 속도를 설정합니다.
-		XMFLOAT3 scrollSpeeds = XMFLOAT3(1.3f, 2.1f, 2.3f);
-
+		_float3 scrollSpeeds = _float3(1.3f, 2.1f, 2.3f);
 		// 세 개의 서로 다른 노이즈 옥타브 텍스처를 만드는 데 사용할 세 개의 스케일을 설정합니다.
-		XMFLOAT3 scales = XMFLOAT3(1.0f, 2.0f, 3.0f);
+		_float3 scales = _float3(1.0f, 2.0f, 3.0f);
+		// Bind NosiseBuffer
+		m_fMyTimeDelta;
+		if (m_fMyTimeDelta > 1000.0f)
+		{
+			m_fMyTimeDelta = 0.0f;
+		}
+		m_pModelCom->Set_RawValue("frameTime", &m_fMyTimeDelta, sizeof(_float));
+		m_pModelCom->Set_RawValue("scrollSpeeds", &scrollSpeeds, sizeof(_float3));
+		m_pModelCom->Set_RawValue("scales", &scales, sizeof(_float3));
 
 		// 세 가지 다른 노이즈 텍스처에 대해 세 가지 다른 x 및 y 왜곡 인수를 설정합니다.
-		XMFLOAT2 distortion1 = XMFLOAT2(0.1f, 0.2f);
-		XMFLOAT2 distortion2 = XMFLOAT2(0.1f, 0.3f);
-		XMFLOAT2 distortion3 = XMFLOAT2(0.1f, 0.1f);
-
+		_float2 distortion1 = _float2(0.1f, 0.2f);
+		_float2 distortion2 = _float2(0.1f, 0.3f);
+		_float2 distortion3 = _float2(0.1f, 0.1f);
 		// 텍스처 좌표 샘플링 섭동의 스케일과 바이어스.
 		float distortionScale = 0.8f;
 		float distortionBias = 0.5f;
+		// Bind DistortionBuffer
+		m_pModelCom->Set_RawValue("distortion1", &distortion1, sizeof(_float2));
+		m_pModelCom->Set_RawValue("distortion2", &distortion2, sizeof(_float2));
+		m_pModelCom->Set_RawValue("distortion3", &distortion3, sizeof(_float2));
+		m_pModelCom->Set_RawValue("distortionScale", &distortionScale, sizeof(_float));
+		m_pModelCom->Set_RawValue("distortionBias", &distortionBias, sizeof(_float));
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -167,7 +188,9 @@ void CFireEffect::Free()
 	__super::Free();
 
 	
-	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pTextureDiffuse);
+	Safe_Release(m_pTextureNoise);
+	Safe_Release(m_pTextureAlpha);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);

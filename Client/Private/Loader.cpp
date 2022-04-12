@@ -410,6 +410,26 @@ HRESULT CLoader::Add_Texture()
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/UI/UIButtonBase_G.dds")))))
 		return E_FAIL;
 
+	// Effects
+
+	// Fire
+	{
+		/* For.Prototype_Component_Texture_fire01 */
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_fire01"),
+			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/fire01.dds")))))
+			return E_FAIL;
+
+		/* For.Prototype_Component_Texture_noise01 */
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise01"),
+			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/noise01.dds")))))
+			return E_FAIL;
+
+		/* For.Prototype_Component_Texture_alpha01 */
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha01"),
+			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/alpha01.dds")))))
+			return E_FAIL;
+	}
+
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
 
