@@ -13,13 +13,24 @@ cbuffer Camera
 	vector			g_vCamPosition;
 };
 
+cbuffer NoiseBuffer
+{
+	float frameTime;
+	float3 scrollSpeeds;
+	float3 scales;
+	float padding;
+};
+
 texture2D		g_DiffuseTexture;
 
 struct VS_IN
 {
+	// VERTEX 정보
 	float3		vPosition : POSITION;
 	float		fPSize: PSIZE;
 
+	// 인스턴스 정점 정보
+	// VIBuffer_Instance Update에서 맵언맵을 통해 이 정보들은 업데이트된다. 
 	float4		vRight : TEXCOORD0;
 	float4		vUp : TEXCOORD1;
 	float4		vLook : TEXCOORD2;

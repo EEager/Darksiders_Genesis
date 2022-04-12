@@ -8,7 +8,18 @@ cbuffer Matrices
 	matrix			g_ProjMatrix;
 };
 
+cbuffer NoiseBuffer
+{
+	float frameTime;
+	float3 scrollSpeeds;
+	float3 scales;
+	float padding;
+};
+
+
 texture2D		g_DiffuseTexture;
+texture2D		g_NoiseTexture; // Noise
+texture2D		g_AlphaTexture; // Alpha
 
 struct VS_IN
 {
@@ -80,6 +91,17 @@ technique11	DefaultTechnique
 	pass DefaultPass
 	{			
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	pass AlphaBlendingPass
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(DefaultRasterizerState);
 

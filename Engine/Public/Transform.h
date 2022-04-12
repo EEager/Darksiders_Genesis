@@ -37,6 +37,8 @@ public:
 		return XMVectorGetX(XMVector3Length(Get_State(eState)));
 	}
 	void Set_Scale(_float3 vScale);
+	void Set_BillBoard();
+
 	_matrix Get_WorldMatrixInverse() {
 		return XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix));
 	}

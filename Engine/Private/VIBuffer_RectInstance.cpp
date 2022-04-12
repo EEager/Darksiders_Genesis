@@ -1,5 +1,8 @@
 #include "..\Public\VIBuffer_RectInstance.h"
 
+#include "GameInstance.h"
+
+
 CVIBuffer_RectInstance::CVIBuffer_RectInstance(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
 	: CVIBuffer_Instance(pDevice, pDeviceContext)
 {
@@ -156,12 +159,12 @@ void CVIBuffer_RectInstance::Update(_float fTimeDelta)
 
 	for (_uint i = 0; i < m_iNumInstance; ++i)
 	{
+		// Speed는 서서히 내려가게하자.
 		((VTXMATRIX*)SubResourceData.pData)[i].vPosition.y -= m_pInstanceSpeed[i] * fTimeDelta;
 
+		// 다 내려왔다면 다시 위로 올려주자.
 		if (((VTXMATRIX*)SubResourceData.pData)[i].vPosition.y <= 0.f)
 			((VTXMATRIX*)SubResourceData.pData)[i].vPosition.y = 15.f;
-
-
 	}
 	m_pDeviceContext->Unmap(m_pVBInst, 0);
 }

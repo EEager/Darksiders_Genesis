@@ -35,6 +35,7 @@
 // Effect
 #include "Effect\RectEffect.h"
 #include "Effect\PointEffect.h"
+#include "Effect\FireEffect.h"
 
 
 
@@ -153,10 +154,14 @@ HRESULT CLoader::Add_GameObject()
 		CRectEffect::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-
 	/* For.Prototype_GameObject_PointEffect */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_PointEffect"),
 		CPointEffect::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_FireEffect */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FireEffect"),
+		CFireEffect::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Sky */

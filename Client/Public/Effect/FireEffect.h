@@ -8,6 +8,7 @@ BEGIN(Engine)
 class CCollider;
 class CRenderer;
 class CTransform;
+class CVIBuffer_RectInstance;
 class CVIBuffer_PointInstance;
 END
 
@@ -32,7 +33,7 @@ private:
 	CRenderer*					m_pRendererCom = nullptr;
 	CTransform*					m_pTransformCom = nullptr;
 	CTexture*					m_pTextureCom = nullptr;
-	CVIBuffer_PointInstance*	m_pModelCom = nullptr;
+	CVIBuffer_RectInstance*		m_pModelCom = nullptr;
 
 private:
 	HRESULT SetUp_Component();

@@ -107,6 +107,25 @@ HRESULT CTransform::NativeConstruct_Prototype()
 	return S_OK;
 }
 
+void CTransform::Set_BillBoard()
+{
+	// 카메라를 항상 쳐다보게하자.
+	_vector vCamPos = CPipeLine::GetInstance()->Get_CamPosition();
+
+	_float scaleRight = Get_Scale(CTransform::STATE_RIGHT);
+	_float scaleLook = Get_Scale(CTransform::STATE_LOOK);
+	_float scaleUp = Get_Scale(CTransform::STATE_UP);
+
+	_vector vLook = XMVector3Normalize(Get_State(CTransform::STATE_POSITION) - vCamPos) * scaleLook;
+	_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)) * scaleRight;
+	_vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight)) * scaleUp;
+
+	Set_State(CTransform::STATE_RIGHT, vRight);
+	Set_State(CTransform::STATE_UP, vUp);
+	Set_State(CTransform::STATE_LOOK, vLook);
+
+}
+
 HRESULT CTransform::NativeConstruct(void * pArg)
 {
 	if (nullptr != pArg)
