@@ -19,8 +19,8 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 		return E_FAIL;
 
 	m_iStride = sizeof(VTXPOINT);
-	m_iNumVertices = 1;
-	m_iNumVertexBuffers = 2;
+	m_iNumVertices = 1; // 정점은 1개다. 
+	m_iNumVertexBuffers = 2; // D3D11_INPUT_PER_VERTEX_DATA, D3D11_INPUT_PER_INSTANCE_DATA
 
 	ZeroMemory(&m_VBDesc, sizeof(D3D11_BUFFER_DESC));
 
@@ -31,9 +31,10 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 	m_VBDesc.MiscFlags = 0;
 	m_VBDesc.StructureByteStride = m_iStride;
 
-	m_pVertices = new VTXPOINT[m_iNumVertices];
+	m_pVertices = new VTXPOINT[m_iNumVertices]; // vPosition, Size
 	ZeroMemory(m_pVertices, sizeof(VTXPOINT) * m_iNumVertices);
 
+	// 정점은 위치와 크기 정보만 가지고 있다. 
 	((VTXPOINT*)m_pVertices)[0].vPosition = _float3(0.f, 0.f, 0.f);
 	((VTXPOINT*)m_pVertices)[0].fPSize = 1.0f;
 
@@ -55,6 +56,7 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 	m_VBInstDesc.MiscFlags = 0;
 	m_VBInstDesc.StructureByteStride = sizeof(VTXMATRIX);	
 
+	// 인스턴스 버퍼는 오, 업, 룩 포 정보를 가지고 있다. 
 	VTXMATRIX*		pInstanceVtx = new VTXMATRIX[m_iNumInstance];
 	ZeroMemory(pInstanceVtx, sizeof(VTXMATRIX) * m_iNumInstance);
 
@@ -108,7 +110,7 @@ HRESULT CVIBuffer_PointInstance::NativeConstruct_Prototype(const _tchar* pShader
 
 
 	// 인스턴스당 인덱스 개수. 나중에 render할때 사용된다
-	m_iIndexCountPerInstance = 1;
+	m_iIndexCountPerInstance = 1; // 이것이 만약 모델링이면 모델인스턴싱을 해야겠지요? 
 
 	// Shader_PointInstance.hlsl 시멘틱 
 	D3D11_INPUT_ELEMENT_DESC		ElementDesc[] = {

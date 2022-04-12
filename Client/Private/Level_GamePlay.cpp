@@ -265,17 +265,17 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
 		return E_FAIL;
-	/* For.Prototype_Component_Model_Enviroment2 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Enviroment3 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Enviroment4 */
-	CGameObject* pEnviroment4 = nullptr;
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment4")))
-		return E_FAIL;
-	static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
+	///* For.Prototype_Component_Model_Enviroment2 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Enviroment3 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Enviroment4 */
+	//CGameObject* pEnviroment4 = nullptr;
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment4")))
+	//	return E_FAIL;
+	//static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
 
 	/* For.Prototype_Component_Model_Foliage0 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage0")))
@@ -283,22 +283,22 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Foliage1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage1")))
 		return E_FAIL;
-	/* For.Prototype_Component_Model_Foliage2 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage2")))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Foliage3 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage3")))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Foliage4 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage4")))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Foliage5 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage5")))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Foliage6 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage6")))
-		return E_FAIL;
-	static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(100.f);
+	///* For.Prototype_Component_Model_Foliage2 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage2")))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Foliage3 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage3")))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Foliage4 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage4")))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Foliage5 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage5")))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Foliage6 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage6")))
+	//	return E_FAIL;
+	//static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(100.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 

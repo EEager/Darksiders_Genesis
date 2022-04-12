@@ -13,9 +13,7 @@
 #include "War.h"
 #include "UI_War_Hp_n_Wrath_Bar.h"
 #include "UI_War_Skills.h"
-#include "RectEffect.h"
 #include "Sky.h"
-#include "PointEffect.h"
 #include "Enviroment.h"
 
 // Monster
@@ -33,6 +31,11 @@
 #include "MapObject\SpikeGate.h"
 #include "MapObject\Flag.h"
 #include "MapObject\Trees.h"
+
+// Effect
+#include "Effect\RectEffect.h"
+#include "Effect\PointEffect.h"
+
 
 
 
@@ -415,24 +418,24 @@ HRESULT CLoader::Add_Model()
 	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
 
 
-	/* For.Prototype_Component_Model_Enviroment4*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment4/", "Enviroment4.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Enviroment4*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment4/", "Enviroment4.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Model_Enviroment3*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Enviroment3*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment3"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
 
-	/* For.Prototype_Component_Model_Enviroment2*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Enviroment2*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
 	/* For.Prototype_Component_Model_Enviroment1*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
@@ -450,7 +453,7 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage1"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage1.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage2"));
+	/*wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage2"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage2.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
@@ -469,7 +472,7 @@ HRESULT CLoader::Add_Model()
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage6"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage6"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage6.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+		return E_FAIL;*/
 
 
 	// ¡å Test

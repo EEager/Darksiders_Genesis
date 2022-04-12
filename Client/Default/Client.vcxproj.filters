@@ -157,6 +157,9 @@
     <Filter Include="02.GameObjects\MapObject\Static\Trees">
       <UniqueIdentifier>{d8ebd296-dda2-4d23-be88-f0bff094d48c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Effect\Fire">
+      <UniqueIdentifier>{63d707f5-f71c-4adc-a1bd-a6e112135729}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -231,17 +234,11 @@
     <ClInclude Include="..\Public\Sword.h">
       <Filter>02.GameObjects\Player\Fiona\Sword</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\RectEffect.h">
-      <Filter>02.GameObjects\Effect\Rect</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Sky.h">
       <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Enviroment.h">
       <Filter>02.GameObjects\BackGround\Enviroment</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\PointEffect.h">
-      <Filter>02.GameObjects\Effect\Point</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Monster\Monster.h">
       <Filter>02.GameObjects\Monster</Filter>
@@ -306,6 +303,15 @@
     <ClInclude Include="..\Public\MapObject\Trees.h">
       <Filter>02.GameObjects\MapObject\Static\Trees</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect\FireEffect.h">
+      <Filter>02.GameObjects\Effect\Fire</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect\PointEffect.h">
+      <Filter>02.GameObjects\Effect\Point</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Effect\RectEffect.h">
+      <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -368,17 +374,11 @@
     <ClCompile Include="..\Private\Sword.cpp">
       <Filter>02.GameObjects\Player\Fiona\Sword</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\RectEffect.cpp">
-      <Filter>02.GameObjects\Effect\Rect</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Sky.cpp">
       <Filter>02.GameObjects\BackGround\Sky</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Enviroment.cpp">
       <Filter>02.GameObjects\BackGround\Enviroment</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\PointEffect.cpp">
-      <Filter>02.GameObjects\Effect\Point</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Monster\Monster.cpp">
       <Filter>02.GameObjects\Monster</Filter>
@@ -439,6 +439,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\MapObject\Trees.cpp">
       <Filter>02.GameObjects\MapObject\Static\Trees</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect\FireEffect.cpp">
+      <Filter>02.GameObjects\Effect\Fire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect\RectEffect.cpp">
+      <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect\PointEffect.cpp">
+      <Filter>02.GameObjects\Effect\Point</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

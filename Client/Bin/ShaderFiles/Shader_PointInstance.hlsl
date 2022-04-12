@@ -137,7 +137,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 technique11	DefaultTechnique
 {
-	pass DefaultPass
+	pass DefaultPass // #0
 	{	
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
@@ -148,7 +148,18 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
-	pass AlphaBlendingPass
+	pass AlphaBlendingPass // #1
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = compile gs_5_0 GS_MAIN();
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	pass DistortionPass // #2
 	{
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);

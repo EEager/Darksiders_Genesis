@@ -176,6 +176,9 @@
     <ClInclude Include="..\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="..\ImGUI\imstb_textedit.h" />
     <ClInclude Include="..\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="..\Public\Effect\FireEffect.h" />
+    <ClInclude Include="..\Public\Effect\PointEffect.h" />
+    <ClInclude Include="..\Public\Effect\RectEffect.h" />
     <ClInclude Include="..\Public\Enviroment.h" />
     <ClInclude Include="..\Public\Logo_BackGround.h" />
     <ClInclude Include="..\Public\Camera_Fly.h" />
@@ -202,8 +205,6 @@
     <ClInclude Include="..\Public\Monster\Monster.h" />
     <ClInclude Include="..\Public\Mouse.h" />
     <ClInclude Include="..\Public\Player.h" />
-    <ClInclude Include="..\Public\PointEffect.h" />
-    <ClInclude Include="..\Public\RectEffect.h" />
     <ClInclude Include="..\Public\SceneChangeEffect.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\State_War.h" />
@@ -226,6 +227,9 @@
     <ClCompile Include="..\ImGUI\imgui_Manager.cpp" />
     <ClCompile Include="..\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="..\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="..\Private\Effect\FireEffect.cpp" />
+    <ClCompile Include="..\Private\Effect\PointEffect.cpp" />
+    <ClCompile Include="..\Private\Effect\RectEffect.cpp" />
     <ClCompile Include="..\Private\Enviroment.cpp" />
     <ClCompile Include="..\Private\Logo_BackGround.cpp" />
     <ClCompile Include="..\Private\Camera_Fly.cpp" />
@@ -250,8 +254,6 @@
     <ClCompile Include="..\Private\Monster\Monster.cpp" />
     <ClCompile Include="..\Private\Mouse.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
-    <ClCompile Include="..\Private\PointEffect.cpp" />
-    <ClCompile Include="..\Private\RectEffect.cpp" />
     <ClCompile Include="..\Private\SceneChangeEffect.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\State_War.cpp" />

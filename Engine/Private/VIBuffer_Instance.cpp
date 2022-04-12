@@ -66,6 +66,8 @@ HRESULT CVIBuffer_Instance::Render(_uint iPassIndex)
 	if (FAILED(m_PassesDesc[iPassIndex]->pPass->Apply(0, m_pDeviceContext)))
 		return E_FAIL;
 
+	// 인스턴스 Render는 아래와 같이 한다.
+	// PointEffect에서는 m_iIndexCountPerInstance=1이다. 하지만 모델 인스턴싱에서는 달라질 수도 있다.
 	m_pDeviceContext->DrawIndexedInstanced(m_iIndexCountPerInstance, m_iNumInstance, 0, 0, 0);
 
 	return S_OK;

@@ -35,7 +35,7 @@ HRESULT CFork::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(230.f + 2.f, 5.f, 430.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(17.f, 0.f, 430.f, 1.f));
 
 	return S_OK;
 }
@@ -62,11 +62,6 @@ _int CFork::LateTick(_float fTimeDelta)
 		return -1;
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-
-	//// Height
-	//_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	//_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 
 	// AddRenderGroup
 	bool AddRenderGroup = false;
@@ -97,6 +92,7 @@ _int CFork::LateTick(_float fTimeDelta)
 
 HRESULT CFork::Render(_uint iPassIndex)
 {
+	if (iPassIndex == 0) iPassIndex = 4;
 
 	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;

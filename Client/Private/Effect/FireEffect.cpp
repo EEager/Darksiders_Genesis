@@ -1,26 +1,26 @@
 #include "stdafx.h"
-#include "..\public\Effect\PointEffect.h"
+#include "..\public\Effect\FireEffect.h"
 
 #include "GameInstance.h"
 
 
-CPointEffect::CPointEffect(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CFireEffect::CFireEffect(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
 }
 
-CPointEffect::CPointEffect(const CPointEffect & rhs)
+CFireEffect::CFireEffect(const CFireEffect & rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CPointEffect::NativeConstruct_Prototype()
+HRESULT CFireEffect::NativeConstruct_Prototype()
 {	
 
 	return S_OK;
 }
 
-HRESULT CPointEffect::NativeConstruct(void * pArg)
+HRESULT CFireEffect::NativeConstruct(void * pArg)
 {
 	if (SetUp_Component())
 		return E_FAIL;
@@ -28,16 +28,16 @@ HRESULT CPointEffect::NativeConstruct(void * pArg)
 	return S_OK;
 }
 
-_int CPointEffect::Tick(_float fTimeDelta)
+_int CFireEffect::Tick(_float fTimeDelta)
 {
 
 
-	//m_pModelCom->Update(fTimeDelta);
+	m_pModelCom->Update(fTimeDelta);
 	
 	return _int();
 }
 
-_int CPointEffect::LateTick(_float fTimeDelta)
+_int CFireEffect::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return -1;
@@ -57,7 +57,7 @@ _int CPointEffect::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CPointEffect::Render(_uint iPassIndex)
+HRESULT CFireEffect::Render(_uint iPassIndex)
 {
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
@@ -69,7 +69,7 @@ HRESULT CPointEffect::Render(_uint iPassIndex)
 	return S_OK;
 }
 
-HRESULT CPointEffect::SetUp_Component()
+HRESULT CFireEffect::SetUp_Component()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -90,7 +90,7 @@ HRESULT CPointEffect::SetUp_Component()
 	return S_OK;
 }
 
-HRESULT CPointEffect::SetUp_ConstantTable()
+HRESULT CFireEffect::SetUp_ConstantTable()
 {
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
@@ -110,9 +110,9 @@ HRESULT CPointEffect::SetUp_ConstantTable()
 }
 
 
-CPointEffect * CPointEffect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CFireEffect * CFireEffect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-	CPointEffect*		pInstance = new CPointEffect(pDevice, pDeviceContext);
+	CFireEffect*		pInstance = new CFireEffect(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
@@ -124,9 +124,9 @@ CPointEffect * CPointEffect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* 
 }
 
 
-CGameObject * CPointEffect::Clone(void* pArg)
+CGameObject * CFireEffect::Clone(void* pArg)
 {
-	CPointEffect*		pInstance = new CPointEffect(*this);
+	CFireEffect*		pInstance = new CFireEffect(*this);
 
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
@@ -138,7 +138,7 @@ CGameObject * CPointEffect::Clone(void* pArg)
 	return pInstance;
 }
 
-void CPointEffect::Free()
+void CFireEffect::Free()
 {
 
 	__super::Free();
