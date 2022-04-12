@@ -99,7 +99,8 @@ public: /* For.Picking */
 public: /* For.Frustum */
 	_bool isIn_WorldSpace(_fvector vWorldPos, _float fRadius = 0.f);
 
-
+public: /* For.Target_Manager */
+	ID3D11ShaderResourceView* Get_RenderTarget_SRV(const _tchar* pTargetTag);
 
 private:
 	CGraphic_Device*			m_pGraphic_Device = nullptr;

@@ -104,7 +104,9 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
-	m_pTextureCom->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture");
+
+	m_pModelCom->Set_ShaderResourceView("g_DepthTexture", pGameInstance->Get_RenderTarget_SRV(TEXT("Target_Depth_Cur")));
+	m_pTextureCom->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture"); 
 
 	// From Dx11Demo_33
 	// Distortion 효과를 적용하자.

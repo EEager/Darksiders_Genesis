@@ -387,6 +387,15 @@ _bool CGameInstance::isIn_WorldSpace(_fvector vWorldPos, _float fRadius)
 	return m_pFrustum->isIn_WorldSpace(vWorldPos, fRadius);
 }
 
+ID3D11ShaderResourceView* CGameInstance::Get_RenderTarget_SRV(const _tchar* pTargetTag)
+{
+	if (nullptr == m_pTarget_Manager)
+		return nullptr;
+
+	return m_pTarget_Manager->Get_SRV(pTargetTag);
+}
+
+
 void CGameInstance::Release_Engine()
 {
 	if (0 != CGameInstance::GetInstance()->DestroyInstance())
