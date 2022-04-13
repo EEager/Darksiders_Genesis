@@ -42,7 +42,8 @@ HRESULT CWar::NativeConstruct_Prototype()
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 	// Init GameInfo
-	m_tGameInfo.iAtt = 3.f;
+	//m_tGameInfo.iAtt = 3.f;
+	m_tGameInfo.iAtt = 30.f;
 	m_tGameInfo.iEnergy = 10;
 	m_tGameInfo.iMaxHp = 20;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;

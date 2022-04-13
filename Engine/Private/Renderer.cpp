@@ -428,7 +428,7 @@ HRESULT CRenderer::Draw()
 	// 빛연산을 여기서하자 : shade와 spec에 넣자.
 	if (FAILED(Render_LightAcc()))
 		return E_FAIL;
-	// [Deffered End] 최종 백버퍼에 합치자
+	// [Deffered End] 최종 백버퍼에 합치자 = NonAlpha + LightAcc
 	if (FAILED(Render_Blend())) 
 		return E_FAIL;
 
@@ -436,10 +436,12 @@ HRESULT CRenderer::Draw()
 	// 빛처리 필요없는 애들의 경우 바로 백버퍼에 그리자
 	if (FAILED(Render_NonLight())) 
 		return E_FAIL;
-
 	// 알파블렌딩은 Forward Processing을 통해 바로 백버퍼에 그리자
 	if (FAILED(Render_Alpha())) 
 		return E_FAIL;
+
+
+
 	// UI도 바로 백버퍼에 그리자
 	if (FAILED(Render_UI())) 
 		return E_FAIL;		

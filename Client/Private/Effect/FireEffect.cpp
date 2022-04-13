@@ -65,7 +65,8 @@ HRESULT CFireEffect::Render(_uint iPassIndex)
 	if (FAILED(SetUp_ConstantTable()))
 		return E_FAIL;
 
-	m_pModelCom->Render(1); // Alpha Blending 
+
+	m_pModelCom->Render(0); // Alpha Blending 
 	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 
 	return S_OK;
@@ -113,7 +114,7 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 	m_pModelCom->Set_ShaderResourceView("g_DepthTexture", pGameInstance->Get_RenderTarget_SRV(TEXT("Target_Depth_Cur")));
 
 	m_pTextureDiffuse->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture"); 
-	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture"); 
+	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture", 1); 
 	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture"); 
 
 	// From Dx11Demo_33
@@ -138,8 +139,8 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 		_float2 distortion2 = _float2(0.1f, 0.3f);
 		_float2 distortion3 = _float2(0.1f, 0.1f);
 		// 텍스처 좌표 샘플링 섭동의 스케일과 바이어스.
-		float distortionScale = 0.8f;
-		float distortionBias = 0.5f;
+		float distortionScale = 0.2f; // 크면 위로 길어진다.
+		float distortionBias = 0.3f; // fire01의 어느 지점부터 찍을지
 		// Bind DistortionBuffer
 		m_pModelCom->Set_RawValue("distortion1", &distortion1, sizeof(_float2));
 		m_pModelCom->Set_RawValue("distortion2", &distortion2, sizeof(_float2));
