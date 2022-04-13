@@ -31,6 +31,7 @@ cbuffer cbPerObject
 cbuffer cbGameObject
 {
 	vector		g_vHitPower;
+	float		g_fIsMonster;
 };
 
 cbuffer CameraDesc
@@ -208,10 +209,12 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 
 	// ------------------------------------
 	// #2. vNormalW : SV_TARGET1;
+	float3 normalMapNorm = In.vNormalW;
 	if (g_UseNormalMap) // Normal Map 사용시
 	{
 		float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
-		Out.vNormalW.xyz = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+		normalMapNorm = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+		Out.vNormalW.xyz = normalMapNorm;
 		Out.vNormalW = vector(Out.vNormalW.xyz * 0.5f + 0.5f, 0.f);
 	}
 	else
@@ -231,8 +234,23 @@ PS_DEFERRED_OUT PS_DEFERRED_MAIN(PS_IN In)
 		Out.vEmissive = g_EmissiveTexture.Sample(samLinear, In.vTexUV);
 
 	// -----------------------------
-	// #5. g_vHitPower : SV_TARGET4
-	Out.vHitPower += g_vHitPower;
+	// #5. hitpower : SV_TARGET4
+	// ㅅㅂ 히트파워는 그냥 더하자.. 
+	Out.vHitPower = g_vHitPower;
+	// Out.vHitPower 맵 출력
+	//	// r : m_fHitPower이다.
+	//	// g : 몬스터인지 플레이어인지 구분.
+	//	// b : 림라이트 색상이다.
+	//// 림라이트는 상시 적용하고, 히트파워는 맞았을때만 적용하자.
+	//Out.vHitPower.r = g_vHitPower.r;
+	//Out.vHitPower.g = g_fIsMonster;
+	//float3 toEyeW = normalize(g_vCamPosition.xyz - In.vPosW.xyz);
+	//float RimLightColor = 1 - saturate(dot(normalMapNorm, g_vCamPosition));
+	//RimLightColor = pow(RimLightColor, 5.0f); // 강도 조정.
+	//Out.vHitPower.b = RimLightColor * .2f;
+
+	// ㅅㅂ 히트파워는 그냥 더하자.. 
+	Out.vHitPower = g_vHitPower;
 
 	return Out;
 }
@@ -288,10 +306,12 @@ PS_DEFERRED_ONLY_WAR_OUT PS_DEFERRED_ONLY_WAR_MAIN(PS_IN In)
 
 	// ------------------------------------
 	// #2. vNormalW : SV_TARGET1;
+	float3 normalMapNorm = In.vNormalW;
 	if (g_UseNormalMap) // Normal Map 사용시
 	{
 		float3 normalMapSample = g_NormalTexture.Sample(samAnisotropic, In.vTexUV).rgb;
-		Out.vNormalW.xyz = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+		normalMapNorm = NormalSampleToWorldSpace(normalMapSample, In.vNormalW.xyz, In.TangentW);
+		Out.vNormalW.xyz = normalMapNorm;
 		Out.vNormalW = vector(Out.vNormalW.xyz * 0.5f + 0.5f, 0.f);
 	}
 	else
@@ -313,10 +333,22 @@ PS_DEFERRED_ONLY_WAR_OUT PS_DEFERRED_ONLY_WAR_MAIN(PS_IN In)
 		Out.vEmissive = g_EmissiveTexture.Sample(samLinear, In.vTexUV);
 
 	// -----------------------------
-	// #5. vEmissive : SV_TARGET4
-	// g_vHitPower 맵 출력
-	Out.vHitPower += g_vHitPower;
-
+	// #5. hitpower : SV_TARGET4
+	// #5. hitpower : SV_TARGET4
+	// ㅅㅂ 히트파워는 그냥 더하자.. 
+	Out.vHitPower = g_vHitPower;
+	// Out.vHitPower 맵 출력
+		// r : m_fHitPower이다.
+		// g : 몬스터인지 플레이어인지 구분.
+		// b : 림라이트 색상이다.
+	//	// a : 
+	//// 림라이트는 상시 적용하고, 히트파워는 맞았을때만 적용하자.
+	//Out.vHitPower.r = g_vHitPower.r;
+	//Out.vHitPower.g = g_fIsMonster;
+	//float3 toEyeW = normalize(g_vCamPosition.xyz - In.vPosW.xyz);
+	//float RimLightColor = 1 - saturate(dot(normalMapNorm, g_vCamPosition));
+	//RimLightColor = pow(RimLightColor, 5.0f); // 강도 조정.
+	//Out.vHitPower.b = RimLightColor * .1f;
 
 	return Out;
 }

@@ -42,8 +42,8 @@ HRESULT CWar::NativeConstruct_Prototype()
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 	// Init GameInfo
-	//m_tGameInfo.iAtt = 3.f;
 	m_tGameInfo.iAtt = 30.f;
+	m_tGameInfo.iAtt = 3.f;
 	m_tGameInfo.iEnergy = 10;
 	m_tGameInfo.iMaxHp = 20;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
@@ -643,10 +643,10 @@ HRESULT CWar::SetUp_Ruin_ConstantTable(_uint iPassIndex, bool drawOutLine)
 		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom_Ruin, "g_ProjMatrix");
 	}
 
-	// Bind Position
-	_float4			vCamPosition;
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pModelCom_Ruin->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+	//// Bind Position
+	//_float4			vCamPosition;
+	//XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	//m_pModelCom_Ruin->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
 
 	bool tmpFalse = false;
 	bool tmpTrue = true;
@@ -657,6 +657,10 @@ HRESULT CWar::SetUp_Ruin_ConstantTable(_uint iPassIndex, bool drawOutLine)
 
 	// 해당 변수 set 되면 Outline만 그린다.
 	m_pModelCom_Ruin->Set_RawValue("g_DrawOutLine", &drawOutLine, sizeof(bool));
+
+	// 림라이트
+	//float isMonster = 0.f;
+	//m_pModelCom_Ruin->Set_RawValue("g_fIsMonster", &isMonster, sizeof(float));
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -697,10 +701,10 @@ HRESULT CWar::SetUp_ConstantTable(_uint iPssIndex, bool drawOutLine, int modelId
 		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom[modelIdx], "g_ProjMatrix");
 	}
 
-	// Bind Position
-	_float4			vCamPosition;
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	m_pModelCom[modelIdx]->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
+	//// Bind Position
+	//_float4			vCamPosition;
+	//XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	//m_pModelCom[modelIdx]->Set_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4));
 
 	// Branch to Use Normal Mapping 
 	// 노멀맵할지 말지 선택을 여기서 하자
@@ -719,6 +723,10 @@ HRESULT CWar::SetUp_ConstantTable(_uint iPssIndex, bool drawOutLine, int modelId
 	// Roughness Map 사용하자
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseRoughnessMap", &g_bUseRoughnessMap, sizeof(bool));
 	m_pModelCom[modelIdx]->Set_RawValue("g_UseMetalMap", &g_bUseMetalicMap, sizeof(bool));
+
+	//// 림라이트
+	//float isMonster = 0.f;
+	//m_pModelCom[modelIdx]->Set_RawValue("g_fIsMonster", &isMonster, sizeof(float));
 
 	if (modelIdx == 0 || modelIdx == 1) 
 		// 피격시 색상 플레이어는 흰색으로 변경할꺼다.

@@ -197,6 +197,13 @@ HRESULT CMonster::SetUp_ConstantTable(_uint iPassIndex)
 	// 피격시 색상 변경할꺼다.
 	m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, 0.f, 0.f, 0.f), sizeof(_vector));
 
+	//// 림라이트 테스트
+	//m_pModelCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_vector));
+
+	//float isMonster = 1.f;
+	//m_pModelCom->Set_RawValue("g_fIsMonster", &isMonster, sizeof(float));
+
+
 
 	RELEASE_INSTANCE(CGameInstance);
 

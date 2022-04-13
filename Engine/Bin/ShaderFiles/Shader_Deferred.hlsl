@@ -310,6 +310,19 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	Out.vColor += vEmissive;
 	Out.vColor += vHitPower;
 
+	//// HitPower + 림라이트
+	//if (vHitPower.g > 0) // g가 있다면 몬스터다. 몬스터는 빨간색이다.
+	//{
+	//	Out.vColor += float4(vHitPower.r, 0.f, 0.f, 0.f); // 히트파워
+	//	Out.vColor += float4(vHitPower.b, 0.f, 0.f, 0.f); // 림라이트 
+	//}
+	//else // g가 없다면 플레이어이다.
+	//{
+	//	Out.vColor += float4(vHitPower.r, vHitPower.r, vHitPower.r, 0.f); // 히트파워
+	//	Out.vColor += float4(vHitPower.b, vHitPower.b, vHitPower.b, 0.f); // 림라이트
+	//}
+
+
 	if (0.f == Out.vColor.a)
 		discard;
 
