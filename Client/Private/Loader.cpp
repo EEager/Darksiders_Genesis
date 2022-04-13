@@ -515,9 +515,9 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
 
-		// ¡å War
-		/* For.Prototype_Component_Model_War */
-		wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_War"));
+	// ¡å War
+	/* For.Prototype_Component_Model_War */
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_War"));
 	_matrix		War_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(-90.f));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_War"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Heroes/Hero_War/War/", "War.fbx", War_PivotMat))))
@@ -682,11 +682,11 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/SpikeGate/", "SpikeGate.fbx", Dynamic_PivotMat))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Model_Flag_A */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Flag_A"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Flag_A"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Flag/", "Flag_A.fbx", Dynamic_PivotMat))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Flag_A */
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Flag_A"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Flag_A"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Flag/", "Flag_A.fbx", Dynamic_PivotMat))))
+	//	return E_FAIL;
 
 
 

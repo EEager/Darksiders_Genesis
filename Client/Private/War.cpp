@@ -732,11 +732,6 @@ HRESULT CWar::SetUp_ConstantTable(_uint iPssIndex, bool drawOutLine, int modelId
 
 HRESULT CWar::War_Render(_uint iPassIndex)
 {
-	// 
-	// 1. War 원형 렌더하면서, 스텐실 버퍼에 1로 채운다. 
-	// 
-	//m_pDeviceContext->OMSetDepthStencilState(RenderStates::MarkMirrorDSS.Get(), 1);
-
 	/* 장치에 월드변환 행렬을 저장한다. */
 	for (int modelIdx = 0; modelIdx < MODELTYPE_END; modelIdx++)
 	{
@@ -773,9 +768,6 @@ HRESULT CWar::War_Render(_uint iPassIndex)
 			m_pModelCom_Ruin->Render(i, iPassIndex);
 		}
 	}
-
-	// restore default states, as the Shader_AnimMesh.hlsl changes them in the effect file.
-	m_pRendererCom->ClearRenderStates();
 
 	return S_OK;
 }

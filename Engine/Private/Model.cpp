@@ -338,7 +338,6 @@ HRESULT CModel::Render(_uint iMtrlIndex, _uint iPassIndex)
 			// BoneMatrices 192개에 모두 다 채워서 
 			pMeshContainer->SetUp_BoneMatrices(BoneMatrices, XMLoadFloat4x4(&m_PivotMatrix));
 
-
 			// 셰이더에 던진다. 셰이더에서는 위에서 채워진 192개의 행렬들중 본인 정점에 영향받는 뼈들 (In.vBlendIndex)을 인덱싱한 후, In.vBlendWeight 가중치를 곱해 최종 행렬을 구한다. 
 			// ex) g_BoneMatrices.Bones[7] * 0.1 + g_BoneMatrices.Bones[123] * 0.2 ... 
 			if (FAILED(Set_RawValue("g_BoneMatrices", BoneMatrices, sizeof(_float4x4) * MAX_BONE_NUM)))

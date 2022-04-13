@@ -305,6 +305,9 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow_Obj"), m_pDevice, m_pDeviceContext, SHADOWMAP_SIZE_X, SHADOWMAP_SIZE_Y, DXGI_FORMAT_R24G8_TYPELESS, _float4(1.f, 1.f, 1.f, 1.f), CRenderTarget::RT_DEPTH_STENCIL)))
 		return E_FAIL;
 
+	// Distortion Map
+
+
 
 #ifdef _DEBUG
 #define WIDTH 150

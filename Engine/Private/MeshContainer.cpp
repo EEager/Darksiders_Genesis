@@ -150,11 +150,16 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 		{
 			XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix));
 			P = XMLoadFloat3(&pVertices->vPosition);
+
+
+			memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));
+			XMStoreFloat3(&pVertices->vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices->vNormal), PivotMatrix));
 		}
 		else // 애니메이션이 있으면 피봇은 나중에 Render하기 전에 곱하더라
 		{
 			XMStoreFloat3(&pVertices->vPosition, XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), XMMatrixIdentity()));
 			P = XMVector3TransformCoord(XMLoadFloat3(&pVertices->vPosition), PivotMatrix);
+			memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));
 		}
 
 		if (isEnviromentBase == false) // 환경 기준점인 경우 콜라이더 범위에 포함시키지말자
@@ -162,10 +167,6 @@ HRESULT CMeshContainer::SetUp_VerticesDesc(CModel* pModel, aiMesh* pMesh, _fmatr
 			*pMin = XMVectorMin(*pMin, P);
 			*pMax = XMVectorMax(*pMax, P);
 		}
-
-
-		memcpy(&pVertices->vNormal, &pMesh->mNormals[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices->vNormal, XMVector3TransformNormal(XMLoadFloat3(&pVertices->vNormal), PivotMatrix));
 
 		memcpy(&pVertices->vTexUV, &pMesh->mTextureCoords[0][i], sizeof(_float2));
 		memcpy(&pVertices->vTangent, &pMesh->mTangents[i], sizeof(_float3));

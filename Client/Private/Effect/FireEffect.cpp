@@ -66,7 +66,7 @@ HRESULT CFireEffect::Render(_uint iPassIndex)
 		return E_FAIL;
 
 
-	m_pModelCom->Render(0); // Alpha Blending 
+	m_pModelCom->Render(1); // Alpha Blending 
 	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 
 	return S_OK;
