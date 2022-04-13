@@ -88,7 +88,7 @@ _int CHollowLord::LateTick(_float fTimeDelta)
 
 HRESULT CHollowLord::Render(_uint iPassIndex)
 {
-	// 모든 몬스터는 SetUp_ConstantTable, m_pModelCom Render
+	// 모든 몬스터는 SetUp_ConstantTable, m_pModelCom_RectInstance Render
 	if (CMonster::Render(iPassIndex) < 0)
 		return -1;
 

@@ -130,7 +130,7 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 	DoState(fTimeDelta);
 
 //#ifdef _DEBUG
-//	_uint keyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
+//	_uint keyFrameIdx = m_pModelCom_RectInstance->Get_Current_KeyFrame_Index(m_pCurState);
 //	cout << "[Tick] : " << m_pCurState << keyFrameIdx << endl;
 //#endif
 

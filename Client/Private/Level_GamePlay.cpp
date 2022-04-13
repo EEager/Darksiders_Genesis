@@ -277,9 +277,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	//	return E_FAIL;
 	//static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
 
-	/* For.Prototype_Component_Model_Foliage0 */
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage0")))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Foliage0 */
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage0")))
+	//	return E_FAIL;
 	/* For.Prototype_Component_Model_Foliage1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage1")))
 		return E_FAIL;

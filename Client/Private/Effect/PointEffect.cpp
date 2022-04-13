@@ -32,7 +32,7 @@ _int CPointEffect::Tick(_float fTimeDelta)
 {
 
 
-	//m_pModelCom->Update(fTimeDelta);
+	//m_pModelCom_RectInstance->Update(fTimeDelta);
 	
 	return _int();
 }

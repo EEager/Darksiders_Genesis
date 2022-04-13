@@ -2,6 +2,7 @@
 #include "..\public\Loader.h"
 
 #include "GameInstance.h"
+#include "Texture.h"
 
 // -------------------
 // GameObject Headers
@@ -420,9 +421,14 @@ HRESULT CLoader::Add_Texture()
 			return E_FAIL;
 
 		/* For.Prototype_Component_Texture_noise */
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"),
-			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/noise0%d.dds"), 4))))
+		auto pTexture = CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/noise0%d.dds"), 4);
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"), pTexture)))
 			return E_FAIL;
+
+		// Renderer에게 noise를 쥐어주자.
+		CRenderer* pRenderer = (CRenderer*)CComponent_Manager::GetInstance()->Find_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"));
+		pRenderer->m_pTextureNoise = pTexture;
+		Safe_AddRef(pTexture);
 
 		/* For.Prototype_Component_Texture_alpha */
 		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha"),
@@ -468,11 +474,11 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Model_Foliage...*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage0"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage0"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage0.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Foliage...*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage0"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage0"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage0.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage1"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage1"),

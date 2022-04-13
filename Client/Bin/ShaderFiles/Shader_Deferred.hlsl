@@ -29,9 +29,13 @@ cbuffer Camera
 	vector			g_vCamPosition;
 };
 
-cbuffer TimeDelta
+cbuffer Distortion
 {
+	float			g_HeatHazeSpeed;
+	float			g_HeatHazeStrength;
 	float			g_fTimeDelta;
+	bool			g_swapDistortion;
+	bool			g_DesertDistortion;
 };
 
 cbuffer Material
@@ -59,6 +63,12 @@ Texture2D		g_ShadowMap_Objects;
 // For.Distortion
 Texture2D		g_BackBufferTexture;
 Texture2D		g_DistortionTexture;
+
+// For.PreBB
+Texture2D		g_PreBBTexture;
+
+// 사막의 아랑이를 표현하자.
+Texture2D		g_NoiseTexture_HeatHaze;
 
 
 
@@ -90,6 +100,21 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vPosition = mul(vector(In.vPosition, 1.f), matTP);
 	
+	Out.vTexUV = In.vTexUV;
+
+	return Out;
+}
+
+VS_OUT VS_MAIN_PreBB_To_BB(VS_IN In)
+{
+	VS_OUT		Out = (VS_OUT)0;
+
+	matrix		matTP;
+
+	matTP = mul(g_TransformMatrix, g_ProjMatrix);
+
+	Out.vPosition = mul(vector(In.vPosition, 1.f), matTP);
+
 	Out.vTexUV = In.vTexUV;
 
 	return Out;
@@ -324,9 +349,57 @@ PS_OUT PS_MAIN_DISTORTION(PS_IN In)
 	return Out;
 }
 
+// Deferred를 위해 OffScreen에 모아놧던것을 진짜 백버퍼에 출력하자 
+PS_OUT PS_MAIN_PreBB_To_BB(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	// g_DistortionTexture에 찍은 Distortion들을 표현하자
+	// 이거
+	if (g_swapDistortion)
+	{
+		float4	Pert = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV);
+		float	x = In.vTexUV.x + (Pert.x) * g_HeatHazeStrength;
+		float	y = In.vTexUV.y + (Pert.y) * g_HeatHazeStrength;
+		Out.vColor = g_PreBBTexture.Sample(DefaultSampler, float2(x, y));
+	}
+	// cos, sin 사용.. 이거 잘 안되는데요.. 
+	else
+	{
+		// 이펙트에서 찍은 Distortion(Noise)를 가져온다.
+		float noise = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV);
+		float alpha = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV).w;
+		if (noise != 0) // 0 이면 노이즈가 없는것이다. 
+		{
+			In.vTexUV.x += noise * cos(g_fTimeDelta * g_HeatHazeSpeed) * g_HeatHazeStrength * alpha;
+			In.vTexUV.y += noise * sin(g_fTimeDelta * g_HeatHazeSpeed) * g_HeatHazeStrength * alpha;
+		}
+		Out.vColor = g_PreBBTexture.Sample(DefaultSampler, In.vTexUV);
+	}
 
 
+	// 사막의 아지랑이를 표현하자
+	if (g_DesertDistortion)
+	{
+		float noise = g_NoiseTexture_HeatHaze.Sample(DefaultSampler, In.vTexUV);
+		In.vTexUV.x += cos(noise * g_fTimeDelta * g_HeatHazeSpeed) * g_HeatHazeStrength;
+		In.vTexUV.y += sin(noise * g_fTimeDelta * g_HeatHazeSpeed) * g_HeatHazeStrength;
+		Out.vColor = g_PreBBTexture.Sample(samLinearClamp, In.vTexUV);
+	}
 
+
+	return Out;
+}
+
+
+PS_OUT PS_MAIN_PreBB_To_BB_TEst(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_PreBBTexture.Sample(DefaultSampler, In.vTexUV);
+
+	return Out;
+}
 
 
 technique11	DefaultTechnique
@@ -391,16 +464,26 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN2();
 	}
 
-	// #5 : Render Blending Post Alpha
-	pass RenderBlendingPostAlpha_Pass
+	// #5 : PreBB=>BB
+	pass RenderPreBBToBB_Pass
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(NonZTestDepthStencilState, 0);
 		SetRasterizerState(DefaultRasterizerState);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
+		VertexShader = compile vs_5_0 VS_MAIN_PreBB_To_BB();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
+		PixelShader = compile ps_5_0 PS_MAIN_PreBB_To_BB();
+	}
+	pass RenderPreBBToBB_Pass_Test
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(NonZTestDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN_PreBB_To_BB();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_PreBB_To_BB_TEst();
 	}
 
 }

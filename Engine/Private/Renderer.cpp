@@ -5,253 +5,8 @@
 #include "Light_Manager.h"
 #include "VIBuffer_Rect.h"
 #include "PipeLine.h"
+#include "Texture.h"
 
-
-#define SHADOW_MAP_TEST
-
-#ifdef SHADOW_MAP_TEST
-
-#pragma region Effect
-class Effect
-{
-public:
-	Effect(ID3D11Device* device, const std::wstring& filename);
-	virtual ~Effect();
-
-private:
-	Effect(const Effect& rhs);
-	Effect& operator=(const Effect& rhs);
-
-protected:
-	ID3DX11Effect* mFX;
-};
-
-Effect::Effect(ID3D11Device* device, const std::wstring& filename)
-	: mFX(0)
-{
-	std::ifstream fin(filename.c_str(), std::ios::binary);
-
-	fin.seekg(0, std::ios_base::end);
-	int size = (int)fin.tellg();
-	fin.seekg(0, std::ios_base::beg);
-	std::vector<char> compiledShader(size);
-
-	fin.read(&compiledShader[0], size);
-	fin.close();
-
-	HR(D3DX11CreateEffectFromMemory(&compiledShader[0], size,
-		0, device, &mFX));
-}
-
-Effect::~Effect()
-{
-	ReleaseCOM(mFX);
-}
-
-#pragma endregion
-
-#pragma region BuildShadowMapEffect
-class BuildShadowMapEffect : public Effect
-{
-public:
-	BuildShadowMapEffect(ID3D11Device* device, const std::wstring& filename);
-	~BuildShadowMapEffect();
-
-	void SetViewProj(CXMMATRIX M) { ViewProj->SetMatrix(reinterpret_cast<const float*>(&M)); }
-	void SetWorldViewProj(CXMMATRIX M) { WorldViewProj->SetMatrix(reinterpret_cast<const float*>(&M)); }
-	void SetWorld(CXMMATRIX M) { World->SetMatrix(reinterpret_cast<const float*>(&M)); }
-	void SetWorldInvTranspose(CXMMATRIX M) { WorldInvTranspose->SetMatrix(reinterpret_cast<const float*>(&M)); }
-	void SetTexTransform(CXMMATRIX M) { TexTransform->SetMatrix(reinterpret_cast<const float*>(&M)); }
-	void SetEyePosW(const XMFLOAT3& v) { EyePosW->SetRawValue(&v, 0, sizeof(XMFLOAT3)); }
-
-	void SetHeightScale(float f) { HeightScale->SetFloat(f); }
-	void SetMaxTessDistance(float f) { MaxTessDistance->SetFloat(f); }
-	void SetMinTessDistance(float f) { MinTessDistance->SetFloat(f); }
-	void SetMinTessFactor(float f) { MinTessFactor->SetFloat(f); }
-	void SetMaxTessFactor(float f) { MaxTessFactor->SetFloat(f); }
-
-	void SetDiffuseMap(ID3D11ShaderResourceView* tex) { DiffuseMap->SetResource(tex); }
-	void SetNormalMap(ID3D11ShaderResourceView* tex) { NormalMap->SetResource(tex); }
-
-	ID3DX11EffectTechnique* BuildShadowMapTech;
-	ID3DX11EffectTechnique* BuildShadowMapAlphaClipTech;
-	ID3DX11EffectTechnique* TessBuildShadowMapTech;
-	ID3DX11EffectTechnique* TessBuildShadowMapAlphaClipTech;
-
-	ID3DX11EffectMatrixVariable* ViewProj;
-	ID3DX11EffectMatrixVariable* WorldViewProj;
-	ID3DX11EffectMatrixVariable* World;
-	ID3DX11EffectMatrixVariable* WorldInvTranspose;
-	ID3DX11EffectMatrixVariable* TexTransform;
-	ID3DX11EffectVectorVariable* EyePosW;
-	ID3DX11EffectScalarVariable* HeightScale;
-	ID3DX11EffectScalarVariable* MaxTessDistance;
-	ID3DX11EffectScalarVariable* MinTessDistance;
-	ID3DX11EffectScalarVariable* MinTessFactor;
-	ID3DX11EffectScalarVariable* MaxTessFactor;
-
-	ID3DX11EffectShaderResourceVariable* DiffuseMap;
-	ID3DX11EffectShaderResourceVariable* NormalMap;
-};
-
-BuildShadowMapEffect::BuildShadowMapEffect(ID3D11Device* device, const std::wstring& filename)
-	: Effect(device, filename)
-{
-	BuildShadowMapTech = mFX->GetTechniqueByName("BuildShadowMapTech");
-	BuildShadowMapAlphaClipTech = mFX->GetTechniqueByName("BuildShadowMapAlphaClipTech");
-
-	TessBuildShadowMapTech = mFX->GetTechniqueByName("TessBuildShadowMapTech");
-	TessBuildShadowMapAlphaClipTech = mFX->GetTechniqueByName("TessBuildShadowMapAlphaClipTech");
-
-	ViewProj = mFX->GetVariableByName("gViewProj")->AsMatrix();
-	WorldViewProj = mFX->GetVariableByName("gWorldViewProj")->AsMatrix();
-	World = mFX->GetVariableByName("gWorld")->AsMatrix();
-	WorldInvTranspose = mFX->GetVariableByName("gWorldInvTranspose")->AsMatrix();
-	TexTransform = mFX->GetVariableByName("gTexTransform")->AsMatrix();
-	EyePosW = mFX->GetVariableByName("gEyePosW")->AsVector();
-	HeightScale = mFX->GetVariableByName("gHeightScale")->AsScalar();
-	MaxTessDistance = mFX->GetVariableByName("gMaxTessDistance")->AsScalar();
-	MinTessDistance = mFX->GetVariableByName("gMinTessDistance")->AsScalar();
-	MinTessFactor = mFX->GetVariableByName("gMinTessFactor")->AsScalar();
-	MaxTessFactor = mFX->GetVariableByName("gMaxTessFactor")->AsScalar();
-	DiffuseMap = mFX->GetVariableByName("gDiffuseMap")->AsShaderResource();
-	NormalMap = mFX->GetVariableByName("gNormalMap")->AsShaderResource();
-}
-
-BuildShadowMapEffect::~BuildShadowMapEffect()
-{
-}
-
-#pragma endregion
-
-#pragma region Effects
-class Effects
-{
-public:
-	static void InitAll(ID3D11Device* device);
-	static void DestroyAll();
-
-	static BuildShadowMapEffect* BuildShadowMapFX;
-};
-
-BuildShadowMapEffect* Effects::BuildShadowMapFX = 0;
-void Effects::InitAll(ID3D11Device* device)
-{
-	BuildShadowMapFX = new BuildShadowMapEffect(device, L"BuildShadowMap.fxo");
-}
-
-void Effects::DestroyAll()
-{
-	SafeDelete(BuildShadowMapFX);
-}
-
-#pragma endregion
-
-#pragma region ShadowsDemo
-#include "Graphic_Device.h"
-
-class ShadowMap
-{
-public:
-	ShadowMap(ID3D11Device* device, UINT width, UINT height);
-	~ShadowMap();
-
-	ID3D11ShaderResourceView* DepthMapSRV();
-
-	void BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc);
-
-private:
-	ShadowMap(const ShadowMap& rhs);
-	ShadowMap& operator=(const ShadowMap& rhs);
-
-private:
-	UINT mWidth;
-	UINT mHeight;
-
-	ID3D11ShaderResourceView* mDepthMapSRV;
-	ID3D11DepthStencilView* mDepthMapDSV;
-
-	D3D11_VIEWPORT mViewport;
-};
-
-static const int SMapSize = 2048;
-ShadowMap* mSmap;
-XMFLOAT4X4 mLightView;
-XMFLOAT4X4 mLightProj;
-XMFLOAT4X4 mShadowTransform;
-
-ShadowMap::ShadowMap(ID3D11Device* device, UINT width, UINT height)
-	: mWidth(width), mHeight(height), mDepthMapSRV(0), mDepthMapDSV(0)
-{
-	mViewport.TopLeftX = 0.0f;
-	mViewport.TopLeftY = 0.0f;
-	mViewport.Width = static_cast<float>(width);
-	mViewport.Height = static_cast<float>(height);
-	mViewport.MinDepth = 0.0f;
-	mViewport.MaxDepth = 1.0f;
-
-	// Use typeless format because the DSV is going to interpret
-	// the bits as DXGI_FORMAT_D24_UNORM_S8_UINT, whereas the SRV is going to interpret
-	// the bits as DXGI_FORMAT_R24_UNORM_X8_TYPELESS.
-	D3D11_TEXTURE2D_DESC texDesc;
-	texDesc.Width = mWidth;
-	texDesc.Height = mHeight;
-	texDesc.MipLevels = 1;
-	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-	texDesc.SampleDesc.Count = 1;
-	texDesc.SampleDesc.Quality = 0;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = 0;
-
-	ID3D11Texture2D* depthMap = 0;
-	HR(device->CreateTexture2D(&texDesc, 0, &depthMap));
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-	dsvDesc.Flags = 0;
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	dsvDesc.Texture2D.MipSlice = 0;
-	HR(device->CreateDepthStencilView(depthMap, &dsvDesc, &mDepthMapDSV));
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	HR(device->CreateShaderResourceView(depthMap, &srvDesc, &mDepthMapSRV));
-
-	// View saves a reference to the texture so we can release our reference.
-	ReleaseCOM(depthMap);
-}
-
-ShadowMap::~ShadowMap()
-{
-	ReleaseCOM(mDepthMapSRV);
-	ReleaseCOM(mDepthMapDSV);
-}
-
-ID3D11ShaderResourceView* ShadowMap::DepthMapSRV()
-{
-	return mDepthMapSRV;
-}
-
-void ShadowMap::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc)
-{
-	dc->RSSetViewports(1, &mViewport);
-
-	// Set null render target because we are only going to draw to depth buffer.
-	// Setting a null render target will disable color writes.
-	ID3D11RenderTargetView* renderTargets[1] = { 0 };
-	dc->OMSetRenderTargets(1, renderTargets, mDepthMapDSV);
-
-	dc->ClearDepthStencilView(mDepthMapDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-}
-#pragma endregion
-
-#endif
 
 
 
@@ -280,6 +35,11 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	m_pDeviceContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
 	/* RT */
+	// Just PreBackBuffer
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_PreBB"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+
+	// NonAlpha
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Diffuse"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Normal"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(1.f, 1.f, 1.f, 1.f))))
@@ -293,12 +53,13 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Depth_Prev"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 1.f))))
 		return E_FAIL;
 
-
+	// LightAcc
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shade"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.0f, 0.0f, 0.0f, 1.f))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Specular"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
+	// Shadown Map
 	// 광원 시선에서 바라본 깊이값들을 저장할 렌더타겟
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Shadow_Env"), m_pDevice, m_pDeviceContext, SHADOWMAP_SIZE_X, SHADOWMAP_SIZE_Y, DXGI_FORMAT_R24G8_TYPELESS, _float4(1.f, 1.f, 1.f, 1.f), CRenderTarget::RT_DEPTH_STENCIL)))
 		return E_FAIL;
@@ -306,18 +67,15 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 
 	// Distortion Map
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Distortion"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))	
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Distortion"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_B8G8R8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
-
-	//// PreBackBuffer
-	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_PreBB"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
-	//	return E_FAIL;
-
-
 
 #ifdef _DEBUG
 #define WIDTH 150
 	/* Debug */
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_PreBB"), WIDTH * 0, WIDTH * 5, WIDTH, WIDTH)))
+		return E_FAIL;
+
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Diffuse"), WIDTH * 0, WIDTH * 0, WIDTH, WIDTH)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Normal"), WIDTH * 1, WIDTH * 0, WIDTH, WIDTH)))
@@ -347,6 +105,9 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 #endif // _DEBUG
 
 	/* MRT */
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_PreBB"), TEXT("Target_PreBB"))))
+		return E_FAIL;
+
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Normal"))))
@@ -372,7 +133,9 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 
 	// Distortion
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Post_Effect"), TEXT("Target_Distortion"))))
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_PreBB"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Alpha"), TEXT("Target_Distortion"))))
 		return E_FAIL;
 
 	/* Lighting */
@@ -432,10 +195,15 @@ bool bDraw_Debug = true;
 
 HRESULT CRenderer::Draw()
 {
+	// ----------------------------------
+	// ▼ Deferred Process Start
+	if (FAILED(m_pTarget_Manager->Begin_MRT_PreBB(m_pDeviceContext, TEXT("MRT_PreBB"))))
+		return E_FAIL;
+
 	// SkyBox
 	if (FAILED(Render_Priority()))
 		return E_FAIL;
-
+	
 	//ShadowMap 
 	if (FAILED(Render_Shadow()))
 		return E_FAIL;
@@ -453,10 +221,10 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 
-	// Render_Post_Alpha // Distortion Test
+	// Render_Alpha // Distortion Test
 	{
 		// Begin_MRT_Post_Alpha : 0번째는 백버퍼, 1번째는 distortionMap 이다.
-		if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Post_Effect"))))
+		if (FAILED(m_pTarget_Manager->Begin_MRT_Alpha(m_pDeviceContext, TEXT("MRT_Alpha"))))
 			return E_FAIL;
 
 		/* 카메라로부터 멀리 있는 객체부터 그린다. */
@@ -486,32 +254,62 @@ HRESULT CRenderer::Draw()
 		ClearRenderStates();
 	}
 
-	// Render_Blend_Post_Alpha
+	// PreBB에 모아놨던 것들을 진짜 백버퍼에 출력하자
+	if (FAILED(m_pTarget_Manager->End_MRT_PreBB(m_pDeviceContext)))
+		return E_FAIL;
+
+	// Render_Blend_Final
 	{
-		//// Bind matrix
-		//m_pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
-		//m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+		// Bind matrix
+		m_pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
+		m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+		// Bind Texture
+		m_pVIBuffer->Set_ShaderResourceView("g_PreBBTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_PreBB")));
+		m_pVIBuffer->Set_ShaderResourceView("g_DistortionTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Distortion")));
 
-		//// Bind Texture
-		//m_pVIBuffer->Set_ShaderResourceView("g_DistortionTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Distortion")));
+		// Bind Delta Time
+		//m_fDistortionTimeAcc = MathHelper::RandF(0.f, 0.0029f);
 
-		//// Bind Delta Time
-		//m_fDistortionTimeAcc += 0.016f;
-		//if (m_fDistortionTimeAcc > 2000.f)
-		//{
-		//	m_fDistortionTimeAcc = 0.f;
-		//}
-		//m_pVIBuffer->Set_RawValue("g_fTimeDelta", &m_fDistortionTimeAcc, sizeof(_float));
+		_bool tmpTrue = true;
+		_bool tmpFlase = false;
 
-		//// Head Haze, 
+		m_pVIBuffer->Set_RawValue("g_swapDistortion", &tmpFlase, sizeof(_bool));
 
-		//m_pVIBuffer->Render(5); // final pass로 출력하자
+		if (tmpFlase)
+		{
+			_float heatHazeSpeed = .1f; 
+			m_pVIBuffer->Set_RawValue("g_HeatHazeSpeed", &heatHazeSpeed, sizeof(_float));
+			_float heatHazeStrength = 0.f;
+			m_pVIBuffer->Set_RawValue("g_HeatHazeStrength", &heatHazeStrength, sizeof(_float));
+		}
+		else
+		{
+			//m_fDistortionTimeAcc = MathHelper::RandF(0.f, 0.0029f);
+			m_fDistortionTimeAcc += 0.016f;
+			if (m_fDistortionTimeAcc >= 1000.f) 
+			{
+				m_fDistortionTimeAcc = 0.f;
+			}
+			m_pVIBuffer->Set_RawValue("g_fTimeDelta", &m_fDistortionTimeAcc, sizeof(_float));
+
+			_float heatHazeSpeed = 5.f;
+			m_pVIBuffer->Set_RawValue("g_HeatHazeSpeed", &heatHazeSpeed, sizeof(_float));
+			_float heatHazeStrength = 0.0026f; 
+			m_pVIBuffer->Set_RawValue("g_HeatHazeStrength", &heatHazeStrength, sizeof(_float));
+		}
+
+		// 사막의 아지랑이를 표현하자
+		m_pVIBuffer->Set_RawValue("g_DesertDistortion", &tmpFlase, sizeof(_bool));
+		if (m_pTextureNoise)
+			m_pTextureNoise->SetUp_OnShader(m_pVIBuffer, "g_NoiseTexture_HeatHaze", 2);
+		m_pVIBuffer->Render(5); // RenderPreBBToBB_Pass
 	}
 
-	//// 알파블렌딩은 Forward Processing을 통해 바로 백버퍼에 그리자
-	//if (FAILED(Render_Alpha()))
-	//	return E_FAIL;
+	// ▲ Deferred Process End
+	// ----------------------------------
 
+	// ----------------------------------
+	// ▼ Foward Process
 
 	// UI도 바로 백버퍼에 그리자
 	if (FAILED(Render_UI())) 
@@ -550,17 +348,19 @@ HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 	if (bDraw_Debug)
 	{
 		// 렌더타겟들 렌더링
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_PreBB"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Shadows"), 4); // ShadowMapDebug_Pass
-		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Post_Effect"), 0); 
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Alpha"), 0); 
 
 
 		// 텍스트 렌더링
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_PreBB"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Deferred"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_LightAcc"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Shadows"), 0, m_spriteBatch, m_spriteFont);
-		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Post_Effect"), 0, m_spriteBatch, m_spriteFont);
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Alpha"), 0, m_spriteBatch, m_spriteFont);
 	}
 #endif // _DEBUG
 
@@ -933,5 +733,6 @@ void CRenderer::Free()
 	Safe_Release(m_pTarget_Manager);
 	
 	Safe_Release(m_pVIBuffer);
+	Safe_Release(m_pTextureNoise);
 }
 

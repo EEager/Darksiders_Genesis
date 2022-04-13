@@ -1,36 +1,6 @@
 
 #include "Shader_Defines.hlsl"
 
-// --------------------
-// sampler_state
-// --------------------
-SamplerState SampleType
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = WRAP;
-	AddressV = WRAP;
-	AddressW = WRAP;
-	MipLODBias = 0.0f;
-	MaxAnisotropy = 1;
-	ComparisonFunc = ALWAYS;
-	BorderColor = float4(0.f, 0.f, 0.f, 0.f);
-	MinLOD = 0;
-};
-
-SamplerState SampleType2
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = CLAMP;
-	AddressV = CLAMP;
-	AddressW = CLAMP;
-	MipLODBias = 0.0f;
-	MaxAnisotropy = 1;
-	ComparisonFunc = ALWAYS;
-	BorderColor = float4(0.f, 0.f, 0.f, 0.f);
-	MinLOD = 0;
-};
-
-
 cbuffer Matrices 
 {
 	matrix			g_WorldMatrix;
@@ -57,9 +27,9 @@ cbuffer DistortionBuffer
 texture2D		g_DiffuseTexture;
 texture2D		g_DepthTexture; // 소프트 렌더링
 texture2D		g_NoiseTexture; // Noise
-texture2D		g_NoiseTexture_3; // Noise
+texture2D		g_NoiseTexture_HeatHaze; // Noise
 texture2D		g_AlphaTexture; // Alpha
-texture2D		g_AlphaTexture_1; // Alpha
+texture2D		g_AlphaTexture_HeatHaze; // Alpha
 
 struct VS_IN
 {
@@ -100,7 +70,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosition = mul(vPosition, matWVP);
 
 	// Out.vProjPos = Out.vPosition;
-	Out.vPosition *= m_dstR; 	// Distortion 범위를 늘리자.
+	//Out.vPosition *= m_dstR; 	// Distortion 범위를 늘리자.
 	Out.vProjPos = Out.vPosition;
 
 	// 픽셀 쉐이더의 텍스처 좌표를 저장한다.
@@ -218,10 +188,11 @@ PS_OUT PS_MAIN_ALPHA(PS_IN In)
 	// ---------------------------------------
 	// Distortion
 	// ---------------------------------------
-	float4	DistortionOut;
-	DistortionOut = g_NoiseTexture_3.Sample(SampleType, In.vTexUV); // noise
-	DistortionOut.w *= g_AlphaTexture_1.Sample(SampleType, In.vTexUV); // Radical 알파를 사용하자
+	float4	DistortionOut = {0.f, 0.f, 0.f, 0.f}; // Clear Color는 _float4(0.f, 0.f, 0.f, 0.f)
+	DistortionOut = g_NoiseTexture_HeatHaze.Sample(SampleType, In.vTexUV); // Noise를 사용한다.
+	DistortionOut.w = g_AlphaTexture_HeatHaze.Sample(SampleType, In.vTexUV); // 알파를 사용한다.
 	Out.vDistortion = DistortionOut;
+	
 
 	//// 
 	//// 소프트 렌더링

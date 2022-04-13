@@ -104,6 +104,103 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _t
 	return S_OK;
 }
 
+HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pDeviceContext)
+{
+	if (nullptr == m_pBackBufferView ||
+		nullptr == m_pDepthStencilView)
+		return E_FAIL;
+
+	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView, m_pDepthStencilView); // 장치에 백버퍼를 바인드하여 원복한다
+
+	Safe_Release(m_pBackBufferView);
+	Safe_Release(m_pDepthStencilView);
+
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::Begin_MRT_Alpha(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag)
+{
+	/* 지정한 mrt에 있는 렌더타겟들을 장치에 바인드한다. */
+	list<CRenderTarget*>* pMRTList = Find_MRT(pMRTTag);
+
+	if (nullptr == pMRTList)
+		return E_FAIL;
+
+	/* 장치에 보관되어있던 백버퍼, 깊이스텐실버퍼를 얻어와서 멤버변수에 보관한다.  */
+	/* 왜? 새로운 타겟들을 장치에 바인드하면 백버퍼를 잃어버리니까. */
+	pDeviceContext->OMGetRenderTargets(1, &m_pBackBufferView, &m_pDepthStencilView);
+
+	ID3D11RenderTargetView* pRenderTargets[8] = { nullptr };
+
+	_uint		iIndex = 0;
+
+	for (auto& pRenderTarget : *pMRTList)
+	{
+		if (iIndex!=0) // 첫번째는 PreBB인데 Clear하면안된다.
+			pRenderTarget->Clear();
+		pRenderTargets[iIndex++] = pRenderTarget->Get_RTV();
+	}
+
+	// The shadow might might be at any slot, so clear all slots.
+	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
+	pDeviceContext->PSSetShaderResources(0, 16, nullSRV);
+
+	// 장치에 여러개의 렌터타겟들을 바인드한다
+	pDeviceContext->OMSetRenderTargets((_uint)pMRTList->size(), pRenderTargets, m_pDepthStencilView);
+
+	return S_OK;
+}
+
+
+
+HRESULT CTarget_Manager::Begin_MRT_PreBB(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag)
+{
+	/* 지정한 mrt에 있는 렌더타겟들을 장치에 바인드한다. */
+	list<CRenderTarget*>* pMRTList = Find_MRT(pMRTTag);
+
+	if (nullptr == pMRTList)
+		return E_FAIL;
+
+	/* 장치에 보관되어있던 백버퍼, 깊이스텐실버퍼를 얻어와서 멤버변수에 보관한다.  */
+	/* 왜? 새로운 타겟들을 장치에 바인드하면 백버퍼를 잃어버리니까. */
+	pDeviceContext->OMGetRenderTargets(1, &m_pBackBufferView_Real, &m_pDepthStencilView_Real);
+
+	ID3D11RenderTargetView* pRenderTargets[8] = { nullptr };
+
+	_uint		iIndex = 0;
+
+	for (auto& pRenderTarget : *pMRTList)
+	{
+		pRenderTarget->Clear();
+		pRenderTargets[iIndex++] = pRenderTarget->Get_RTV();
+	}
+
+	// The shadow might might be at any slot, so clear all slots.
+	ID3D11ShaderResourceView* nullSRV[16] = { 0 };
+	pDeviceContext->PSSetShaderResources(0, 16, nullSRV);
+
+	// 장치에 여러개의 렌터타겟들을 바인드한다
+	pDeviceContext->OMSetRenderTargets((_uint)pMRTList->size(), pRenderTargets, m_pDepthStencilView_Real);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::End_MRT_PreBB(ID3D11DeviceContext* pDeviceContext)
+{
+	if (nullptr == m_pBackBufferView_Real ||
+		nullptr == m_pDepthStencilView_Real)
+		return E_FAIL;
+
+	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView_Real , m_pDepthStencilView_Real); // 장치에 백버퍼를 바인드하여 원복한다
+
+	Safe_Release(m_pBackBufferView_Real);
+	Safe_Release(m_pDepthStencilView_Real);
+
+
+	return S_OK;
+}
+
 // For.TEXT("MRT_Shadows")
 HRESULT CTarget_Manager::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* pDeviceContext, const _tchar* pRenderTargetTag)
 {
@@ -135,20 +232,6 @@ HRESULT CTarget_Manager::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* pDev
 	return S_OK;
 }
 
-HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pDeviceContext)
-{
-	if (nullptr == m_pBackBufferView ||
-		nullptr == m_pDepthStencilView)
-		return E_FAIL;
-
-	pDeviceContext->OMSetRenderTargets(1, &m_pBackBufferView, m_pDepthStencilView); // 장치에 백버퍼를 바인드하여 원복한다
-
-	Safe_Release(m_pBackBufferView);
-	Safe_Release(m_pDepthStencilView);
-
-
-	return S_OK;
-}
 
 #ifdef _DEBUG
 

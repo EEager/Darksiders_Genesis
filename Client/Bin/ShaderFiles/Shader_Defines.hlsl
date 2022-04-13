@@ -17,6 +17,32 @@ struct Material
 // --------------------
 // sampler_state
 // --------------------
+SamplerState SampleType
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = WRAP;
+	AddressV = WRAP;
+	AddressW = WRAP;
+	MipLODBias = 0.0f;
+	MaxAnisotropy = 1;
+	ComparisonFunc = ALWAYS;
+	BorderColor = float4(0.f, 0.f, 0.f, 0.f);
+	MinLOD = 0;
+};
+
+SamplerState SampleType2
+{
+	Filter = MIN_MAG_MIP_LINEAR;
+	AddressU = CLAMP;
+	AddressV = CLAMP;
+	AddressW = CLAMP;
+	MipLODBias = 0.0f;
+	MaxAnisotropy = 1;
+	ComparisonFunc = ALWAYS;
+	BorderColor = float4(0.f, 0.f, 0.f, 0.f);
+	MinLOD = 0;
+};
+
 SamplerState samAnisotropic
 {
 	Filter = ANISOTROPIC;

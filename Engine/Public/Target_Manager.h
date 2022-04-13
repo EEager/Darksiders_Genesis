@@ -20,8 +20,11 @@ public:
 	HRESULT Add_MRT(const _tchar* pMRTTag, const _tchar* pRenderTargetTag);
 
 	HRESULT Begin_MRT(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag);
+	HRESULT Begin_MRT_Alpha(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag);
+	HRESULT Begin_MRT_PreBB(ID3D11DeviceContext* pDeviceContext, const _tchar* pMRTTag);
 	HRESULT BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* pDeviceContext, const _tchar* pRenderTargetTag);
 	HRESULT End_MRT(ID3D11DeviceContext* pDeviceContext);
+	HRESULT End_MRT_PreBB(ID3D11DeviceContext* pDeviceContext);
 
 #ifdef _DEBUG
 public:
@@ -41,6 +44,9 @@ private:
 private:
 	ID3D11RenderTargetView* m_pBackBufferView = nullptr;
 	ID3D11DepthStencilView* m_pDepthStencilView = nullptr;
+
+	ID3D11RenderTargetView* m_pBackBufferView_Real = nullptr;
+	ID3D11DepthStencilView* m_pDepthStencilView_Real = nullptr;
 
 #ifdef _DEBUG
 private:

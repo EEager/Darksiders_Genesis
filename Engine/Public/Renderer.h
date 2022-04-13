@@ -60,6 +60,9 @@ private:
 	_float m_fDistortionTimeAcc = 0.f;
 
 public:
+	CTexture* m_pTextureNoise = nullptr;
+
+public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;

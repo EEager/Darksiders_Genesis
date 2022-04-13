@@ -35,11 +35,12 @@ private:
 	CTexture*					m_pTextureDiffuse = nullptr;
 	CTexture*					m_pTextureNoise = nullptr;
 	CTexture*					m_pTextureAlpha = nullptr;
-	CVIBuffer_RectInstance*		m_pModelCom = nullptr;
+	CVIBuffer_RectInstance*		m_pModelCom_RectInstance = nullptr;
+	CVIBuffer_Rect*				m_pModelCom_Rect = nullptr;
 
 private:
 	HRESULT SetUp_Component();
-	HRESULT SetUp_ConstantTable();	
+	HRESULT SetUp_ConstantTable(CVIBuffer* pVIBuffer);
 
 	_float m_fMyTimeDelta = 0.f;
 

@@ -30,7 +30,7 @@ HRESULT CFireEffect::NativeConstruct(void * pArg)
 
 _int CFireEffect::Tick(_float fTimeDelta)
 {
-	//m_pModelCom->Update(fTimeDelta);
+	//m_pModelCom_RectInstance->Update(fTimeDelta);
 
 	m_fMyTimeDelta += fTimeDelta;
 	
@@ -45,7 +45,7 @@ _int CFireEffect::LateTick(_float fTimeDelta)
 	// War를 따라다니도록하자.
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);
 	CTransform*		pTarget = (CTransform*)pGameInstance->Get_ComponentPtr(LEVEL_GAMEPLAY, TEXT("Layer_War"), TEXT("Com_Transform"));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTarget->Get_State(CTransform::STATE_POSITION));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTarget->Get_State(CTransform::STATE_POSITION) + XMVectorSet(0.f, 5.5f, 0.f, 0.f));
 
 	// 빌보딩
 	//m_pTransformCom->Set_BillBoard();
@@ -62,11 +62,11 @@ _int CFireEffect::LateTick(_float fTimeDelta)
 
 HRESULT CFireEffect::Render(_uint iPassIndex)
 {
-	if (FAILED(SetUp_ConstantTable()))
+	if (FAILED(SetUp_ConstantTable(m_pModelCom_RectInstance)))
 		return E_FAIL;
 
-
-	m_pModelCom->Render(1); // Alpha Blending 
+	//m_pModelCom_Rect->Render(3); // Distortion_Alpha
+	m_pModelCom_RectInstance->Render(1); // Distortion_Alpha Blending 
 	m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 
 	return S_OK;
@@ -88,38 +88,45 @@ HRESULT CFireEffect::SetUp_Component()
 	/* For.Com_Texture_Noise */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"), TEXT("Com_Texture_Noise"), (CComponent**)&m_pTextureNoise)))
 		return E_FAIL;
+
 	/* For.Com_Texture_Alpha */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha"), TEXT("Com_Texture_Alpha"), (CComponent**)&m_pTextureAlpha)))
 		return E_FAIL;
 
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_RectInstance"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	/* For.Com_Model1 */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_RectInstance"), TEXT("Com_Model1"), (CComponent**)&m_pModelCom_RectInstance)))
+		return E_FAIL;
+
+	/* For.Com_Model2 */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_Model2"), (CComponent**)&m_pModelCom_Rect)))
 		return E_FAIL;
 	
 	return S_OK;
 }
 
-HRESULT CFireEffect::SetUp_ConstantTable()
+HRESULT CFireEffect::SetUp_ConstantTable(CVIBuffer* pVIBuffer)
 {
-	if (nullptr == m_pModelCom)
+	if (nullptr == pVIBuffer)
 		return E_FAIL;
 
 	CGameInstance*		pGameInstance = GET_INSTANCE(CGameInstance);	
 
-	m_pTransformCom->Bind_OnShader(m_pModelCom, "g_WorldMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom, "g_ViewMatrix");
-	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom, "g_ProjMatrix");
+	m_pTransformCom->Bind_OnShader(pVIBuffer, "g_WorldMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, pVIBuffer, "g_ViewMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, pVIBuffer, "g_ProjMatrix");
 
-	// For.소프트 렌더링
-	m_pModelCom->Set_ShaderResourceView("g_DepthTexture", pGameInstance->Get_RenderTarget_SRV(TEXT("Target_Depth_Cur")));
+	//// For.소프트 렌더링
+	//pVIBuffer->Set_ShaderResourceView("g_DepthTexture", pGameInstance->Get_RenderTarget_SRV(TEXT("Target_Depth_Cur")));
 
-	m_pTextureDiffuse->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture"); 
+	m_pTextureDiffuse->SetUp_OnShader(pVIBuffer, "g_DiffuseTexture");
 
-	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture", 1); 
-	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture_3", 0); 
+	// Noise
+	m_pTextureNoise->SetUp_OnShader(pVIBuffer, "g_NoiseTexture", 1);
+	m_pTextureNoise->SetUp_OnShader(pVIBuffer, "g_NoiseTexture_HeatHaze", 2); 
 
-	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture", 0); 
-	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture_1", 1); 
+	// 알파
+	m_pTextureAlpha->SetUp_OnShader(pVIBuffer, "g_AlphaTexture", 0);
+	m_pTextureAlpha->SetUp_OnShader(pVIBuffer, "g_AlphaTexture_HeatHaze", 1); 
 
 	// From Dx11Demo_33
 	// Distortion 효과를 적용하자.
@@ -134,9 +141,9 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 		{
 			m_fMyTimeDelta = 0.0f;
 		}
-		m_pModelCom->Set_RawValue("frameTime", &m_fMyTimeDelta, sizeof(_float));
-		m_pModelCom->Set_RawValue("scrollSpeeds", &scrollSpeeds, sizeof(_float3));
-		m_pModelCom->Set_RawValue("scales", &scales, sizeof(_float3));
+		pVIBuffer->Set_RawValue("frameTime", &m_fMyTimeDelta, sizeof(_float));
+		pVIBuffer->Set_RawValue("scrollSpeeds", &scrollSpeeds, sizeof(_float3));
+		pVIBuffer->Set_RawValue("scales", &scales, sizeof(_float3));
 
 		// 세 가지 다른 노이즈 텍스처에 대해 세 가지 다른 x 및 y 왜곡 인수를 설정합니다.
 		_float2 distortion1 = _float2(0.1f, 0.2f);
@@ -146,11 +153,11 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 		float distortionScale = 0.2f; // 크면 위로 길어진다.
 		float distortionBias = 0.3f; // fire01의 어느 지점부터 찍을지
 		// Bind DistortionBuffer
-		m_pModelCom->Set_RawValue("distortion1", &distortion1, sizeof(_float2));
-		m_pModelCom->Set_RawValue("distortion2", &distortion2, sizeof(_float2));
-		m_pModelCom->Set_RawValue("distortion3", &distortion3, sizeof(_float2));
-		m_pModelCom->Set_RawValue("distortionScale", &distortionScale, sizeof(_float));
-		m_pModelCom->Set_RawValue("distortionBias", &distortionBias, sizeof(_float));
+		pVIBuffer->Set_RawValue("distortion1", &distortion1, sizeof(_float2));
+		pVIBuffer->Set_RawValue("distortion2", &distortion2, sizeof(_float2));
+		pVIBuffer->Set_RawValue("distortion3", &distortion3, sizeof(_float2));
+		pVIBuffer->Set_RawValue("distortionScale", &distortionScale, sizeof(_float));
+		pVIBuffer->Set_RawValue("distortionBias", &distortionBias, sizeof(_float));
 	}
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -198,5 +205,6 @@ void CFireEffect::Free()
 	Safe_Release(m_pTextureAlpha);
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pModelCom);
+	Safe_Release(m_pModelCom_RectInstance);
+	Safe_Release(m_pModelCom_Rect);
 }
