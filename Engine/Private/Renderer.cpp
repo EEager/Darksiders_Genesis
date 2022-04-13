@@ -306,6 +306,12 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 
 	// Distortion Map
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_Distortion"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))	
+		return E_FAIL;
+
+	//// PreBackBuffer
+	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(TEXT("Target_PreBB"), m_pDevice, m_pDeviceContext, ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+	//	return E_FAIL;
 
 
 
@@ -334,14 +340,13 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Shadow_Obj"), WIDTH * 1, WIDTH * 2, WIDTH, WIDTH)))
 		return E_FAIL;
+
+	// Distortion
+	if (FAILED(m_pTarget_Manager->Ready_DebugBuffer(m_pDevice, m_pDeviceContext, TEXT("Target_Distortion"), WIDTH * 0, WIDTH * 3, WIDTH, WIDTH)))
+		return E_FAIL;
 #endif // _DEBUG
 
 	/* MRT */
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow_Env"))))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow_Obj"))))
-		return E_FAIL;
-
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Diffuse"))))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Deferred"), TEXT("Target_Normal"))))
@@ -360,10 +365,19 @@ HRESULT CRenderer::NativeConstruct_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Specular"))))
 		return E_FAIL;
 
+	// Shadow
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow_Env"))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Shadows"), TEXT("Target_Shadow_Obj"))))
+		return E_FAIL;
+
+	// Distortion
+	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Post_Effect"), TEXT("Target_Distortion"))))
+		return E_FAIL;
+
 	/* Lighting */
 	if (FAILED(m_pLight_Manager->NativeConstruct(m_pDevice, m_pDeviceContext)))
 		return E_FAIL;
-
 
 	/* Final Render(Render Blending) */
 	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"));
@@ -419,8 +433,8 @@ bool bDraw_Debug = true;
 HRESULT CRenderer::Draw()
 {
 	// SkyBox
- 	if (FAILED(Render_Priority()))
-		return E_FAIL; 
+	if (FAILED(Render_Priority()))
+		return E_FAIL;
 
 	//ShadowMap 
 	if (FAILED(Render_Shadow()))
@@ -432,17 +446,71 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_LightAcc()))
 		return E_FAIL;
 	// [Deffered End] 최종 백버퍼에 합치자 = NonAlpha + LightAcc
-	if (FAILED(Render_Blend())) 
+	if (FAILED(Render_Blend()))
 		return E_FAIL;
 
-	
 	// 빛처리 필요없는 애들의 경우 바로 백버퍼에 그리자
-	if (FAILED(Render_NonLight())) 
-		return E_FAIL;
-	// 알파블렌딩은 Forward Processing을 통해 바로 백버퍼에 그리자
-	if (FAILED(Render_Alpha())) 
+	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 
+	// Render_Post_Alpha // Distortion Test
+	{
+		// Begin_MRT_Post_Alpha : 0번째는 백버퍼, 1번째는 distortionMap 이다.
+		if (FAILED(m_pTarget_Manager->Begin_MRT(m_pDeviceContext, TEXT("MRT_Post_Effect"))))
+			return E_FAIL;
+
+		/* 카메라로부터 멀리 있는 객체부터 그린다. */
+		m_RenderObjects[RENDER_ALPHA].sort([&](CGameObject* pSour, CGameObject* pDest)
+			{
+				return pSour->Get_CamDistance() > pDest->Get_CamDistance();
+			});
+
+		/* 리스트 순회 */
+		for (auto& pGameObject : m_RenderObjects[RENDER_ALPHA])
+		{
+			if (nullptr != pGameObject)
+			{
+				if (FAILED(pGameObject->Render()))
+					return E_FAIL;
+
+				Safe_Release(pGameObject);
+			}
+		}
+
+		m_RenderObjects[RENDER_ALPHA].clear();
+
+		if (FAILED(m_pTarget_Manager->End_MRT(m_pDeviceContext)))
+			return E_FAIL;
+
+		// Restore default states
+		ClearRenderStates();
+	}
+
+	// Render_Blend_Post_Alpha
+	{
+		//// Bind matrix
+		//m_pVIBuffer->Set_RawValue("g_TransformMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_TransformMatrix)), sizeof(_float4x4));
+		//m_pVIBuffer->Set_RawValue("g_ProjMatrix", &XMMatrixTranspose(XMLoadFloat4x4(&m_OrthoMatrix)), sizeof(_float4x4));
+
+		//// Bind Texture
+		//m_pVIBuffer->Set_ShaderResourceView("g_DistortionTexture", m_pTarget_Manager->Get_SRV(TEXT("Target_Distortion")));
+
+		//// Bind Delta Time
+		//m_fDistortionTimeAcc += 0.016f;
+		//if (m_fDistortionTimeAcc > 2000.f)
+		//{
+		//	m_fDistortionTimeAcc = 0.f;
+		//}
+		//m_pVIBuffer->Set_RawValue("g_fTimeDelta", &m_fDistortionTimeAcc, sizeof(_float));
+
+		//// Head Haze, 
+
+		//m_pVIBuffer->Render(5); // final pass로 출력하자
+	}
+
+	//// 알파블렌딩은 Forward Processing을 통해 바로 백버퍼에 그리자
+	//if (FAILED(Render_Alpha()))
+	//	return E_FAIL;
 
 
 	// UI도 바로 백버퍼에 그리자
@@ -481,12 +549,18 @@ HRESULT CRenderer::PostDraw(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 
 	if (bDraw_Debug)
 	{
-		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Shadows"), 4); // ShadowMapDebug_Pass
+		// 렌더타겟들 렌더링
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Deferred"), 0);
 		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_LightAcc"), 0);
-		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Shadows"), 0, m_spriteBatch, m_spriteFont);
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Shadows"), 4); // ShadowMapDebug_Pass
+		m_pTarget_Manager->Render_DebugBuffer(TEXT("MRT_Post_Effect"), 0); 
+
+
+		// 텍스트 렌더링
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Deferred"), 0, m_spriteBatch, m_spriteFont);
 		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_LightAcc"), 0, m_spriteBatch, m_spriteFont);
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Shadows"), 0, m_spriteBatch, m_spriteFont);
+		m_pTarget_Manager->PostRender_DebugBuffer(TEXT("MRT_Post_Effect"), 0, m_spriteBatch, m_spriteFont);
 	}
 #endif // _DEBUG
 

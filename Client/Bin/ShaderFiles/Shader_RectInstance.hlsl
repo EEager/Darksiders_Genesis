@@ -57,7 +57,9 @@ cbuffer DistortionBuffer
 texture2D		g_DiffuseTexture;
 texture2D		g_DepthTexture; // 소프트 렌더링
 texture2D		g_NoiseTexture; // Noise
+texture2D		g_NoiseTexture_3; // Noise
 texture2D		g_AlphaTexture; // Alpha
+texture2D		g_AlphaTexture_1; // Alpha
 
 struct VS_IN
 {
@@ -82,6 +84,9 @@ struct VS_OUT
 	float2 texCoords3 : TEXCOORD4;
 };
 
+
+static float m_dstR = 10.7;		// distortion range for x and y
+
 VS_OUT VS_MAIN(VS_IN In)
 {
 	VS_OUT		Out = (VS_OUT)0;
@@ -93,6 +98,9 @@ VS_OUT VS_MAIN(VS_IN In)
 	matrix		TransformMatrix = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
 	vector		vPosition = mul(vector(In.vPosition, 1.f), TransformMatrix);
 	Out.vPosition = mul(vPosition, matWVP);
+
+	// Out.vProjPos = Out.vPosition;
+	Out.vPosition *= m_dstR; 	// Distortion 범위를 늘리자.
 	Out.vProjPos = Out.vPosition;
 
 	// 픽셀 쉐이더의 텍스처 좌표를 저장한다.
@@ -128,28 +136,38 @@ struct PS_IN
 
 struct PS_OUT
 {
-	float4		vColor : SV_TARGET0;
+	float4		vBackBuffer : SV_TARGET0;
+	float4		vDistortion : SV_TARGET1;
 };
 
 
-
+// -------------------------------
+// Pass #0
+// -------------------------------
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
 	// 색상을 얻어오자.
-	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	if (Out.vColor.a < 0.1f)
+	Out.vBackBuffer = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	if (Out.vBackBuffer.a < 0.1f)
 		discard;
 
 	return Out;
 }
 
+// -------------------------------
+// Pass #1
 // For.Fire Effect With Distortion
+// -------------------------------
 PS_OUT PS_MAIN_ALPHA(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
+
+	// ---------------------------------------
+	// Noise 이미지를 통한 불 UV 흐리기
+	// ---------------------------------------
 	float4 noise1;
 	float4 noise2;
 	float4 noise3;
@@ -187,7 +205,7 @@ PS_OUT PS_MAIN_ALPHA(PS_IN In)
 
 	// 섭동되고 왜곡 된 텍스처 샘플링 좌표를 사용하여 화재 텍스처에서 색상을 샘플링합니다.
 	// 화스랩 상태를 감싸는 대신 클램프 샘플 상태를 사용하여 화염을 감싸는 것을 방지합니다.
-	Out.vColor = g_DiffuseTexture.Sample(SampleType2, noiseCoords.xy);
+	Out.vBackBuffer = g_DiffuseTexture.Sample(SampleType2, noiseCoords.xy);
 
 	// 교란되고 왜곡 된 텍스처 샘플링 좌표를 사용하여 알파 텍스처에서 알파 값을 샘플링합니다.
 	// 이것은 불의 투명도에 사용됩니다.
@@ -195,8 +213,15 @@ PS_OUT PS_MAIN_ALPHA(PS_IN In)
 	alphaColor = g_AlphaTexture.Sample(SampleType2, noiseCoords.xy);
 
 	// 화재의 알파 블렌딩을 불안정하고 왜곡 된 알파 텍스처 값으로 설정합니다.
-	Out.vColor.a = alphaColor;
+	Out.vBackBuffer.a = alphaColor;
 
+	// ---------------------------------------
+	// Distortion
+	// ---------------------------------------
+	float4	DistortionOut;
+	DistortionOut = g_NoiseTexture_3.Sample(SampleType, In.vTexUV); // noise
+	DistortionOut.w *= g_AlphaTexture_1.Sample(SampleType, In.vTexUV); // Radical 알파를 사용하자
+	Out.vDistortion = DistortionOut;
 
 	//// 
 	//// 소프트 렌더링
@@ -221,6 +246,10 @@ PS_OUT PS_MAIN_ALPHA(PS_IN In)
 
 
 
+
+// -------------------------------
+// 
+// -------------------------------
 technique11	DefaultTechnique
 {
 	pass DefaultPass

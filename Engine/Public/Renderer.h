@@ -56,6 +56,9 @@ private:
 
 	HRESULT Render_Mouse();
 
+private:
+	_float m_fDistortionTimeAcc = 0.f;
+
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CComponent* Clone(void* pArg) override;

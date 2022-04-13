@@ -29,6 +29,11 @@ cbuffer Camera
 	vector			g_vCamPosition;
 };
 
+cbuffer TimeDelta
+{
+	float			g_fTimeDelta;
+};
+
 cbuffer Material
 {
 	vector			g_vMtrlAmbient = vector(1.f, 1.f, 1.f, 1.f);
@@ -43,11 +48,19 @@ texture2D		g_DiffuseTexture;
 texture2D		g_EmissiveTexture;
 texture2D		g_HitPowerTexture;
 
+// For.LightAcc
 texture2D		g_ShadeTexture;
 texture2D		g_SpecularTexture;
 
+// For.Shadow Mapping
 Texture2D		g_ShadowMap_Env;
 Texture2D		g_ShadowMap_Objects;
+
+// For.Distortion
+Texture2D		g_BackBufferTexture;
+Texture2D		g_DistortionTexture;
+
+
 
 
 // ----------
@@ -116,7 +129,6 @@ PS_OUT PS_MAIN2(PS_IN In)
 	Out.vColor = float4(c.rrr, 1);
 	return Out;
 }
-
 
 struct PS_OUT_DIRECTIONAL
 {
@@ -294,6 +306,26 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 }
 
 
+// 백버퍼를 Noise(Distortion)를 이용하여 sampling 한다.
+// For Distortion 
+PS_OUT PS_MAIN_DISTORTION(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	vector vBackBuffer = g_BackBufferTexture.Sample(DefaultSampler, In.vTexUV);
+	vector vDistortion = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV);
+	//
+	// 기본 빛연산
+	//
+	Out.vColor = vBackBuffer;
+	if (0.f == Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
+
+
 
 
 
@@ -335,7 +367,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_POINT();
 	}
 
-	// #3
+	// #3 : 논알파 + 빛연산
 	pass FinalRender
 	{
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -357,6 +389,18 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN2();
+	}
+
+	// #5 : Render Blending Post Alpha
+	pass RenderBlendingPostAlpha_Pass
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(NonZTestDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
 	}
 
 }

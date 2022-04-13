@@ -414,19 +414,19 @@ HRESULT CLoader::Add_Texture()
 
 	// Fire
 	{
-		/* For.Prototype_Component_Texture_fire01 */
+		/* For.Prototype_Component_Texture_fire */
 		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_fire01"),
 			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/fire01.dds")))))
 			return E_FAIL;
 
 		/* For.Prototype_Component_Texture_noise */
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise01"),
-			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/noise0%d.dds"), 2))))
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"),
+			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/noise0%d.dds"), 4))))
 			return E_FAIL;
 
-		/* For.Prototype_Component_Texture_alpha01 */
-		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha01"),
-			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/alpha01.dds")))))
+		/* For.Prototype_Component_Texture_alpha */
+		if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha"),
+			CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Fire/alpha0%d.dds"), 2))))
 			return E_FAIL;
 	}
 

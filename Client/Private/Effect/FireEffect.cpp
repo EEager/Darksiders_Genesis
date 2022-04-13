@@ -48,7 +48,7 @@ _int CFireEffect::LateTick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTarget->Get_State(CTransform::STATE_POSITION));
 
 	// 빌보딩
-	m_pTransformCom->Set_BillBoard();
+	//m_pTransformCom->Set_BillBoard();
 		
 	// Blending을 하기 위해 알파그룹에 넣는다.
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this)))
@@ -86,10 +86,10 @@ HRESULT CFireEffect::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_fire01"), TEXT("Com_Texture_Diffuse"), (CComponent**)&m_pTextureDiffuse)))
 		return E_FAIL;
 	/* For.Com_Texture_Noise */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise01"), TEXT("Com_Texture_Noise"), (CComponent**)&m_pTextureNoise)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"), TEXT("Com_Texture_Noise"), (CComponent**)&m_pTextureNoise)))
 		return E_FAIL;
 	/* For.Com_Texture_Alpha */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha01"), TEXT("Com_Texture_Alpha"), (CComponent**)&m_pTextureAlpha)))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha"), TEXT("Com_Texture_Alpha"), (CComponent**)&m_pTextureAlpha)))
 		return E_FAIL;
 
 	/* For.Com_Model */
@@ -114,8 +114,12 @@ HRESULT CFireEffect::SetUp_ConstantTable()
 	m_pModelCom->Set_ShaderResourceView("g_DepthTexture", pGameInstance->Get_RenderTarget_SRV(TEXT("Target_Depth_Cur")));
 
 	m_pTextureDiffuse->SetUp_OnShader(m_pModelCom, "g_DiffuseTexture"); 
+
 	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture", 1); 
-	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture"); 
+	m_pTextureNoise->SetUp_OnShader(m_pModelCom, "g_NoiseTexture_3", 0); 
+
+	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture", 0); 
+	m_pTextureAlpha->SetUp_OnShader(m_pModelCom, "g_AlphaTexture_1", 1); 
 
 	// From Dx11Demo_33
 	// Distortion 효과를 적용하자.
