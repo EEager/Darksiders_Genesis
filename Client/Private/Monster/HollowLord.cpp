@@ -367,7 +367,7 @@ void CHollowLord::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTim
 	{
 		// 피격 당했다. 
 		m_bHitted = true;
-		m_fHitPower = .8f;
+		m_fHitPower = .7f;
 
 		auto DstAtkDmg = pDst->Get_Owner()->m_tGameInfo.iAtt;
 		m_tGameInfo.iHp -= DstAtkDmg;

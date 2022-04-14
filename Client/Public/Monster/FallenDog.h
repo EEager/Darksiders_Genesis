@@ -74,6 +74,7 @@ public:
 private:
 	const _float MAX_STIFFNESS = 15.f; // 5대 맞으면 그로기 상태
 	_float m_fStiffness = MAX_STIFFNESS; // 0이되면, 그로기 상태에 빠진다.
+	_bool	m_bStiffnessRecovery = false; // 그로기가 끝나면 서서히 경직도를 증가시키는 연출을하자.
 	_float m_fFinalDeadTime = 0.f; // DeadPose에서 몇초뒤에 진짜로 죽는다.
 	_bool m_bExecutionAnim = false;
 	_bool m_bExecutionAnimEnd = false;

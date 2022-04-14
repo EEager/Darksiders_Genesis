@@ -104,7 +104,7 @@ _int CMonster::LateTick(_float fTimeDelta)
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 			return 0;
 
-		// 모든 몬스터는 Post Render를 진행한다 그룹에서 render한다
+		// 모든 몬스터는 Post Render를 진행한다. 체력바가 여기에 있거든요.
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			return 0;
 	}

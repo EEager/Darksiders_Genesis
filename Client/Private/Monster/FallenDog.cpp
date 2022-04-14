@@ -129,7 +129,9 @@ void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTime
 		// 피격 당했다. 
 		m_bHitted = true;
 		m_fHitPower = .8f;
-		m_fStiffness -= 2.5f;
+
+		if (m_bStiffnessRecovery == false) // 회복상태에서는 감소하지말자.
+			m_fStiffness -= 2.5f;
 
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
 
@@ -177,13 +179,11 @@ _int CFallenDog::Tick(_float fTimeDelta)
 		// update animation
 		if (m_bExecutionAnim) // 처형모션일때는 월행 움직이지말자.
 		{
-			_float4x4 forDontMoveInWorld;
-			XMStoreFloat4x4(&forDontMoveInWorld, XMMatrixIdentity());
 			m_pModelCom->Update_Animation(fTimeDelta);
 		}
 		else
 		{
-			m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom, m_eDir);
+			m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "MASTER_FallenDog", m_pNaviCom, m_eDir, 4);
 		}
 	}
 	else
@@ -197,6 +197,17 @@ _int CFallenDog::Tick(_float fTimeDelta)
 		}
 	}
 	DoState(fTimeDelta);
+
+	// 그로기 상태가 되었을 경우, 경직도를 서서히 증가시키자.
+	if (m_bStiffnessRecovery)
+	{
+		m_fStiffness += 0.03f;
+		if (m_fStiffness >= MAX_STIFFNESS)
+		{
+			m_bStiffnessRecovery = false;
+			m_fStiffness = MAX_STIFFNESS;
+		}
+	}
 
 	return _int();
 }
@@ -525,10 +536,16 @@ void CFallenDog::DoState(float fTimeDelta)
 	//-----------------------------------------------------------
 	else if (m_pCurState == "FallenDog_Mesh.ao|FallenDog_Impact_Heavy_F")
 	{
+		// 그로기 이후 일어날랑 할때 경직도를 증가시키자
+		if (m_bStiffnessRecovery == false)
+		{
+			_uint iKeyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
+			if (iKeyFrameIdx > 106)
+				m_bStiffnessRecovery = true;
+		}
+
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			// Stiffness 복구. 
-			m_fStiffness = MAX_STIFFNESS;
 			m_pNextState = "FallenDog_Mesh.ao|FallenDog_Idle";
 		}
 	}
