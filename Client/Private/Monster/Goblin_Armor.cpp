@@ -109,8 +109,11 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 
 _int CGoblin_Armor::Tick(_float fTimeDelta)
 {
-	if (CMonster::Tick(fTimeDelta) < 0)
+	int ret = CMonster::Tick(fTimeDelta);
+	if (ret < 0)
 		return -1;
+	if (ret == 1) // dissolve ÁßÀÌ´Ù.
+		return 0;
 
 	// FSM
 	CMonster::DoGlobalState(fTimeDelta);

@@ -48,10 +48,10 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 
 _int CBallista::Tick(_float fTimeDelta)
 {
-	// 모든 몬스터는 죽으면 -1을 반환한다
+	// CBallista는 죽으면 죽은 상태 유지하자
 	if (m_isDead)
 	{
-		return -1;
+		return 0;
 	}
 
 	// 키프레임 1일때 화살을 생성하자.
@@ -181,7 +181,8 @@ _int CBallista::LateTick(_float fTimeDelta)
 	}
 
 	// 플레이어가 근처에 있으면 Collider를 실행시키자.
-	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 25.f);
+	if (m_isDead == false)
+		pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 25.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 	return 0;

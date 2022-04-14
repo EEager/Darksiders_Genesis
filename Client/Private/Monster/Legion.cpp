@@ -119,15 +119,21 @@ _int CLegion::Tick(_float fTimeDelta)
 		// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다
 		if (m_isDead)
 		{
-			// 바리스타 있는 경우, 죽기전에 바리스타 상태 초기화
-			if (m_pBallista)
+			// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다. 
+			m_fDissolvePower += 0.002f;
+			if (m_fDissolvePower >= 1.f) // 1이면 다 사라졌다. 이때는 진짜로 죽이자.
 			{
-				auto pBallista = static_cast<CBallista*>(m_pBallista);
-				pBallista->m_bLegionOn = false;
-				if (pBallista->m_bWillDead == false) // m_bWillDead일때는 Idle로 바꾸지말자.. 
-					pBallista->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+				// 바리스타 있는 경우, 죽기전에 바리스타 상태 초기화
+				if (m_pBallista)
+				{
+					auto pBallista = static_cast<CBallista*>(m_pBallista);
+					pBallista->m_bLegionOn = false;
+					if (pBallista->m_bWillDead == false) // m_bWillDead일때는 Idle로 바꾸지말자.. 
+						pBallista->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+				}
+				return -1;
 			}
-			return -1;
+			return 0; // 바로 삭제시키지말고. 
 		}
 
 		// 모든 몬스터는 타겟팅을 설정한다

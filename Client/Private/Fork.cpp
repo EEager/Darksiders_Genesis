@@ -159,7 +159,7 @@ HRESULT CFork::SetUp_Component()
 		return E_FAIL;
 
 
-	/* For.Com_Texture*/
+	/* For.Com_Texture_Disolve */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_Texture"), (CComponent**)m_pDissolveTextureCom.GetAddressOf())))
 		return E_FAIL;
 

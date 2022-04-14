@@ -36,9 +36,16 @@ HRESULT CMonster::NativeConstruct(void * pArg)
 
 _int CMonster::Tick(_float fTimeDelta)
 {
-	// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다
+	// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다. 
 	if (m_isDead)
-		return -1;
+	{
+		m_fDissolvePower += 0.002f;
+		if (m_fDissolvePower >= 1.f) // 1이면 다 사라졌다. 이때는 진짜로 죽이자.
+		{
+			return -1;
+		}
+		return 1; // 바로 삭제시키지말고. 
+	}
 
 	// 모든 몬스터는 타겟팅을 설정한다
 	if (!m_bTargetingOnce)
@@ -167,6 +174,10 @@ HRESULT CMonster::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"), TEXT("Com_Navi"), (CComponent**)&m_pNaviCom)))
 		return E_FAIL;
 
+	/* For.Com_Texture_Disolve */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_Texture"), (CComponent**)&m_pDissolveTextureCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -200,11 +211,17 @@ HRESULT CMonster::SetUp_ConstantTable(_uint iPassIndex)
 	m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, 0.f, 0.f, 0.f), sizeof(_vector));
 
 	//// 림라이트 테스트
-	//m_pModelCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_vector));
+	{
+		//m_pModelCom->Set_RawValue("g_vCamPosition", &pGameInstance->Get_CamPosition(), sizeof(_vector));
 
-	//float isMonster = 1.f;
-	//m_pModelCom->Set_RawValue("g_fIsMonster", &isMonster, sizeof(float));
+		//float isMonster = 1.f;
+		//m_pModelCom->Set_RawValue("g_fIsMonster", &isMonster, sizeof(float));
+	}
 
+	// Bind Dissolve 
+	m_pModelCom->Set_RawValue("g_DissolvePwr", &m_fDissolvePower, sizeof(_float));
+	if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
+		return E_FAIL;
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -315,4 +332,5 @@ void CMonster::Free()
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pDissolveTextureCom);
 }

@@ -39,6 +39,9 @@ protected:
 
 	CNavigation*				m_pNaviCom = nullptr;
 	CModel*						m_pModelCom = nullptr;
+	CTexture*					m_pDissolveTextureCom = nullptr;
+
+	_float m_fDissolvePower = 0.000f; 
 
 	// ---------------------------------------------------- 
 	// FSM

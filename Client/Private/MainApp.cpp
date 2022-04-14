@@ -252,7 +252,7 @@ HRESULT CMainApp::Ready_Component_ForStatic()
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_Dissolve */
-	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/T_DissolveMask_A.tga")))))
+	if (FAILED(m_pGameInstance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/T_DissolveMask_A.dds")))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Texture_UI_MenuTransSlice1 */
