@@ -24,6 +24,7 @@ private:
 	}BONEDESC;
 	BONEDESC		m_Lord_RightHandDesc;
 	BONEDESC		m_Lord_LeftHandDesc;
+	BONEDESC		m_Lord_HeadDesc;
 
 private:
 	explicit CHollowLord(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
@@ -56,6 +57,8 @@ private:
 
 	_float m_fTimeIdle = 0.f;
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
+
+	_float m_fHitDmgAcc = 0.f;
 	//----------------------------------------------
 
 

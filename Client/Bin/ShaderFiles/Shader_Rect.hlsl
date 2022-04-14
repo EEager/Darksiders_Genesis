@@ -154,10 +154,10 @@ PS_OUT PS_MAIN_HollowLord(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	// 현재 체력을 표시하자. 알파가 166~167사이이면 체력 배경이다. 
 	if (In.vTexUV.x <= g_HollowLordCurHpUVX)
 	{
-		if (0.6509f <= Out.vColor.a && Out.vColor.a < 0.6549f)
+		// 알파가 166이면 체력바 있는 부분인데 보간으로 인해 165 ~ 167로 잡아야한다.
+		if (0.6490f/*165/255*/ <= Out.vColor.a && Out.vColor.a < 0.6549f /*167/255*/)
 			Out.vColor.rgb = float3(1.f, 0.f, 0.f);
 	}
 	Out.vColor.a = min(Out.vColor.a, g_Alpha); // 서서히 나오게 하자.

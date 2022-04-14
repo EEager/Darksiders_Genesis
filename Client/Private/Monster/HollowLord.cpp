@@ -53,22 +53,38 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	m_Lord_LeftHandDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_HL_Hand_L");
 	m_Lord_LeftHandDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
 	m_Lord_LeftHandDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
+	ZeroMemory(&m_Lord_HeadDesc, sizeof(BONEDESC));
+	m_Lord_HeadDesc.pBoneMatrix = m_pModelCom->Get_CombinedMatrixPtr("Bone_HL_Face_ForeHead");
+	m_Lord_HeadDesc.OffsetMatrix = m_pModelCom->Get_OffsetMatrix("Bone_HL_Face_ForeHead");
+	m_Lord_HeadDesc.PivotMatrix = m_pModelCom->Get_PivotMatrix_Bones();
+	m_Lord_HeadDesc.pTargetWorldMatrix = m_pTransformCom->Get_WorldFloat4x4Ptr();
 
 	// For Hit Box
 	{
 		// 보스 히트박스는 COL_BALLISTA_BODY로 만들어 플레이어가 공격하였을때 go back 하도록하자
+		
+		// 0
 		/* For.LordBody */
 		ColliderDesc.vPivot = _float3(0.f, 15.f, 0.f);
 		ColliderDesc.vSize = _float3(20.f, 30.f, 20.f);
 		ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_AABB;
 		__super::Add_Collider(&ColliderDesc, COL_BALLISTA_BODY);
 
+		// 1
+		/* For.LordHead */
+		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
+		ColliderDesc.fRadius = 5.f;
+		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+		__super::Add_Collider(&ColliderDesc, COL_BALLISTA_BODY);
+
+		// 2
 		/* For.LordRightHand */
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
 		ColliderDesc.fRadius = 5.f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 		__super::Add_Collider(&ColliderDesc, COL_BALLISTA_BODY);
 
+		// 3
 		/* For.LordLeftHand */
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
 		ColliderDesc.fRadius = 5.f;
@@ -78,12 +94,14 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 
 	// For Weapon
 	{
+		// 4
 		/* For.LordRightHand */
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f); 
 		ColliderDesc.fRadius = 5.f;
 		ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
 		__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON, true);
 
+		// 5
 		/* For.LordLeftHand */
 		ColliderDesc.vPivot = _float3(0.f, 0.0f, 0.f);
 		ColliderDesc.fRadius = 5.f;
@@ -217,7 +235,8 @@ void CHollowLord::UpdateState()
 		isLoop = false;
 	}
 	else if (m_pNextState == "HollowLord.ao|HollowLord_Emerge" || 
-			m_pNextState == "HollowLord.ao|HollowLord_Death")
+			 m_pNextState == "HollowLord.ao|HollowLord_Death" ||
+			 m_pNextState == "HollowLord.ao|HollowLord_Impact_F")
 	{
 		isLoop = false;
 	}
@@ -274,9 +293,19 @@ void CHollowLord::DoState(float fTimeDelta)
 	//-----------------------------------------------------
 	else if (m_pCurState == "HollowLord.ao|HollowLord_Death")
 	{
+		m_bWillDead = true;
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
 			m_isDead = true;
+		}
+	}
+	//-----------------------------------------------------
+	else if (m_pCurState == "HollowLord.ao|HollowLord_Impact_F")
+	{
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			// 그로기 끝나면 Idle로.
+			m_pNextState = "HollowLord.ao|HollowLord_Idle";
 		}
 	}
 }
@@ -287,7 +316,7 @@ _int CHollowLord::Update_Colliders(_matrix wolrdMatrix/*not used*/)
 	int idx = 0;
 	for (auto& pCollider : m_ColliderList)
 	{
-		if (idx == 1 || idx ==3) // m_Lord_RightHandDesc
+		if (idx == 2 || idx ==4) // m_Lord_RightHandDesc
 		{
 			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_Lord_RightHandDesc.OffsetMatrix); // 뼈->정점
 			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_Lord_RightHandDesc.pBoneMatrix); // Root->뼈 
@@ -298,7 +327,7 @@ _int CHollowLord::Update_Colliders(_matrix wolrdMatrix/*not used*/)
 				TargetWorldMatrix;
 			pCollider->Update(TransformationMatrix);
 		}
-		else if (idx == 2 || idx == 4) // m_Lord_LeftHandDesc
+		else if (idx == 3 || idx == 5) // m_Lord_LeftHandDesc
 		{
 			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_Lord_LeftHandDesc.OffsetMatrix); // 뼈->정점
 			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_Lord_LeftHandDesc.pBoneMatrix); // Root->뼈 
@@ -309,7 +338,18 @@ _int CHollowLord::Update_Colliders(_matrix wolrdMatrix/*not used*/)
 				TargetWorldMatrix;
 			pCollider->Update(TransformationMatrix);
 		}
-		else // LordBody 
+		else if (idx == 1) // m_Lord_HeadDesc 
+		{
+			_matrix		OffsetMatrix = XMLoadFloat4x4(&m_Lord_HeadDesc.OffsetMatrix); // 뼈->정점
+			_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_Lord_HeadDesc.pBoneMatrix); // Root->뼈 
+			_matrix		PivotMatrix = XMLoadFloat4x4(&m_Lord_HeadDesc.PivotMatrix);
+			_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_Lord_HeadDesc.pTargetWorldMatrix);
+			_matrix		TransformationMatrix =
+				(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix를 안곱하니간 뭔가 되는거 같다... 왜?
+				TargetWorldMatrix;
+			pCollider->Update(TransformationMatrix);
+		}
+		else // Body
 		{
 			pCollider->Update(m_pTransformCom->Get_WorldMatrix());
 		}
@@ -329,7 +369,16 @@ void CHollowLord::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTim
 		m_bHitted = true;
 		m_fHitPower = .8f;
 
-		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt * 10;
+		auto DstAtkDmg = pDst->Get_Owner()->m_tGameInfo.iAtt;
+		m_tGameInfo.iHp -= DstAtkDmg;
+		m_fHitDmgAcc += DstAtkDmg;
+
+		// 받은 피해량이 20이 넘어가면 그로기 상태로 만든다. 죽을라 할때는 그로기로 안만든다
+		if (m_bWillDead == false && m_fHitDmgAcc >= 20.f)
+		{
+			m_pNextState = "HollowLord.ao|HollowLord_Impact_F";
+			m_fHitDmgAcc = 0.f;
+		}
 		return;
 	}
 }

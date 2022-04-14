@@ -107,8 +107,6 @@ HRESULT CLight_Manager::Update(_float fTimeDelta)
 		// 광원 시점의 여러 Matrics 를 생성한다
 		// 먼저 Enviroment그림자를 만들기위한 행렬들을 생성한다.
 		{
-
-
 			// 빛타겟포지션
 			XMVECTOR targetPos = XMVectorSet(502.f, 32.f - 80.f, 461.f + 40.f, 1.0f);
 			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
