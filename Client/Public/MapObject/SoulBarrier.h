@@ -38,6 +38,9 @@ private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
+	CTexture* m_pDissolveTextureCom = nullptr;
+private:
+	_float m_fDissolvePower = 0.000f;
 
 private:
 	// FSM

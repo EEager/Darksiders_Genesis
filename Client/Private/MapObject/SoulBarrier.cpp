@@ -56,7 +56,12 @@ _int CSoulBarrier::Tick(_float fTimeDelta)
 	// 모든 몬스터는 죽으면 -1을 반환한다
 	if (m_isDead)
 	{
-		return -1;
+		m_fDissolvePower += 0.002f;
+		if (m_fDissolvePower >= 1.f) // 1이면 다 사라졌다. 이때는 진짜로 죽이자.
+		{
+			return -1;
+		}
+		return 1; // 바로 삭제시키지말고. 
 	}
 
 	// GlobalState
@@ -223,6 +228,10 @@ HRESULT CSoulBarrier::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SoulBarrier"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+	/* For.Com_Texture_Disolve */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_Texture"), (CComponent**)&m_pDissolveTextureCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -254,6 +263,11 @@ HRESULT CSoulBarrier::SetUp_ConstantTable(_uint iPassIndex)
 
 	// 피격시 색상 변경할꺼다. 빨간색으로
 	m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(m_fHitPower, 0.f, 0.f, 0.f), sizeof(_vector));
+
+	// Bind Dissolve 
+	m_pModelCom->Set_RawValue("g_DissolvePwr", &m_fDissolvePower, sizeof(_float));
+	if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom, "g_DissolveTexture")))
+		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
@@ -320,5 +334,6 @@ void CSoulBarrier::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pDissolveTextureCom);
 }
 

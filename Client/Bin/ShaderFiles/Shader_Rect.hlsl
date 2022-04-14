@@ -29,6 +29,11 @@ cbuffer Effects
 	float			g_Alpha;
 };
 
+cbuffer HollowLord
+{
+	float			g_HollowLordCurHpUVX;
+};
+
 texture2D		g_DiffuseTexture;
 texture2D		g_NoiseTexture; // Noise
 texture2D		g_NoiseTexture_HeatHaze; // Noise
@@ -139,11 +144,26 @@ PS_OUT PS_MAIN2(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor.a = g_Alpha;
+	Out.vColor.a = min(Out.vColor.a, g_Alpha); // 서서히 나오게 하자.
 
 	return Out;
 }
 
+PS_OUT PS_MAIN_HollowLord(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	// 현재 체력을 표시하자. 알파가 166~167사이이면 체력 배경이다. 
+	if (In.vTexUV.x <= g_HollowLordCurHpUVX)
+	{
+		if (0.6509f <= Out.vColor.a && Out.vColor.a < 0.6549f)
+			Out.vColor.rgb = float3(1.f, 0.f, 0.f);
+	}
+	Out.vColor.a = min(Out.vColor.a, g_Alpha); // 서서히 나오게 하자.
+
+	return Out;
+}
 
 PS_OUT_DISTORTION PS_MAIN_DISTORTION(VS_OUT_DISTORTION In)
 {
@@ -213,6 +233,7 @@ PS_OUT_DISTORTION PS_MAIN_DISTORTION(VS_OUT_DISTORTION In)
 
 technique11	DefaultTechnique
 {
+	// 0
 	pass DefaultPass
 	{			
 		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -224,6 +245,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
+	// 1
 	pass ZIgnoreNAlphablending
 	{
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -235,6 +257,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
+	// 2
 	pass ZIgnoreNAlphablending_AlphaControl
 	{
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -246,6 +269,7 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN2();
 	}
 
+	// 3
 	pass Distortion_Alpha
 	{
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -255,5 +279,17 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN_DISTORTION();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
+	}
+
+	// 4
+	pass ZIgnoreNAlphablending_HollowLord
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(NonZTestNonZWriteDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_HollowLord();
 	}
 }

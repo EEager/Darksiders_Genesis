@@ -160,6 +160,9 @@
     <Filter Include="02.GameObjects\Effect\Fire">
       <UniqueIdentifier>{63d707f5-f71c-4adc-a1bd-a6e112135729}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Monster\HollowLord\HpBar">
+      <UniqueIdentifier>{e8cf9841-ed7c-4219-b0a2-1ac8f42227b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="..\Public\Effect\RectEffect.h">
       <Filter>02.GameObjects\Effect\Rect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_HollowLord_HpBar.h">
+      <Filter>02.GameObjects\Monster\HollowLord\HpBar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -448,6 +454,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect\PointEffect.cpp">
       <Filter>02.GameObjects\Effect\Point</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_HollowLord_HpBar.cpp">
+      <Filter>02.GameObjects\Monster\HollowLord\HpBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

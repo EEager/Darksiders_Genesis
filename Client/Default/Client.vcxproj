@@ -210,6 +210,7 @@
     <ClInclude Include="..\Public\State_War.h" />
     <ClInclude Include="..\Public\Sword.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_HollowLord_HpBar.h" />
     <ClInclude Include="..\Public\UI_War_Hp_n_Wrath_Bar.h" />
     <ClInclude Include="..\Public\UI_War_Skills.h" />
     <ClInclude Include="..\Public\War.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="..\Private\State_War.cpp" />
     <ClCompile Include="..\Private\Sword.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_HollowLord_HpBar.cpp" />
     <ClCompile Include="..\Private\UI_War_Hp_n_Wrath_Bar.cpp" />
     <ClCompile Include="..\Private\UI_War_Skills.cpp" />
     <ClCompile Include="..\Private\War.cpp" />

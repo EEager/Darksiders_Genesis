@@ -90,7 +90,7 @@ _int CMonster::LateTick(_float fTimeDelta)
 
 	// AddRenderGroup
 	bool AddRenderGroup = false;
-	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.f))
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
 		AddRenderGroup = true;
 
 #ifdef USE_IMGUI
@@ -110,7 +110,7 @@ _int CMonster::LateTick(_float fTimeDelta)
 	}
 
 	// 모든 몬스터는 자기가 가지고 있는 Collider list를 collider manager에 등록하여 충돌처리를 진행한다
-	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 20.f);
+	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 90.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 
