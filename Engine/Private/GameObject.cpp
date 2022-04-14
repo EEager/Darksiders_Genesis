@@ -131,6 +131,7 @@ _int CGameObject::Update_Colliders(_matrix wolrdMatrix)
 	return 0;
 }
 
+#ifdef _DEBUG
 _int CGameObject::Render_Colliders()
 {
 	for (auto& pCollider : m_ColliderList)
@@ -140,6 +141,7 @@ _int CGameObject::Render_Colliders()
 	}
 	return 0;
 }
+#endif
 
 
 void CGameObject::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)

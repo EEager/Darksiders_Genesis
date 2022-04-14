@@ -708,8 +708,10 @@ _int CGoblin_Spear::LateTick(_float fTimeDelta)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 			assert(0);
+#ifdef _DEBUG
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
+#endif
 	}
 
 	// Collider, Layer_War와 20.f 거리 이하인 경우에만 콜라이더매니져에 등록된다
@@ -742,7 +744,9 @@ HRESULT CGoblin_Spear::Render(_uint iPassIndex)
 
 HRESULT CGoblin_Spear::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+#ifdef _DEBUG
 	CGameObject::Render_Colliders();
+#endif
 
 	return S_OK;
 }

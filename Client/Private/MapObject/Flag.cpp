@@ -66,8 +66,10 @@ _int CFlag_A::LateTick(_float fTimeDelta)
 		{
 			if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 				assert(0);
+#ifdef _DEBUG
 			if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 				assert(0);
+#endif
 		}
 	}
 
@@ -95,7 +97,9 @@ HRESULT CFlag_A::Render(_uint iPassIndex)
 
 HRESULT CFlag_A::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+#ifdef _DEBUG
 	CGameObject::Render_Colliders();
+#endif
 
 #ifdef USE_IMGUI
 	if (m_bUseImGui) // IMGUI 툴로 배치할거다

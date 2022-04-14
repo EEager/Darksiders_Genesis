@@ -250,7 +250,6 @@ HRESULT CTarget_Manager::Ready_DebugBuffer(ID3D11Device* pDevice, ID3D11DeviceCo
 
 	return pRenderTarget->Ready_DebugBuffer(iLTX, iLTY, iSizeX, iSizeY);
 }
-#endif // _DEBUG
 
 HRESULT CTarget_Manager::Render_DebugBuffer(const _tchar* pMRTTag, _uint iPassIndex)
 {
@@ -275,6 +274,7 @@ HRESULT CTarget_Manager::PostRender_DebugBuffer(const _tchar* pMRTTag, _uint iPa
 
 	return S_OK;
 }
+#endif // _DEBUG
 
 
 CRenderTarget * CTarget_Manager::Find_RenderTarget(const _tchar * pRenderTargetTag)
@@ -318,5 +318,7 @@ void CTarget_Manager::Free()
 		Safe_Release(Pair.second);
 	}
 	m_RenderTargets.clear();
+#ifdef _DEBUG
 	Safe_Release(m_pVIBuffer);
+#endif
 }

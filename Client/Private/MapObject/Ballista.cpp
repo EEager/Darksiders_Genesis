@@ -105,18 +105,18 @@ _int CBallista::Tick(_float fTimeDelta)
 			_bool isLoop = true;
 
 			if (m_pNextState == "Ballista_A.ao|Balliista_A_Idle" ||
-				m_pNextState == "Ballista_A.ao|Ballista_A_Full" 
+				m_pNextState == "Ballista_A.ao|Ballista_A_Full"
 				)
+			{
 				isLoop = true;
+			}
 			else if (m_pNextState == "Ballista_A.ao|Ballista_A_Impact" ||
 					 m_pNextState == "Ballista_A_Destroyed.ao|Ballista_A_Explode")
 				isLoop = false;
-
-			m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
-
 			if (m_pNextState == "Ballista_A.ao|Ballista_A_Full") // Idle일때는 대충 아무거나 고블린이 던져서 발리스타 밑에 깔리게 끔하자.
 				m_pModelGoblinCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_Ballista_Full", isLoop);
 
+			m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
 			m_pCurState = m_pNextState;
 		}
 	}
@@ -174,8 +174,10 @@ _int CBallista::LateTick(_float fTimeDelta)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 			assert(0);
+#ifdef _DEBUG
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
+#endif
 	}
 
 	// 플레이어가 근처에 있으면 Collider를 실행시키자.
@@ -254,7 +256,9 @@ HRESULT CBallista::Render(_uint iPassIndex)
 
 HRESULT CBallista::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+#ifdef _DEBUG
 	CGameObject::Render_Colliders();
+#endif
 
 #ifdef USE_IMGUI
 	if (m_bUseImGui) // IMGUI 툴로 배치할거다
@@ -534,8 +538,10 @@ _int CBallista_Bolt::LateTick(_float fTimeDelta)
 	{
 		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONALPHA, this)))
 			assert(0);
+#ifdef _DEBUG
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
+#endif
 	}
 
 	// Collider 
@@ -568,7 +574,9 @@ HRESULT CBallista_Bolt::Render(_uint iPassIndex)
 
 HRESULT CBallista_Bolt::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+#ifdef _DEBUG
 	CGameObject::Render_Colliders();
+#endif
 
 	return S_OK;
 }

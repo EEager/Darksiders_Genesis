@@ -54,7 +54,10 @@ public:
 	void Set_Collider_Attribute(const _tchar* pColliderTag/*define 값을 넣어주자*/, _bool disable); // 특정 Tag의 콜라이더 속성을 변경한다.
 	virtual void Release_Collider();
 	virtual _int Update_Colliders(_matrix wolrdMatrix = XMMatrixIdentity());
+
+#ifdef _DEBUG
 	virtual _int Render_Colliders();
+#endif
 
 public:
 	virtual void OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta);

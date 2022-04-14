@@ -7,6 +7,15 @@
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
+      <FullPath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Engine\Bin\LightHelper.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Engine\Bin\Shader_Deferred.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Engine\Bin\Shader_Defines.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
       <FullPath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Engine\Bin\Shader_Line.cso</FullPath>
     </ContentFile>
   </ContentFiles>

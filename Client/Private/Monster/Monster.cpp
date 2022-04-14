@@ -3,7 +3,9 @@
 
 #include "GameInstance.h"
 
+#ifdef USE_IMGUI
 #include "imgui_Manager.h"
+#endif
 
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)

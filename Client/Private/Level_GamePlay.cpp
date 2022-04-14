@@ -265,40 +265,53 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
 		return E_FAIL;
-	///* For.Prototype_Component_Model_Enviroment2 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
-	//	return E_FAIL;
-	///* For.Prototype_Component_Model_Enviroment3 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3")))
-	//	return E_FAIL;
-	///* For.Prototype_Component_Model_Enviroment4 */
-	//CGameObject* pEnviroment4 = nullptr;
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment4")))
-	//	return E_FAIL;
-	//static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
+	/* For.Prototype_Component_Model_Enviroment2 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment3_1 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3_1")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment3_2 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3_2")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment3_3 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3_3")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Enviroment3_4 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment3_4")))
+		return E_FAIL;
 
+	/* For.Prototype_Component_Model_Enviroment4 */
+	CGameObject* pEnviroment4 = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment4")))
+		return E_FAIL;
+	static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(150.f);
+
+#if 0 // not use
 	///* For.Prototype_Component_Model_Foliage0 */
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage0")))
 	//	return E_FAIL;
+#endif
 	/* For.Prototype_Component_Model_Foliage1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage1")))
 		return E_FAIL;
-	///* For.Prototype_Component_Model_Foliage2 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage2")))
-	//	return E_FAIL;
-	///* For.Prototype_Component_Model_Foliage3 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage3")))
-	//	return E_FAIL;
-	///* For.Prototype_Component_Model_Foliage4 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage4")))
-	//	return E_FAIL;
-	///* For.Prototype_Component_Model_Foliage5 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage5")))
-	//	return E_FAIL;
-	///* For.Prototype_Component_Model_Foliage6 */
-	//if (FAILED(pGameInstance->Add_GameObjectToLayer(&pEnviroment4, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage6")))
-	//	return E_FAIL;
-	//static_cast<CEnviroment*>(pEnviroment4)->Set_CullingRadian(100.f);
+	/* For.Prototype_Component_Model_Foliage2 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage2")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Foliage3 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage3")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Foliage4 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage4")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Foliage5 */
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage5")))
+		return E_FAIL;
+	/* For.Prototype_Component_Model_Foliage6 */
+	CGameObject* pFoliage6 = nullptr;
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pFoliage6, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage6")))
+		return E_FAIL;
+	static_cast<CEnviroment*>(pFoliage6)->Set_CullingRadian(100.f);
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -491,6 +504,7 @@ void CLevel_GamePlay::Free()
 bool event1_event0;
 bool event1_event1;
 bool event1_event2;
+bool event1_event3;
 CGameObject* pEffect = nullptr;
 CGameObject* pLegion = nullptr;
 CGameObject* pSceneChangeEffect3 = nullptr;
@@ -528,9 +542,10 @@ bool OnEvent1(_float fTimeDelta)
 	if (pEffect && static_cast<CSceneChangeEffect2*>(pEffect)->Get_Type() == CSceneChangeEffect2::EFFECT2_TYPE::DESCENT)
 	{
 		// 이펙트 죽는것은 계속해서 체크를 ㅎ라자.
-		if (pEffect->IsDead()) // 죽었으면 Release하자.
+		if (!event1_event3 && pEffect->IsDead()) // 죽었으면 Release하자.
 		{
 			Safe_Release(pEffect);
+			event1_event3 = true;
 		}
 
 		// 아래는 한번만 실행한다.
@@ -667,6 +682,7 @@ bool OnEvent2(_float fTimeDelta)
 bool event3_0;
 bool event3_1;
 bool event3_2;
+bool event3_3;
 _float event3TimeAcc;
 CGameObject* pSoulBarrier = nullptr;
 bool OnEvent3(_float fTimeDelta)
@@ -701,9 +717,10 @@ bool OnEvent3(_float fTimeDelta)
 	if (pEffect && static_cast<CSceneChangeEffect2*>(pEffect)->Get_Type() == CSceneChangeEffect2::EFFECT2_TYPE::DESCENT)
 	{
 		// 이펙트 죽는것은 계속해서 체크를 ㅎ라자.
-		if (pEffect->IsDead()) // 죽었으면 Release하자.
+		if (event3_3 == false && pEffect->IsDead()) // 죽었으면 Release하자.
 		{
 			Safe_Release(pEffect);
+			event3_3 = true;
 		}
 
 		// 아래는 한번만 실행한다.
@@ -798,6 +815,7 @@ bool OnEvent3(_float fTimeDelta)
 bool event4_0;
 bool event4_1;
 bool event4_2;
+bool event4_3;
 _float m_event4_TimeAcc;
 
 bool OnEvent4(_float fTimeDelta)
@@ -833,9 +851,10 @@ bool OnEvent4(_float fTimeDelta)
 	if (pEffect && static_cast<CSceneChangeEffect2*>(pEffect)->Get_Type() == CSceneChangeEffect2::EFFECT2_TYPE::DESCENT)
 	{
 		// 이펙트 죽는것은 계속해서 체크를 해서 위에 Safe_AddRef 한것을 해제해주자.
-		if (pEffect->IsDead()) // 죽었으면 Release하자.
+		if (event4_3 == false && pEffect->IsDead()) // 죽었으면 Release하자.
 		{
 			Safe_Release(pEffect);
+			event4_3 = true;
 		}
 
 		// 보스 생성 + 카메라 위치 조정

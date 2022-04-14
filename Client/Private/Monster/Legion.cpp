@@ -122,8 +122,10 @@ _int CLegion::Tick(_float fTimeDelta)
 			// 바리스타 있는 경우, 죽기전에 바리스타 상태 초기화
 			if (m_pBallista)
 			{
-				static_cast<CBallista*>(m_pBallista)->m_bLegionOn = false;
-				static_cast<CBallista*>(m_pBallista)->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
+				auto pBallista = static_cast<CBallista*>(m_pBallista);
+				pBallista->m_bLegionOn = false;
+				if (pBallista->m_bWillDead == false) // m_bWillDead일때는 Idle로 바꾸지말자.. 
+					pBallista->m_pNextState = "Ballista_A.ao|Balliista_A_Idle";
 			}
 			return -1;
 		}
