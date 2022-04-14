@@ -45,8 +45,12 @@ private:
 	_float	m_fHpBar_Y = 743.f;
 	_float	m_fPortrait_X = 551.f;
 	_float	m_fPortrait_Y = 732.f;
+	_float	m_fText_X = 767.f;
+	_float	m_fText_Y = 732.f;
 
 	_float	m_fAlpha = 0.f;
+
+	bool	m_bInit = false;
 
 
 private:

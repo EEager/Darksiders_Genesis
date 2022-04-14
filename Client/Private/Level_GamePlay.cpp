@@ -11,6 +11,8 @@
 #include "MapObject\SoulBarrier.h"
 #include "Enviroment.h"
 
+#include "Monster/HollowLord.h"
+
 
 // -----------------------------
 // For.CallBack using in Event
@@ -21,7 +23,7 @@ bool OnEvent1(_float fTimeDelta); // 바리스타 첫 대면 장면. 퀘스트 추가까지.
 bool OnEvent2(_float fTimeDelta); // 모험의 서. 경치 보여주는 장면.
 bool OnEvent3(_float fTimeDelta); // 성 문앞에서, 몬스터 삼인방 나오는 장면. 
 bool OnEvent4(_float fTimeDelta); // 보스 씬.
-bool OnEvent5(_float fTimeDelta); // 보스 씬.
+bool OnEvent5(_float fTimeDelta); // 보스 씬 Spike
 // ------------------------------
 
 
@@ -923,6 +925,9 @@ bool OnEvent4(_float fTimeDelta)
 		for (auto& pUI : *pUIList)
 			pUI->Set_NotRender(false);
 
+		// OnEvent4가 끝나고 바로 보스 체력을 활성화 시키자.
+		CHollowLord* pHollowLord = (CHollowLord*)(CObject_Manager::GetInstance()->Get_GameObject_CloneList(L"Layer_HollowLord")->front());
+		pHollowLord->UI_Init();
 		RELEASE_INSTANCE(CGameInstance);
 
 		// [이벤트 종료]

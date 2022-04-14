@@ -36,6 +36,9 @@ HRESULT CUI_HollowLord_HpBar::NativeConstruct(void * pArg)
 
 _int CUI_HollowLord_HpBar::Tick(_float fTimeDelta)
 {
+	if (m_bInit == false)
+		return 0;
+
 	m_fAlpha += 0.005f;
 	if (m_fAlpha >= 1.f)
 		m_fAlpha = 1.f;
@@ -77,15 +80,18 @@ HRESULT CUI_HollowLord_HpBar::Render(_uint iPassIndex)
 
 HRESULT CUI_HollowLord_HpBar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+	if (m_bInit == false)
+		return 0;
+
 	//ImSI
-	wstring str = DXString::Format(L"Hollow Lord Hp : %d", m_pHollowLord->m_tGameInfo.iHp);
+	wstring str = DXString::Format(L"Hollow Lord");
 
 	const wchar_t* output = str.c_str();
 
 	auto origin = DirectX::g_XMZero;
 
 	_float2 tmpPos; 
-	tmpPos = _float2(131.f, 45.f); // 처음 위치
+	tmpPos = _float2(m_fText_X, m_fText_Y); //  위치
 	XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
 
 	// Outline Effect
@@ -115,6 +121,8 @@ HRESULT CUI_HollowLord_HpBar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch,
 			ImGui::DragFloat("Hp_PosY", &m_fHpBar_Y);
 			ImGui::DragFloat("Portrait_PosX", &m_fPortrait_X);
 			ImGui::DragFloat("Portrait_PosY", &m_fPortrait_Y);
+			ImGui::DragFloat("m_fText_X", &m_fText_X);
+			ImGui::DragFloat("m_fText_Y", &m_fText_Y);
 		}
 		ImGui::End();
 	}

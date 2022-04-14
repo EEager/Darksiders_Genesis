@@ -334,6 +334,11 @@ void CHollowLord::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTim
 	}
 }
 
+void CHollowLord::UI_Init()
+{
+	m_pHpBar->m_bInit = true;
+}
+
 
 CHollowLord* CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {

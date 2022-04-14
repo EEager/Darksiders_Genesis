@@ -58,9 +58,12 @@ private:
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 	//----------------------------------------------
 
+
 private:
 	class CUI_HollowLord_HpBar* m_pHpBar = nullptr;
 
+public:
+	void UI_Init();
 
 public:	
 	static CHollowLord* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
