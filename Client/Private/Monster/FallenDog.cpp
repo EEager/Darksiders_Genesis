@@ -203,7 +203,7 @@ _int CFallenDog::Tick(_float fTimeDelta)
 	// 그로기 상태가 되었을 경우, 경직도를 서서히 증가시키자.
 	if (m_bStiffnessRecovery)
 	{
-		m_fStiffness += 0.03f;
+		m_fStiffness += 0.025f; 
 		if (m_fStiffness >= MAX_STIFFNESS)
 		{
 			m_bStiffnessRecovery = false;
@@ -556,11 +556,7 @@ void CFallenDog::DoState(float fTimeDelta)
 	{
 		// 그로기 이후 일어날랑 할때 경직도를 증가시키자
 		if (m_bStiffnessRecovery == false)
-		{
-			_uint iKeyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
-			if (iKeyFrameIdx > 106)
-				m_bStiffnessRecovery = true;
-		}
+			m_bStiffnessRecovery = true;
 
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
