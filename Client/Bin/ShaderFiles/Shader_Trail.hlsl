@@ -45,24 +45,39 @@ struct PS_IN
 	float2		vTexUV : TEXCOORD0;
 };
 
-struct PS_DEFERRED_OUT
+struct PS_OUT
 {
-	float4		vDiffuse : SV_TARGET0;
-	float4		vNormalW : SV_TARGET1;
-	float4		vDepthW : SV_TARGET2;
-	float4		vEmissive : SV_TARGET3;
-	float4		vHitPower : SV_TARGET4;
+	float4		vColor : SV_TARGET0;
 };
 
-PS_DEFERRED_OUT PS_MAIN(PS_IN In)
-{
-	PS_DEFERRED_OUT		Out = (PS_DEFERRED_OUT)0;
 
-	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	//Out.vDiffuse = float4(1.f, 0.f, 1.f, 1.f);
+PS_OUT PS_MAIN(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
 
 	return Out;
 }
+
+//struct PS_DEFERRED_OUT
+//{
+//	float4		vDiffuse : SV_TARGET0;
+//	float4		vNormalW : SV_TARGET1;
+//	float4		vDepthW : SV_TARGET2;
+//	float4		vEmissive : SV_TARGET3;
+//	float4		vHitPower : SV_TARGET4;
+//};
+//
+//
+//PS_DEFERRED_OUT PS_MAIN_DEFERRED(PS_IN In)
+//{
+//	PS_DEFERRED_OUT		Out = (PS_DEFERRED_OUT)0;
+//
+//	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+//
+//	return Out;
+//}
 
 technique11	DefaultTechnique
 {
@@ -84,6 +99,18 @@ technique11	DefaultTechnique
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	// 2
+	pass Alphablending_NoCullPass
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(NoCull);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;

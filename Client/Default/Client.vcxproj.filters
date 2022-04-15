@@ -163,6 +163,9 @@
     <Filter Include="02.GameObjects\Monster\HollowLord\HpBar">
       <UniqueIdentifier>{e8cf9841-ed7c-4219-b0a2-1ac8f42227b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\Trail">
+      <UniqueIdentifier>{ffa30b7b-aff9-46d1-b579-fbaf5758f3fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -318,6 +321,9 @@
     <ClInclude Include="..\Public\UI_HollowLord_HpBar.h">
       <Filter>02.GameObjects\Monster\HollowLord\HpBar</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Trail.h">
+      <Filter>02.GameObjects\Trail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -457,6 +463,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_HollowLord_HpBar.cpp">
       <Filter>02.GameObjects\Monster\HollowLord\HpBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trail.cpp">
+      <Filter>02.GameObjects\Trail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

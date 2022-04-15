@@ -13,7 +13,7 @@ protected:
 public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg);
-	virtual HRESULT Render(_uint iPassIndex);
+	virtual HRESULT Render(_uint iPassIndex = 0);
 
 public:
 	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);

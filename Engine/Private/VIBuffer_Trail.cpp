@@ -303,5 +303,6 @@ void CVIBuffer_Trail::Free()
 {
 	__super::Free();
 
-
+	Safe_Delete_Array(m_pVertices);
+	Safe_Delete_Array(m_pPrimitiveIndices);
 }
