@@ -31,17 +31,17 @@ HRESULT CVIBuffer_Trail::NativeConstruct(void * pArg)
 	if (FAILED(__super::NativeConstruct(pArg)))
 		return E_FAIL;
 
-	// --------------------------------------------------------
-	// Vertex Buffer Create.
-	// 
+
 	// Init Stuffs
-	m_maxvtxCnt = 1000;// 일단은 1000개로, TODO : NativeConstruct_Prototype 인자받아서 하는것으로 변경해보자
+	m_maxvtxCnt = 1000;// 일단은 1000개로
 	m_maxtriCnt = m_maxvtxCnt - 2;
 
-	m_fDuration = 0.03; // 몇초마다 트레일 정점을 넣을것인지.
+	m_fDuration = 0.01f; // 몇초마다 트레일 정점을 넣을것인지. 0.01f가 부드러움.
 	m_fAliveTime = 0.5f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
-	m_LerpCnt = 20.f; // 캣멀스플라인 보간에 사용될 값. j/m_LerpCnt로 하드라.
+	m_LerpCnt = 20.f; // 캣멀스플라인 보간에 사용될 값. 20.f가 나은듯.
 
+	// --------------------------------------------------------
+	// Vertex Buffer Create.
 	m_iStride = sizeof(VTXTEX); // 트레일은 위치와 UV 좌표만 갖는다.
 	m_iNumVertices = m_maxvtxCnt;
 	m_iNumVertexBuffers = 1;
@@ -138,27 +138,21 @@ void CVIBuffer_Trail::Update(_float fTimeDelta, _matrix* pWorldMat)
 	if (trailDatas.empty())
 		return;
 	
-	// #1. 지속시간이 끝난 아이들 체크하여 지워주자.
+	// #1. 지속시간 초과한 트레일 선들 지워주자.
 	while (!trailDatas.empty())
 	{
-		auto frontData = trailDatas.front();
-		frontData.timecount += fTimeDelta;
-		if (frontData.timecount >= m_fAliveTime)
-		{
+		auto frontData = trailDatas.front(); // 가장 앞에 있는 아이는 지속시간이 가장 큰 아이 이다. 
+		if (frontData.timecount + fTimeDelta >= m_fAliveTime)
 			trailDatas.pop_front(); 
-		}
 		else
-		{
-			frontData.timecount -= fTimeDelta; // 오케이. 여기서부터 다시 계산하자.
 			break;
-		}
 	}
 
 	// #2. 지워봤는데 사이즈가 1개 이하면 나가자.
 	if (trailDatas.size() <= 1)
 		return;
 	
-	// #3. 오케이. 여기서부터는 전부 살아있는 아이들이다. 지속시간을 더해주자.
+	// #3. #1에서 살아남은 트레일들의 지속시간을 올려주자.
 	for (auto iter = trailDatas.begin(); iter != trailDatas.end(); ++iter)
 	{
 		iter->timecount += fTimeDelta;
