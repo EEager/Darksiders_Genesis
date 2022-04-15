@@ -16,6 +16,7 @@ cbuffer Camera
 cbuffer Monster
 {
 	float			g_fMonsterHpUVX;
+	float			g_fMonsterHpUVX_White_Follow; // 현재체력을따라다니는 흰색체력
 	float			g_fHpBarHeight;
 	vector			g_vHpBarColorBorder; // 빨간색
 	vector			g_vHpBarColor;
@@ -147,6 +148,11 @@ PS_OUT PS_MAIN(PS_IN In)
 	if (In.vTexUV.x <= (uvOffsetX + g_fMonsterHpUVX))
 	{
 		Out.vColor = g_vHpBarColor;
+	}
+	// 따라오고 있는 체력은 흰색이다.
+	else if (In.vTexUV.x <= g_fMonsterHpUVX_White_Follow)
+	{
+		Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
 	}
 	
 

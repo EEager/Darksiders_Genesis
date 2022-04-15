@@ -32,6 +32,8 @@ HRESULT CFallenDog::NativeConstruct(void * pArg)
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
 
+	m_fFollwingHP = m_tGameInfo.iMaxHp;
+
 	// 속도
 	m_fSpeed = 5.f;
 
@@ -209,6 +211,11 @@ _int CFallenDog::Tick(_float fTimeDelta)
 		}
 	}
 
+	// m_fFollwingHP는 현재 체력을 따라간다.
+	m_fFollwingHP -= 0.1f;
+	if (m_fFollwingHP <= (_float)m_tGameInfo.iHp)
+		m_fFollwingHP = (_float)m_tGameInfo.iHp;
+
 	return _int();
 }
 
@@ -260,7 +267,15 @@ HRESULT CFallenDog::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_pt
 		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
 		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
 		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColor", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
+
+		// 현재 체력을 따라다니는 흰색 체력도 만들자
+		_float fCurWhiteHpRatio = m_fFollwingHP / (_float)m_tGameInfo.iMaxHp;
+		fUVx = MAX_LEN_HP * fCurWhiteHpRatio;
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fMonsterHpUVX_White_Follow", &fUVx, sizeof(_float));
+
 		m_pVIHpBarGsBufferCom.Get()->Render(0);
+
+
 		m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);
 
 		//---------------------
@@ -273,6 +288,9 @@ HRESULT CFallenDog::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_pt
 		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
 		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(.5f, .5f, .5f, 1.f), sizeof(_vector));
 		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_vHpBarColor", &XMVectorSet(.5f, .5f, .5f, 1.f), sizeof(_vector));
+		fUVx = -1.f; // 흰색 체력 사용안함.
+		m_pVIHpBarGsBufferCom.Get()->Set_RawValue("g_fMonsterHpUVX_White_Follow", &fUVx, sizeof(_float));
+
 
 		m_pVIHpBarGsBufferCom.Get()->Render(0);
 		m_pDeviceContext->GSSetShader(nullptr, nullptr, 0);

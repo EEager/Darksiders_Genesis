@@ -66,6 +66,9 @@ protected:
 	const char* m_pImpactState_F = nullptr; // 피격 애니메이션은 각 몬스터들이 NativeContruct에서 할당해주자
 	const char* m_pImpactState_B = nullptr; // 피격 애니메이션은 각 몬스터들이 NativeContruct에서 할당해주자
 
+	_float m_fFollwingHP = 0.f;// 현재체력을 따라가는 흰색체력를 만들자.
+
+
 public:
 #define MAX_LEN_HP (0.99f - 0.01f)
 	_bool m_bSuperArmor = false;

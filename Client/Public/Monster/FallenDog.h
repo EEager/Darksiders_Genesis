@@ -79,6 +79,7 @@ private:
 	_bool m_bExecutionAnim = false;
 	_bool m_bExecutionAnimEnd = false;
 
+
 public:	
 	static CFallenDog* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;

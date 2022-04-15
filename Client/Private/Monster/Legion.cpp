@@ -39,6 +39,8 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 1;
 
+	m_fFollwingHP = m_tGameInfo.iMaxHp;
+
 	// 속도.
 	m_fSpeed = 8.f;
 
@@ -181,6 +183,10 @@ _int CLegion::Tick(_float fTimeDelta)
 	DoState(fTimeDelta);
 
 
+	// m_fFollwingHP는 현재 체력을 따라간다.
+	m_fFollwingHP -= 0.1f;
+	if (m_fFollwingHP <= (_float)m_tGameInfo.iHp)
+		m_fFollwingHP = (_float)m_tGameInfo.iHp;
 
 
 	return _int();
@@ -245,6 +251,11 @@ HRESULT CLegion::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<S
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_vHpBarColor", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
+
+		// 현재 체력을 따라다니는 흰색 체력도 만들자
+		_float fCurWhiteHpRatio = m_fFollwingHP / (_float)m_tGameInfo.iMaxHp;
+		fUVx = MAX_LEN_HP * fCurWhiteHpRatio;
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX_White_Follow", &fUVx, sizeof(_float));
 
 		m_pVIHpBarGsBufferCom->Render(0);
 		RELEASE_INSTANCE(CGameInstance);

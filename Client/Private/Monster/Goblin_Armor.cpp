@@ -29,6 +29,9 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 1;
 
+	// m_fFollwingHP는 현재 체력을 따라간다.
+	m_fFollwingHP = m_tGameInfo.iMaxHp;
+
 	m_fSpeed = 5.f;
 	// 모든 몬스터는 m_pTransformCom, m_pRendererCom, m_pNaviCom를 가진다
 	if (CMonster::NativeConstruct(pArg))
@@ -132,10 +135,10 @@ _int CGoblin_Armor::Tick(_float fTimeDelta)
 	}
 	DoState(fTimeDelta);
 
-//#ifdef _DEBUG
-//	_uint keyFrameIdx = m_pModelCom_RectInstance->Get_Current_KeyFrame_Index(m_pCurState);
-//	cout << "[Tick] : " << m_pCurState << keyFrameIdx << endl;
-//#endif
+	// m_fFollwingHP는 현재 체력을 따라간다.
+	m_fFollwingHP -= 0.1f;
+	if (m_fFollwingHP <= (_float)m_tGameInfo.iHp)
+		m_fFollwingHP = (_float)m_tGameInfo.iHp;
 
 	return _int();
 }
@@ -191,6 +194,11 @@ HRESULT CGoblin_Armor::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_fHpBarHeight", &fHpBarHeight, sizeof(_float));
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_vHpBarColorBorder", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
 		m_pVIHpBarGsBufferCom->Set_RawValue("g_vHpBarColor", &XMVectorSet(1.f, 0.f, 0.f, 1.f), sizeof(_vector));
+
+		// 현재 체력을 따라다니는 흰색 체력도 만들자
+		_float fCurWhiteHpRatio = m_fFollwingHP / (_float)m_tGameInfo.iMaxHp;
+		fUVx = MAX_LEN_HP * fCurWhiteHpRatio;
+		m_pVIHpBarGsBufferCom->Set_RawValue("g_fMonsterHpUVX_White_Follow", &fUVx, sizeof(_float));
 
 		m_pVIHpBarGsBufferCom->Render(0);
 		RELEASE_INSTANCE(CGameInstance);
