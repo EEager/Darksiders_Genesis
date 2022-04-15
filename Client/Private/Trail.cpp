@@ -81,6 +81,9 @@ HRESULT CTrail::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Sp
 	{
 		ImGui::Begin("CTrail");
 		{
+			ImGui::InputInt("TextureIdx", &m_TrailTextureIdx);
+			ImGui::DragFloat("m_dDuration", (float*)&m_pTrail->m_fDuration);
+			ImGui::DragFloat("m_dAliveTime", (float*)&m_pTrail->m_fAliveTime);
 			ImGui::DragInt("m_LerpCnt", (int*)&(m_pTrail->m_LerpCnt));
 		}
 		ImGui::End();
@@ -102,7 +105,7 @@ HRESULT CTrail::SetUp_Component()
 		return E_FAIL;
 
 	/* For.Com_Trail_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail_VFX_war_basicSwipe"), TEXT("Com_Trail_Texture"), (CComponent**)m_pTrailTextureCom.GetAddressOf())))
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Trail_Texture"), (CComponent**)m_pTrailTextureCom.GetAddressOf())))
 		return E_FAIL;
 	return S_OK;
 }
@@ -116,7 +119,7 @@ HRESULT CTrail::SetUp_ConstantTable(_uint iPassIndex)
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pTrail.Get(), "g_ViewMatrix");
 	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pTrail.Get(), "g_ProjMatrix");
 
-	if (FAILED(m_pTrailTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_DiffuseTexture")))
+	if (FAILED(m_pTrailTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_DiffuseTexture", m_TrailTextureIdx)))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

@@ -454,12 +454,7 @@ HRESULT CLoader::Add_Texture()
 
 	/* For.Prototype_Component_Texture_Trail */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail"),
-		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Trail/trail.dds")))))
-		return E_FAIL;
-
-	/* For.Prototype_Component_Texture_Trail_VFX_war_basicSwipe */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail_VFX_war_basicSwipe"),
-		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/War/VFX_war_basicSwipe.dds")))))
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Trail/trail%d.dds"), 6))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

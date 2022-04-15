@@ -30,6 +30,8 @@ private:
 	ComPtr<CTexture>			m_pTrailTextureCom = nullptr;
 	ComPtr<CVIBuffer_Trail>		m_pTrail = nullptr;
 
+	int m_TrailTextureIdx = 0;
+
 public:
 	void Set_Transform(class CTransform* pTransform)
 	{

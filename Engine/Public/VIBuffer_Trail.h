@@ -40,8 +40,8 @@ public:
 	unsigned long m_maxtriCnt = 0;
 	unsigned long m_curTriCnt = 0;
 	unsigned long m_curVtxCnt = 0;
-	double m_dDuration = 0.0;
-	double m_dAliveTime = 0.0;
+	float m_fDuration = 0.0f;
+	float m_fAliveTime = 0.0f;
 	float m_fTimerAcc = 0.0f;
 	size_t m_LerpCnt = 0;
 	std::deque<TrailData> trailDatas;

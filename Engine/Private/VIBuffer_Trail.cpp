@@ -38,8 +38,8 @@ HRESULT CVIBuffer_Trail::NativeConstruct(void * pArg)
 	m_maxvtxCnt = 1000;// 일단은 1000개로, TODO : NativeConstruct_Prototype 인자받아서 하는것으로 변경해보자
 	m_maxtriCnt = m_maxvtxCnt - 2;
 
-	m_dDuration = 0.03; // 몇초마다 트레일 정점을 넣을것인지.
-	m_dAliveTime = 0.5f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
+	m_fDuration = 0.03; // 몇초마다 트레일 정점을 넣을것인지.
+	m_fAliveTime = 0.5f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
 	m_LerpCnt = 20.f; // 캣멀스플라인 보간에 사용될 값. j/m_LerpCnt로 하드라.
 
 	m_iStride = sizeof(VTXTEX); // 트레일은 위치와 UV 좌표만 갖는다.
@@ -63,7 +63,6 @@ HRESULT CVIBuffer_Trail::NativeConstruct(void * pArg)
 
 	// --------------------------------------------------------
 	// Index Buffer Create
-
 	m_iNumPrimitive = m_maxtriCnt; // Vertex개수에서 2를 뺀다.
 	m_iIndicesSize = sizeof(FACEINDICES16);
 	m_iNumIndicesPerFigure = 3;
@@ -78,14 +77,6 @@ HRESULT CVIBuffer_Trail::NativeConstruct(void * pArg)
 	m_IBDesc.MiscFlags = 0;
 	m_IBDesc.StructureByteStride = 0;
 	m_pPrimitiveIndices = new FACEINDICES16[m_iNumPrimitive];
-
-	//((FACEINDICES16*)m_pPrimitiveIndices)[0]._0 = 0;
-	//((FACEINDICES16*)m_pPrimitiveIndices)[0]._1 = 1;
-	//((FACEINDICES16*)m_pPrimitiveIndices)[0]._2 = 2;
-
-	//((FACEINDICES16*)m_pPrimitiveIndices)[1]._0 = 0;
-	//((FACEINDICES16*)m_pPrimitiveIndices)[1]._1 = 2;
-	//((FACEINDICES16*)m_pPrimitiveIndices)[1]._2 = 3;
 
 	ZeroMemory(&m_IBSubresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_IBSubresourceData.pSysMem = m_pPrimitiveIndices;
@@ -134,7 +125,7 @@ HRESULT CVIBuffer_Trail::Render(_uint iPassIndex)
 void CVIBuffer_Trail::AddNewTrail(const _float3& upposition, const _float3& downposition, _float fTimeDelta)
 {
 	m_fTimerAcc += fTimeDelta;
-	if (m_dDuration < (double)m_fTimerAcc)
+	if (m_fDuration < (double)m_fTimerAcc)
 	{
 		TrailData data(upposition, downposition);
 		trailDatas.emplace_back(data);
@@ -152,7 +143,7 @@ void CVIBuffer_Trail::Update(_float fTimeDelta, _matrix* pWorldMat)
 	{
 		auto frontData = trailDatas.front();
 		frontData.timecount += fTimeDelta;
-		if (frontData.timecount >= m_dAliveTime)
+		if (frontData.timecount >= m_fAliveTime)
 		{
 			trailDatas.pop_front(); 
 		}

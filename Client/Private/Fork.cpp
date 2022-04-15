@@ -80,7 +80,10 @@ _int CFork::LateTick(_float fTimeDelta)
 #ifdef USE_IMGUI
 	// 디버깅이 필요하면 이거 넣어줘야한다
 	if (m_bUseImGui)
+	{
+		m_pTrail->m_bUseImGui = true; // 트레일 imgui
 		AddRenderGroup = true;
+	}
 #endif
 
 	if (AddRenderGroup)
