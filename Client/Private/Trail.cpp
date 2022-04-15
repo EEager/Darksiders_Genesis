@@ -13,18 +13,18 @@ CTrail::CTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 }
 
 CTrail::CTrail(const CTrail& rhs)
-	: CGameObject(rhs), 
+	: CGameObject(rhs),
 	m_pRendererCom(rhs.m_pRendererCom)
 {
 }
 
 HRESULT CTrail::NativeConstruct_Prototype()
-{	
+{
 	SetUp_Component();
 	return S_OK;
 }
 
-HRESULT CTrail::NativeConstruct(void * pArg)
+HRESULT CTrail::NativeConstruct(void* pArg)
 {
 	// Not Used
 	return S_OK;
@@ -32,16 +32,32 @@ HRESULT CTrail::NativeConstruct(void * pArg)
 
 _int CTrail::Tick(_float fTimeDelta)
 {
+	// Not Used
+
+	return _int();
+}
+
+_int CTrail::MyTick(_float fTimeDelta, _fmatrix* pBonemMat)
+{
 	_float3 up;
 	_float3 down;
-	auto pTemp = m_pTargetTransform->Get_State(CTransform::STATE_POSITION);
-	XMStoreFloat3(&up, pTemp + XMVectorSet(1.0f, 0.f, 0.f, 0.f));
-	XMStoreFloat3(&down, pTemp - XMVectorSet(1.0f, 0.f, 0.f, 0.f));
+
+	_vector pTemp = m_pTargetTransform->Get_State(CTransform::STATE_POSITION);
+	if (!pBonemMat) // Bone가 없으면
+	{
+		XMStoreFloat3(&up, pTemp + XMLoadFloat3(&m_vUpPosOffset));
+		XMStoreFloat3(&down, pTemp + XMLoadFloat3(&m_vDownPosOffset));
+	}
+	else // 뼈 정보가 있으면
+	{
+		XMStoreFloat3(&up, XMVector3TransformCoord(XMLoadFloat3(&m_vUpPosOffset), *pBonemMat));
+		XMStoreFloat3(&down, XMVector3TransformCoord(XMLoadFloat3(&m_vDownPosOffset), *pBonemMat));
+	}
 
 	m_pTrail->AddNewTrail(up, down, fTimeDelta);
 	m_pTrail->Update(fTimeDelta, &m_pTargetTransform->Get_WorldMatrix());
 
-	return _int();
+	return 0;
 }
 
 _int CTrail::LateTick(_float fTimeDelta)
@@ -77,14 +93,28 @@ HRESULT CTrail::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Sp
 #endif // _DEBUG
 
 #ifdef USE_IMGUI
-	if (m_bUseImGui) 
+	if (m_bUseImGui)
 	{
-		ImGui::Begin("CTrail");
+		char TagTmp[32];
+		sprintf_s(TagTmp, "CTrail##%d", m_CloneIdx);
+		ImGui::Begin(TagTmp, &m_bUseImGui);
 		{
 			ImGui::InputInt("TextureIdx", &m_TrailTextureIdx);
 			ImGui::DragFloat("m_dDuration", (float*)&m_pTrail->m_fDuration);
 			ImGui::DragFloat("m_dAliveTime", (float*)&m_pTrail->m_fAliveTime);
 			ImGui::DragInt("m_LerpCnt", (int*)&(m_pTrail->m_LerpCnt));
+			 
+			float vec3f_Up[3] = {m_vUpPosOffset.x, m_vUpPosOffset.y, m_vUpPosOffset.z};
+			float vec3f_Dn[3] = {m_vDownPosOffset.x, m_vDownPosOffset.y, m_vDownPosOffset.z}; 
+
+			// Up Offset Position 
+			if (ImGui::DragFloat3(" Up Offset Position", vec3f_Up, 1.f))
+				m_vUpPosOffset = _float3(vec3f_Up[0], vec3f_Up[1], vec3f_Up[2]);
+
+			// Dn Offset Position 
+			if (ImGui::DragFloat3("Dn Offset Position", vec3f_Dn, 1.f))
+				m_vDownPosOffset = _float3(vec3f_Dn[0], vec3f_Dn[1], vec3f_Dn[2]);
+
 		}
 		ImGui::End();
 	}
@@ -129,9 +159,9 @@ HRESULT CTrail::SetUp_ConstantTable(_uint iPassIndex)
 }
 
 
-CTrail * CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CTrail* CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-	CTrail*		pInstance = new CTrail(pDevice, pDeviceContext);
+	CTrail* pInstance = new CTrail(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
@@ -143,9 +173,9 @@ CTrail * CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceConte
 }
 
 
-CGameObject * CTrail::Clone(void* pArg)
+CGameObject* CTrail::Clone(void* pArg)
 {
-	CTrail*		pInstance = new CTrail(*this);
+	CTrail* pInstance = new CTrail(*this);
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{

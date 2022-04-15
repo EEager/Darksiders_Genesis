@@ -7,6 +7,8 @@
 #include "Light_Manager.h"
 #include "Monster\Monster.h"
 
+#include "Trail.h"
+
 
 
 // In State_War.cpp
@@ -71,6 +73,13 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	if (SetUp_BoneMatrix())
 		return E_FAIL;
 
+	// Trail
+	m_pTrail = CTrail::Create(m_pDevice, m_pDeviceContext);
+	m_pTrail->Set_Transform(m_pTransformCom);
+	m_pTrail->Set_Trail_Up_PositionOffset(_float3(0.f, 0.f, 2.3f));
+	m_pTrail->Set_Trail_Down_PositionOffset(_float3(0.f, 0.f, 0.f));
+		// Texture는 5번, duration:0.003, m_fAliveTime:0.25f, m_LerpCnt:7
+
 	return S_OK;
 }
 
@@ -111,6 +120,26 @@ _int CWar::Tick(_float fTimeDelta)
 	// Collider Update
 	Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
+	// Trail
+	{
+		// 검에다가 달자
+		_matrix		OffsetMatrix = XMLoadFloat4x4(&m_WarSwordDesc.OffsetMatrix); // 뼈->정점
+		_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_WarSwordDesc.pBoneMatrix); // Root->뼈 
+
+		_matrix		PivotMatrix; // 정점들 피봇
+		if (m_War_On_Ruin_State)
+			PivotMatrix = Get_WarRuinPivot();
+		else
+			PivotMatrix = XMLoadFloat4x4(&m_WarSwordDesc.PivotMatrix);
+
+		_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_WarSwordDesc.pTargetWorldMatrix); // War 월행
+
+		_matrix		TransformationMatrix =
+			(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
+			TargetWorldMatrix;
+		m_pTrail->MyTick(fTimeDelta, &TransformationMatrix);
+	}
+
 
 	return _int();
 }
@@ -148,6 +177,9 @@ _int CWar::LateTick(_float fTimeDelta)
 	// Collider 
 	pGameInstance->Add_Collision(this);
 
+	// Trail
+	m_pTrail->LateTick(fTimeDelta);
+
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
@@ -180,6 +212,7 @@ HRESULT CWar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Spri
 
 	if (m_bUseImGui) // IMGUI 툴로 배치할거다
 	{
+		m_pTrail->m_bUseImGui = true;
 		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
 	}
 
@@ -868,6 +901,8 @@ void CWar::Free()
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pStateMachineCom);
+
+	Safe_Release(m_pTrail);
 
 
 	Safe_Release(m_pModelCom_Ruin);

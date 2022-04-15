@@ -60,7 +60,7 @@ _int CFork::Tick(_float fTimeDelta)
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
 	// Trail
-	m_pTrail->Tick(fTimeDelta);
+	m_pTrail->MyTick(fTimeDelta);
 
 	return _int();
 }

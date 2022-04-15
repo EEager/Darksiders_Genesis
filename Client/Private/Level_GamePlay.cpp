@@ -124,22 +124,22 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Flag_A", TEXT("Prototype_GameObject_Flag_A"));
 	}
 
-	// Trees 설치하자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_2))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT ("Prototype_GameObject_TreeA"))))
-			return E_FAIL;
-	}
-	if (CInput_Device::GetInstance()->Key_Down(DIK_3))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT("Prototype_GameObject_TreeB"))))
-			return E_FAIL;
-	}
-	if (CInput_Device::GetInstance()->Key_Down(DIK_4))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT("Prototype_GameObject_TreeC"))))
-			return E_FAIL;
-	}
+	//// Trees 설치하자
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_2)) 
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT ("Prototype_GameObject_TreeA"))))
+	//		return E_FAIL;
+	//}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_3))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT("Prototype_GameObject_TreeB"))))
+	//		return E_FAIL;
+	//}
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_4))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Trees", TEXT("Prototype_GameObject_TreeC"))))
+	//		return E_FAIL;
+	//}
 
 	// E키를 눌러 시험하자
 	

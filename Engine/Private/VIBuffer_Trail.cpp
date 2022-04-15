@@ -36,9 +36,9 @@ HRESULT CVIBuffer_Trail::NativeConstruct(void * pArg)
 	m_maxvtxCnt = 1000;// 일단은 1000개로
 	m_maxtriCnt = m_maxvtxCnt - 2;
 
-	m_fDuration = 0.01f; // 몇초마다 트레일 정점을 넣을것인지. 0.01f가 부드러움.
-	m_fAliveTime = 0.5f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
-	m_LerpCnt = 20.f; // 캣멀스플라인 보간에 사용될 값. 20.f가 나은듯.
+	m_fDuration = 0.003f; // 몇초마다 트레일 정점을 넣을것인지. 0.01f가 부드러움.
+	m_fAliveTime = 0.25f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
+	m_LerpCnt = 7.f; // 캣멀스플라인 보간에 사용될 값. 커질수록 트레일이 느리게 따라온다.
 
 	// --------------------------------------------------------
 	// Vertex Buffer Create.
