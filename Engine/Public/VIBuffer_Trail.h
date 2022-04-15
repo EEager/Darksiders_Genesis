@@ -35,7 +35,6 @@ public: // From. Trail_DX9
 	void Update(_float fTimeDelta, _matrix* pWorldMat);
 
 public:
-	unsigned long m_vtxSize = 0;
 	unsigned long m_maxvtxCnt = 0;
 	unsigned long m_maxtriCnt = 0;
 	unsigned long m_curTriCnt = 0;
