@@ -99,7 +99,7 @@ HRESULT CSceneChangeEffect1::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, 
 	{
 		ImGui::Begin("CSceneChangeEffect");
 		{
-			if (ImGui::DragFloat("Position", &m_fTexturePosY));
+			ImGui::DragFloat("Position", &m_fTexturePosY);
 		}
 		ImGui::End();
 	}
@@ -303,7 +303,7 @@ HRESULT CSceneChangeEffect2::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, 
 	{
 		ImGui::Begin("CSceneChangeEffect2");
 		{
-			if (ImGui::DragFloat("Position", &m_fTexturePosY));
+			ImGui::DragFloat("Position", &m_fTexturePosY);
 		}
 		ImGui::End();
 	}
@@ -482,7 +482,7 @@ HRESULT CSceneChangeEffect3::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, 
 	{
 		ImGui::Begin("CSceneChangeEffect3");
 		{
-			if (ImGui::DragFloat("Position", &m_fTexturePosY));
+			ImGui::DragFloat("Position", &m_fTexturePosY);
 		}
 		ImGui::End();
 	}

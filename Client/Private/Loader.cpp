@@ -329,6 +329,11 @@ HRESULT CLoader::Add_VIBuffer()
 		CVIBuffer_MonsterHp_PointGS::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_MonsterHpBar_PointGs.hlsl")))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_VIBuffer_Trail*/
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Trail"),
+		CVIBuffer_Trail::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/ShaderFiles/Shader_Trail.hlsl")))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_VIBuffer_Sphere */
 	// 이거 필요하면 CCell::Ready_DebugBuffer() 참조
 
@@ -446,6 +451,12 @@ HRESULT CLoader::Add_Texture()
 			return E_FAIL;
 	}
 
+
+	/* For.Prototype_Component_Texture_Trail */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/Trail/trail.dds")))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
 
@@ -459,6 +470,7 @@ HRESULT CLoader::Add_Model()
 	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
 
 
+#if 0 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment4*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
@@ -492,6 +504,7 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
+#endif
 
 	/* For.Prototype_Component_Model_Enviroment1*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
@@ -515,6 +528,8 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage2.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
+#if 0 // JJLEE 잠시만 막아두자
+
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage3"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage3"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage3.fbx", EnviromentPivotMatrix))))
@@ -531,6 +546,7 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage6"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage6.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
+#endif 
 
 
 	// ▼ Test

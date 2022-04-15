@@ -515,6 +515,9 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MonsterHpBar_PointGs.hlsl">
       <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

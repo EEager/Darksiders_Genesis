@@ -10,6 +10,7 @@ class CTransform;
 class CTexture;
 class CModel;
 class CNavigation;
+class CVIBuffer_Trail;
 END
 
 BEGIN(Client)
@@ -41,6 +42,9 @@ private:
 	CCollider*					m_pOBBCom = nullptr;
 	ComPtr<CNavigation>			m_pNaviCom = nullptr; // ComPtr Test
 	ComPtr<CTexture>			m_pDissolveTextureCom = nullptr;
+	ComPtr<CTexture>			m_pTrailTextureCom = nullptr;
+
+	ComPtr<CVIBuffer_Trail>		m_pTrail = nullptr;
 
 private:
 	HRESULT SetUp_Component();

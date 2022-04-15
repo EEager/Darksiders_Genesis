@@ -169,6 +169,9 @@
     <Filter Include="01.Utility\10.Frustum">
       <UniqueIdentifier>{1b1bd1c2-281e-4a14-b17f-bd2292542dec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Component\Components\VIBuffer\Trail">
+      <UniqueIdentifier>{a48f2735-b519-42b5-9f0c-2873b12c4447}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Graphic_Device.h">
@@ -336,6 +339,9 @@
     <ClInclude Include="..\Public\Frustum.h">
       <Filter>01.Utility\10.Frustum</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Trail.h">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Trail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Graphic_Device.cpp">
@@ -487,6 +493,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Frustum.cpp">
       <Filter>01.Utility\10.Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Trail.cpp">
+      <Filter>01.Utility\04.Component\Components\VIBuffer\Trail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

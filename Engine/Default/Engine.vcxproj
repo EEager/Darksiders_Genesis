@@ -227,6 +227,7 @@
     <ClInclude Include="..\Public\VIBuffer_RectInstance.h" />
     <ClInclude Include="..\Public\VIBuffer_Sphere.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
+    <ClInclude Include="..\Public\VIBuffer_Trail.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Animation.cpp" />
@@ -279,6 +280,7 @@
     <ClCompile Include="..\Private\VIBuffer_RectInstance.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Sphere.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl" />

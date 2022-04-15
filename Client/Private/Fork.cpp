@@ -53,6 +53,15 @@ _int CFork::Tick(_float fTimeDelta)
 	// Collider 
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
+	_float3 up;
+	_float3 down;
+	auto pTemp = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	XMStoreFloat3(&up, pTemp + XMVectorSet(1.0f, 0.f, 0.f, 0.f));
+	XMStoreFloat3(&down, pTemp - XMVectorSet(1.0f, 0.f, 0.f, 0.f));
+
+	m_pTrail->AddNewTrail(up, down, fTimeDelta);
+	m_pTrail->Update(fTimeDelta, &m_pTransformCom->Get_WorldMatrix());
+
 	return _int();
 }
 
@@ -92,25 +101,41 @@ _int CFork::LateTick(_float fTimeDelta)
 
 HRESULT CFork::Render(_uint iPassIndex)
 {
-	if (iPassIndex == 0) iPassIndex = 4;
-
 	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;
 
 	/* 장치에 월드변환 행렬을 저장한다. */
 	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
 
-	
+
 	for (_uint i = 0; i < iNumMeshContainer; ++i)
 	{
 		m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
 
-		m_pModelCom->Render(i, iPassIndex); // Deferred
+		m_pModelCom->Render(i, iPassIndex);
 	}
 
 	// restore default states, as the SkyFX changes them in the effect file.
 	m_pDeviceContext->RSSetState(0);
 	m_pDeviceContext->OMSetDepthStencilState(0, 0);
+
+	// The shadow might might be at any slot, so clear all slots.
+
+	if (iPassIndex != 3) // 그림자일때는 Render하지말자.. 
+	{
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		// Bind Transform
+		m_pTransformCom->Bind_OnShader(m_pTrail.Get(), "g_WorldMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pTrail.Get(), "g_ViewMatrix");
+		pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pTrail.Get(), "g_ProjMatrix");
+
+		if (FAILED(m_pTrailTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_DiffuseTexture")))
+			return E_FAIL;
+
+		RELEASE_INSTANCE(CGameInstance);
+		m_pTrail->Render(1); // AlphablendingPass
+	}
 
 
 	return S_OK;
@@ -176,6 +201,14 @@ HRESULT CFork::SetUp_Component()
 	ColliderDesc.vSize = static_cast<CModel*>(m_pModelCom)->Get_Extents();
 	ColliderDesc.eColType = CCollider::COL_TYPE::COL_TYPE_OBB;
 	__super::Add_Collider(&ColliderDesc, L"Fork2");
+
+	/* For.Com_Buffer_Trail */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_VIBuffer_Trail"), TEXT("Com_Buffer_Trail"), (CComponent**)m_pTrail.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Trail_Texture */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Trail_Texture"), (CComponent**)m_pTrailTextureCom.GetAddressOf())))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -254,4 +287,5 @@ void CFork::Free()
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pTrail);
 }

@@ -18,6 +18,7 @@
 #include "VIBuffer_PointInstance.h"
 #include "VIBuffer_Sphere.h"
 #include "VIBuffer_MonsterHp_PointGS.h"
+#include "VIBuffer_Trail.h"
 
 /* 컴포넌트들의 원형을 모아둔다. */
 
