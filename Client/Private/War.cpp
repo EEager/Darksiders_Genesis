@@ -78,6 +78,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	m_pTrail->Set_Transform(m_pTransformCom);
 	m_pTrail->Set_Trail_Up_PositionOffset(_float3(0.f, 0.f, 2.3f));
 	m_pTrail->Set_Trail_Down_PositionOffset(_float3(0.f, 0.f, 0.f));
+	m_pTrail->Set_TrailTextureIdx(5); // 5: 칼 휘두르는것. 6: 대쉬입니다. 
 		// Texture는 5번, duration:0.003, m_fAliveTime:0.25f, m_LerpCnt:7
 
 	return S_OK;
@@ -178,7 +179,8 @@ _int CWar::LateTick(_float fTimeDelta)
 	pGameInstance->Add_Collision(this);
 
 	// Trail
-	m_pTrail->LateTick(fTimeDelta);
+	if (m_bTrailOn) // 공격할때만 Trail을 출력하자.
+		m_pTrail->LateTick(fTimeDelta); // 지가 렌더러에 넣는다. 
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);

@@ -454,7 +454,7 @@ HRESULT CLoader::Add_Texture()
 
 	/* For.Prototype_Component_Texture_Trail */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail"),
-		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Trail/trail%d.dds"), 6))))
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Trail/trail%d.dds"), 7))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);

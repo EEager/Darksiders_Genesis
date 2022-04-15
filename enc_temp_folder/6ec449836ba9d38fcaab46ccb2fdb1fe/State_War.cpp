@@ -2339,9 +2339,6 @@ void CState_War_Atk_Air_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 키고
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
-
-	// 검트레일 On
-	g_pWar->m_bTrailOn = true;
 	
 }
 
@@ -2379,8 +2376,6 @@ void CState_War_Atk_Air_Land::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 해당 상태에서 무기 콜라이더 끄자
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, true);
-	// 검트레일 Off
-	g_pWar->m_bTrailOn = false;
 }
 
 void CState_War_Atk_Air_Land::Free()

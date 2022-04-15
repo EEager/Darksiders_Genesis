@@ -148,6 +148,8 @@ public:
 
 private:
 	class CTrail* m_pTrail = nullptr;
+public:
+	bool m_bTrailOn = false;
 
 
 
