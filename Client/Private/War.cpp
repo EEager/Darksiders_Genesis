@@ -76,7 +76,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	// Trail
 	m_pTrail = CTrail::Create(m_pDevice, m_pDeviceContext);
 	m_pTrail->Set_Transform(m_pTransformCom);
-	m_pTrail->Set_Trail_Up_PositionOffset(_float3(0.f, 0.f, 2.3f));
+	m_pTrail->Set_Trail_Up_PositionOffset(_float3(0.f, 0.f, 2.45f));
 	m_pTrail->Set_Trail_Down_PositionOffset(_float3(0.f, 0.f, 0.f));
 	m_pTrail->Set_TrailTextureIdx(5); // 5: 칼 휘두르는것. 6: 대쉬입니다. 
 		// Texture는 5번, duration:0.003, m_fAliveTime:0.25f, m_LerpCnt:7

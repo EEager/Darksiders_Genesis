@@ -29,6 +29,8 @@ public:
 private:	
 	ComPtr<CRenderer>			m_pRendererCom = nullptr;
 	ComPtr<CTexture>			m_pTrailTextureCom = nullptr;
+	ComPtr<CTexture>			m_pDistortionNoiseTextureCom = nullptr;
+	ComPtr<CTexture>			m_pDistortionAlphaTextureCom = nullptr;
 	ComPtr<CVIBuffer_Trail>		m_pTrail = nullptr;
 
 

@@ -77,10 +77,13 @@ _int CTrail::LateTick(_float fTimeDelta)
 
 HRESULT CTrail::Render(_uint iPassIndex)
 {
+	// 2 : Alphablending_NoCullPass
+	// 3 : Alphablending_NoCull_DistortionPass
+	iPassIndex = 3;
 	if (FAILED(SetUp_ConstantTable(iPassIndex)))
 		return E_FAIL;
 
-	m_pTrail->Render(2); // Alphablending_NoCullPass
+	m_pTrail->Render(iPassIndex);
 
 	return S_OK;
 }
@@ -137,6 +140,15 @@ HRESULT CTrail::SetUp_Component()
 	/* For.Com_Trail_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Trail_Texture"), (CComponent**)m_pTrailTextureCom.GetAddressOf())))
 		return E_FAIL;
+
+	/* For.Com_Texture_Noise */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"), TEXT("Com_Texture_Noise"), (CComponent**)m_pDistortionNoiseTextureCom.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Texture_Noise */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha"), TEXT("Com_Texture_Alpha"), (CComponent**)m_pDistortionAlphaTextureCom.GetAddressOf())))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -152,9 +164,16 @@ HRESULT CTrail::SetUp_ConstantTable(_uint iPassIndex)
 	if (FAILED(m_pTrailTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_DiffuseTexture", m_TrailTextureIdx)))
 		return E_FAIL;
 
+	// 트레일 + 왜곡을 주고 싶을때 이 패스를 사용한다. 
+	if (iPassIndex == 3)
+	{
+		// 근데 Renderer Render_Blend_Final에서 tmpTrue일때는 1번이 최고네 ㅎㅎ
+		if (FAILED(m_pDistortionNoiseTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_NoiseTexture",1)))
+			return E_FAIL; 
+		//if (FAILED(m_pDistortionNoiseTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_AlphaTexture")))
+		//	return E_FAIL;  
+	}
 	RELEASE_INSTANCE(CGameInstance);
-
-	m_pTrail->Render(2); // Alphablending_NoCullPass
 	return S_OK;
 }
 

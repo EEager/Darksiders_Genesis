@@ -270,16 +270,15 @@ HRESULT CRenderer::Draw()
 		// Bind Delta Time
 		//m_fDistortionTimeAcc = MathHelper::RandF(0.f, 0.0029f);
 
-		_bool tmpTrue = true;
-		_bool tmpFlase = false;
+		_bool tmpTrue = true; // 검기는 이걸로 갑니다 ^_^
+		_bool tmpFlase = false; // 화염은 이걸로 갑니다 ^_^
 
-		m_pVIBuffer->Set_RawValue("g_swapDistortion", &tmpFlase, sizeof(_bool));
-
-		if (tmpFlase)
+		m_pVIBuffer->Set_RawValue("g_swapDistortion", &tmpTrue, sizeof(_bool));
+		if (tmpTrue)
 		{
 			_float heatHazeSpeed = .1f; 
 			m_pVIBuffer->Set_RawValue("g_HeatHazeSpeed", &heatHazeSpeed, sizeof(_float));
-			_float heatHazeStrength = 0.f;
+			_float heatHazeStrength = 0.01f;
 			m_pVIBuffer->Set_RawValue("g_HeatHazeStrength", &heatHazeStrength, sizeof(_float));
 		}
 		else
@@ -292,9 +291,9 @@ HRESULT CRenderer::Draw()
 			}
 			m_pVIBuffer->Set_RawValue("g_fTimeDelta", &m_fDistortionTimeAcc, sizeof(_float));
 
-			_float heatHazeSpeed = 5.f;
+			_float heatHazeSpeed = 2.f;
 			m_pVIBuffer->Set_RawValue("g_HeatHazeSpeed", &heatHazeSpeed, sizeof(_float));
-			_float heatHazeStrength = 0.0026f; 
+			_float heatHazeStrength = 0.01f; 
 			m_pVIBuffer->Set_RawValue("g_HeatHazeStrength", &heatHazeStrength, sizeof(_float));
 		}
 

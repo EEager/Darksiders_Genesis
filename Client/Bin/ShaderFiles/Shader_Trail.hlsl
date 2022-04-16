@@ -10,6 +10,8 @@ cbuffer Matrices
 
 
 texture2D		g_DiffuseTexture;
+texture2D		g_NoiseTexture;
+texture2D		g_AlphaTexture;
 
 struct VS_IN
 {
@@ -50,7 +52,6 @@ struct PS_OUT
 	float4		vColor : SV_TARGET0;
 };
 
-
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -60,24 +61,30 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
-//struct PS_DEFERRED_OUT
-//{
-//	float4		vDiffuse : SV_TARGET0;
-//	float4		vNormalW : SV_TARGET1;
-//	float4		vDepthW : SV_TARGET2;
-//	float4		vEmissive : SV_TARGET3;
-//	float4		vHitPower : SV_TARGET4;
-//};
-//
-//
-//PS_DEFERRED_OUT PS_MAIN_DEFERRED(PS_IN In)
-//{
-//	PS_DEFERRED_OUT		Out = (PS_DEFERRED_OUT)0;
-//
-//	Out.vDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-//
-//	return Out;
-//}
+struct PS_OUT_DISTORTION
+{
+	float4		vBackBuffer : SV_TARGET0;
+	float4		vDistortion : SV_TARGET1;
+};
+
+PS_OUT_DISTORTION PS_MAIN_DISTORTION(PS_IN In)
+{
+	PS_OUT_DISTORTION		Out = (PS_OUT_DISTORTION)0;
+
+	// BackBuffer
+	Out.vBackBuffer = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	// Distortion
+	float4	DistortionOut = { 0.f, 0.f, 0.f, 0.f }; 
+	DistortionOut = g_NoiseTexture.Sample(SampleType, In.vTexUV); // Noise를 사용한다.
+	//DistortionOut.w = g_AlphaTexture.Sample(SampleType, In.vTexUV); // 알파를 사용한다.
+	Out.vDistortion = DistortionOut;
+
+	return Out;
+}
+
+
+
 
 technique11	DefaultTechnique
 {
@@ -115,5 +122,17 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	// 3
+	pass Alphablending_NoCull_DistortionPass
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(NoCull);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
 	}
 }
