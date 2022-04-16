@@ -11,17 +11,17 @@ END
 
 BEGIN(Client)
 
-class CTrail final : public CGameObject
+class CTrail_War_Sword final : public CGameObject
 {
 private:
-	explicit CTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
-	explicit CTrail(const CTrail& rhs);
-	virtual ~CTrail() = default;
+	explicit CTrail_War_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	explicit CTrail_War_Sword(const CTrail_War_Sword& rhs);
+	virtual ~CTrail_War_Sword() = default;
 public:
 	virtual HRESULT NativeConstruct_Prototype();
 	virtual HRESULT NativeConstruct(void* pArg);
 	virtual _int Tick(_float fTimeDelta);
-	_int CTrail::MyTick(_float fTimeDelta, _fmatrix* pBonemMat = nullptr); // Trail을 소유하고 있는 객체에서 pBonemMat를 채워주도록하자
+	_int CTrail_War_Sword::MyTick(_float fTimeDelta, _fmatrix* pBonemMat = nullptr); // Trail을 소유하고 있는 객체에서 pBonemMat를 채워주도록하자
 	virtual _int LateTick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iPassIndex = 0);
 	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
@@ -61,7 +61,7 @@ private:
 	HRESULT SetUp_ConstantTable(_uint iPassIndex);	
 
 public:	
-	static CTrail* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	static CTrail_War_Sword* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

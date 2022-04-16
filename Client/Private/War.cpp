@@ -74,7 +74,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 		return E_FAIL;
 
 	// Trail
-	m_pTrail = CTrail::Create(m_pDevice, m_pDeviceContext);
+	m_pTrail = CTrail_War_Sword::Create(m_pDevice, m_pDeviceContext);
 	m_pTrail->Set_Transform(m_pTransformCom);
 	m_pTrail->Set_Trail_Up_PositionOffset(_float3(0.f, 0.f, 2.45f));
 	m_pTrail->Set_Trail_Down_PositionOffset(_float3(0.f, 0.f, 0.f));

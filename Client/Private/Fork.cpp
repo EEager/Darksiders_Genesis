@@ -39,10 +39,6 @@ HRESULT CFork::NativeConstruct(void * pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(17.f, 0.f, 430.f, 1.f));
 
-	// Trail 
-	m_pTrail = CTrail::Create(m_pDevice, m_pDeviceContext);
-	m_pTrail->Set_Transform(m_pTransformCom);
-
 	return S_OK;
 }
 
@@ -58,9 +54,6 @@ _int CFork::Tick(_float fTimeDelta)
 
 	// Collider 
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
-
-	// Trail
-	m_pTrail->MyTick(fTimeDelta);
 
 	return _int();
 }
@@ -81,7 +74,6 @@ _int CFork::LateTick(_float fTimeDelta)
 	// 디버깅이 필요하면 이거 넣어줘야한다
 	if (m_bUseImGui)
 	{
-		m_pTrail->m_bUseImGui = true; // 트레일 imgui
 		AddRenderGroup = true;
 	}
 #endif
@@ -96,9 +88,6 @@ _int CFork::LateTick(_float fTimeDelta)
 
 	// Collider 
 	//pGameInstance->Add_Collision(this);
-
-	// Trail
-	m_pTrail->LateTick(fTimeDelta);
 
 
 	RELEASE_INSTANCE(CGameInstance);
@@ -265,5 +254,4 @@ void CFork::Free()
 	Safe_Release(m_pTransformCom);	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pModelCom);
-	Safe_Release(m_pTrail);
 }

@@ -368,7 +368,7 @@ PS_OUT PS_MAIN_PreBB_To_BB(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	// g_DistortionTexture에 찍은 Distortion들을 표현하자
-	// 이거
+	// 이거는 별로 인거 같다..
 	if (g_swapDistortion)
 	{
 		float4	Pert = g_DistortionTexture.Sample(DefaultSampler, In.vTexUV);
@@ -376,7 +376,7 @@ PS_OUT PS_MAIN_PreBB_To_BB(PS_IN In)
 		float	y = In.vTexUV.y + (Pert.y) * g_HeatHazeStrength;
 		Out.vColor = g_PreBBTexture.Sample(DefaultSampler, float2(x, y));
 	}
-	// cos, sin 사용.. 이거 잘 안되는데요.. 
+	// cos, sin 사용.. 이거 잘 되는데요.
 	else
 	{
 		// 이펙트에서 찍은 Distortion(Noise)를 가져온다.

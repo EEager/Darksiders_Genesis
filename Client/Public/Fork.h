@@ -43,9 +43,6 @@ private:
 	ComPtr<CTexture>			m_pDissolveTextureCom = nullptr;
 
 private:
-	class CTrail*	m_pTrail = nullptr;
-
-private:
 	HRESULT SetUp_Component();
 	HRESULT SetUp_ConstantTable(_uint iPassIndex);	
 

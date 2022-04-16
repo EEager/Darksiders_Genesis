@@ -7,37 +7,37 @@
 #include "imgui_Manager.h"
 #endif
 
-CTrail::CTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CTrail_War_Sword::CTrail_War_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
 }
 
-CTrail::CTrail(const CTrail& rhs)
+CTrail_War_Sword::CTrail_War_Sword(const CTrail_War_Sword& rhs)
 	: CGameObject(rhs),
 	m_pRendererCom(rhs.m_pRendererCom)
 {
 }
 
-HRESULT CTrail::NativeConstruct_Prototype()
+HRESULT CTrail_War_Sword::NativeConstruct_Prototype()
 {
 	SetUp_Component();
 	return S_OK;
 }
 
-HRESULT CTrail::NativeConstruct(void* pArg)
+HRESULT CTrail_War_Sword::NativeConstruct(void* pArg)
 {
 	// Not Used
 	return S_OK;
 }
 
-_int CTrail::Tick(_float fTimeDelta)
+_int CTrail_War_Sword::Tick(_float fTimeDelta)
 {
 	// Not Used
 
 	return _int();
 }
 
-_int CTrail::MyTick(_float fTimeDelta, _fmatrix* pBonemMat)
+_int CTrail_War_Sword::MyTick(_float fTimeDelta, _fmatrix* pBonemMat)
 {
 	_float3 up;
 	_float3 down;
@@ -60,7 +60,7 @@ _int CTrail::MyTick(_float fTimeDelta, _fmatrix* pBonemMat)
 	return 0;
 }
 
-_int CTrail::LateTick(_float fTimeDelta)
+_int CTrail_War_Sword::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
 		return -1;
@@ -75,7 +75,7 @@ _int CTrail::LateTick(_float fTimeDelta)
 	return _int();
 }
 
-HRESULT CTrail::Render(_uint iPassIndex)
+HRESULT CTrail_War_Sword::Render(_uint iPassIndex)
 {
 	// 2 : Alphablending_NoCullPass
 	// 3 : Alphablending_NoCull_DistortionPass
@@ -88,7 +88,7 @@ HRESULT CTrail::Render(_uint iPassIndex)
 	return S_OK;
 }
 
-HRESULT CTrail::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+HRESULT CTrail_War_Sword::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
 #ifdef _DEBUG
 	// Collider 
@@ -99,7 +99,7 @@ HRESULT CTrail::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Sp
 	if (m_bUseImGui)
 	{
 		char TagTmp[32];
-		sprintf_s(TagTmp, "CTrail##%d", m_CloneIdx);
+		sprintf_s(TagTmp, "CTrail_War_Sword##%d", m_CloneIdx);
 		ImGui::Begin(TagTmp, &m_bUseImGui);
 		{
 			ImGui::InputInt("TextureIdx", &m_TrailTextureIdx);
@@ -127,7 +127,7 @@ HRESULT CTrail::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Sp
 }
 
 
-HRESULT CTrail::SetUp_Component()
+HRESULT CTrail_War_Sword::SetUp_Component()
 {
 	/* For.Com_Renderer*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)m_pRendererCom.GetAddressOf())))
@@ -145,14 +145,10 @@ HRESULT CTrail::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"), TEXT("Com_Texture_Noise"), (CComponent**)m_pDistortionNoiseTextureCom.GetAddressOf())))
 		return E_FAIL;
 
-	/* For.Com_Texture_Noise */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_alpha"), TEXT("Com_Texture_Alpha"), (CComponent**)m_pDistortionAlphaTextureCom.GetAddressOf())))
-		return E_FAIL;
-
 	return S_OK;
 }
 
-HRESULT CTrail::SetUp_ConstantTable(_uint iPassIndex)
+HRESULT CTrail_War_Sword::SetUp_ConstantTable(_uint iPassIndex)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
@@ -170,21 +166,19 @@ HRESULT CTrail::SetUp_ConstantTable(_uint iPassIndex)
 		// 근데 Renderer Render_Blend_Final에서 tmpTrue일때는 1번이 최고네 ㅎㅎ
 		if (FAILED(m_pDistortionNoiseTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_NoiseTexture",1)))
 			return E_FAIL; 
-		//if (FAILED(m_pDistortionNoiseTextureCom->SetUp_OnShader(m_pTrail.Get(), "g_AlphaTexture")))
-		//	return E_FAIL;  
 	}
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
 }
 
 
-CTrail* CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+CTrail_War_Sword* CTrail_War_Sword::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-	CTrail* pInstance = new CTrail(pDevice, pDeviceContext);
+	CTrail_War_Sword* pInstance = new CTrail_War_Sword(pDevice, pDeviceContext);
 
 	if (FAILED(pInstance->NativeConstruct_Prototype()))
 	{
-		MSG_BOX("Failed to Created CTrail");
+		MSG_BOX("Failed to Created CTrail_War_Sword");
 		Safe_Release(pInstance);
 	}
 
@@ -192,20 +186,20 @@ CTrail* CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContex
 }
 
 
-CGameObject* CTrail::Clone(void* pArg)
+CGameObject* CTrail_War_Sword::Clone(void* pArg)
 {
-	CTrail* pInstance = new CTrail(*this);
+	CTrail_War_Sword* pInstance = new CTrail_War_Sword(*this);
 
 	if (FAILED(pInstance->NativeConstruct(pArg)))
 	{
-		MSG_BOX("Failed to Created CTrail");
+		MSG_BOX("Failed to Created CTrail_War_Sword");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CTrail::Free()
+void CTrail_War_Sword::Free()
 {
 	__super::Free();
 	Safe_Release(m_pTargetTransform);

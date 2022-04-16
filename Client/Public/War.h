@@ -147,7 +147,7 @@ public:
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 
 private:
-	class CTrail* m_pTrail = nullptr;
+	class CTrail_War_Sword* m_pTrail = nullptr;
 public:
 	bool m_bTrailOn = false;
 
