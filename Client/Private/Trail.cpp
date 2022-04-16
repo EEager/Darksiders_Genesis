@@ -7,14 +7,83 @@
 #include "imgui_Manager.h"
 #endif
 
-CTrail_War_Sword::CTrail_War_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+
+
+//-------------------------------------------------
+// CTrail
+//-------------------------------------------------
+CTrail::CTrail(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
 }
 
+CTrail::CTrail(const CTrail& rhs)
+	: CGameObject(rhs)
+{
+}
+
+
+HRESULT CTrail::NativeConstruct_Prototype()
+{
+	return E_NOTIMPL;
+}
+
+HRESULT CTrail::NativeConstruct(void* pArg)
+{
+	// Not Used
+	return E_NOTIMPL;
+}
+
+_int CTrail::Tick(_float fTimeDelta)
+{
+	return _int();
+}
+
+_int CTrail::LateTick(_float fTimeDelta)
+{
+	return _int();
+}
+
+HRESULT CTrail::Render(_uint iPassIndex)
+{
+	return E_NOTIMPL;
+}
+
+HRESULT CTrail::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	return 0;
+}
+
+_int CTrail::MyTick(_float fTimeDelta, _fmatrix* pBonemMat)
+{
+	return _int();
+}
+
+CTrail* CTrail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	return nullptr;
+}
+
+CGameObject* CTrail::Clone(void* pArg)
+{
+	return nullptr;
+}
+
+void CTrail::Free()
+{
+}
+
+
+//-------------------------------------------------
+// CTrail_War_Sword
+//-------------------------------------------------
+CTrail_War_Sword::CTrail_War_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CTrail(pDevice, pDeviceContext)
+{
+}
+
 CTrail_War_Sword::CTrail_War_Sword(const CTrail_War_Sword& rhs)
-	: CGameObject(rhs),
-	m_pRendererCom(rhs.m_pRendererCom)
+	: CTrail(rhs)
 {
 }
 
@@ -204,3 +273,9 @@ void CTrail_War_Sword::Free()
 	__super::Free();
 	Safe_Release(m_pTargetTransform);
 }
+
+
+
+//-------------------------------------------------
+// CTrail_War_Dash
+//-------------------------------------------------

@@ -101,6 +101,7 @@ private:
 
 public:
 	_bool m_bDontMoveInWorld = false;
+	_float m_fOffsetMul = 1.f;
 
 	// -----------------------------------------------------------------
 	// 아래 3개는 War 키 입력에 사용

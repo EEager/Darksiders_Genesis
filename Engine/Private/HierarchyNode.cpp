@@ -1,8 +1,6 @@
 #include "..\Public\HierarchyNode.h"
 #include "Navigation.h"
 
-
-
 CHierarchyNode::CHierarchyNode()
 {
 }
@@ -37,7 +35,7 @@ void CHierarchyNode::Update_CombinedTransformationMatrix()
 			XMLoadFloat4x4(&m_TransformationMatrix));
 }
 
-void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, IN const char* pRootNodeName, IN CNavigation* pNaviCom, IN OBJECT_DIR eDir)
+void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIndex, OUT _float4x4* pMatW, IN const char* pRootNodeName, IN CNavigation* pNaviCom, IN OBJECT_DIR eDir, _float OffsetMul)
 {
 	// m_Channels에서 iCurrentAnimIndex의 애니메이션에 해당하는 뼈행렬 정보를 가지고 있다. 
 	// 이 채널들은 Model 사본만들때 Model이 넣어준다. 
@@ -58,7 +56,6 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 				if (m_Channels[iCurrentAnimIndex]->Get_KeyFrameIndex() == 0 || offsetPos == _float4(0.f, 0.f, 0.f, 1.f)) 
 				{
 					//if (XMVectorGetX(XMVector4Length(XMLoadFloat4(&offsetPos))) < 3.f) // Air_Land 같은것은 첫번째 키프레임인데 이미 오프셋 만큼 앞으로 나간 상태이다.
-					m_prevOffsetPos = offsetPos;
 				}
 				else // 오프셋만큼 월행을 이동시켜주자
 				{
@@ -100,19 +97,19 @@ void CHierarchyNode::Update_CombinedTransformationMatrix(IN _uint iCurrentAnimIn
 					{
 						if (pNaviCom->isMove((XMLoadFloat4((_float4*)&pMatW->m[3]) + XMLoadFloat4(&tmpOffset))) == 1)
 						{
-							_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x, tmpOffset.y, tmpOffset.z);
+							_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x * OffsetMul, tmpOffset.y * OffsetMul, tmpOffset.z * OffsetMul);
 							XMStoreFloat4x4(pMatW, dstMat);
 						}
 					}
 					else
 					{
-						_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x, tmpOffset.y, tmpOffset.z);
+						_matrix dstMat = XMLoadFloat4x4(pMatW) * XMMatrixTranslation(tmpOffset.x * OffsetMul, tmpOffset.y * OffsetMul, tmpOffset.z * OffsetMul);
 						XMStoreFloat4x4(pMatW, dstMat);
 					}
-					// 이전 오프셋위치를 저장한다. 
-					m_prevOffsetPos = offsetPos;
-
 				}
+
+				// 이전 오프셋위치를 저장한다. 
+				m_prevOffsetPos = offsetPos;
 			}
 
 			// 로컬 애니메이션 위치(m_TransformationMatrix)는 0으로 고정하자.

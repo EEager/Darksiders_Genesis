@@ -2795,6 +2795,9 @@ void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true); // 내가 모든 키를 위임할꼬야
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+
+	// m_fOffsetMul 값을 1.5f로 올려주자. 
+	g_pWar->m_fOffsetMul = 1.4f;
 }
 
 void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2837,6 +2840,9 @@ void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false); // 내가 모든 키를 위임할꼬야
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = false;
+
+	// m_fOffsetMul 값을 다시 원복한다
+	g_pWar->m_fOffsetMul = 1.f;
 }
 
 void CState_War_DashTo_F::Free()
