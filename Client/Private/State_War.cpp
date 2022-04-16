@@ -11,6 +11,8 @@
 #include "War.h"
 #include "PipeLine.h"
 
+#include "Trail.h"
+
 
 // 
 // Global War State Machine in War.cpp
@@ -2798,6 +2800,10 @@ void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// m_fOffsetMul 값을 1.5f로 올려주자. 
 	g_pWar->m_fOffsetMul = 1.4f;
+
+	// 대쉬 트레일 ON
+	g_pWar->m_bDashTrailOn = true;
+
 }
 
 void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2830,7 +2836,6 @@ void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
 		return;
 	}
-
 }
 
 void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -2843,6 +2848,10 @@ void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// m_fOffsetMul 값을 다시 원복한다
 	g_pWar->m_fOffsetMul = 1.f;
+
+
+	// 대쉬 트레일 OFF
+	g_pWar->m_bDashTrailOn = false;
 }
 
 void CState_War_DashTo_F::Free()

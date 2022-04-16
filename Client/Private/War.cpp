@@ -72,13 +72,13 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	if (SetUp_BoneMatrix())
 		return E_FAIL;
 
-	// Trail
+	// Trail Sword Create
 	m_pTrail = CTrail_War_Sword::Create(m_pDevice, m_pDeviceContext);
 	m_pTrail->Set_Transform(m_pTransformCom);
-	m_pTrail->Set_Trail_Up_PositionOffset(_float3(0.f, 0.f, 2.45f));
-	m_pTrail->Set_Trail_Down_PositionOffset(_float3(0.f, 0.f, 0.f));
-	m_pTrail->Set_TrailTextureIdx(5); // 5: 칼 휘두르는것. 6: 대쉬입니다. 
-		// Texture는 5번, duration:0.003, m_fAliveTime:0.25f, m_LerpCnt:7
+
+	// Trail Dash Create
+	m_pTrailDash = CTrail_War_Dash::Create(m_pDevice, m_pDeviceContext);
+	m_pTrailDash->Set_Transform(m_pTransformCom);
 
 	return S_OK;
 }
@@ -138,6 +138,9 @@ _int CWar::Tick(_float fTimeDelta)
 			(OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
 			TargetWorldMatrix;
 		m_pTrail->MyTick(fTimeDelta, &TransformationMatrix);
+
+		// 대쉬의 경우에는 그냥 하자
+		m_pTrailDash->MyTick(fTimeDelta);
 	}
 
 
@@ -180,6 +183,8 @@ _int CWar::LateTick(_float fTimeDelta)
 	// Trail
 	if (m_bTrailOn) // 공격할때만 Trail을 출력하자.
 		m_pTrail->LateTick(fTimeDelta); // 지가 렌더러에 넣는다. 
+	if (m_bDashTrailOn)
+		g_pWar->m_pTrailDash->LateTick(fTimeDelta);
 
 _EXIT:
 	RELEASE_INSTANCE(CGameInstance);
@@ -214,6 +219,7 @@ HRESULT CWar::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<Spri
 	if (m_bUseImGui) // IMGUI 툴로 배치할거다
 	{
 		m_pTrail->m_bUseImGui = true;
+		m_pTrailDash->m_bUseImGui = true;
 		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom, m_CloneIdx, &m_bUseImGui);
 	}
 
@@ -904,6 +910,7 @@ void CWar::Free()
 	Safe_Release(m_pStateMachineCom);
 
 	Safe_Release(m_pTrail);
+	Safe_Release(m_pTrailDash);
 
 
 	Safe_Release(m_pModelCom_Ruin);

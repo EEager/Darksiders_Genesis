@@ -147,10 +147,12 @@ public:
 	int m_iHitDir = -1; // 어느방향에서 피격하였는지 알 수 있게하자. -1 : 아직 피격안당했다.
 	OBJECT_DIR m_eDir = OBJECT_DIR::DIR_F;
 
-private:
-	class CTrail_War_Sword* m_pTrail = nullptr;
 public:
+	class CTrail_War_Sword* m_pTrail = nullptr;
+	class CTrail_War_Dash* m_pTrailDash = nullptr;
+
 	bool m_bTrailOn = false;
+	bool m_bDashTrailOn = false;
 
 
 

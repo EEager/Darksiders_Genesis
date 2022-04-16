@@ -84,6 +84,17 @@ PS_OUT_DISTORTION PS_MAIN_DISTORTION(PS_IN In)
 }
 
 
+PS_OUT_DISTORTION PS_MAIN_ONLY_DISTORTION(PS_IN In)
+{
+	PS_OUT_DISTORTION		Out = (PS_OUT_DISTORTION)0;
+	// Distortion
+	float4	DistortionOut = { 0.f, 0.f, 0.f, 0.f };
+	DistortionOut = g_NoiseTexture.Sample(SampleType, In.vTexUV);
+	Out.vDistortion = DistortionOut;
+	return Out;
+}
+
+
 
 
 technique11	DefaultTechnique
@@ -134,5 +145,17 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_DISTORTION();
+	}
+
+	// 4
+	pass Alphablending_NoCull_OnlyDistortionPass
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(NoCull);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_ONLY_DISTORTION();
 	}
 }
