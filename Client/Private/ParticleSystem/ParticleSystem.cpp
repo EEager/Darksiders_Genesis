@@ -55,7 +55,12 @@ HRESULT CParticleSystem::NativeConstruct_Prototype(const _tchar* pShaderFilePath
 
 	mMaxParticles = 500; //  maxParticles;
 	mEmitPosW = _float3(17.f, 1.f, 430.f); // 파티클 시작 방출 위치. 
-	mEmitDirW = _float3(0.0f, 1.0f, 0.0f); // 파티클 시작 가속도.
+	mEmitColor = _float3(1.f, 1.f, 1.f);
+	mEmitSize = _float2(0.1f, 0.1f);
+
+	mEmitInitAccel = _float3( 0.0f, 7.8f, 0.0f );
+
+	mEmitRandomPower = 4.f;
 
 	BuildVB(m_pDevice);
 
@@ -85,6 +90,8 @@ _int CParticleSystem::LateTick(_float fTimeDelta)
 
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this))) 
+		return -1;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 		return -1;
 	RELEASE_INSTANCE(CGameInstance);
 	return _int();
@@ -149,20 +156,58 @@ HRESULT CParticleSystem::Render(_uint iPassIndex)
 	m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
 
 	m_DrawTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		m_DrawTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
 
-		m_pDeviceContext->DrawAuto();
-	}
+	m_DrawTech->GetPassByIndex(0)->Apply(0, m_pDeviceContext);
+
+	m_pDeviceContext->DrawAuto();
+	//for (UINT p = 0; p < techDesc.Passes; ++p)
+	//{
+	//	m_DrawTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
+
+	//	m_pDeviceContext->DrawAuto();
+	//}
 
 	return S_OK;
 }
 
 HRESULT CParticleSystem::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+#ifdef USE_IMGUI
+	// Imgui 로 시험하자.
+	ImGui::Begin("ParticleSystem");
+	{
+		// 텍스처 어떤거 사용할지. 
+		const char* textureItems[] = { "m_pTextureParticle", "m_pTextureDecayPuffs", "m_pTextureDust",  "m_pTextureFogCloud" ,"m_pTextureRockChips" };
+		ImGui::Combo("Texture Select", &mTextureTagIdx, textureItems, IM_ARRAYSIZE(textureItems));
 
+		// 텍스쳐 인덱스
+		ImGui::InputInt("TextureIdx", &m_iTextureIdx);
 
+		// mEmitPosW
+		float EmitPos[3] = { mEmitPosW.x, mEmitPosW.y,mEmitPosW.z };
+		if (ImGui::DragFloat3("EmitPos", EmitPos, .01f))
+			mEmitPosW = _float3(EmitPos[0], EmitPos[1], EmitPos[2]);
+
+		// mEmitColor;
+		float EmitColor[3] = { mEmitColor.x, mEmitColor.y,mEmitColor.z };
+		if (ImGui::DragFloat3("mEmitColor", EmitColor, .01f))
+			mEmitColor = _float3(EmitColor[0], EmitColor[1], EmitColor[2]);
+
+		// mEmitInitAccel;
+		float EmitAccel[3] = { mEmitInitAccel.x, mEmitInitAccel.y,mEmitInitAccel.z };
+		if (ImGui::DragFloat3("mEmitInitAccel", EmitAccel, .01f))
+			mEmitInitAccel = _float3(EmitAccel[0], EmitAccel[1], EmitAccel[2]);
+
+		// mEmitSize;
+		float EmitSize[2] = { mEmitSize.x, mEmitSize.y };
+		if (ImGui::DragFloat2("mEmitSize", EmitSize, .01f))
+			mEmitSize = _float2(EmitSize[0], EmitSize[1]);
+
+		// mEmitRandomPower
+		ImGui::DragFloat("mEmitRandomPower", &mEmitRandomPower, 0.01f);
+	}
+	ImGui::End();
+#endif
 	return S_OK;
 }
 
@@ -183,9 +228,27 @@ HRESULT CParticleSystem::SetUp_Component()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)m_pRendererCom.GetAddressOf())))
 		return E_FAIL;
 
-	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Particle_Flare"), TEXT("Com_Texture"), (CComponent**)m_pTextureCom.GetAddressOf())))
+	/* For.Com_Texture1 */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Particle"), TEXT("Com_Texture1"), (CComponent**)m_pTextureParticle.GetAddressOf())))
 		return E_FAIL;
+
+	/* For.Com_Texture2 */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_DecayPuffs"), TEXT("Com_Texture2"), (CComponent**)m_pTextureDecayPuffs.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Texture3 */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Dust"), TEXT("Com_Texture3"), (CComponent**)m_pTextureDust.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Texture4 */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_FogCloud"), TEXT("Com_Texture4"), (CComponent**)m_pTextureFogCloud.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Texture5 */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_RockChips"), TEXT("Com_Texture5"), (CComponent**)m_pTextureRockChips.GetAddressOf())))
+		return E_FAIL;
+
+
 
 	return S_OK;
 }
@@ -236,18 +299,47 @@ HRESULT CParticleSystem::SetUp_ConstantTable(_uint iPassIndex)
 
 	// Bind Stuffs
 	Set_RawValue("gEmitPosW", &mEmitPosW, sizeof(_float3));
-	Set_RawValue("gEmitDirW", &mEmitDirW, sizeof(_float3));
+	Set_RawValue("gEmitColor", &mEmitColor, sizeof(_float3));
+	Set_RawValue("gAccelW", &mEmitInitAccel, sizeof(_float3)); // 초기속도
+	Set_RawValue("gRandomPwr", &mEmitRandomPower, sizeof(_float)); // 랜덤방향세기. 세질수록 초기속도 무시할 수 있음.
+	Set_RawValue("gEmitSize", &mEmitSize, sizeof(_float2));
 	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
 
-	// 랜덤값 던져주자
+	// 랜덤방향의 랜덤값 던져주자. 방향으로 지정할 수도 있음.
 	_vector randFloat3 = MathHelper::RandUnitVec3();
-	Set_RawValue("gRandom", &randFloat3, sizeof(_vector));
+	Set_RawValue("gRandomDir", &randFloat3, sizeof(_vector));
 
 	// 텍스쳐 던져주자
 	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
 	if (nullptr == pValiable)
 		return E_FAIL;
-	pValiable->SetResource(m_pTextureCom->Get_SRV(0));
+
+#ifdef USE_IMGUI
+	ID3D11ShaderResourceView* pResource = nullptr;
+	switch (mTextureTagIdx)
+	{
+	case 0:
+		pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+		break;
+	case 1:
+		pResource = m_pTextureDecayPuffs->Get_SRV(m_iTextureIdx);
+		break;
+	case 2:
+		pResource = m_pTextureDust->Get_SRV(m_iTextureIdx);
+		break;
+	case 3:
+		pResource = m_pTextureFogCloud->Get_SRV(m_iTextureIdx);
+		break;
+	case 4:
+		pResource = m_pTextureRockChips->Get_SRV(m_iTextureIdx);
+		break;
+	default:
+		assert(0);
+	}
+#else
+	auto pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+#endif
+	pValiable->SetResource(pResource);
 
 	RELEASE_INSTANCE(CGameInstance);
 

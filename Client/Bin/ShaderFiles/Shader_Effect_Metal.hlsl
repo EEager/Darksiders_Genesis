@@ -13,15 +13,17 @@ cbuffer cbPerFrame
 	float4 gEyePosW; // 카메라 위치 
 	// for when the emit position/direction is varying
 	float3 gEmitPosW;
-	float3 gEmitDirW;
+	float3 gEmitColor;
+	float2 gEmitSize;
 	float gTimeStep;
-	vector gRandom;
+	vector gRandomDir;
 };
 
 cbuffer cbFixed
 {
 	// Net constant acceleration used to accerlate the particles.
-	float3 gAccelW = { 0.0f, 7.8f, 0.0f };
+	float3 gAccelW; // 강하게 부는 바람. 불같은 경우 위쪽으로 간다.
+	float3 gRandomPwr; // 랜덤하게 가는 방향의 세기.
 
 	// Texture coordinates used to stretch texture over quad 
 	// when we expand point particle into a quad.
@@ -73,14 +75,13 @@ void StreamOutGS(point Particle gin[1],
 		// time to emit a new particle?
 		if (gin[0].Age > 0.005f)
 		{
-			float3 vRandom = gRandom.xyz;
-			vRandom.x *= 0.5f;
-			vRandom.z *= 0.5f;
+			// 랜덤사용할경우.
+			float3 vRandom = gRandomDir.xyz;
 
 			Particle p;
 			p.InitialPosW = gEmitPosW.xyz;
-			p.InitialVelW = 15.0f * vRandom;
-			p.SizeW = float2(1.f, 1.f);
+			p.InitialVelW = gRandomPwr * vRandom;
+			p.SizeW = gEmitSize;
 			p.Age = 0.0f;
 			p.Type = PT_FLARE;
 
@@ -143,7 +144,9 @@ VertexOut DrawVS(Particle vin)
 
 	// fade color with time
 	float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / 1.0f);
-	vout.Color = float4(1.f, 1.f, 1.f, opacity);
+	//vout.Color = float4(1.f, 1.f, 1.f, opacity);
+	vout.Color.xyz = gEmitColor;
+	vout.Color.w = opacity;
 
 	vout.SizeW = vin.SizeW;
 	vout.Type = vin.Type;
@@ -207,9 +210,17 @@ void DrawGS(point VertexOut gin[1],
 
 float4 DrawPS(GeoOut pin) : SV_TARGET
 {
-	return g_DiffuseTexture.Sample(DefaultSampler, pin.Tex);
+	return g_DiffuseTexture.Sample(DefaultSampler, pin.Tex)* pin.Color;
 }
 
+
+
+float4 DrawPS2(GeoOut pin) : SV_TARGET
+{
+	float4 ret = g_DiffuseTexture.Sample(DefaultSampler, pin.Tex) * pin.Color;
+	ret.xyz = pin.Color;
+	return ret;
+}
 
 technique11 DrawTech
 {
@@ -218,6 +229,16 @@ technique11 DrawTech
 		SetVertexShader(CompileShader(vs_5_0, DrawVS()));
 		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
 		SetPixelShader(CompileShader(ps_5_0, DrawPS()));
+
+		SetBlendState(AdditiveBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+		SetDepthStencilState(NoDepthWrites, 0);
+	}
+
+	pass P1
+	{
+		SetVertexShader(CompileShader(vs_5_0, DrawVS()));
+		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
+		SetPixelShader(CompileShader(ps_5_0, DrawPS2()));
 
 		SetBlendState(AdditiveBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 		SetDepthStencilState(NoDepthWrites, 0);

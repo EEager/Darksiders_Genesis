@@ -34,7 +34,13 @@ private:
 private:	
 	ComPtr<CRenderer>			m_pRendererCom = nullptr;
 	ComPtr<CTransform>			m_pTransformCom = nullptr;
-	ComPtr<CTexture>			m_pTextureCom = nullptr;
+
+	// Particle
+	ComPtr<CTexture>			m_pTextureParticle = nullptr;
+	ComPtr<CTexture>			m_pTextureDecayPuffs = nullptr;
+	ComPtr<CTexture>			m_pTextureDust = nullptr;
+	ComPtr<CTexture>			m_pTextureFogCloud = nullptr;
+	ComPtr<CTexture>			m_pTextureRockChips = nullptr;
 
 	ID3D11InputLayout*			m_ParticleLayout = 0;
 	ID3DX11EffectTechnique*		m_StreamOutTech = nullptr;
@@ -53,7 +59,13 @@ private:
 	float mAge;
 
 	_float3 mEmitPosW;
-	_float3 mEmitDirW;
+	_float3 mEmitColor;
+	_float3 mEmitInitAccel;
+	_float2 mEmitSize;
+	_float mEmitRandomPower;
+	int	m_iTextureIdx = 0;
+	int mTextureTagIdx = 0;
+
 
 private:
 	HRESULT SetUp_Component();

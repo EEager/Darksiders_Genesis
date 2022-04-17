@@ -458,9 +458,29 @@ HRESULT CLoader::Add_Texture()
 		return E_FAIL;
 
 	// ÆÄÆ¼Å¬
-	/* For.Prototype_Component_Texture_Particle_Flare */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Particle_Flare"),
-		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/flare0.dds")))))
+	/* For.Prototype_Component_Texture_Particle */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Particle"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/Particle%d.dds"), 10))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_DecayPuffs */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_DecayPuffs"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/DecayPuffs%d.dds"), 4))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Dust */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Dust"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/Dust%d.dds"), 4))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_FogCloud */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_FogCloud"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/FogCloud%d.dds"), 4))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_RockChips */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_RockChips"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/RockChips%d.dds"), 16))))
 		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
