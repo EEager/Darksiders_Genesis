@@ -302,7 +302,7 @@ HRESULT CTrail_War_Dash::NativeConstruct_Prototype()
 	SetUp_Component();
 	 
 	Set_Trail_Up_PositionOffset(_float3(0.f, 1.7f, 0.f));
-	Set_Trail_Down_PositionOffset(_float3(0.f, -.5f, 0.f));
+	Set_Trail_Down_PositionOffset(_float3(0.f, 0.5f, 0.f));
 	Set_TrailTextureIdx(6); // 6: 대쉬입니다. 
 	m_NoiseTextureIdx = 15;
 
@@ -426,7 +426,7 @@ HRESULT CTrail_War_Dash::SetUp_Component()
 		return E_FAIL;
 	// 트레일 버퍼 정보 초기화
 	m_pTrail->m_fDuration = 0.002f; // 몇초마다 트레일 정점을 넣을것인지. 0.01f가 부드러움.
-	m_pTrail->m_fAliveTime = 0.05f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
+	m_pTrail->m_fAliveTime = 0.1f; // 넣은 트레일 정점이 몇초동안 살아남을 것인지.
 	m_pTrail->m_LerpCnt = 20.f; // 캣멀스플라인 보간에 사용될 값. 커질수록 트레일이 느리게 따라온다.
 
 	/* For.Com_Trail_Texture */
