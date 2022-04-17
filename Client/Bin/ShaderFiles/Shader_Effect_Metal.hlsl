@@ -23,7 +23,7 @@ cbuffer cbFixed
 {
 	// Net constant acceleration used to accerlate the particles.
 	float3 gAccelW; // 강하게 부는 바람. 불같은 경우 위쪽으로 간다.
-	float3 gRandomPwr; // 랜덤하게 가는 방향의 세기.
+	float gRandomPwr; // 랜덤하게 가는 방향의 세기.
 
 	// Texture coordinates used to stretch texture over quad 
 	// when we expand point particle into a quad.
