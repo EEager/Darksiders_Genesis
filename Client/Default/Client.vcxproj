@@ -111,7 +111,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../../Reference/Librarys/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine.lib;DirectXTexd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTexd.lib;%(AdditionalDependencies);Effects11d.lib;Effects11.lib</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ShaderType>Effect</ShaderType>
@@ -204,6 +204,7 @@
     <ClInclude Include="..\Public\Monster\Legion.h" />
     <ClInclude Include="..\Public\Monster\Monster.h" />
     <ClInclude Include="..\Public\Mouse.h" />
+    <ClInclude Include="..\Public\ParticleSystem\ParticleSystem.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\SceneChangeEffect.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="..\Private\Monster\Legion.cpp" />
     <ClCompile Include="..\Private\Monster\Monster.cpp" />
     <ClCompile Include="..\Private\Mouse.cpp" />
+    <ClCompile Include="..\Private\ParticleSystem\ParticleSystem.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\SceneChangeEffect.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
@@ -286,6 +288,7 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimMesh_Normal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cube.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Effect_Metal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Mesh_Normal.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MonsterHpBar_PointGs.hlsl" />

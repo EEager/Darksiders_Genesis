@@ -17,6 +17,10 @@ public:
 		return eTransformType == TS_VIEW ? XMLoadFloat4x4(&m_ViewMatrix) : XMLoadFloat4x4(&m_ProjMatrix);
 	}
 
+	_matrix Get_CamWorldMat() {
+		return XMLoadFloat4x4(&m_ViewMatrixInverse);
+	}
+
 	_vector Get_CamPosition() {
 		return XMLoadFloat4(&m_vCamPosition);
 	}

@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "GameObject.h"
+#include "ParticleSystem\ParticleSystem.h"
 
 BEGIN(Engine)
 class CCollider;
@@ -41,6 +42,8 @@ private:
 	CCollider*					m_pOBBCom = nullptr;
 	ComPtr<CNavigation>			m_pNaviCom = nullptr; // ComPtr Test
 	ComPtr<CTexture>			m_pDissolveTextureCom = nullptr;
+
+	ComPtr<CParticleSystem>		m_pParticleSystem = nullptr;
 
 private:
 	HRESULT SetUp_Component();

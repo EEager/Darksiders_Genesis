@@ -62,6 +62,26 @@ private:
 public:
 	CTexture* m_pTextureNoise = nullptr;
 
+#if 1 // Test Particles
+	bool mFirstRun = true;
+	float mTimeStep = 0.f;
+	float mAge;
+
+	_float3 mEmitPosW;
+	_float3 mEmitDirW;
+
+	ID3D11Buffer* mInitVB;
+	ID3D11Buffer* mDrawVB;
+	ID3D11Buffer* mStreamOutVB;
+
+	ID3DX11Effect*		m_pEffect = nullptr;
+	ID3D11InputLayout* m_ParticleLayout = 0;
+	ID3DX11EffectTechnique* m_StreamOutTech = nullptr;
+	ID3DX11EffectTechnique* m_DrawTech = nullptr;
+
+	HRESULT Set_RawValue(const char* pConstantName, void* pData, _uint iSize);
+#endif
+
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	virtual CComponent* Clone(void* pArg) override;

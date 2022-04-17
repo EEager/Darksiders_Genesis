@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 
 #include "Trail.h"
+#include "Fork.h"
 
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
@@ -55,6 +56,7 @@ _int CFork::Tick(_float fTimeDelta)
 	// Collider 
 	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
 
+
 	return _int();
 }
 
@@ -85,6 +87,8 @@ _int CFork::LateTick(_float fTimeDelta)
 		if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
 			assert(0);
 	}
+
+
 
 	// Collider 
 	//pGameInstance->Add_Collision(this);

@@ -98,7 +98,7 @@ HRESULT CTrail_War_Sword::NativeConstruct_Prototype()
 	Set_Trail_Down_PositionOffset(_float3(0.f, 0.f, 0.f));
 
 	Set_TrailTextureIdx(5); // Ä® ÈÖµÎ¸£´Â Æ®·¹ÀÏ
-	m_NoiseTextureIdx = 1;
+	m_NoiseTextureIdx = 15;
 
 	return S_OK;
 }

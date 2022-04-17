@@ -2,6 +2,8 @@
 
 #include "Client_Defines.h"
 #include "GameObject.h"
+#include "ParticleSystem\ParticleSystem.h"
+
 
 BEGIN(Engine)
 
@@ -37,6 +39,7 @@ private:
 	CTexture*					m_pTextureAlpha = nullptr;
 	CVIBuffer_RectInstance*		m_pModelCom_RectInstance = nullptr;
 	CVIBuffer_Rect*				m_pModelCom_Rect = nullptr;
+	ComPtr<CParticleSystem>			m_pParticleSystem = nullptr;
 
 private:
 	HRESULT SetUp_Component();

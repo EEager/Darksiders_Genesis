@@ -57,6 +57,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vColor.w = 0.2f;
 
 	return Out;
 }
@@ -73,6 +74,7 @@ PS_OUT_DISTORTION PS_MAIN_DISTORTION(PS_IN In)
 
 	// BackBuffer
 	Out.vBackBuffer = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vBackBuffer.w *= 0.5f;
 
 	// Distortion
 	float4	DistortionOut = { 0.f, 0.f, 0.f, 0.f }; 

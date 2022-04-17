@@ -75,8 +75,30 @@ public:
 	//	return XMMatrixTranspose(XMMatrixInverse(&det, A));
 	//}
 
-	//static XMVECTOR RandUnitVec3();
 	//static XMVECTOR RandHemisphereUnitVec3(XMVECTOR n);
+
+	static XMVECTOR RandUnitVec3()
+	{
+		XMVECTOR One = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+		XMVECTOR Zero = XMVectorZero();
+
+		// Keep trying until we get a point on/in the hemisphere.
+		while (true)
+		{
+			// Generate random point in the cube [-1,1]^3.
+			XMVECTOR v = XMVectorSet(MathHelper::RandF(-1.0f, 1.0f), MathHelper::RandF(-1.0f, 1.0f), MathHelper::RandF(-1.0f, 1.0f), 0.0f);
+
+			// Ignore points outside the unit sphere in order to get an even distribution 
+			// over the unit sphere.  Otherwise points will clump more on the sphere near 
+			// the corners of the cube.
+
+			if (XMVector3Greater(XMVector3LengthSq(v), One))
+				continue;
+
+			return XMVector3Normalize(v);
+		}
+	}
+
 
 	static const float Infinity;
 	static const float Pi;

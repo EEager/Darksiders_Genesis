@@ -24,7 +24,9 @@ HRESULT CFireEffect::NativeConstruct(void * pArg)
 {
 	if (SetUp_Component())
 		return E_FAIL;
-	
+
+	m_pParticleSystem = CParticleSystem::Create(m_pDevice, m_pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Metal.hlsl");
+
 	return S_OK;
 }
 
@@ -33,6 +35,8 @@ _int CFireEffect::Tick(_float fTimeDelta)
 	//m_pModelCom_RectInstance->Update(fTimeDelta);
 
 	m_fMyTimeDelta += fTimeDelta;
+
+	m_pParticleSystem->Tick(fTimeDelta);
 	
 	return _int();
 }
@@ -56,6 +60,7 @@ _int CFireEffect::LateTick(_float fTimeDelta)
 
 	RELEASE_INSTANCE(CGameInstance);	
 
+	m_pParticleSystem->LateTick(fTimeDelta);
 
 	return _int();
 }

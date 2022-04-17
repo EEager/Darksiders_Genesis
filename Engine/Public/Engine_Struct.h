@@ -66,6 +66,15 @@ namespace Engine
 	// ------------------
 	// Buffer Struct Types
 	// ------------------
+	typedef struct tagParticle
+	{
+		XMFLOAT3 InitialPos;
+		XMFLOAT3 InitialVel;
+		XMFLOAT2 Size;
+		float Age;
+		unsigned int Type;
+	}VTXPTC;
+
 	typedef struct tagVertex_Matrix
 	{
 		XMFLOAT4			vRight;

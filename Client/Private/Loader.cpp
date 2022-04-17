@@ -457,6 +457,12 @@ HRESULT CLoader::Add_Texture()
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Trail/trail%d.dds"), 7))))
 		return E_FAIL;
 
+	// ÆÄÆ¼Å¬
+	/* For.Prototype_Component_Texture_Particle_Flare */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Particle_Flare"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/flare0.dds")))))
+		return E_FAIL;
+
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
 

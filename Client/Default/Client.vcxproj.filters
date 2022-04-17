@@ -166,6 +166,9 @@
     <Filter Include="02.GameObjects\Trail">
       <UniqueIdentifier>{ffa30b7b-aff9-46d1-b579-fbaf5758f3fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\ParticleSystem">
+      <UniqueIdentifier>{41c5c9dc-a2fb-4147-890f-4d0b407d60a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -324,6 +327,9 @@
     <ClInclude Include="..\Public\Trail.h">
       <Filter>02.GameObjects\Trail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ParticleSystem\ParticleSystem.h">
+      <Filter>02.GameObjects\ParticleSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -467,6 +473,9 @@
     <ClCompile Include="..\Private\Trail.cpp">
       <Filter>02.GameObjects\Trail</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\ParticleSystem\ParticleSystem.cpp">
+      <Filter>02.GameObjects\ParticleSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -525,6 +534,9 @@
       <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl">
+      <Filter>97.ShaderFiles\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Effect_Metal.hlsl">
       <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
