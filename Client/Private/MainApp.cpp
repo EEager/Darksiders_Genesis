@@ -13,6 +13,7 @@
 
 // Effect
 #include "SceneChangeEffect.h"
+#include "ParticleSystem\ParticleSystem_Manager.h"
 
 // ----------------------
 //	ImGUI
@@ -375,6 +376,8 @@ void CMainApp::Free()
 	Safe_Release(m_pDevice);
 
 	Safe_Release(m_pGameInstance);
+
+	CParticleSystem_Manager::GetInstance()->DestroyInstance();
 
 	CGameInstance::Release_Engine();
 }
