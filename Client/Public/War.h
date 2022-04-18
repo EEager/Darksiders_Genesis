@@ -19,14 +19,21 @@ class CWar final : public CGameObject
 {
 	friend class CGlobal_State_War;
 
-private:
+private:_float curFloorHeight = 0.f; public:_float Get_CurFloorH() { return curFloorHeight; }
+
+public:
 	typedef struct tagSwordDesc
 	{
 		_float4x4		OffsetMatrix;
-		_float4x4*		pBoneMatrix;
+		_float4x4* pBoneMatrix;
 		_float4x4		PivotMatrix;
-		_float4x4*		pTargetWorldMatrix;
+		_float4x4* pTargetWorldMatrix;
 	}SWORDDESC;
+
+public:
+	SWORDDESC* Get_WarSwordDesc_Ptr() { return &m_WarSwordDesc; }
+
+
 public:
 	enum TEXTURETYPE { TYPE_DIFFUSE, TYPE_FILTER, TYPE_BRUSH, TYPE_END };
 	enum MODELTYPE { MODELTYPE_WAR, MODELTYPE_GAUNTLET, MODELTYPE_WEAPON, MODELTYPE_END };

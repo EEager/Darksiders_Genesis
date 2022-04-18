@@ -22,7 +22,7 @@ extern CTransform* g_pWar_Transform_Context;
 
 
 
-
+#include "ParticleSystem\ParticleSystem_Manager.h"
 CWar::CWar(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
@@ -36,12 +36,15 @@ CWar::CWar(const CWar & rhs)
 HRESULT CWar::NativeConstruct_Prototype()
 {	
 
-
 	return S_OK;
 }
 
 HRESULT CWar::NativeConstruct(void * pArg)
 {
+
+	CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
+
+
 	// Init GameInfo
 	m_tGameInfo.iAtt = 30.f;
 	m_tGameInfo.iAtt = 3.f;
@@ -156,7 +159,7 @@ _int CWar::LateTick(_float fTimeDelta)
 
 	// Height
 	_vector	vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	_float curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
+	curFloorHeight = m_pNaviCom->Compute_Height(vPosition);
 	if (m_bJump) // 점프중이라면 땅위에 서게 하지말자 
 	{
 		if (XMVectorGetY(vPosition) < curFloorHeight) // 만약 현재 위치가 땅 밑에 있다면 땅위에 서게 하자 

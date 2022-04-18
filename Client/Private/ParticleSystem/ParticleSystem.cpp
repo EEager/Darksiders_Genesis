@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 #include "d3dx11effect.h"
 
+#include "War.h"
+
 
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
@@ -101,25 +103,32 @@ HRESULT CParticleSystem::NativeConstruct_Prototype(const _tchar* pShaderFilePath
 	HR(m_pDevice->CreateInputLayout(ElementDesc, iNumElements, passDesc.pIAInputSignature,
 		passDesc.IAInputSignatureSize, &m_ParticleLayout));
 
-	// #3. Init Stuffs
-	mFirstRun = true; // 처음 정점은 emitter이기에 이걸로 구분해주자.
-	mTimeStep = 0.0f; // GS Stream에서 각 정점 파티클 생존시간 계산하기 위한 게임 dt.
-	mAge = 0.0f; // 현재 이 파티클시스템의 경과시간.
-
-	mMaxParticles = maxParticleNum; //  maxParticles;
-	mEmitPosW = _float3(17.f, 1.f, 430.f); // 파티클 시작 방출 위치. 
-	mEmitColor = _float3(1.f, 1.f, 1.f);
-	mEmitSize = _float2(0.1f, 0.1f);
-
-	mEmitInitAccel = _float3( 0.0f, 7.8f, 0.0f );
-
-	mEmitRandomPower = 4.f;
-
+	// 랜덤 텍스쳐 생성
 	mRandomTexSRV = CreateRandomTexture1DSRV(m_pDevice);
 
+	// 정점 생성 
+	mMaxParticles = maxParticleNum; //  maxParticles;
 	BuildVB(m_pDevice);
 
+	// 컴포넌트 생성 
 	SetUp_Component();
+
+	// 초기화
+	mAge = 0.0f; // 현재 이 파티클시스템의 경과시간.
+	mTimeStep = 0.0f; // GS Stream에서 각 정점 파티클 생존시간 계산하기 위한 게임 dt.
+	mFirstRun = true; // 처음 정점은 emitter이기에 이걸로 구분해주자.
+	m_isAvailable = true;
+
+	// 자식들이 채워줄 변수들. 일단은 부모에서도 초기화시켜주자.
+	mEmitPosW = _float3(17.f, 1.f, 430.f); // 파티클 시작 방출 위치. 
+	mEmitColor = _float3(1.f, 1.f, 1.f);
+	mEmitInitAccel = _float3(0.0f, 7.8f, 0.0f);
+	mEmitSize = _float2(0.1f, 0.1f);
+	mEmitRandomPower = 4.f;
+	m_iTextureIdx = 0;
+	mTextureTagIdx = 0;
+	mMaxAge = 2.f;
+	mEmitLoop = false;
 
 	return S_OK;
 }
@@ -131,7 +140,7 @@ HRESULT CParticleSystem::NativeConstruct(void * pArg)
 }
 
 _int CParticleSystem::Tick(_float fTimeDelta)
-{
+{ 
 	if (m_isDead)
 	{
 		// 죽어서 반납하기 전에 몇가지를 초기화해야한다
@@ -145,12 +154,6 @@ _int CParticleSystem::Tick(_float fTimeDelta)
 	mTimeStep = fTimeDelta;
 	mAge += fTimeDelta;
 	mGameTime += fTimeDelta;
-
-	if (CInput_Device::GetInstance()->Key_Down(DIK_P))
-	{
-		mFirstRun = true;
-		mAge = 0.f;
-	}
 
 	return _int();
 }
@@ -211,7 +214,7 @@ HRESULT CParticleSystem::Render(_uint iPassIndex)
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	m_StreamOutTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
+	for (UINT p = 0; p < techDesc.Passes; ++p) // 이거는 유지
 	{
 		m_StreamOutTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
 
@@ -237,18 +240,9 @@ HRESULT CParticleSystem::Render(_uint iPassIndex)
 	// Draw the updated particle system we just streamed-out. 
 	//
 	m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
-
 	m_DrawTech->GetDesc(&techDesc);
-
-	m_DrawTech->GetPassByIndex(0)->Apply(0, m_pDeviceContext);
-
+	m_DrawTech->GetPassByIndex(iPassIndex)->Apply(0, m_pDeviceContext);
 	m_pDeviceContext->DrawAuto();
-	//for (UINT p = 0; p < techDesc.Passes; ++p)
-	//{
-	//	m_DrawTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
-
-	//	m_pDeviceContext->DrawAuto();
-	//}
 
 	return S_OK;
 }
@@ -390,14 +384,11 @@ HRESULT CParticleSystem::SetUp_ConstantTable(_uint iPassIndex)
 	Set_RawValue("gEmitSize", &mEmitSize, sizeof(_float2));
 	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
 	Set_RawValue("gGameTime", &mGameTime, sizeof(_float));
-
-	// 기타
 	Set_RawValue("useLoop", &mEmitLoop, sizeof(_bool));
 	Set_RawValue("maxAge", &mMaxAge, sizeof(_float));
 
-	// 랜덤방향의 랜덤값 던져주자. 방향으로 지정할 수도 있음.
-	_vector randFloat3 = MathHelper::RandUnitVec3();
-	Set_RawValue("gRandomDir", &randFloat3, sizeof(_vector));
+	// 랜덤방향의 세기를 결정해주자 : 사용하지말자.
+	// Set_RawValue("gRandomDir", &randFloat3, sizeof(_vector));
 
 	// g_DiffuseTexture
 	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
@@ -490,7 +481,6 @@ CParticleSystem * CParticleSystem::Create(ID3D11Device* pDevice, ID3D11DeviceCon
 }
 
 
-// 필요할때 파티클시스템 매니져에서 알아서 복사만 잘 해줄것이다.
 CGameObject * CParticleSystem::Clone(void* pArg)
 {
 	return nullptr;
@@ -511,11 +501,12 @@ void CParticleSystem::Free()
 
 
 
-
-
 // -----------------------------------
 // CParticle_Sword
+// 검으로 몬스터 때리면 불꽃이 튀도록하자.
+// 참고로 불꽃은 밑으로 떨어지면서 
 // -----------------------------------
+
 CParticle_Sword::CParticle_Sword(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CParticleSystem(pDevice, pDeviceContext)
 {
@@ -528,7 +519,21 @@ CParticle_Sword::CParticle_Sword(const CParticle_Sword& rhs)
 
 HRESULT CParticle_Sword::NativeConstruct_Prototype(const _tchar* pShaderFilePath, int maxParticleNum)
 {
-	return CParticleSystem::NativeConstruct_Prototype(pShaderFilePath, maxParticleNum);
+	CParticleSystem::NativeConstruct_Prototype(pShaderFilePath, maxParticleNum);
+
+	// CParticle_Sword 멤버변수 초기화 
+	mEmitPosW = _float3(0.f, 0.f, 0.f); // 파티클 시작 방출 위치. 
+	//mEmitColor = _float3(1.f, .57f, MathHelper::RandF(0.f, 1.f));
+	mEmitColor = _float3(1.f, 0.f, 0.f);
+	mEmitInitAccel = _float3(0.0f, -7.8f, 0.0f);
+	mEmitSize = _float2(0.1f, 0.1f);
+	mEmitRandomPower = 2.f;
+	m_iTextureIdx = 4; // 텍스쳐 인덱스 번호.
+	mTextureTagIdx = 0; // 어떤 텍스쳐를 사용할것인지.
+	mMaxAge = 2.5f;
+	mEmitLoop = false;
+
+	return S_OK;
 }
 
 HRESULT CParticle_Sword::NativeConstruct(void* pArg)
@@ -539,25 +544,75 @@ HRESULT CParticle_Sword::NativeConstruct(void* pArg)
 
 _int CParticle_Sword::Tick(_float fTimeDelta)
 {
-	if (CParticleSystem::Tick(fTimeDelta) < 0)
-		return -1;
+#ifdef _DEBUG
+	if (CInput_Device::GetInstance()->Key_Down(DIK_P))
+	{
+		mFirstRun = true;
+		mAge = 0.f;
+	}
+#endif
 
+	if (targetingOnce == false)
+	{
+		// 타겟은 검이다.
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		m_pTarget = pGameInstance->Get_War();
+		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		RELEASE_INSTANCE(CGameInstance);
+		targetingOnce = true;
+	}
+
+	if (CParticleSystem::Tick(fTimeDelta) < 0)
+	{
+		
+		return -1;
+	}
+	 
 	// mEmitPosW는 플레이어 칼 위치를 따라간다.
+	auto pWarSwordTag = static_cast<CWar*>(m_pTarget)->Get_WarSwordDesc_Ptr();
+	_matrix		OffsetMatrix = XMLoadFloat4x4(&pWarSwordTag->OffsetMatrix); 
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(pWarSwordTag->pBoneMatrix);
+	_matrix		PivotMatrix = XMLoadFloat4x4(&pWarSwordTag->PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(pWarSwordTag->pTargetWorldMatrix);
+	_matrix		TransformationMatrix = (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
+		TargetWorldMatrix;
+	XMStoreFloat3(&mEmitPosW, XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 1.53f, 1.f), TransformationMatrix));
+
 
 	return 0;
 }
 
 _int CParticle_Sword::LateTick(_float fTimeDelta)
 {
-	if (CParticleSystem::LateTick(fTimeDelta) < 0)
+	// 만약 Loop가 아닌경우에는 mAge를 계속 체크를 해줘야한다. 
+	if (mEmitLoop == false)
+	{
+		if (mAge > mMaxAge)
+		{
+			// JJLEE TEST
+			//m_isDead = true;
+			//return 0;
+		}
+	}
+
+
+	if (nullptr == m_pRendererCom)
 		return -1;
 
-	return 0;
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this)))
+		return -1;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		return -1;
+	RELEASE_INSTANCE(CGameInstance);
+	return _int();
 }
 
 HRESULT CParticle_Sword::Render(_uint iPassIndex)
 {
-	if (CParticleSystem::Render(iPassIndex) < 0)
+	// 1 : 서서히 사라진다. 땅에 닿으면 옆으로 간다
+	// 2 : fade 없다. 그냥 떨어진다 밑으로
+	if (CParticleSystem::Render(1) < 0)
 		return -1;
 
 	return 0;
@@ -565,12 +620,96 @@ HRESULT CParticle_Sword::Render(_uint iPassIndex)
 
 HRESULT CParticle_Sword::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
 {
+#ifdef _DEBUG
 	if (CParticleSystem::PostRender(m_spriteBatch, m_spriteFont) < 0)
 		return -1;
+#endif
 
 	return 0;
 }
 
+
+HRESULT CParticle_Sword::SetUp_ConstantTable(_uint iPassIndex)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Transform
+	// 뷰행 던져주자
+	_matrix	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	_float4x4	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gViewMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 투행 던져주자
+	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gProjMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 카메라 위치 던져주자
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	auto ret = Set_RawValue("gEyePosW", &vCamPosition, sizeof(_float4));
+
+	// Bind Stuffs
+	Set_RawValue("gEmitPosW", &mEmitPosW, sizeof(_float3));
+	Set_RawValue("gEmitColor", &mEmitColor, sizeof(_float3));
+	Set_RawValue("gAccelW", &mEmitInitAccel, sizeof(_float3)); // 초기속도
+	Set_RawValue("gRandomPwr", &mEmitRandomPower, sizeof(_float)); // 랜덤방향세기. 세질수록 초기속도 무시할 수 있음.
+	Set_RawValue("gEmitSize", &mEmitSize, sizeof(_float2));
+	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
+	Set_RawValue("gGameTime", &mGameTime, sizeof(_float));
+	Set_RawValue("useLoop", &mEmitLoop, sizeof(_bool));
+	Set_RawValue("maxAge", &mMaxAge, sizeof(_float));
+
+
+	// 타겟의 높이를 던져주자. 
+	_float targetHeight = static_cast<CWar*>(m_pTarget)->Get_CurFloorH();
+	Set_RawValue("gFloorHeight", &targetHeight, sizeof(_float));
+
+	// 랜덤방향의 세기를 결정해주자 : 사용하지말자.
+	// Set_RawValue("gRandomDir", &randFloat3, sizeof(_vector));
+
+	// g_DiffuseTexture
+	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
+#ifdef USE_IMGUI
+	ID3D11ShaderResourceView* pResource = nullptr;
+	switch (mTextureTagIdx)
+	{
+	case 0:
+		pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+		break;
+	case 1:
+		pResource = m_pTextureDecayPuffs->Get_SRV(m_iTextureIdx);
+		break;
+	case 2:
+		pResource = m_pTextureDust->Get_SRV(m_iTextureIdx);
+		break;
+	case 3:
+		pResource = m_pTextureFogCloud->Get_SRV(m_iTextureIdx);
+		break;
+	case 4:
+		pResource = m_pTextureRockChips->Get_SRV(m_iTextureIdx);
+		break;
+	default:
+		assert(0);
+	}
+#else
+	auto pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+#endif
+	pValiable->SetResource(pResource);
+
+
+	// g_RandomTex
+	pValiable = m_pEffect->GetVariableByName("g_RandomTex")->AsShaderResource();
+	pValiable->SetResource(mRandomTexSRV);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
 
 CParticle_Sword* CParticle_Sword::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, int maxParticleNum)
 {
@@ -591,6 +730,198 @@ CGameObject* CParticle_Sword::Clone(void* pArg)
 }
 
 void CParticle_Sword::Free()
+{
+	CParticleSystem::Free();
+}
+
+
+
+// -----------------------------------
+// CParticle_Blood
+// 피
+// -----------------------------------
+
+CParticle_Blood::CParticle_Blood(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CParticleSystem(pDevice, pDeviceContext)
+{
+}
+
+CParticle_Blood::CParticle_Blood(const CParticle_Blood& rhs)
+	: CParticleSystem(rhs)
+{
+}
+
+HRESULT CParticle_Blood::NativeConstruct_Prototype(const _tchar* pShaderFilePath, int maxParticleNum)
+{
+	CParticleSystem::NativeConstruct_Prototype(pShaderFilePath, maxParticleNum);
+
+	// CParticle_Blood 멤버변수 초기화 
+	mEmitPosW = _float3(0.f, 0.f, 0.f); // 파티클 시작 방출 위치. 
+	mEmitColor = _float3(1.f, 0.f, 0.f);
+	mEmitInitAccel = _float3(MathHelper::RandF(-1.f, 1.f), -7.8f, MathHelper::RandF(-1.f, 1.f));
+	mEmitSize = _float2(0.14f, 0.14f);
+	mEmitRandomPower = 1.55f;
+	m_iTextureIdx = 2; // 텍스쳐 인덱스 번호.
+	mTextureTagIdx = 0; // 어떤 텍스쳐를 사용할것인지.
+	mMaxAge = 2.5f;
+	mEmitLoop = false;
+
+	return S_OK;
+}
+
+HRESULT CParticle_Blood::NativeConstruct(void* pArg)
+{
+	// not used
+	return E_NOTIMPL;
+}
+
+_int CParticle_Blood::Tick(_float fTimeDelta)
+{
+	if (targetingOnce == false)
+	{
+		// 타겟은 검이다.
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		m_pTarget = pGameInstance->Get_War();
+		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		RELEASE_INSTANCE(CGameInstance);
+		targetingOnce = true;
+	}
+
+	if (CParticleSystem::Tick(fTimeDelta) < 0)
+		return -1;
+
+	// mEmitPosW는 플레이어 칼 위치를 따라간다.
+	auto pWarSwordTag = static_cast<CWar*>(m_pTarget)->Get_WarSwordDesc_Ptr();
+	_matrix		OffsetMatrix = XMLoadFloat4x4(&pWarSwordTag->OffsetMatrix);
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(pWarSwordTag->pBoneMatrix);
+	_matrix		PivotMatrix = XMLoadFloat4x4(&pWarSwordTag->PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(pWarSwordTag->pTargetWorldMatrix);
+	_matrix		TransformationMatrix = (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
+		TargetWorldMatrix;
+	XMStoreFloat3(&mEmitPosW, XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 1.53f, 1.f), TransformationMatrix));
+
+	return 0;
+}
+
+_int CParticle_Blood::LateTick(_float fTimeDelta)
+{
+	if (CParticleSystem::LateTick(fTimeDelta) < 0)
+		return -1;
+
+	return 0;
+}
+
+HRESULT CParticle_Blood::Render(_uint iPassIndex)
+{
+	// 2 : 알파블렌딩이고, Blood용이다.
+	if (CParticleSystem::Render(2) < 0)
+		return -1;
+
+	return 0;
+}
+
+HRESULT CParticle_Blood::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	return 0;
+}
+
+
+HRESULT CParticle_Blood::SetUp_ConstantTable(_uint iPassIndex)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Transform
+	// 뷰행 던져주자
+	_matrix	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	_float4x4	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gViewMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 투행 던져주자
+	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gProjMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 카메라 위치 던져주자
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	auto ret = Set_RawValue("gEyePosW", &vCamPosition, sizeof(_float4));
+
+	// Bind Stuffs
+	Set_RawValue("gEmitPosW", &mEmitPosW, sizeof(_float3));
+	Set_RawValue("gEmitColor", &mEmitColor, sizeof(_float3));
+	Set_RawValue("gAccelW", &mEmitInitAccel, sizeof(_float3)); // 가속도
+	Set_RawValue("gRandomPwr", &mEmitRandomPower, sizeof(_float)); // 랜덤방향세기. 세질수록 초기속도 무시할 수 있음.
+	Set_RawValue("gEmitSize", &mEmitSize, sizeof(_float2));
+	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
+	Set_RawValue("gGameTime", &mGameTime, sizeof(_float));
+	Set_RawValue("useLoop", &mEmitLoop, sizeof(_bool));
+	Set_RawValue("maxAge", &mMaxAge, sizeof(_float));
+
+	// 타겟의 높이를 던져주자. 
+	_float targetHeight = static_cast<CWar*>(m_pTarget)->Get_CurFloorH();
+	Set_RawValue("gFloorHeight", &targetHeight, sizeof(_float));
+
+	// g_DiffuseTexture
+	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
+#ifdef USE_IMGUI
+	ID3D11ShaderResourceView* pResource = nullptr;
+	switch (mTextureTagIdx)
+	{
+	case 0:
+		pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+		break;
+	case 1:
+		pResource = m_pTextureDecayPuffs->Get_SRV(m_iTextureIdx);
+		break;
+	case 2:
+		pResource = m_pTextureDust->Get_SRV(m_iTextureIdx);
+		break;
+	case 3:
+		pResource = m_pTextureFogCloud->Get_SRV(m_iTextureIdx);
+		break;
+	case 4:
+		pResource = m_pTextureRockChips->Get_SRV(m_iTextureIdx);
+		break;
+	default:
+		assert(0);
+	}
+#else
+	auto pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+#endif
+	pValiable->SetResource(pResource);
+
+	// g_RandomTex
+	pValiable = m_pEffect->GetVariableByName("g_RandomTex")->AsShaderResource();
+	pValiable->SetResource(mRandomTexSRV);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+CParticle_Blood* CParticle_Blood::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, int maxParticleNum)
+{
+	CParticle_Blood* pInstance = new CParticle_Blood(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, maxParticleNum)))
+	{
+		MSG_BOX("Failed to Created CParticle_Blood");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CParticle_Blood::Clone(void* pArg)
+{
+	return nullptr;
+}
+
+void CParticle_Blood::Free()
 {
 	CParticleSystem::Free();
 }

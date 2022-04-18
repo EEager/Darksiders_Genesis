@@ -545,9 +545,6 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl">
       <Filter>97.ShaderFiles\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\ShaderFiles\Shader_Effect_Metal.hlsl">
-      <Filter>97.ShaderFiles\Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

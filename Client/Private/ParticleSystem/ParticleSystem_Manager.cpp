@@ -48,15 +48,19 @@ void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag)
 // Initalize를 결국 Gameplay Loader에서 해야하는 것인가? 
 void CParticleSystem_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
-
 	for (int i = 0; i < 10; i++)
 	{
-		CParticleSystem* pParticle = static_cast<CParticleSystem*>(CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Metal.hlsl", 30/*파티클정점개수*/));
-		pParticle->mEmitLoop = false;
-		pParticle->mMaxAge = 2.f;
+		CParticleSystem* pParticle = static_cast<CParticleSystem*>(CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/));
 		Add_ParticleSystem(L"Particle_Sword", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_Sword", 0);
+
+	for (int i = 0; i < 20; i++)
+	{
+		CParticleSystem* pParticle = static_cast<CParticleSystem*>(CParticle_Blood::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/));
+		Add_ParticleSystem(L"Particle_Blood", pParticle);
+	}
+	m_ParticleSystemsIndex.emplace(L"Particle_Blood", 0);
 }
 
 

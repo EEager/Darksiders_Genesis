@@ -511,5 +511,8 @@
     <FxCompile Include="..\Bin\ShaderFiles\LightHelper.hlsl">
       <Filter>01.Utility\04.Component\Components\Renderer\Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Client\Bin\ShaderFiles\Shader_Effect_Particle.hlsl">
+      <Filter>01.Utility\04.Component\Components\Renderer\Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

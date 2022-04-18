@@ -190,8 +190,8 @@ HRESULT CUI_HollowLord_HpBar::SetUp_ConstantTable_Portrait()
 
 	_float4x4		WorldMatrix;
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixIdentity());
-	WorldMatrix._22 = 256.f/1.2f;
 	WorldMatrix._11 = 256.f/1.2f;
+	WorldMatrix._22 = 256.f/1.2f;
 	WorldMatrix._41 = m_fPortrait_X - (g_iWinCX >> 1);
 	WorldMatrix._42 = -m_fPortrait_Y + (g_iWinCY >> 1);
 	XMStoreFloat4x4(&WorldMatrix, XMMatrixTranspose(XMLoadFloat4x4(&WorldMatrix)));

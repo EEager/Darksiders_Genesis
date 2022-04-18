@@ -19,6 +19,8 @@ cbuffer cbPerFrame
 	float gGameTime;
 	vector gRandomDir;
 
+	float gFloorHeight; // 파티클의 바닥 높이이다.
+
 	bool useLoop;
 	float maxAge;
 };
@@ -96,7 +98,9 @@ Particle StreamOutVS(Particle vin)
 // programed here will generally vary from particle system
 // to particle system, as the destroy/spawn rules will be 
 // different.
-[maxvertexcount(26)]
+
+const static int maxVsize = 51; // 파티클 처음 만들때와 같은 숫자여야한다
+[maxvertexcount(maxVsize)]
 void StreamOutGS(point Particle gin[1],
 	inout PointStream<Particle> ptStream)
 {
@@ -131,10 +135,10 @@ void StreamOutGS(point Particle gin[1],
 		}
 		else // #2. 방출기에서 파티클을 한번만 방출한다.
 		{
-			for (int i = 0; i < 25; ++i)
+			for (int i = 0; i < maxVsize-1; ++i)
 			{
 				// 랜덤사용할경우
-				float3 vRandom = RandVec3((float)i / 25.0f);//  gRandomDir.xyz;
+				float3 vRandom = RandVec3((float)i / (float)maxVsize-1);//  gRandomDir.xyz;
 
 				Particle p;
 				p.InitialPosW = gEmitPosW.xyz;
@@ -211,6 +215,46 @@ VertexOut DrawVS(Particle vin)
 	return vout;
 }
 
+VertexOut DrawVSSword(Particle vin)
+{
+	VertexOut vout;
+
+	float t = vin.Age;
+
+	// constant acceleration equation
+	vout.PosW = 0.5f * t * t * gAccelW + t * vin.InitialVelW + vin.InitialPosW;
+
+	// 플레이어 현재 월드 높이에 닿은 경우에는 높이는 움직이지 않는다. 
+	vout.PosW.y = max(gFloorHeight, vout.PosW.y);
+
+	// fade color with time
+	float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / maxAge);
+	vout.Color.xyz = gEmitColor;
+	vout.Color.w = opacity;
+
+	vout.SizeW = vin.SizeW;
+	vout.Type = vin.Type;
+
+	return vout;
+}
+
+VertexOut DrawVSBlood(Particle vin)
+{
+	VertexOut vout;
+
+	float t = vin.Age;
+
+	// constant acceleration equation
+	vout.PosW = 0.5f * t * t * gAccelW + t * vin.InitialVelW + vin.InitialPosW;
+	vout.Color.xyz = gEmitColor; // 피의 경우 빨강일것이다.
+	vout.Color.w = 1.f; // 피.
+	vout.SizeW = vin.SizeW;
+	vout.Type = vin.Type;
+	return vout;
+}
+
+
+
 struct GeoOut
 {
 	float4 PosH  : SV_Position;
@@ -270,18 +314,20 @@ float4 DrawPS(GeoOut pin) : SV_TARGET
 	return g_DiffuseTexture.Sample(DefaultSampler, pin.Tex)* pin.Color;
 }
 
-
-
-float4 DrawPS2(GeoOut pin) : SV_TARGET
+float4 DrawPSSword(GeoOut pin) : SV_TARGET
 {
-	float4 ret = g_DiffuseTexture.Sample(DefaultSampler, pin.Tex) * pin.Color;
-	ret.xyz = pin.Color;
-	return ret;
+	return g_DiffuseTexture.Sample(DefaultSampler, pin.Tex) * pin.Color;
 }
+
+float4 DrawPSBlood(GeoOut pin) : SV_TARGET
+{
+	return g_DiffuseTexture.Sample(DefaultSampler, pin.Tex) * pin.Color;
+}
+
 
 technique11 DrawTech
 {
-	pass P0 // 검이 몹과 부딫혔을때 검에서 나오는 파티클 입자. 가산 혼합. 땅밑으로 떨어
+	pass P0 // 처음꺼
 	{
 		SetVertexShader(CompileShader(vs_5_0, DrawVS()));
 		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
@@ -291,13 +337,25 @@ technique11 DrawTech
 		SetDepthStencilState(NoDepthWrites, 0);
 	}
 
-	pass P1
+	pass P1 // 검이 몹과 부딫혔을때 검에서 나오는 불꽃.
 	{
-		SetVertexShader(CompileShader(vs_5_0, DrawVS()));
+		SetVertexShader(CompileShader(vs_5_0, DrawVSSword()));
 		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
-		SetPixelShader(CompileShader(ps_5_0, DrawPS2()));
+		SetPixelShader(CompileShader(ps_5_0, DrawPSSword()));
 
 		SetBlendState(AdditiveBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 		SetDepthStencilState(NoDepthWrites, 0);
 	}
+
+	pass P2 // 피
+	{
+		SetVertexShader(CompileShader(vs_5_0, DrawVSBlood()));
+		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
+		SetPixelShader(CompileShader(ps_5_0, DrawPSBlood()));
+
+		SetBlendState(AlphaBlendState, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+		SetDepthStencilState(NoDepthWrites, 0);
+	}
+
+
 }
