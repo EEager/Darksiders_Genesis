@@ -205,6 +205,7 @@
     <ClInclude Include="..\Public\Monster\Monster.h" />
     <ClInclude Include="..\Public\Mouse.h" />
     <ClInclude Include="..\Public\ParticleSystem\ParticleSystem.h" />
+    <ClInclude Include="..\Public\ParticleSystem\ParticleSystem_Manager.h" />
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\SceneChangeEffect.h" />
     <ClInclude Include="..\Public\Sky.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="..\Private\Monster\Monster.cpp" />
     <ClCompile Include="..\Private\Mouse.cpp" />
     <ClCompile Include="..\Private\ParticleSystem\ParticleSystem.cpp" />
+    <ClCompile Include="..\Private\ParticleSystem\ParticleSystem_Manager.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\SceneChangeEffect.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />

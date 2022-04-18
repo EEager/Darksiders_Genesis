@@ -16,7 +16,11 @@ cbuffer cbPerFrame
 	float3 gEmitColor;
 	float2 gEmitSize;
 	float gTimeStep;
+	float gGameTime;
 	vector gRandomDir;
+
+	bool useLoop;
+	float maxAge;
 };
 
 cbuffer cbFixed
@@ -37,6 +41,34 @@ cbuffer cbFixed
 };
 
 texture2D		g_DiffuseTexture;
+Texture1D		g_RandomTex;
+
+//***********************************************
+// HELPER FUNCTIONS                             *
+//***********************************************
+float3 RandUnitVec3(float offset)
+{
+	// Use game time plus offset to sample random texture.
+	float u = (gGameTime + offset);
+
+	// coordinates in [-1,1]
+	float3 v = g_RandomTex.SampleLevel(samLinear, u, 0).xyz;
+
+	// project onto unit sphere
+	return normalize(v);
+}
+
+float3 RandVec3(float offset)
+{
+	// Use game time plus offset to sample random texture.
+	float u = (gGameTime + offset);
+
+	// coordinates in [-1,1]
+	float3 v = g_RandomTex.SampleLevel(samLinear, u, 0).xyz;
+
+	return v;
+}
+
 
 //***********************************************
 // STREAM-OUT TECH                              *
@@ -64,7 +96,7 @@ Particle StreamOutVS(Particle vin)
 // programed here will generally vary from particle system
 // to particle system, as the destroy/spawn rules will be 
 // different.
-[maxvertexcount(4)]
+[maxvertexcount(26)]
 void StreamOutGS(point Particle gin[1],
 	inout PointStream<Particle> ptStream)
 {
@@ -72,32 +104,57 @@ void StreamOutGS(point Particle gin[1],
 
 	if (gin[0].Type == PT_EMITTER)
 	{
-		// time to emit a new particle?
-		if (gin[0].Age > 0.005f)
+		// #1. 방출기에서 계속해서 파티클을 방출한다
+		if (useLoop)
 		{
-			// 랜덤사용할경우.
-			float3 vRandom = gRandomDir.xyz;
+			// time to emit a new particle?
+			if (gin[0].Age > 0.005f)
+			{
+				// 랜덤사용할경우
+				float3 vRandom = RandVec3(0.0f);//  gRandomDir.xyz;
 
-			Particle p;
-			p.InitialPosW = gEmitPosW.xyz;
-			p.InitialVelW = gRandomPwr * vRandom;
-			p.SizeW = gEmitSize;
-			p.Age = 0.0f;
-			p.Type = PT_FLARE;
+				Particle p;
+				p.InitialPosW = gEmitPosW.xyz;
+				p.InitialVelW = gRandomPwr * vRandom;
+				p.SizeW = gEmitSize;
+				p.Age = 0.0f;
+				p.Type = PT_FLARE;
 
-			ptStream.Append(p);
+				ptStream.Append(p);
+
+				// reset the time to emit
+				gin[0].Age = 0.0f;
+			}
+
+			// always keep emitters
+			ptStream.Append(gin[0]);
+		}
+		else // #2. 방출기에서 파티클을 한번만 방출한다.
+		{
+			for (int i = 0; i < 25; ++i)
+			{
+				// 랜덤사용할경우
+				float3 vRandom = RandVec3((float)i / 25.0f);//  gRandomDir.xyz;
+
+				Particle p;
+				p.InitialPosW = gEmitPosW.xyz;
+				p.InitialVelW = gRandomPwr * vRandom;
+				p.SizeW = gEmitSize;
+				p.Age = 0.0f;
+				p.Type = PT_FLARE;
+
+				ptStream.Append(p);
+			}
 
 			// reset the time to emit
 			gin[0].Age = 0.0f;
 		}
-
-		// always keep emitters
-		ptStream.Append(gin[0]);
 	}
 	else
 	{
 		// Specify conditions to keep particle; this may vary from system to system.
-		if (gin[0].Age <= 1.0f)
+		// 아직 생존시간이 남아있으면 gs_5_0에 넣는다.
+		if (gin[0].Age <= maxAge)
 			ptStream.Append(gin[0]);
 	}
 }
@@ -143,7 +200,7 @@ VertexOut DrawVS(Particle vin)
 	vout.PosW = 0.5f * t * t * gAccelW + t * vin.InitialVelW + vin.InitialPosW;
 
 	// fade color with time
-	float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / 1.0f);
+	float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / maxAge);
 	//vout.Color = float4(1.f, 1.f, 1.f, opacity);
 	vout.Color.xyz = gEmitColor;
 	vout.Color.w = opacity;
@@ -224,7 +281,7 @@ float4 DrawPS2(GeoOut pin) : SV_TARGET
 
 technique11 DrawTech
 {
-	pass P0
+	pass P0 // 검이 몹과 부딫혔을때 검에서 나오는 파티클 입자. 가산 혼합. 땅밑으로 떨어
 	{
 		SetVertexShader(CompileShader(vs_5_0, DrawVS()));
 		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));

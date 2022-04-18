@@ -126,6 +126,35 @@ HRESULT CObject_Manager::Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* 
 	return S_OK;
 }
 
+// pGameObject를 바로 넣어주자
+HRESULT CObject_Manager::Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, IN CGameObject* pGameObject, const _tchar* pPrototypeTag)
+{
+	if (iLevelIndex >= m_iNumLevels)
+		return E_FAIL;
+
+	CLayer* pLayer = Find_Layer(iLevelIndex, pLayerTag);
+	if (nullptr == pLayer)
+	{
+		pLayer = CLayer::Create();
+		if (nullptr == pLayer)
+			return E_FAIL;
+
+		pLayer->Add_GameObject(pGameObject);
+		
+		m_pLayers[iLevelIndex].insert(LAYERS::value_type(pLayerTag, pLayer));
+	}
+	else
+		pLayer->Add_GameObject(pGameObject);
+
+	Safe_AddRef(pGameObject);
+
+	// Set PrototypeTag n LayerTag
+	pGameObject->Set_PrototypeTag(pPrototypeTag);
+	pGameObject->Set_LayerTag(pLayerTag);
+
+	return S_OK;
+}
+
 _int CObject_Manager::Tick(_float fTimeDelta)
 {
 	_int iProgress = 0;

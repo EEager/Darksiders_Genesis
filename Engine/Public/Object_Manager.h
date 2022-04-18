@@ -23,6 +23,7 @@ public:
 	HRESULT Add_Prototype(const _tchar* pPrototypeTag, class CGameObject* pPrototype);
 	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pPrototypeTag, void* pArg);
 	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar* pLayerTag, const _tchar* pPrototypeTag, void* pArg, OUT CGameObject** pGameObject);
+	HRESULT Add_GameObjectToLayer(_uint iLevelIndex, const _tchar * pLayerTag, IN CGameObject * pGameObject, const _tchar * pPrototypeTag);
 	_int Tick(_float fTimeDelta);
 	_int LateTick(_float fTimeDelta);
 	HRESULT Clear_LevelLayers(_uint iLevelIndex);

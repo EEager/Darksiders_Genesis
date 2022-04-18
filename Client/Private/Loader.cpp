@@ -38,7 +38,8 @@
 #include "Effect\PointEffect.h"
 #include "Effect\FireEffect.h"
 
-
+// Particles
+#include "ParticleSystem\ParticleSystem_Manager.h"
 
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
@@ -114,6 +115,9 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Navigation"),
 		CNavigation::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Data/NavigationData.dat")))))
 		return E_FAIL;
+
+	// For. Particle System Manager
+	CParticleSystem_Manager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
 
 	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY Load Completed!"));
 

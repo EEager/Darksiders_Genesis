@@ -169,6 +169,9 @@
     <Filter Include="02.GameObjects\ParticleSystem">
       <UniqueIdentifier>{41c5c9dc-a2fb-4147-890f-4d0b407d60a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObjects\ParticleSystem\Manager">
+      <UniqueIdentifier>{132c4d32-0d62-43d0-9a34-89c18c0e6fc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -330,6 +333,9 @@
     <ClInclude Include="..\Public\ParticleSystem\ParticleSystem.h">
       <Filter>02.GameObjects\ParticleSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ParticleSystem\ParticleSystem_Manager.h">
+      <Filter>02.GameObjects\ParticleSystem\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -475,6 +481,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\ParticleSystem\ParticleSystem.cpp">
       <Filter>02.GameObjects\ParticleSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\ParticleSystem\ParticleSystem_Manager.cpp">
+      <Filter>02.GameObjects\ParticleSystem\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

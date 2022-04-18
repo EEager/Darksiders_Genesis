@@ -3,6 +3,8 @@
 
 #include "GameInstance.h"
 
+#include "ParticleSystem\ParticleSystem_Manager.h"
+
 
 CFireEffect::CFireEffect(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
@@ -25,7 +27,7 @@ HRESULT CFireEffect::NativeConstruct(void * pArg)
 	if (SetUp_Component())
 		return E_FAIL;
 
-	m_pParticleSystem = CParticleSystem::Create(m_pDevice, m_pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Metal.hlsl");
+	//m_pParticleSystem = CParticle_Sword::Create(m_pDevice, m_pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Metal.hlsl");
 
 	return S_OK;
 }
@@ -36,11 +38,12 @@ _int CFireEffect::Tick(_float fTimeDelta)
 
 	m_fMyTimeDelta += fTimeDelta;
 
-	m_pParticleSystem->Tick(fTimeDelta);
+	//m_pParticleSystem->Tick(fTimeDelta);
 	
 	return _int();
 }
 
+bool TestOnce;
 _int CFireEffect::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom)
@@ -60,8 +63,8 @@ _int CFireEffect::LateTick(_float fTimeDelta)
 
 	RELEASE_INSTANCE(CGameInstance);	
 
-	m_pParticleSystem->LateTick(fTimeDelta);
-
+	//m_pParticleSystem->LateTick(fTimeDelta);
+	
 	return _int();
 }
 

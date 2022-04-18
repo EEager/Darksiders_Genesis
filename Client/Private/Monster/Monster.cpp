@@ -2,6 +2,7 @@
 #include "..\public\Monster\Monster.h"
 
 #include "GameInstance.h"
+#include "ParticleSystem\ParticleSystem_Manager.h"
 
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
@@ -245,6 +246,9 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		// 피격 당했다. 
+		// 이펙트를 넣어주자
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
+
 		m_bHitted = true;
 		m_fHitPower = .8f;
 
