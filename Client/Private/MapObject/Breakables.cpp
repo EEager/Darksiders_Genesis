@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 #include "Transform.h"
 
+#include "ParticleSystem\ParticleSystem_Manager.h"
+
 #ifdef USE_IMGUI
 #include "imgui_Manager.h"
 #endif
@@ -43,7 +45,13 @@ HRESULT CBreakableBase::NativeConstruct(void * pArg)
 _int CBreakableBase::Tick(_float fTimeDelta)
 {
 	if (m_isDead)
+	{
+		// 죽기전에 파티클 하나 만들어서 넣자. 
+		_float3 temp = nullptr;
+		XMStoreFloat3(&temp, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Box", &temp);
 		return -1;
+	}
 
 	// 피격 중이다.
 	if (m_bHitted)

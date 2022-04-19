@@ -212,4 +212,34 @@ public:
 	virtual void Free() override;
 };
 
+
+// ---------------------------------
+// CParticle_Box
+// ---------------------------------
+class CParticle_Box final : public CParticleSystem
+{
+private:
+	explicit CParticle_Box(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	explicit CParticle_Box(const CParticle_Box& rhs);
+	virtual ~CParticle_Box() = default;
+public:
+	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, int maxParticleNum);
+	virtual HRESULT NativeConstruct(void* pArg);
+	virtual _int Tick(_float fTimeDelta);
+	virtual _int LateTick(_float fTimeDelta);
+	virtual HRESULT Render(_uint iPassIndex = 0);
+	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
+	virtual HRESULT SetUp_ConstantTable(_uint iPassIndex);
+private:
+	class CTransform* m_pTargetTransform = nullptr;
+	class CGameObject* m_pTarget = nullptr;
+	_bool targetingOnce = false;
+
+public:
+	static CParticle_Box* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, int maxParticleNum);
+	virtual CGameObject* Clone(void* pArg) override;
+	virtual void Free() override;
+};
+
+
 END

@@ -133,6 +133,45 @@ void StreamOutGS(point Particle gin[1],
 	}
 }
 
+
+// 51개짜리 한방 파티클
+const static int maxVsize_10 = 11;
+[maxvertexcount(maxVsize_10)]
+void StreamOutGS_10(point Particle gin[1],
+	inout PointStream<Particle> ptStream)
+{
+	gin[0].Age += gTimeStep;
+
+	if (gin[0].Type == PT_EMITTER)
+	{
+		for (int i = 0; i < maxVsize_10 - 1; ++i)
+		{
+			// 랜덤사용할경우
+			float3 vRandom = RandVec3((float)i / (float)maxVsize_10 - 1);//  gRandomDir.xyz;
+
+			Particle p;
+			p.InitialPosW = gEmitPosW.xyz;
+			p.InitialVelW = gRandomPwr * vRandom;
+			p.SizeW = gEmitSize;
+			p.Age = 0.0f;
+			p.Type = PT_FLARE;
+
+			ptStream.Append(p);
+		}
+
+		// reset the time to emit
+		gin[0].Age = 0.0f;
+	}
+	else
+	{
+		// Specify conditions to keep particle; this may vary from system to system.
+		// 아직 생존시간이 남아있으면 gs_5_0에 넣는다.
+		if (gin[0].Age <= maxAge)
+			ptStream.Append(gin[0]);
+	}
+}
+
+
 // 100개지만 50만 넣는 한방짜리
 const static int maxVsize_300 = 100; 
 [maxvertexcount(maxVsize_300)]
@@ -213,6 +252,10 @@ GeometryShader gsStreamOut = ConstructGSWithSO(
 	CompileShader(gs_5_0, StreamOutGS()),
 	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
 
+GeometryShader gsStreamOut_10 = ConstructGSWithSO(
+	CompileShader(gs_5_0, StreamOutGS_10()),
+	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
+
 GeometryShader gsStreamOut_300 = ConstructGSWithSO(
 	CompileShader(gs_5_0, StreamOutGS_300()),
 	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
@@ -251,6 +294,18 @@ technique11 StreamOutTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, StreamOutVS()));
 		SetGeometryShader(gsStreamOut_Loop);
+
+		// disable pixel shader for stream-out only
+		SetPixelShader(NULL);
+
+		// we must also disable the depth buffer for stream-out only
+		SetDepthStencilState(DisableDepth, 0);
+	}
+
+	pass P3 // 한방 파티클 10개
+	{
+		SetVertexShader(CompileShader(vs_5_0, StreamOutVS()));
+		SetGeometryShader(gsStreamOut_10);
 
 		// disable pixel shader for stream-out only
 		SetPixelShader(NULL);

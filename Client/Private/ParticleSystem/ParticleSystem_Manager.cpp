@@ -11,7 +11,7 @@ CParticleSystem_Manager::CParticleSystem_Manager()
 }
 
 // 클라에서 해당 메소드를 통해 오브젝트 매니져에 등록해 달라고 하자
-void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag)
+void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag, _float3* vPos)
 {
 	auto pPTCVector = Find_PTC(pParticleTag);
 	if (pPTCVector == nullptr)
@@ -37,6 +37,9 @@ void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag)
 	// pParticle를 초기화 시켜주자
 	pParticle->m_isDead = false; // 만약 죽어있었다면 다시 살려내고 
 	pParticle->m_isAvailable = false; // 화장실 사용중으로 바꿔주고
+	if (vPos) // 초기화 위치가 있다면 설정해주자.
+		pParticle->mEmitPosW = *vPos;
+
 
 	// 오브젝트 매니져에 등록하자
 	auto ret = CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Particles", pParticle, L"Prototype_ParticleSystem");
@@ -53,7 +56,7 @@ void CParticleSystem_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceCont
 	// Particle_Sword
 	for (int i = 0; i < 10; i++)
 	{
-		CParticleSystem* pParticle = CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 500/*mMaxParticles*/);
+		CParticleSystem* pParticle = CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 10/*mMaxParticles*/);
 		Add_ParticleSystem(L"Particle_Sword", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_Sword", 0);
@@ -90,6 +93,14 @@ void CParticleSystem_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceCont
 		Add_ParticleSystem(L"Particle_War_Dash_Horse", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_War_Dash_Horse", 0);
+
+	// Particle_Box
+	for (int i = 0; i < 10; i++)
+	{
+		CParticleSystem* pParticle = CParticle_Box::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 10/*mMaxParticles*/);
+		Add_ParticleSystem(L"Particle_Box", pParticle);
+	}
+	m_ParticleSystemsIndex.emplace(L"Particle_Box", 0);
 }
 
 

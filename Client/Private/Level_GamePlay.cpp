@@ -150,11 +150,11 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	//}
 
 	//// Breakalbe 설치하자
-	//if (CInput_Device::GetInstance()->Key_Down(DIK_2))
-	//{
-	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
-	//		return E_FAIL;
-	//}
+	if (CInput_Device::GetInstance()->Key_Down(DIK_2))
+	{
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
+			return E_FAIL;
+	}
 	//if (CInput_Device::GetInstance()->Key_Down(DIK_3))
 	//{
 	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable2"))))

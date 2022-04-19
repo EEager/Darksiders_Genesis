@@ -509,15 +509,14 @@ HRESULT CParticle_Sword::NativeConstruct_Prototype(const _tchar* pShaderFilePath
 	// CParticle_Sword 멤버변수 초기화 
 	mEmitPosW = _float3(0.f, 0.f, 0.f); // 파티클 시작 방출 위치. 
 	//mEmitColor = _float3(1.f, .57f, MathHelper::RandF(0.f, 1.f));
-	mEmitColor = _float3(1.f, 0.f, 0.f);
-	mEmitInitAccel = _float3(0.0f, -7.8f, 0.0f);
-	mEmitSize = _float2(0.1f, 0.1f);
-	mEmitRandomPower = 2.f;
-	m_iTextureIdx = 4; // 텍스쳐 인덱스 번호.
-	mTextureTagIdx = 0; // 어떤 텍스쳐를 사용할것인지.
-	mMaxAge = 2.5f;
-
-	streamPassIdx = 2; // 계속 방출 
+	mEmitColor = _float3(1.f, .520f, 0.400f);
+	mEmitInitAccel = _float3(0.0f, 0.3f, -1.81f);
+	mEmitSize = _float2(1.f, 1.f);
+	mEmitRandomPower = .750f;
+	m_iTextureIdx = 3; // 텍스쳐 인덱스 번호.
+	mTextureTagIdx = 3; // 어떤 텍스쳐를 사용할것인지.
+	mMaxAge = 1.5f;
+	streamPassIdx = 3; // 한방 파티클 10개짜리
 	vertexPassIdx = 1;
 
 	return S_OK;
@@ -961,6 +960,20 @@ _int CParticle_LightAtk4::Tick(_float fTimeDelta)
 	{
 		return -1; 
 	}
+	return 0;
+}
+
+_int CParticle_LightAtk4::LateTick(_float fTimeDelta)
+{
+	if (targetingOnce == false)
+	{
+		// 타겟은 검이다.
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		m_pTarget = pGameInstance->Get_War();
+		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		RELEASE_INSTANCE(CGameInstance);
+		targetingOnce = true;
+	}
 
 	// mEmitPosW는 플레이어 칼 위치를 따라간다.
 	auto pWarSwordTag = static_cast<CWar*>(m_pTarget)->Get_WarSwordDesc_Ptr();
@@ -973,11 +986,6 @@ _int CParticle_LightAtk4::Tick(_float fTimeDelta)
 	XMStoreFloat3(&mEmitPosW, XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 1.53f, 1.f), TransformationMatrix));
 
 
-	return 0;
-}
-
-_int CParticle_LightAtk4::LateTick(_float fTimeDelta)
-{
 	if (CParticleSystem::LateTick(fTimeDelta) < 0)
 		return -1;
 	return 0;
@@ -1282,6 +1290,188 @@ CGameObject* CParticle_War_Dash_Horse::Clone(void* pArg)
 }
 
 void CParticle_War_Dash_Horse::Free()
+{
+	CParticleSystem::Free();
+}
+
+
+
+
+// -----------------------------------
+// CParticle_Box
+// 검으로 몬스터 때리면 불꽃이 튀도록하자.
+// 참고로 불꽃은 밑으로 떨어지면서 
+// -----------------------------------
+
+CParticle_Box::CParticle_Box(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CParticleSystem(pDevice, pDeviceContext)
+{
+}
+
+CParticle_Box::CParticle_Box(const CParticle_Box& rhs)
+	: CParticleSystem(rhs)
+{
+}
+
+HRESULT CParticle_Box::NativeConstruct_Prototype(const _tchar* pShaderFilePath, int maxParticleNum)
+{
+	CParticleSystem::NativeConstruct_Prototype(pShaderFilePath, maxParticleNum);
+
+	// CParticle_Box 멤버변수 초기화 
+	mEmitPosW = _float3(0.f, 0.f, 0.f); // 파티클 시작 방출 위치.  
+	mEmitColor = _float3(1.f, .520f, 0.400f);
+	mEmitInitAccel = _float3(0.0f, 0.3f, -1.81f);
+	mEmitSize = _float2(1.f, 1.f);
+	mEmitRandomPower = .750f;
+	m_iTextureIdx = rand()%4; // 텍스쳐 인덱스 번호.
+	mTextureTagIdx = 3; // 어떤 텍스쳐를 사용할것인지. : 구름을 사용하기로 했습니다
+	mMaxAge = 2.f;
+	streamPassIdx = 3; // 한방 파티클 10개짜리
+	vertexPassIdx = 1;
+
+	return S_OK;
+}
+
+HRESULT CParticle_Box::NativeConstruct(void* pArg)
+{
+	// not used
+	return E_NOTIMPL;
+}
+
+_int CParticle_Box::Tick(_float fTimeDelta)
+{
+	if (CParticleSystem::Tick(fTimeDelta) < 0)
+	{
+		return -1;
+	}
+	return 0;
+}
+
+_int CParticle_Box::LateTick(_float fTimeDelta)
+{
+	if (mAge > mMaxAge)
+	{
+		m_isDead = true;
+		return 0;
+	}
+
+	if (nullptr == m_pRendererCom)
+		return -1;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this)))
+		return -1;
+	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+		return -1;
+	RELEASE_INSTANCE(CGameInstance);
+	return _int();
+}
+
+HRESULT CParticle_Box::Render(_uint iPassIndex)
+{
+	if (CParticleSystem::Render() < 0)
+		return -1;
+
+	return 0;
+}
+
+HRESULT CParticle_Box::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	return 0;
+}
+
+
+HRESULT CParticle_Box::SetUp_ConstantTable(_uint iPassIndex)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Transform
+	// 뷰행 던져주자
+	_matrix	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	_float4x4	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gViewMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 투행 던져주자
+	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gProjMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 카메라 위치 던져주자
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	auto ret = Set_RawValue("gEyePosW", &vCamPosition, sizeof(_float4));
+
+	// Bind Stuffs
+	Set_RawValue("gEmitPosW", &mEmitPosW, sizeof(_float3));
+	Set_RawValue("gEmitColor", &mEmitColor, sizeof(_float3));
+	Set_RawValue("gAccelW", &mEmitInitAccel, sizeof(_float3)); // 초기속도
+	Set_RawValue("gRandomPwr", &mEmitRandomPower, sizeof(_float)); // 랜덤방향세기. 세질수록 초기속도 무시할 수 있음.
+	Set_RawValue("gEmitSize", &mEmitSize, sizeof(_float2));
+	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
+	Set_RawValue("gGameTime", &mGameTime, sizeof(_float));
+	Set_RawValue("maxAge", &mMaxAge, sizeof(_float));
+
+	// 타겟의 높이를 던져주자. 
+	_float targetHeight = -10.f;
+	Set_RawValue("gFloorHeight", &targetHeight, sizeof(_float));
+
+	// g_DiffuseTexture
+	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
+	ID3D11ShaderResourceView* pResource = nullptr;
+	switch (mTextureTagIdx)
+	{
+	case 0:
+		pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+		break;
+	case 1:
+		pResource = m_pTextureDecayPuffs->Get_SRV(m_iTextureIdx);
+		break;
+	case 2:
+		pResource = m_pTextureDust->Get_SRV(m_iTextureIdx);
+		break;
+	case 3:
+		pResource = m_pTextureFogCloud->Get_SRV(m_iTextureIdx);
+		break;
+	case 4:
+		pResource = m_pTextureRockChips->Get_SRV(m_iTextureIdx);
+		break;
+	default:
+		assert(0);
+	}
+	pValiable->SetResource(pResource);
+
+	// g_RandomTex
+	pValiable = m_pEffect->GetVariableByName("g_RandomTex")->AsShaderResource();
+	pValiable->SetResource(mRandomTexSRV);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+CParticle_Box* CParticle_Box::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, int maxParticleNum)
+{
+	CParticle_Box* pInstance = new CParticle_Box(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, maxParticleNum)))
+	{
+		MSG_BOX("Failed to Created CParticle_Box");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CParticle_Box::Clone(void* pArg)
+{
+	return nullptr;
+}
+
+void CParticle_Box::Free()
 {
 	CParticleSystem::Free();
 }

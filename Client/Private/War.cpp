@@ -43,7 +43,7 @@ HRESULT CWar::NativeConstruct(void * pArg)
 {
 
 #ifdef _DEBUG
-	//CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
+	CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
 #endif
 
 	

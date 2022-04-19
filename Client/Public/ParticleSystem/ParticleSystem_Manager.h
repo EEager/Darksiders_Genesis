@@ -17,7 +17,7 @@ private:
 
 public:
 	void Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext); // Loader에서 해줘야하는것인가..? 
-	void Add_Particle_To_Layer(const _tchar* pParticleTag); // 플레이어가 이것을 호출할것이다.
+	void Add_Particle_To_Layer(const _tchar* pParticleTag, _float3* vPos = nullptr); // 플레이어가 이것을 호출할것이다.
 	class CParticleSystem* Get_Particle_Available(const _tchar* pParticleTa, int idx);
 
 private:
