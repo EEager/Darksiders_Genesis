@@ -47,7 +47,7 @@ void CMeshEffect_Manager::Effect_War_Skill_1(_float fTimeDelta)
 		// 칼이 보는 방향은 
 		_vector vDir = XMVector3Normalize(tempDesc.vPos - vWarPos);
 		tempDesc.vLook = vWarPos + vDir * MathHelper::RandF(10.f, 15.f);
-		tempDesc.vLook = XMVectorSetY(tempDesc.vLook, 20.f);
+		tempDesc.vLook = XMVectorSetY(tempDesc.vLook, XMVectorGetY(vWarPos) + 20.f);
 
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_War_ChaosEater"), &tempDesc)))
 			assert(0);

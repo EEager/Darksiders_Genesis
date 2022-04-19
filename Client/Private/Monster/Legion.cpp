@@ -204,7 +204,6 @@ _int CLegion::LateTick(_float fTimeDelta)
 	{
 		m_bWillDead = true;
 		m_pNextState = "Legion_Mesh.ao|Legion_Knockback_Start";
-		//m_isDead = true;
 	}
 
 	return _int();

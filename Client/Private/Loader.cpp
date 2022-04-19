@@ -145,20 +145,20 @@ HRESULT CLoader::Add_GameObject()
 		CTerrain::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	/* For.Prototype_GameObject_Fork */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Fork"),
-		CFork::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Fork */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Fork"),
+	//	CFork::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
 
-	/* For.Prototype_GameObject_Player */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
-		CPlayer::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Player */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Player"),
+	//	CPlayer::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
 
-	/* For.Prototype_GameObject_Sword */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sword"),
-		CSword::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
+	///* For.Prototype_GameObject_Sword */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sword"),
+	//	CSword::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
 
 	/* For.Prototype_GameObject_RectEffect */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_RectEffect"),
@@ -523,7 +523,7 @@ HRESULT CLoader::Add_Model()
 	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
 
 
-#if 0 // JJLEE 잠시만 막아두자
+#if 1 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment4*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
@@ -565,14 +565,6 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
 
-#if 0 // 처음 나오는 풀들인데 사용안할것이다
-	///* For.Prototype_Component_Model_Foliage...*/
-	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage0"));
-	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage0"),
-	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage0.fbx", EnviromentPivotMatrix))))
-	//	return E_FAIL;
-#endif
-
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage1"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage1"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage1.fbx", EnviromentPivotMatrix))))
@@ -581,7 +573,7 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage2.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
-#if 0 // JJLEE 잠시만 막아두자
+#if 1 // JJLEE 잠시만 막아두자
 
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage3"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage3"),
@@ -602,20 +594,20 @@ HRESULT CLoader::Add_Model()
 #endif 
 
 
-	// ▼ Test
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Fiona"));
-	_matrix		PivotMatrix = XMMatrixIdentity();
-	PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
-	/* For.Prototype_Component_Model_Player , Fiona */
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx", PivotMatrix))))
-		return E_FAIL;
+	//// ▼ Test
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Fiona"));
+	//_matrix		PivotMatrix = XMMatrixIdentity();
+	//PivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.0f));
+	///* For.Prototype_Component_Model_Player , Fiona */
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Player"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Fiona/", "Fiona.fbx", PivotMatrix))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Model_Fork*/
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Fork"));
-	PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
+	///* For.Prototype_Component_Model_Fork*/
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Fork"));
+	//PivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.0f));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Fork"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/ForkLift/", "ForkLift.fbx", PivotMatrix))))
 
 	// ▼ War
 	/* For.Prototype_Component_Model_War */

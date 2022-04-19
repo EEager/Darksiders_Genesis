@@ -95,7 +95,7 @@ private:
 	_bool	m_War_Key_Lock = false; // 일부 FSM에서는 움직이지말아야한다. 하지만 이건 detail 작업이므로 나중에 넣자.
 	_bool	m_War_On_Ruin_State = false; // 말타고 있는 상태.
 
-	WAR_G_TYPE m_eGType = G_TYPE_EARTH;
+	WAR_G_TYPE m_eGType = G_TYPE_FIRE;
 public:
 	int m_iBoneChannelIdx = 0;
 
