@@ -2,7 +2,11 @@
 #include "..\public\ParticleSystem\ParticleSystem.h"
 
 #include "GameInstance.h"
+#ifdef _DEBUG
 #include "d3dx11effect.h"
+#else
+#include "d3dx11effect.h"
+#endif
 
 #include "War.h"
 

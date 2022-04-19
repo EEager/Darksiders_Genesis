@@ -47,7 +47,7 @@ _int CBreakableBase::Tick(_float fTimeDelta)
 	if (m_isDead)
 	{
 		// 죽기전에 파티클 하나 만들어서 넣자. 
-		_float3 temp = nullptr;
+		_float3 temp = {};
 		XMStoreFloat3(&temp, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Box", &temp);
 		return -1;
