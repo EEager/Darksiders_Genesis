@@ -358,7 +358,7 @@ _int CHollowLord::Update_Colliders(_matrix wolrdMatrix/*not used*/)
 
 	return 0;
 }
-
+#include "ParticleSystem\ParticleSystem_Manager.h"
 void CHollowLord::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDelta)
 {
 	// 몬스터 몸통과 플레이어 검이 충돌한 경우. 
@@ -368,6 +368,8 @@ void CHollowLord::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTim
 		// 피격 당했다. 
 		m_bHitted = true;
 		m_fHitPower = .7f;
+
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
 
 		auto DstAtkDmg = pDst->Get_Owner()->m_tGameInfo.iAtt;
 		m_tGameInfo.iHp -= DstAtkDmg;

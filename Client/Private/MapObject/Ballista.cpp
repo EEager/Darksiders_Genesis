@@ -342,9 +342,8 @@ void CBallista::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeD
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		// 피격 당했다. 
-		// Legion, HollowLord인 경우에만 피 파티클을 생성하자.
-		if (!lstrcmpW(pSrc->Get_Owner()->Get_PrototypeTag(), L"Prototype_Component_Model_Legion") || 
-			!lstrcmpW(pSrc->Get_Owner()->Get_PrototypeTag(), L"Prototype_GameObject_HollowLord"))
+		// Legion인 경우에만 피 파티클을 생성하자.
+		if (!lstrcmpW(pSrc->Get_Owner()->Get_PrototypeTag(), L"Prototype_Component_Model_Legion"))
 			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
 
 		m_bHitted = true;
