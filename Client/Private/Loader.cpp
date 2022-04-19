@@ -321,6 +321,11 @@ HRESULT CLoader::Add_GameObject()
 		CMeshEffect_Sphere::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_MeshEffect_Ring */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MeshEffect_Ring"),
+		CMeshEffect_Ring::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
@@ -505,10 +510,6 @@ HRESULT CLoader::Add_Texture()
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/RockChips%d.dds"), 16))))
 		return E_FAIL;
 
-	// MeshEffects
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Shpere_Diffuse"),
-		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Sphere/Sphere%d.dds"), 6))))
-		return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
@@ -796,6 +797,11 @@ HRESULT CLoader::Add_Model()
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_MeshEffect_Sphere"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_Sphere"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/MeshEffect/Sphere/", "Sphere.fbx", MeshEffect_Sphere_PivotMat))))
+		return E_FAIL;
+
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_MeshEffect_Ring"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_Ring"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/MeshEffect/Ring/", "Ring.fbx", MeshEffect_Sphere_PivotMat))))
 		return E_FAIL;
 
 

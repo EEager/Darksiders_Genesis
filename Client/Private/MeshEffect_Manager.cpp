@@ -5,6 +5,9 @@
 
 IMPLEMENT_SINGLETON(CMeshEffect_Manager)
 
+bool targetWarOnce;
+bool targetBossOnce;
+
 CMeshEffect_Manager::CMeshEffect_Manager()
 {
 
@@ -25,7 +28,6 @@ void CMeshEffect_Manager::Add_MeshEffects_To_Layer(const _tchar* pMeshEffectTag,
 }
 
 
-bool targetWarOnce;
 void CMeshEffect_Manager::Effect_War_Skill_1(_float fTimeDelta)
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
