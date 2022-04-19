@@ -173,6 +173,13 @@ HRESULT CRenderer::Add_RenderGroup(RENDER eRenderGroup, CGameObject * pGameObjec
 	if (eRenderGroup >= RENDER_END)
 		return E_FAIL;
 
+	if (m_RenderObjects[eRenderGroup].size() > 1000)
+	{
+		int debug = 0;
+		cout << m_RenderObjects[eRenderGroup].max_size() << endl;
+		m_RenderObjects[eRenderGroup].clear();
+	}
+
 	m_RenderObjects[eRenderGroup].push_back(pGameObject);
 
 	Safe_AddRef(pGameObject);
@@ -204,86 +211,8 @@ HRESULT CRenderer::Set_RawValue(const char* pConstantName, void* pData, _uint iS
 	return pVariable->SetRawValue(pData, 0, iSize);
 }
 
-bool testOnce;
 HRESULT CRenderer::Draw()
 {
-	if (testOnce == false)
-	{
-
-#if 0 // test_particles
-   		_uint		iFlag = 0;
-#ifdef _DEBUG
-		iFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-		iFlag = D3DCOMPILE_OPTIMIZATION_LEVEL1;
-#endif // _DEBUG	
-		FAILED(D3DX11CompileEffectFromFile(L"../Bin/ShaderFiles/Shader_Effect_Metal.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iFlag, 0, m_pDevice, &m_pEffect, nullptr));
-
-		m_StreamOutTech = m_pEffect->GetTechniqueByName("StreamOutTech");
-		m_DrawTech = m_pEffect->GetTechniqueByName("DrawTech");
-
-		// ▼ ----------------------------------------
-		// Compile Shader 
-		D3D11_INPUT_ELEMENT_DESC		ElementDesc[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"VELOCITY", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"SIZE",     0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"AGE",      0, DXGI_FORMAT_R32_FLOAT,       0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TYPE",     0, DXGI_FORMAT_R32_UINT,        0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
-
-		_uint iNumElements = 5;
-		D3DX11_PASS_DESC passDesc;
-		m_StreamOutTech->GetPassByIndex(0)->GetDesc(&passDesc);
-		HR(m_pDevice->CreateInputLayout(ElementDesc, iNumElements, passDesc.pIAInputSignature,
-			passDesc.IAInputSignatureSize, &m_ParticleLayout));
-
-		// Compile Shader End
-		// ▲ ----------------------------------------
-
-		// Init Stuffs
-		mFirstRun = true;
-		mTimeStep = 0.0f;
-		mAge = 0.0f;
-
-		mEmitPosW = _float3(17.f, 1.f, 430.f);
-		mEmitDirW = _float3(0.0f, 1.0f, 0.0f);
-
-		// BuildVB(m_pDevice);
-		{
-			D3D11_BUFFER_DESC vbd;
-			vbd.Usage = D3D11_USAGE_DEFAULT;
-			vbd.ByteWidth = sizeof(VTXPTC) * 1;
-			vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			vbd.CPUAccessFlags = 0;
-			vbd.MiscFlags = 0;
-			vbd.StructureByteStride = 0;
-
-			// The initial particle emitter has type 0 and age 0.  The rest
-			// of the particle attributes do not apply to an emitter.
-			VTXPTC p;
-			ZeroMemory(&p, sizeof(VTXPTC));
-			p.Age = 0.0f;
-			p.Type = 0;
-
-			D3D11_SUBRESOURCE_DATA vinitData;
-			vinitData.pSysMem = &p;
-
-			HR(m_pDevice->CreateBuffer(&vbd, &vinitData, &mInitVB));
-
-			//
-			// Create the ping-pong buffers for stream-out and drawing.
-			//
-			vbd.ByteWidth = sizeof(VTXPTC) * 500;
-			vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
-
-			HR(m_pDevice->CreateBuffer(&vbd, 0, &mDrawVB));
-			HR(m_pDevice->CreateBuffer(&vbd, 0, &mStreamOutVB));
-		}
-#endif
-		testOnce = true;
-	}
-
 	// ----------------------------------
 	// ▼ Deferred Process Start
 	if (FAILED(m_pTarget_Manager->Begin_MRT_PreBB(m_pDeviceContext, TEXT("MRT_PreBB"))))
@@ -395,104 +324,6 @@ HRESULT CRenderer::Draw()
 
 	// ▲ Deferred Process End
 	// ----------------------------------
-
-
-#if 0 // test_particles
-	// Restore default states
-	ClearRenderStates();
-
-	mTimeStep = 0.016f;
-	mAge += 0.016f;
-	// 뷰행 던져주자
-	_matrix	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW);
-	TransformMatrix = XMMatrixTranspose(TransformMatrix);
-	_float4x4	TransformFloat4x4;
-	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
-	Set_RawValue("gViewMatrix", &TransformFloat4x4, sizeof(_float4x4));
-
-	// 투행 던져주자
-	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ);
-	TransformMatrix = XMMatrixTranspose(TransformMatrix);
-	TransformFloat4x4; 
-	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
-	Set_RawValue("gProjMatrix", &TransformFloat4x4, sizeof(_float4x4));
-
-	// 카메라 위치 던져주자
-	_float4			vCamPosition; 
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
-	RELEASE_INSTANCE(CGameInstance);
-
-	auto ret = Set_RawValue("gEyePosW", &vCamPosition, sizeof(_float4));
-
-	// Bind Stuffs
-	Set_RawValue("gEmitPosW", &mEmitPosW, sizeof(_float3));
-	Set_RawValue("gEmitDirW", &mEmitDirW, sizeof(_float3));
-	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
-
-	//
-	// Set IA stage.
-	//
-	m_pDeviceContext->IASetInputLayout(m_ParticleLayout);
-	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
-	UINT stride = sizeof(VTXPTC);
-	UINT offset = 0;
-
-	// On the first pass, use the initialization VB.  Otherwise, use
-	// the VB that contains the current particle list.
-	if (mFirstRun)
-		m_pDeviceContext->IASetVertexBuffers(0, 1, &mInitVB, &stride, &offset);
-	else
-		m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
-
-	//
-	// Draw the current particle list using stream-out only to update them.  
-	// The updated vertices are streamed-out to the target VB. 
-	//
-	m_pDeviceContext->SOSetTargets(1, &mStreamOutVB, &offset);
-
-	D3DX11_TECHNIQUE_DESC techDesc;
-	m_StreamOutTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		m_StreamOutTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
-
-		if (mFirstRun)
-		{
-			m_pDeviceContext->Draw(1, 0);
-			mFirstRun = false;
-		}
-		else
-		{
-			m_pDeviceContext->DrawAuto();
-		}
-	}
-
-	// Restore default states
-	ClearRenderStates();
-
-
-	// done streaming-out--unbind the vertex buffer
-	ID3D11Buffer* bufferArray[1] = { 0 };
-	m_pDeviceContext->SOSetTargets(1, bufferArray, &offset);
-
-	// ping-pong the vertex buffers
-	std::swap(mDrawVB, mStreamOutVB);
-
-	//
-	// Draw the updated particle system we just streamed-out. 
-	//
-	m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
-
-	m_DrawTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
-	{
-		m_DrawTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
-
-		m_pDeviceContext->DrawAuto(); 
-	}
-#endif
 
 
 	// ----------------------------------
@@ -679,7 +510,7 @@ HRESULT CRenderer::Render_NonAlpha()
 	// Restore default states
 	ClearRenderStates();
 	
-	// 위에서 War를 먼저 찍고 그 다음 다른 객체들을 찍도록 하자.
+	// 위에서 War를 먼저 찍고 그 다음 다른 객체들을 찍도록 하자.1
 	for (auto& pGameObject : m_RenderObjects[RENDER_NONALPHA])
 	{
 		if (nullptr != pGameObject)

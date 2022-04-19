@@ -166,11 +166,17 @@
     <Filter Include="02.GameObjects\Trail">
       <UniqueIdentifier>{ffa30b7b-aff9-46d1-b579-fbaf5758f3fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\ParticleSystem">
+    <Filter Include="02.GameObjects\Effect\ParticleSystem">
       <UniqueIdentifier>{41c5c9dc-a2fb-4147-890f-4d0b407d60a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\ParticleSystem\Manager">
+    <Filter Include="02.GameObjects\Effect\ParticleSystem\Manager">
       <UniqueIdentifier>{132c4d32-0d62-43d0-9a34-89c18c0e6fc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Effect\Mesh">
+      <UniqueIdentifier>{94cf7780-e9d3-477d-b494-d392d85135d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\Effect\Mesh\Manager">
+      <UniqueIdentifier>{9873e714-9d12-4e9a-8af3-31a8b91f93fa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -331,10 +337,16 @@
       <Filter>02.GameObjects\Trail</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ParticleSystem\ParticleSystem.h">
-      <Filter>02.GameObjects\ParticleSystem</Filter>
+      <Filter>02.GameObjects\Effect\ParticleSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\ParticleSystem\ParticleSystem_Manager.h">
-      <Filter>02.GameObjects\ParticleSystem\Manager</Filter>
+      <Filter>02.GameObjects\Effect\ParticleSystem\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshEffect.h">
+      <Filter>02.GameObjects\Effect\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MeshEffect_Manager.h">
+      <Filter>02.GameObjects\Effect\Mesh\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -480,10 +492,16 @@
       <Filter>02.GameObjects\Trail</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ParticleSystem\ParticleSystem.cpp">
-      <Filter>02.GameObjects\ParticleSystem</Filter>
+      <Filter>02.GameObjects\Effect\ParticleSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ParticleSystem\ParticleSystem_Manager.cpp">
-      <Filter>02.GameObjects\ParticleSystem\Manager</Filter>
+      <Filter>02.GameObjects\Effect\ParticleSystem\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshEffect_Manager.cpp">
+      <Filter>02.GameObjects\Effect\Mesh\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MeshEffect.cpp">
+      <Filter>02.GameObjects\Effect\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

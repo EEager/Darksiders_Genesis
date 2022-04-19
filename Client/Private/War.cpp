@@ -10,6 +10,7 @@
 #include "Trail.h"
 
 #include "ParticleSystem\ParticleSystem_Manager.h"
+#include "MeshEffect_Manager.h"
 
 // In State_War.cpp
 #include "State_War.h"
@@ -45,8 +46,6 @@ HRESULT CWar::NativeConstruct(void * pArg)
 #ifdef _DEBUG
 	CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
 #endif
-
-	
 
 
 	// Init GameInfo
@@ -115,7 +114,7 @@ _int CWar::Tick(_float fTimeDelta)
 		// War 월행포인터를 던져주어, 애니메이션 로컬 위치를 월행에 적용하도록하자 
 		if (m_bDontMoveInWorld == false)
 		{
-			m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom, m_eDir, 0/*채널인덱스*/, m_fOffsetMul);
+			m_pModelCom[MODELTYPE_WAR]->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_War_Root", m_pNaviCom, m_eDir, m_iBoneChannelIdx/*채널인덱스*/, m_fOffsetMul);
 		}
 		else
 		{

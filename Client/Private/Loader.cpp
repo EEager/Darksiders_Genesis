@@ -41,6 +41,9 @@
 // Particles
 #include "ParticleSystem\ParticleSystem_Manager.h"
 
+// Mesh Effect
+#include "MeshEffect_Manager.h"
+
 
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: m_pDevice(pDevice)
@@ -118,6 +121,9 @@ HRESULT CLoader::Loading_ForGamePlayLevel()
 
 	// For. Particle System Manager
 	CParticleSystem_Manager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
+
+	// For. Mesh Effect Manager
+	CMeshEffect_Manager::GetInstance()->Initialize();
 
 	wsprintf(m_szLoading, TEXT("LEVEL_GAMEPLAY Load Completed!"));
 
@@ -301,6 +307,13 @@ HRESULT CLoader::Add_GameObject()
 	/* For.Prototype_GameObject_Flag_A */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Flag_A"),
 		CFlag_A::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+
+	// Mesh Effects
+	/* For.Prototype_GameObject_MeshEffect_War_ChaosEater */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_MeshEffect_War_ChaosEater"),
+		CMeshEffect_ChaosEater::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 
@@ -768,6 +781,13 @@ HRESULT CLoader::Add_Model()
 	//	return E_FAIL;
 
 
+	// 여기서부터는 Mesh Effects
+	_matrix		MeshEffect_PivotMat = XMMatrixScaling(0.02f, 0.02f, 0.02f) *
+		XMMatrixRotationY(XMConvertToRadians(-90.f));	/* For.Prototype_Component_Model_MeshEffect_ChaosEater */
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_MeshEffect_ChaosEater"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_ChaosEater"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/MeshEffect/ChaosEater/", "ChaosEater.fbx", MeshEffect_PivotMat))))
+		return E_FAIL;
 
 
 

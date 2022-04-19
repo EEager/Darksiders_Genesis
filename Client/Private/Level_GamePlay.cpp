@@ -102,6 +102,15 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 		//// MonsterSpanwer3
 		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer3, placeholders::_1));
 	}
+
+	// Create Mesh Effects
+	{
+		//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+		//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_War_ChaosEater"))))
+		//	return E_FAIL;
+		//RELEASE_INSTANCE(CGameInstance);
+	}
 	 
 	return S_OK;
 }
@@ -149,12 +158,12 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	//	pGameInstance->Add_GameObjectToLayer(LEVEL_LOGO, L"Layer_BackGround", TEXT("Prototype_GameObject_SceneChangeEffect3"));
 	//}
 
-	//// Breakalbe 설치하자
-	if (CInput_Device::GetInstance()->Key_Down(DIK_2))
-	{
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
-			return E_FAIL;
-	}
+	////// Breakalbe 설치하자
+	//if (CInput_Device::GetInstance()->Key_Down(DIK_2))
+	//{
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable1"))))
+	//		return E_FAIL;
+	//}
 	//if (CInput_Device::GetInstance()->Key_Down(DIK_3))
 	//{
 	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Breakables_1", TEXT("Prototype_GameObject_Breakable2"))))

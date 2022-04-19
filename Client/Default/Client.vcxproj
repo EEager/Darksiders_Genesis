@@ -198,6 +198,8 @@
     <ClInclude Include="..\Public\MapObject\SoulBarrier.h" />
     <ClInclude Include="..\Public\MapObject\SpikeGate.h" />
     <ClInclude Include="..\Public\MapObject\Trees.h" />
+    <ClInclude Include="..\Public\MeshEffect.h" />
+    <ClInclude Include="..\Public\MeshEffect_Manager.h" />
     <ClInclude Include="..\Public\Monster\FallenDog.h" />
     <ClInclude Include="..\Public\Monster\Goblin_Armor.h" />
     <ClInclude Include="..\Public\Monster\HollowLord.h" />
@@ -251,6 +253,8 @@
     <ClCompile Include="..\Private\MapObject\SoulBarrier.cpp" />
     <ClCompile Include="..\Private\MapObject\SpikeGate.cpp" />
     <ClCompile Include="..\Private\MapObject\Trees.cpp" />
+    <ClCompile Include="..\Private\MeshEffect.cpp" />
+    <ClCompile Include="..\Private\MeshEffect_Manager.cpp" />
     <ClCompile Include="..\Private\Monster\FallenDog.cpp" />
     <ClCompile Include="..\Private\Monster\Goblin_Armor.cpp" />
     <ClCompile Include="..\Private\Monster\HollowLord.cpp" />

@@ -14,6 +14,7 @@
 #include "Trail.h"
 
 #include "ParticleSystem\ParticleSystem_Manager.h"
+#include "MeshEffect_Manager.h"
 
 // 
 // Global War State Machine in War.cpp
@@ -2442,24 +2443,26 @@ void CState_War_Wrath_BladeGeyser::Enter(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+
+	// 검사하는 뼈를 바꿔야한다. 
+	g_pWar->m_iBoneChannelIdx = 10;
 }
 
 void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
-	//// [Event] 방향키 하나라도 누르게된다면
-	//// [State]  -> CState_War_Run_Combat
-	//bool dirty = false;
-	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_A);
-	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_W);
-	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_D);
-	//dirty |= CInput_Device::GetInstance()->Key_Pressing(DIK_S);
-	//if (dirty)
-	//{
-	//	g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
-	//	return;
-	//}
+	if (m_bCreate == false) 
+	{
+		if (g_pWar_Model_Context->Get_Current_KeyFrame_Index("War_Mesh.ao|War_Wrath_BladeGeyser") == 13)
+		{
+			// 천본앤겸영을 생성하자 
+			CMeshEffect_Manager::GetInstance()->Add_MeshEffects_To_Layer(L"Effect_War_Skill_1", fTimeDelta);
+			// 검 불꽃 파티클을 생성하자
+			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand");
+			m_bCreate = true;
+		}
+	}
 
 	// [Event] 애니메이션 종료
 	// [State]  -> CState_War_Idle_Combat
@@ -2477,6 +2480,10 @@ void CState_War_Wrath_BladeGeyser::Exit(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(false);
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = false;
+
+	m_bCreate = false;
+
+	g_pWar->m_iBoneChannelIdx = 0;
 }
 
 void CState_War_Wrath_BladeGeyser::Free()

@@ -908,6 +908,9 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	bool m_bCreate = false;
+
 public:
 	virtual void Free() final;
 };

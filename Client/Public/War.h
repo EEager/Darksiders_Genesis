@@ -96,6 +96,8 @@ private:
 	_bool	m_War_On_Ruin_State = false; // 말타고 있는 상태.
 
 	WAR_G_TYPE m_eGType = G_TYPE_EARTH;
+public:
+	int m_iBoneChannelIdx = 0;
 
 
 public:
