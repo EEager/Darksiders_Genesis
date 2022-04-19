@@ -18,12 +18,12 @@ private:
 public:
 	void Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext); // Loader에서 해줘야하는것인가..? 
 	void Add_Particle_To_Layer(const _tchar* pParticleTag); // 플레이어가 이것을 호출할것이다.
+	class CParticleSystem* Get_Particle_Available(const _tchar* pParticleTa, int idx);
 
 private:
 	HRESULT Add_ParticleSystem(const _tchar* pParticleTag, class CParticleSystem*);
 	vector<CParticleSystem*>* Find_PTC(const _tchar* pParticleTag);
 	int* Find_AvailableIdx(const _tchar* pParticleTag);
-
 
 private:
 	unordered_map<const _tchar*, vector<CParticleSystem*>>				m_ParticleSystems;

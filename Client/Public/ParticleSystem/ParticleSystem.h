@@ -66,7 +66,6 @@ protected: // 아래는 자식들이 각자 가져갈것이다.
 	float mAge; // 해당 파티클 시스템매니져가 만약 mEmitLoop가 아니라면, mMaxAge까지만 호출하고 죽어야한다.
 	// 참고로 죽기전에 m_isAvailable를 사용가능으로 돌려놓는 매너는 있지 않았겠지용?
 	float mMaxAge; // 이 파티클 시스템은 언제까지 살아 남을것인지.
-	bool mEmitLoop = false; // 계속 방출하는것인지. true면 mMaxAge의미없다.
 	float mGameTime = 0.f; // 랜덤값 사용하기 위한것.
 
 	_float3 mEmitPosW;
@@ -76,6 +75,9 @@ protected: // 아래는 자식들이 각자 가져갈것이다.
 	_float mEmitRandomPower;
 	int	m_iTextureIdx = 0;
 	int mTextureTagIdx = 0;
+
+	int streamPassIdx = 0;
+	int vertexPassIdx = 0;
 
 protected:
 	_bool m_isAvailable = true;
@@ -173,5 +175,41 @@ public:
 	virtual void Free() override;
 }; 
 
+
+// ---------------------------------
+// CParticle_War_Dash_Horse
+// ---------------------------------
+class CParticle_War_Dash_Horse final : public CParticleSystem
+{
+private:
+	explicit CParticle_War_Dash_Horse(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
+	explicit CParticle_War_Dash_Horse(const CParticle_War_Dash_Horse& rhs);
+	virtual ~CParticle_War_Dash_Horse() = default;
+public:
+	virtual HRESULT NativeConstruct_Prototype(const _tchar* pShaderFilePath, int maxParticleNum);
+	virtual HRESULT NativeConstruct(void* pArg);
+	virtual _int Tick(_float fTimeDelta);
+	virtual _int LateTick(_float fTimeDelta);
+	virtual HRESULT Render(_uint iPassIndex = 0);
+	virtual HRESULT PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont);
+	virtual HRESULT SetUp_ConstantTable(_uint iPassIndex);
+
+	void Toggle_Enable() {
+		m_bEnable = !m_bEnable; 
+		if (m_bEnable == true)
+			mFirstRun = true; // 처음에는 emitter를 넣는다.
+	}
+
+private:
+	class CTransform* m_pTargetTransform = nullptr;
+	class CGameObject* m_pTarget = nullptr;
+	_bool targetingOnce = false;
+	_bool m_bEnable = false;
+
+public:
+	static CParticle_War_Dash_Horse* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, int maxParticleNum);
+	virtual CGameObject* Clone(void* pArg) override;
+	virtual void Free() override;
+};
 
 END

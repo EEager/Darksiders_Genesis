@@ -9,6 +9,7 @@
 
 #include "Trail.h"
 
+#include "ParticleSystem\ParticleSystem_Manager.h"
 
 // In State_War.cpp
 #include "State_War.h"
@@ -22,7 +23,6 @@ extern CTransform* g_pWar_Transform_Context;
 
 
 
-#include "ParticleSystem\ParticleSystem_Manager.h"
 CWar::CWar(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
@@ -42,7 +42,11 @@ HRESULT CWar::NativeConstruct_Prototype()
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 
-	CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
+#ifdef _DEBUG
+	//CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
+#endif
+
+	
 
 
 	// Init GameInfo
@@ -82,6 +86,12 @@ HRESULT CWar::NativeConstruct(void * pArg)
 	// Trail Dash Create
 	m_pTrailDash = CTrail_War_Dash::Create(m_pDevice, m_pDeviceContext);
 	m_pTrailDash->Set_Transform(m_pTransformCom);
+
+	// 먼지 파티클 Create
+	for (int i = 0; i < 4; i++)
+	{
+		m_pParticle[i] = static_cast<CParticle_War_Dash_Horse*>(CParticleSystem_Manager::GetInstance()->Get_Particle_Available(L"Particle_War_Dash_Horse", i));
+	}
 
 	return S_OK;
 }
@@ -146,12 +156,23 @@ _int CWar::Tick(_float fTimeDelta)
 		m_pTrailDash->MyTick(fTimeDelta);
 	}
 
+	// 파티클 틱
+	for (auto& pParticle : m_pParticle)
+	{
+		pParticle->Tick(fTimeDelta);
+	}
 
 	return _int();
 }
 
 _int CWar::LateTick(_float fTimeDelta)
 {
+	// 파티클 레이트 틱
+	for (auto& pParticle : m_pParticle)
+	{
+		pParticle->LateTick(fTimeDelta);
+	}
+
 	if (nullptr == m_pRendererCom)
 		return -1;
 
@@ -914,6 +935,11 @@ void CWar::Free()
 
 	Safe_Release(m_pTrail);
 	Safe_Release(m_pTrailDash);
+
+	for (auto pParticle : m_pParticle)
+	{
+		Safe_Release(pParticle);
+	}
 
 
 	Safe_Release(m_pModelCom_Ruin);

@@ -48,13 +48,16 @@ void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag)
 // Initalize를 결국 Gameplay Loader에서 해야하는 것인가? 
 void CParticleSystem_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
+	//#############################################################
+	// 이건 테스트용입니다.
 	// Particle_Sword
 	for (int i = 0; i < 10; i++)
 	{
-		CParticleSystem* pParticle = CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/);
+		CParticleSystem* pParticle = CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 500/*mMaxParticles*/);
 		Add_ParticleSystem(L"Particle_Sword", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_Sword", 0);
+	//#############################################################
 
 	// Particle_Blood
 	for (int i = 0; i < 20; i++)
@@ -72,13 +75,21 @@ void CParticleSystem_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceCont
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_LightAtk4", 0);
 
-	// Particle_LightAtk4
+	// Particle_AirLand
 	for (int i = 0; i < 3; i++)
 	{
 		CParticleSystem* pParticle = CParticle_LightAtk4::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 300/*mMaxParticles*/);
 		Add_ParticleSystem(L"Particle_AirLand", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_AirLand", 0);
+
+	// Particle_War_Dash_Horse
+	for (int i = 0; i < 4; i++)
+	{
+		CParticleSystem* pParticle = CParticle_War_Dash_Horse::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 500/*mMaxParticles*/);
+		Add_ParticleSystem(L"Particle_War_Dash_Horse", pParticle);
+	}
+	m_ParticleSystemsIndex.emplace(L"Particle_War_Dash_Horse", 0);
 }
 
 
@@ -95,6 +106,15 @@ HRESULT CParticleSystem_Manager::Add_ParticleSystem(const _tchar* pParticleTag, 
 	else
 		pPTCVector->push_back(pParticle);
 	return 0;
+}
+
+CParticleSystem* CParticleSystem_Manager::Get_Particle_Available(const _tchar* pParticleTag, int idx)
+{
+	vector<CParticleSystem*>* pPTCVector = Find_PTC(pParticleTag);
+	if (nullptr == pPTCVector)
+		return nullptr;
+
+	return (*pPTCVector)[idx];
 }
 
 

@@ -21,8 +21,9 @@ cbuffer cbPerFrame
 
 	float gFloorHeight; // 파티클의 바닥 높이이다.
 
-	bool useLoop;
 	float maxAge;
+
+	bool EmitEnable;
 };
 
 cbuffer cbFixed
@@ -93,13 +94,10 @@ Particle StreamOutVS(Particle vin)
 	return vin;
 }
 
-// The stream-out GS is just responsible for emitting 
-// new particles and destroying old particles.  The logic
-// programed here will generally vary from particle system
-// to particle system, as the destroy/spawn rules will be 
-// different.
 
-const static int maxVsize = 51; // 파티클 처음 만들때와 같은 숫자여야한다
+
+// 51개짜리 한방 파티클
+const static int maxVsize = 51;
 [maxvertexcount(maxVsize)]
 void StreamOutGS(point Particle gin[1],
 	inout PointStream<Particle> ptStream)
@@ -108,51 +106,23 @@ void StreamOutGS(point Particle gin[1],
 
 	if (gin[0].Type == PT_EMITTER)
 	{
-		// #1. 방출기에서 계속해서 파티클을 방출한다
-		if (useLoop)
+		for (int i = 0; i < maxVsize-1; ++i)
 		{
-			// time to emit a new particle?
-			if (gin[0].Age > 0.005f)
-			{
-				// 랜덤사용할경우
-				float3 vRandom = RandVec3(0.0f);//  gRandomDir.xyz;
+			// 랜덤사용할경우
+			float3 vRandom = RandVec3((float)i / (float)maxVsize-1);//  gRandomDir.xyz;
 
-				Particle p;
-				p.InitialPosW = gEmitPosW.xyz;
-				p.InitialVelW = gRandomPwr * vRandom;
-				p.SizeW = gEmitSize;
-				p.Age = 0.0f;
-				p.Type = PT_FLARE;
+			Particle p;
+			p.InitialPosW = gEmitPosW.xyz;
+			p.InitialVelW = gRandomPwr * vRandom;
+			p.SizeW = gEmitSize;
+			p.Age = 0.0f;
+			p.Type = PT_FLARE;
 
-				ptStream.Append(p);
-
-				// reset the time to emit
-				gin[0].Age = 0.0f;
-			}
-
-			// always keep emitters
-			ptStream.Append(gin[0]);
+			ptStream.Append(p);
 		}
-		else // #2. 방출기에서 파티클을 한번만 방출한다.
-		{
-			for (int i = 0; i < maxVsize-1; ++i)
-			{
-				// 랜덤사용할경우
-				float3 vRandom = RandVec3((float)i / (float)maxVsize-1);//  gRandomDir.xyz;
 
-				Particle p;
-				p.InitialPosW = gEmitPosW.xyz;
-				p.InitialVelW = gRandomPwr * vRandom;
-				p.SizeW = gEmitSize;
-				p.Age = 0.0f;
-				p.Type = PT_FLARE;
-
-				ptStream.Append(p);
-			}
-
-			// reset the time to emit
-			gin[0].Age = 0.0f;
-		}
+		// reset the time to emit
+		gin[0].Age = 0.0f;
 	}
 	else
 	{
@@ -163,7 +133,8 @@ void StreamOutGS(point Particle gin[1],
 	}
 }
 
-const static int maxVsize_300 = 100; // 파티클 처음 만들때와 같은 숫자여야한다
+// 100개지만 50만 넣는 한방짜리
+const static int maxVsize_300 = 100; 
 [maxvertexcount(maxVsize_300)]
 void StreamOutGS_300(point Particle gin[1],
 	inout PointStream<Particle> ptStream)
@@ -199,12 +170,55 @@ void StreamOutGS_300(point Particle gin[1],
 	}
 }
 
+// 루프 방출
+[maxvertexcount(2)]
+void StreamOutGS_Loop(point Particle gin[1],
+	inout PointStream<Particle> ptStream)
+{
+	gin[0].Age += gTimeStep;
+
+	if (gin[0].Type == PT_EMITTER)
+	{
+		// time to emit a new particle?
+		if (gin[0].Age > 0.005f)
+		{
+			float3 vRandom = RandVec3(0.0f);
+
+			Particle p;
+			p.InitialPosW = gEmitPosW.xyz;
+			p.InitialVelW = gRandomPwr * vRandom;
+			p.SizeW = gEmitSize;
+			p.Age = 0.0f;
+			p.Type = PT_FLARE;
+
+			ptStream.Append(p);
+
+			// reset the time to emit
+			gin[0].Age = 0.0f;
+		}
+
+		// always keep emitters
+		if (EmitEnable)
+			ptStream.Append(gin[0]);
+	}
+	else
+	{
+		// Specify conditions to keep particle; this may vary from system to system.
+		if (gin[0].Age <= maxAge)
+			ptStream.Append(gin[0]);
+	}
+}
+
 GeometryShader gsStreamOut = ConstructGSWithSO(
 	CompileShader(gs_5_0, StreamOutGS()),
 	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
 
 GeometryShader gsStreamOut_300 = ConstructGSWithSO(
 	CompileShader(gs_5_0, StreamOutGS_300()),
+	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
+
+GeometryShader gsStreamOut_Loop = ConstructGSWithSO(
+	CompileShader(gs_5_0, StreamOutGS_Loop()),
 	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
 
 technique11 StreamOutTech
@@ -225,6 +239,18 @@ technique11 StreamOutTech
 	{
 		SetVertexShader(CompileShader(vs_5_0, StreamOutVS()));
 		SetGeometryShader(gsStreamOut_300);
+
+		// disable pixel shader for stream-out only
+		SetPixelShader(NULL);
+
+		// we must also disable the depth buffer for stream-out only
+		SetDepthStencilState(DisableDepth, 0);
+	}
+
+	pass P2 // 계속 방출 
+	{
+		SetVertexShader(CompileShader(vs_5_0, StreamOutVS()));
+		SetGeometryShader(gsStreamOut_Loop);
 
 		// disable pixel shader for stream-out only
 		SetPixelShader(NULL);
@@ -302,6 +328,25 @@ VertexOut DrawVSBlood(Particle vin)
 	vout.Color.w = 1.f; // 피.
 	vout.SizeW = vin.SizeW;
 	vout.Type = vin.Type;
+	return vout;
+}
+
+VertexOut DrawVSDashHorse(Particle vin)
+{
+	VertexOut vout;
+
+	float t = vin.Age;
+
+	// constant acceleration equation
+	vout.PosW = 0.5f * t * t * gAccelW + t * vin.InitialVelW + vin.InitialPosW;
+	// fade color with time
+	float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / maxAge);
+	vout.Color.xyz = gEmitColor;
+	vout.Color.w = opacity;
+
+	vout.SizeW = vin.SizeW;
+	vout.Type = vin.Type;
+
 	return vout;
 }
 
@@ -406,6 +451,16 @@ technique11 DrawTech
 		SetPixelShader(CompileShader(ps_5_0, DrawPSBlood()));
 
 		SetBlendState(AlphaBlendState, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+		SetDepthStencilState(NoDepthWrites, 0);
+	}
+
+	pass P3 // 대쉬 및 말 연기
+	{
+		SetVertexShader(CompileShader(vs_5_0, DrawVSDashHorse()));
+		SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
+		SetPixelShader(CompileShader(ps_5_0, DrawPSSword()));
+
+		SetBlendState(AdditiveBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
 		SetDepthStencilState(NoDepthWrites, 0);
 	}
 

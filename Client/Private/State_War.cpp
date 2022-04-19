@@ -2839,6 +2839,12 @@ void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
 	// 대쉬 트레일 ON
 	g_pWar->m_bDashTrailOn = true;
 
+	// 먼지 파티클 On
+	if (!g_pWar->m_bJump)
+	{
+		g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
+		m_bParticleOn = true;
+	}
 }
 
 void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2871,6 +2877,19 @@ void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar_State_Context->ChangeState(CState_War_Run_Combat::GetInstance());
 		return;
 	}
+
+
+	// 특정 대쉬 애니메이션에서 먼지를 끄자.
+	// 먼지 파티클 OFF
+	if (m_bParticleOn)
+	{
+		if (g_pWar_Model_Context->Get_Current_KeyFrame_Index("War_Mesh.ao|War_DashTo_F") >= 5)
+		{
+			g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
+			g_pWar->m_iParticleIdx = (g_pWar->m_iParticleIdx + 1) % 4;
+			m_bParticleOn = false;
+		}
+	}
 }
 
 void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
@@ -2887,6 +2906,14 @@ void CState_War_DashTo_F::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 대쉬 트레일 OFF
 	g_pWar->m_bDashTrailOn = false;
+
+	// 먼지 파티클 OFF
+	if (m_bParticleOn)
+	{
+		g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
+		g_pWar->m_iParticleIdx = (g_pWar->m_iParticleIdx + 1) % 4;
+		m_bParticleOn = false;
+	}
 }
 
 void CState_War_DashTo_F::Free()
@@ -3497,6 +3524,7 @@ void CState_War_Horse_Gallop::Free()
 // [State] CState_War_Horse_Gallop_Fast_Start
 // [Infom] LSHIFT 달리기 시작
 // -------------------------------------------------
+bool g_bParticleOn;
 CState_War_Horse_Gallop_Fast_Start::CState_War_Horse_Gallop_Fast_Start()
 {
 	m_pStateName = "CState_War_Horse_Gallop_Fast_Start";
@@ -3510,6 +3538,9 @@ void CState_War_Horse_Gallop_Fast_Start::Enter(CGameObject* pOwner, _float fTime
 
 	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SHIFT_SPEED);
 
+	// 먼지 파티클 On
+	g_bParticleOn = true;
+	g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
 }
 
 void CState_War_Horse_Gallop_Fast_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3552,8 +3583,6 @@ void CState_War_Horse_Gallop_Fast::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Gallop_Fast");
 	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop_Fast");
 
-
-
 }
 
 void CState_War_Horse_Gallop_Fast::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3590,6 +3619,14 @@ void CState_War_Horse_Gallop_Fast::Exit(CGameObject* pOwner, _float fTimeDelta)
 	CState::Exit();
 
 	static_cast<CWar*>(pOwner)->Set_Speed(RUIN_SPEED);
+
+	// 먼지 파티클 OFF
+	if (g_bParticleOn)
+	{
+		g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
+		g_pWar->m_iParticleIdx = (g_pWar->m_iParticleIdx + 1) % 4;
+		g_bParticleOn = false;
+	}
 }
 
 void CState_War_Horse_Gallop_Fast::Free()

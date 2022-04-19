@@ -71,8 +71,8 @@ private:
 	ID3D11ShaderResourceView* pSRV = nullptr;
 
 	// -----------------------------------------------------------------
-	// 아래들은 거의 FSM에서 사용
-public:
+	// 아래들은 거의 FSM에서 사용 
+public: 
 	void Set_Jump(_bool warJump = true, _bool clearJump = true);
 	_bool Get_Jump() { return m_bJump; }
 
@@ -87,8 +87,8 @@ public:
 
 	WAR_G_TYPE Get_GType() { return m_eGType; }
 
-private:
 	_bool	m_bJump = false; // 점프했는지 안했느지 판단
+private:
 	_bool	m_bDont_Key = false; // War_Key 타지말자
 	_bool	m_bDontMove_OnlyTurn = false; // 땅 콤보 스킬 사용할때는 움직이면 안된다.
 	_bool	m_bDontTurn_OnlyMove = false; // 불 콤보 스킬 사용할때는 회전하면 안된다
@@ -160,6 +160,10 @@ public:
 
 	bool m_bTrailOn = false;
 	bool m_bDashTrailOn = false;
+
+
+	class CParticle_War_Dash_Horse* m_pParticle[4] = { 0, };
+	int m_iParticleIdx = 0;
 
 
 

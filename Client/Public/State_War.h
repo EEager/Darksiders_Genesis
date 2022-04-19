@@ -1069,6 +1069,8 @@ public:
 private:
 	_float m_fMoveLockTimeAcc = 0.f;
 
+	_bool m_bParticleOn = false;
+
 public:
 	virtual void Free() final;
 };
@@ -1393,6 +1395,9 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	bool m_bParticleOn = false;
 
 public:
 	virtual void Free() final;
