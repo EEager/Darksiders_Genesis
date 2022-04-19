@@ -211,22 +211,16 @@ HRESULT CParticleSystem::Render(_uint iPassIndex)
 	// The updated vertices are streamed-out to the target VB. 
 	//
 	m_pDeviceContext->SOSetTargets(1, &mStreamOutVB, &offset);
+	m_StreamOutTech->GetPassByIndex(0)->Apply(0, m_pDeviceContext);
 
-	D3DX11_TECHNIQUE_DESC techDesc;
-	m_StreamOutTech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p) // 이거는 유지
+	if (mFirstRun)
 	{
-		m_StreamOutTech->GetPassByIndex(p)->Apply(0, m_pDeviceContext);
-
-		if (mFirstRun)
-		{
-			m_pDeviceContext->Draw(1, 0);
-			mFirstRun = false;
-		}
-		else
-		{
-			m_pDeviceContext->DrawAuto();
-		}
+		m_pDeviceContext->Draw(1, 0);
+		mFirstRun = false;
+	}
+	else
+	{
+		m_pDeviceContext->DrawAuto();
 	}
 
 	// done streaming-out--unbind the vertex buffer
@@ -240,7 +234,6 @@ HRESULT CParticleSystem::Render(_uint iPassIndex)
 	// Draw the updated particle system we just streamed-out. 
 	//
 	m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
-	m_DrawTech->GetDesc(&techDesc);
 	m_DrawTech->GetPassByIndex(iPassIndex)->Apply(0, m_pDeviceContext);
 	m_pDeviceContext->DrawAuto();
 
@@ -610,8 +603,6 @@ _int CParticle_Sword::LateTick(_float fTimeDelta)
 
 HRESULT CParticle_Sword::Render(_uint iPassIndex)
 {
-	// 1 : 서서히 사라진다. 땅에 닿으면 옆으로 간다
-	// 2 : fade 없다. 그냥 떨어진다 밑으로
 	if (CParticleSystem::Render(1) < 0)
 		return -1;
 
@@ -922,6 +913,249 @@ CGameObject* CParticle_Blood::Clone(void* pArg)
 }
 
 void CParticle_Blood::Free()
+{
+	CParticleSystem::Free();
+}
+
+
+// -----------------------------------
+// CParticle_LightAtk4
+// 약공 후 칼이 땅에 닿았을때
+// 점공 후 칼이 땅에 닿았을때 
+// -----------------------------------
+
+CParticle_LightAtk4::CParticle_LightAtk4(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CParticleSystem(pDevice, pDeviceContext)
+{
+}
+
+CParticle_LightAtk4::CParticle_LightAtk4(const CParticle_LightAtk4& rhs)
+	: CParticleSystem(rhs)
+{
+}
+
+HRESULT CParticle_LightAtk4::NativeConstruct_Prototype(const _tchar* pShaderFilePath, int maxParticleNum)
+{
+	CParticleSystem::NativeConstruct_Prototype(pShaderFilePath, maxParticleNum);
+
+	mEmitPosW = _float3(0.f, 0.f, 0.f); // 파티클 시작 방출 위치. 
+	//mEmitColor = _float3(1.f, .57f, MathHelper::RandF(0.f, 1.f));
+	mEmitColor = _float3(1.f, 0.570f, 0.130f);
+	mEmitInitAccel = _float3(0.0f, 1.2f, -10.240f); // 바람은 오른쪽으로 붑니다 ^_^
+	mEmitSize = _float2(0.1f, 0.1f);
+	mEmitRandomPower = 11.090f;
+	m_iTextureIdx = 4; // 텍스쳐 인덱스 번호.
+	mTextureTagIdx = 0; // 어떤 텍스쳐를 사용할것인지.
+	mMaxAge = 2.5f;
+	mEmitLoop = false;
+
+	return S_OK;
+}
+
+HRESULT CParticle_LightAtk4::NativeConstruct(void* pArg)
+{
+	// not used
+	return E_NOTIMPL;
+}
+
+_int CParticle_LightAtk4::Tick(_float fTimeDelta)
+{
+	if (targetingOnce == false)
+	{
+		// 타겟은 검이다.
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		m_pTarget = pGameInstance->Get_War();
+		m_pTargetTransform = static_cast<CTransform*>(m_pTarget->Get_ComponentPtr(L"Com_Transform"));
+		RELEASE_INSTANCE(CGameInstance);
+		targetingOnce = true;
+	}
+
+	if (CParticleSystem::Tick(fTimeDelta) < 0)
+	{
+		return -1; 
+	}
+
+	// mEmitPosW는 플레이어 칼 위치를 따라간다.
+	auto pWarSwordTag = static_cast<CWar*>(m_pTarget)->Get_WarSwordDesc_Ptr();
+	_matrix		OffsetMatrix = XMLoadFloat4x4(&pWarSwordTag->OffsetMatrix);
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(pWarSwordTag->pBoneMatrix);
+	_matrix		PivotMatrix = XMLoadFloat4x4(&pWarSwordTag->PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(pWarSwordTag->pTargetWorldMatrix);
+	_matrix		TransformationMatrix = (OffsetMatrix * CombinedTransformationMatrix * PivotMatrix) *
+		TargetWorldMatrix;
+	XMStoreFloat3(&mEmitPosW, XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 1.53f, 1.f), TransformationMatrix));
+
+
+	return 0;
+}
+
+_int CParticle_LightAtk4::LateTick(_float fTimeDelta)
+{
+	if (CParticleSystem::LateTick(fTimeDelta) < 0)
+		return -1;
+	return 0;
+}
+
+HRESULT CParticle_LightAtk4::Render(_uint iPassIndex)
+{
+	m_pRendererCom->ClearRenderStates();
+
+	if (FAILED(SetUp_ConstantTable(iPassIndex)))
+		return E_FAIL;
+
+	//
+	// Set IA stage.
+	//
+	m_pDeviceContext->IASetInputLayout(m_ParticleLayout);
+	m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	UINT stride = sizeof(VTXPTC);
+	UINT offset = 0;
+
+	// On the first pass, use the initialization VB.  Otherwise, use
+	// the VB that contains the current particle list.
+	if (mFirstRun)
+		m_pDeviceContext->IASetVertexBuffers(0, 1, &mInitVB, &stride, &offset);
+	else
+		m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+
+	//
+	// Draw the current particle list using stream-out only to update them.  
+	// The updated vertices are streamed-out to the target VB. 
+	//
+	m_pDeviceContext->SOSetTargets(1, &mStreamOutVB, &offset);
+	m_StreamOutTech->GetPassByIndex(1)->Apply(0, m_pDeviceContext); // 한방 파티클 300개
+
+	if (mFirstRun)
+	{
+		m_pDeviceContext->Draw(1, 0);
+		mFirstRun = false;
+	}
+	else
+	{
+		m_pDeviceContext->DrawAuto();
+	}
+
+	// done streaming-out--unbind the vertex buffer
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	m_pDeviceContext->SOSetTargets(1, bufferArray, &offset);
+
+	// ping-pong the vertex buffers
+	std::swap(mDrawVB, mStreamOutVB);
+
+	//
+	// Draw the updated particle system we just streamed-out. 
+	//
+	m_pDeviceContext->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+	m_DrawTech->GetPassByIndex(1)->Apply(0, m_pDeviceContext);
+	m_pDeviceContext->DrawAuto();
+
+	return S_OK;
+}
+
+HRESULT CParticle_LightAtk4::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+	return 0;
+}
+
+
+HRESULT CParticle_LightAtk4::SetUp_ConstantTable(_uint iPassIndex)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Transform
+	// 뷰행 던져주자
+	_matrix	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_VIEW);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	_float4x4	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gViewMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 투행 던져주자
+	TransformMatrix = CPipeLine::GetInstance()->Get_Transform(CPipeLine::TS_PROJ);
+	TransformMatrix = XMMatrixTranspose(TransformMatrix);
+	TransformFloat4x4;
+	XMStoreFloat4x4(&TransformFloat4x4, TransformMatrix);
+	Set_RawValue("gProjMatrix", &TransformFloat4x4, sizeof(_float4x4));
+
+	// 카메라 위치 던져주자
+	_float4			vCamPosition;
+	XMStoreFloat4(&vCamPosition, pGameInstance->Get_CamPosition());
+	auto ret = Set_RawValue("gEyePosW", &vCamPosition, sizeof(_float4));
+
+	// Bind Stuffs
+	Set_RawValue("gEmitPosW", &mEmitPosW, sizeof(_float3));
+	Set_RawValue("gEmitColor", &mEmitColor, sizeof(_float3));
+	Set_RawValue("gAccelW", &mEmitInitAccel, sizeof(_float3)); // 초기속도
+	Set_RawValue("gRandomPwr", &mEmitRandomPower, sizeof(_float)); // 랜덤방향세기. 세질수록 초기속도 무시할 수 있음.
+	Set_RawValue("gEmitSize", &mEmitSize, sizeof(_float2));
+	Set_RawValue("gTimeStep", &mTimeStep, sizeof(_float));
+	Set_RawValue("gGameTime", &mGameTime, sizeof(_float));
+	Set_RawValue("useLoop", &mEmitLoop, sizeof(_bool));
+	Set_RawValue("maxAge", &mMaxAge, sizeof(_float));
+
+	// 타겟의 높이를 던져주자. 
+	_float targetHeight = static_cast<CWar*>(m_pTarget)->Get_CurFloorH();
+	Set_RawValue("gFloorHeight", &targetHeight, sizeof(_float));
+
+	// g_DiffuseTexture
+	ID3DX11EffectShaderResourceVariable* pValiable = m_pEffect->GetVariableByName("g_DiffuseTexture")->AsShaderResource();
+#ifdef USE_IMGUI
+	ID3D11ShaderResourceView* pResource = nullptr;
+	switch (mTextureTagIdx)
+	{
+	case 0:
+		pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+		break;
+	case 1:
+		pResource = m_pTextureDecayPuffs->Get_SRV(m_iTextureIdx);
+		break;
+	case 2:
+		pResource = m_pTextureDust->Get_SRV(m_iTextureIdx);
+		break;
+	case 3:
+		pResource = m_pTextureFogCloud->Get_SRV(m_iTextureIdx);
+		break;
+	case 4:
+		pResource = m_pTextureRockChips->Get_SRV(m_iTextureIdx);
+		break;
+	default:
+		assert(0);
+	}
+#else
+	auto pResource = m_pTextureParticle->Get_SRV(m_iTextureIdx);
+#endif
+	pValiable->SetResource(pResource);
+
+
+	// g_RandomTex
+	pValiable = m_pEffect->GetVariableByName("g_RandomTex")->AsShaderResource();
+	pValiable->SetResource(mRandomTexSRV);
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+CParticle_LightAtk4* CParticle_LightAtk4::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const _tchar* pShaderFilePath, int maxParticleNum)
+{
+	CParticle_LightAtk4* pInstance = new CParticle_LightAtk4(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype(pShaderFilePath, maxParticleNum)))
+	{
+		MSG_BOX("Failed to Created CParticle_LightAtk4");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CParticle_LightAtk4::Clone(void* pArg)
+{
+	return nullptr;
+}
+
+void CParticle_LightAtk4::Free()
 {
 	CParticleSystem::Free();
 }

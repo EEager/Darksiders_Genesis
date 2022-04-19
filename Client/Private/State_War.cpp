@@ -13,6 +13,7 @@
 
 #include "Trail.h"
 
+#include "ParticleSystem\ParticleSystem_Manager.h"
 
 // 
 // Global War State Machine in War.cpp
@@ -1121,11 +1122,21 @@ void CState_War_Atk_Light_04::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
 }
 
 void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// 애니메이션 인덱스 체크. 
+	auto curKeyFrameIdx = g_pWar_Model_Context->Get_Current_KeyFrame_Index("War_Mesh.ao|War_Atk_Light_04");
+	if (31 <= curKeyFrameIdx && curKeyFrameIdx <= 32)
+	{
+		// 검 불꽃 파티클을 생성하자
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4");
+	}
+
 
 	m_fTimeAcc += fTimeDelta;
 	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
@@ -1347,6 +1358,14 @@ void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
+	// 애니메이션 인덱스 체크. 
+	auto curKeyFrameIdx = g_pWar_Model_Context->Get_Current_KeyFrame_Index("War_Mesh.ao|War_Atk_Heavy_02");
+	if (27 <= curKeyFrameIdx && curKeyFrameIdx <= 28)
+	{
+		// 검 불꽃 파티클을 생성하자
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4");
+	}
+
 	// 공격후 몇초간 바로 움직이게 하지말자
 	m_fTimeAcc += fTimeDelta;
 	if (m_fTimeAcc > WAR_KEY_LOCK_TIME_CAUSE_OF_ATK)
@@ -1438,6 +1457,14 @@ void CState_War_Atk_Heavy_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// 애니메이션 인덱스 체크. 
+	auto curKeyFrameIdx = g_pWar_Model_Context->Get_Current_KeyFrame_Index("War_Mesh.ao|War_Atk_Heavy_03");
+	if (30 <= curKeyFrameIdx && curKeyFrameIdx <= 31)
+	{
+		// 검 불꽃 파티클을 생성하자
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand"); 
+	}
 
 	// 공격후 몇초간 바로 움직이게 하지말자
 	m_fTimeAcc += fTimeDelta;
@@ -2350,6 +2377,14 @@ void CState_War_Atk_Air_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Atk_Air_Land::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// 애니메이션 인덱스 체크. 
+	auto curKeyFrameIdx = g_pWar_Model_Context->Get_Current_KeyFrame_Index("War_Mesh.ao|War_Atk_Air_Land");
+	if (2 <= curKeyFrameIdx && curKeyFrameIdx <= 3)
+	{
+		// 검 불꽃 파티클을 생성하자
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand");
+	}
 
 	//// [Event] 방향키 하나라도 누르게된다면
 	//// [State]  -> CState_War_Run_Combat

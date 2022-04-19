@@ -48,19 +48,37 @@ void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag)
 // Initalize를 결국 Gameplay Loader에서 해야하는 것인가? 
 void CParticleSystem_Manager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
+	// Particle_Sword
 	for (int i = 0; i < 10; i++)
 	{
-		CParticleSystem* pParticle = static_cast<CParticleSystem*>(CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/));
+		CParticleSystem* pParticle = CParticle_Sword::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/);
 		Add_ParticleSystem(L"Particle_Sword", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_Sword", 0);
 
+	// Particle_Blood
 	for (int i = 0; i < 20; i++)
 	{
-		CParticleSystem* pParticle = static_cast<CParticleSystem*>(CParticle_Blood::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/));
+		CParticleSystem* pParticle = CParticle_Blood::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 50/*mMaxParticles*/);
 		Add_ParticleSystem(L"Particle_Blood", pParticle);
 	}
 	m_ParticleSystemsIndex.emplace(L"Particle_Blood", 0);
+
+	// Particle_LightAtk4
+	for (int i = 0; i < 3; i++)
+	{
+		CParticleSystem* pParticle = CParticle_LightAtk4::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 300/*mMaxParticles*/);
+		Add_ParticleSystem(L"Particle_LightAtk4", pParticle);
+	}
+	m_ParticleSystemsIndex.emplace(L"Particle_LightAtk4", 0);
+
+	// Particle_LightAtk4
+	for (int i = 0; i < 3; i++)
+	{
+		CParticleSystem* pParticle = CParticle_LightAtk4::Create(pDevice, pDeviceContext, L"../Bin/ShaderFiles/Shader_Effect_Particle.hlsl", 300/*mMaxParticles*/);
+		Add_ParticleSystem(L"Particle_AirLand", pParticle);
+	}
+	m_ParticleSystemsIndex.emplace(L"Particle_AirLand", 0);
 }
 
 

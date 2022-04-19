@@ -40,7 +40,7 @@ _int CMonster::Tick(_float fTimeDelta)
 	// 모든 몬스터는 죽으면 m_Objects 에서 제거 당해야한다. 
 	if (m_isDead)
 	{
-		m_fDissolvePower += 0.002f;
+		m_fDissolvePower += fTimeDelta/2.f;
 		if (m_fDissolvePower >= 1.f) // 1이면 다 사라졌다. 이때는 진짜로 죽이자.
 		{
 			return -1;

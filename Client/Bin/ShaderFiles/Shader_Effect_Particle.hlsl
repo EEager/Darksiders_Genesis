@@ -163,16 +163,68 @@ void StreamOutGS(point Particle gin[1],
 	}
 }
 
+const static int maxVsize_300 = 100; // 파티클 처음 만들때와 같은 숫자여야한다
+[maxvertexcount(maxVsize_300)]
+void StreamOutGS_300(point Particle gin[1],
+	inout PointStream<Particle> ptStream)
+{
+	gin[0].Age += gTimeStep;
+
+	if (gin[0].Type == PT_EMITTER)
+	{
+		for (int i = 0; i < maxVsize - 1; ++i)
+		{
+			// 랜덤사용할경우
+			float3 vRandom = RandVec3((float)i / (float)maxVsize - 1);//  gRandomDir.xyz;
+
+			Particle p;
+			p.InitialPosW = gEmitPosW.xyz;
+			p.InitialVelW = gRandomPwr * vRandom;
+			p.SizeW = gEmitSize;
+			p.Age = 0.0f;
+			p.Type = PT_FLARE;
+
+			ptStream.Append(p);
+		}
+
+		// reset the time to emit
+		gin[0].Age = 0.0f;
+	}
+	else
+	{
+		// Specify conditions to keep particle; this may vary from system to system.
+		// 아직 생존시간이 남아있으면 gs_5_0에 넣는다.
+		if (gin[0].Age <= maxAge)
+			ptStream.Append(gin[0]);
+	}
+}
+
 GeometryShader gsStreamOut = ConstructGSWithSO(
 	CompileShader(gs_5_0, StreamOutGS()),
 	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
 
+GeometryShader gsStreamOut_300 = ConstructGSWithSO(
+	CompileShader(gs_5_0, StreamOutGS_300()),
+	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
+
 technique11 StreamOutTech
 {
-	pass P0
+	pass P0 // 한방 파티클 50개
 	{
 		SetVertexShader(CompileShader(vs_5_0, StreamOutVS()));
 		SetGeometryShader(gsStreamOut);
+
+		// disable pixel shader for stream-out only
+		SetPixelShader(NULL);
+
+		// we must also disable the depth buffer for stream-out only
+		SetDepthStencilState(DisableDepth, 0);
+	}
+
+	pass P1 // 한방 파티클 300개
+	{
+		SetVertexShader(CompileShader(vs_5_0, StreamOutVS()));
+		SetGeometryShader(gsStreamOut_300);
 
 		// disable pixel shader for stream-out only
 		SetPixelShader(NULL);
