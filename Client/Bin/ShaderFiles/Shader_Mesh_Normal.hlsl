@@ -27,6 +27,9 @@ cbuffer cbPerObject
 	bool		g_UseMetalMap;
 
 	float		g_DissolvePwr;
+
+
+	float		g_NoiseAlphaPwr;
 };
 
 cbuffer cbGameObject
@@ -47,6 +50,7 @@ texture2D		g_NormalTexture; // Normal Map
 texture2D		g_EmissiveTexture; // Emissive Map
 texture2D		g_MetalRoughnessTexture; // Roughness Metal Map
 texture2D		g_DissolveTexture;
+texture2D		g_NoiseTexture;
 
 
 // --------------------
@@ -387,6 +391,46 @@ PS_FORWARD_OUT PS_FORWARD_MAIN(PS_IN In)
 	return Out;
 }
 
+
+// --------------------
+// PS_ALPHABLEND
+// --------------------
+
+struct PS_ALPHABLEND_OUT
+{
+	float4		vBackBuffer : SV_TARGET0;
+	float4		vDistortion   : SV_TARGET1;
+};
+
+PS_ALPHABLEND_OUT PS_ALPHABLEND(PS_IN In)
+{
+	PS_ALPHABLEND_OUT		Out = (PS_ALPHABLEND_OUT)0;
+	// BackBuffer
+	Out.vBackBuffer = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	//Out.vBackBuffer.w = 1.f;
+	
+	// Distortion
+	float4	DistortionOut = { 0.f, 0.f, 0.f, 0.f };
+	DistortionOut = g_NoiseTexture.Sample(SampleType, In.vTexUV); // Noise를 사용한다.
+	//DistortionOut.w = g_AlphaTexture.Sample(SampleType, In.vTexUV); // 알파를 사용한다.
+	Out.vDistortion = DistortionOut;
+
+	return Out;
+}
+
+PS_ALPHABLEND_OUT PS_ALPHABLEND_ONLYDISTORTION(PS_IN In)
+{
+	PS_ALPHABLEND_OUT		Out = (PS_ALPHABLEND_OUT)0;
+
+	// Distortion
+	float4	DistortionOut = { 0.f, 0.f, 0.f, 0.f };
+	DistortionOut = g_NoiseTexture.Sample(SampleType, In.vTexUV); // Noise를 사용한다.
+	Out.vDistortion = DistortionOut;
+	Out.vDistortion.w *= g_NoiseAlphaPwr;
+
+	return Out;
+}
+
 technique11	DefaultTechnique
 {
 	// #0
@@ -429,5 +473,25 @@ technique11	DefaultTechnique
 		PixelShader = NULL;
 
 		SetRasterizerState(ShadowDepthNoCull);
+	}
+
+	// #4 알파타겟용도. 매쉬 이펙트에 알파맥일때 사용. 디스토션 타겟에다가도 넣어보자.
+	pass P4
+	{
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_ALPHABLEND();
+		
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetRasterizerState(NoCull);
+	}
+	pass P5
+	{
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_ALPHABLEND_ONLYDISTORTION();
+
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetRasterizerState(NoCull);
 	}
 }

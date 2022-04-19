@@ -107,7 +107,7 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	{
 		//CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-		//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_War_ChaosEater"))))
+		//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Sphere"))))
 		//	return E_FAIL;
 		//RELEASE_INSTANCE(CGameInstance);
 	}

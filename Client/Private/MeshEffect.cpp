@@ -9,6 +9,9 @@
 #include "imgui_Manager.h"
 #endif
 
+// --------------------------
+// CMeshEffect_ChaosEater
+// --------------------------
 CMeshEffect_ChaosEater::CMeshEffect_ChaosEater(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
@@ -234,6 +237,252 @@ CGameObject * CMeshEffect_ChaosEater::Clone(void* pArg)
 }
 
 void CMeshEffect_ChaosEater::Free()
+{
+	__super::Free();
+}
+
+
+// ---------------------------------------------------
+// CMeshEffect_Sphere
+// ---------------------------------------------------
+CMeshEffect_Sphere::CMeshEffect_Sphere(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+	: CGameObject(pDevice, pDeviceContext)
+{
+}
+
+CMeshEffect_Sphere::CMeshEffect_Sphere(const CMeshEffect_Sphere& rhs)
+	: CGameObject(rhs)
+{
+}
+
+HRESULT CMeshEffect_Sphere::NativeConstruct_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CMeshEffect_Sphere::NativeConstruct(void* pArg)
+{
+	if (!pArg) // 무조건 이펙트를 생성할 위치
+		assert(0);
+
+	if (SetUp_Component())
+		return E_FAIL;
+	
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+
+	m_vSize = _float3(0.01f, 0.01f, 0.01f);
+	return S_OK;
+}
+
+_int CMeshEffect_Sphere::Tick(_float fTimeDelta)
+{
+	if (m_isDead)
+		return -1;
+
+	// 공기팡 사이즈를 서서히 증가시키자
+	fTimeDelta *= 15.f;
+	XMStoreFloat3(&m_vSize, XMLoadFloat3(&m_vSize) + XMVectorSet(fTimeDelta, fTimeDelta, fTimeDelta, 0.f));
+	m_pTransformCom->Set_Scale(m_vSize);
+
+	return _int();
+}
+
+_int CMeshEffect_Sphere::LateTick(_float fTimeDelta)
+{
+	if (nullptr == m_pRendererCom)
+		return -1;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// AddRenderGroup
+	bool AddRenderGroup = false;
+	if (true == pGameInstance->isIn_WorldSpace(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 3.f))
+		AddRenderGroup = true;
+
+#ifdef USE_IMGUI
+	// 디버깅이 필요하면 이거 넣어줘야한다
+	if (m_bUseImGui)
+	{
+		AddRenderGroup = true;
+	}
+#endif
+
+	if (AddRenderGroup)
+	{
+		if (FAILED(m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this)))
+			assert(0);
+	/*	if (FAILED(m_pRendererCom->Add_PostRenderGroup(this)))
+			assert(0); */
+	}
+
+	// 공기팡 사이즈가 5.0f 이상이 되면 죽자.
+	if (m_vSize.x >= 5.f)
+	{
+		m_isDead = true;
+	}
+
+	RELEASE_INSTANCE(CGameInstance);
+	return _int();
+}
+
+HRESULT CMeshEffect_Sphere::Render(_uint iPassIndex)
+{
+	if (FAILED(SetUp_ConstantTable(iPassIndex)))
+		return E_FAIL;
+
+	/* 장치에 월드변환 행렬을 저장한다. */
+	_uint	iNumMeshContainer = m_pModelCom->Get_NumMeshContainer();
+
+	for (_uint i = 0; i < iNumMeshContainer; ++i)
+	{
+		//m_pModelCom->Set_ShaderResourceView("g_DiffuseTexture", i, aiTextureType_DIFFUSE);
+
+		m_pModelCom->Render(i, 5); // 그냥 Distortion 만 하자.
+	}
+
+	// restore default states, as the SkyFX changes them in the effect file.
+	m_pDeviceContext->RSSetState(0);
+	m_pDeviceContext->OMSetDepthStencilState(0, 0);
+
+	return S_OK;
+}
+
+HRESULT CMeshEffect_Sphere::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+#ifdef _DEBUG
+	// Collider 
+	__super::Render_Colliders();
+#endif // _DEBUG
+
+#ifdef USE_IMGUI
+	if (m_bUseImGui)
+	{
+		CImguiManager::GetInstance()->Transform_Control(m_pTransformCom.Get(), m_CloneIdx, &m_bUseImGui);
+
+		char buf[32];
+		sprintf_s(buf, "Sphere##%d", m_CloneIdx);
+		ImGui::Begin(buf);
+		{
+			// 텍스쳐 인덱스
+			ImGui::InputInt("Noise TextureIdx", &m_noiseTextureIdx);
+			ImGui::InputInt("Diffuse TextureIdx", &m_diffuseTextureIdx);
+
+			if (ImGui::DragFloat("Size", &m_vSize.x, 0.01f))
+			{
+				m_vSize = _float3(m_vSize.x, m_vSize.x, m_vSize.x);
+			}
+		}
+		ImGui::End();
+	}
+#endif
+
+	return S_OK;
+}
+
+
+HRESULT CMeshEffect_Sphere::SetUp_Component()
+{
+	/* For.Com_Transform */
+	CTransform::TRANSFORMDESC		TransformDesc;
+	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
+
+	TransformDesc.fSpeedPerSec = 7.f;
+	TransformDesc.fRotationPerSec = XMConvertToRadians(10.0f);
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)m_pTransformCom.GetAddressOf(), &TransformDesc)))
+		return E_FAIL;
+
+	/* For.Com_Renderer*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)m_pRendererCom.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_Sphere"), TEXT("Com_Model"), (CComponent**)m_pModelCom.GetAddressOf())))
+		return E_FAIL;
+
+	///* For.Com_Texture_Disolve */
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_Texture"), (CComponent**)m_pDissolveTextureCom.GetAddressOf())))
+	//	return E_FAIL;
+
+	/* For.Com_Texture_Noise */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_noise"), TEXT("Com_Texture_Noise"), (CComponent**)m_pDistortionNoiseTextureCom.GetAddressOf())))
+		return E_FAIL;
+
+	/* For.Com_Texture_Diffuse */
+	if (FAILED(__super::Add_Component(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Shpere_Diffuse"), TEXT("Com_Texture_Diffuse"), (CComponent**)m_pDiffuseTextureCom.GetAddressOf())))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CMeshEffect_Sphere::SetUp_ConstantTable(_uint iPassIndex)
+{
+	if (nullptr == m_pModelCom)
+		return E_FAIL;
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+
+	// Bind Transform
+	m_pTransformCom->Bind_OnShader(m_pModelCom.Get(), "g_WorldMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_VIEW, m_pModelCom.Get(), "g_ViewMatrix");
+	pGameInstance->Bind_Transform_OnShader(CPipeLine::TS_PROJ, m_pModelCom.Get(), "g_ProjMatrix");
+
+	//// Bind Dissolve 
+	//m_pModelCom->Set_RawValue("g_DissolvePwr", &dissolvePower, sizeof(_float));
+	//if (FAILED(m_pDissolveTextureCom->SetUp_OnShader(m_pModelCom.Get(), "g_DissolveTexture")))
+	//	return E_FAIL;
+
+	// Bind Noise Texture
+	if (FAILED(m_pDistortionNoiseTextureCom->SetUp_OnShader(m_pModelCom.Get(), "g_NoiseTexture", 5))) // m_noiseTextureIdx
+		return E_FAIL;
+
+	// Bind Difffuse Texture
+	if (FAILED(m_pDiffuseTextureCom->SetUp_OnShader(m_pModelCom.Get(), "g_DiffuseTexture", m_diffuseTextureIdx)))
+		return E_FAIL;
+
+	// Emissive Map
+	//_bool falseTemp = false;
+	//_bool trueTemp = true;
+	//m_pModelCom->Set_RawValue("g_UseEmissiveMap", &falseTemp, sizeof(_bool));
+	//m_pModelCom->Set_RawValue("g_UseNormalMap", &trueTemp, sizeof(_bool));
+
+	_float tempAlpha = .0f;
+	m_pModelCom->Set_RawValue("g_NoiseAlphaPwr", &tempAlpha, sizeof(_float));
+
+	RELEASE_INSTANCE(CGameInstance);
+
+	return S_OK;
+}
+
+
+CMeshEffect_Sphere* CMeshEffect_Sphere::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
+{
+	CMeshEffect_Sphere* pInstance = new CMeshEffect_Sphere(pDevice, pDeviceContext);
+
+	if (FAILED(pInstance->NativeConstruct_Prototype()))
+	{
+		MSG_BOX("Failed to Created CMesh_Effect");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+
+CGameObject* CMeshEffect_Sphere::Clone(void* pArg)
+{
+	CMeshEffect_Sphere* pInstance = new CMeshEffect_Sphere(*this);
+
+	if (FAILED(pInstance->NativeConstruct(pArg)))
+	{
+		MSG_BOX("Failed to Created CMeshEffect_Sphere");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CMeshEffect_Sphere::Free()
 {
 	__super::Free();
 }
