@@ -123,6 +123,8 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		
 		auto pWarPos = static_cast<CTransform*>(pGameInstance->Get_War()->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Ring"), &pWarPos)))
+			return E_FAIL; 
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Explosion", TEXT("Prototype_GameObject_Explosion"), &pWarPos)))
 			return E_FAIL;
 
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
@@ -276,6 +278,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
 		return E_FAIL;
+#if 0 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment2 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
 		return E_FAIL;
@@ -321,6 +324,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(&pFoliage6, LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Foliage6")))
 		return E_FAIL;
 	static_cast<CEnviroment*>(pFoliage6)->Set_CullingRadian(100.f);
+#endif
 
 	RELEASE_INSTANCE(CGameInstance);
 
@@ -425,9 +429,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar* pLayerTag)
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_PointEffect"))))
 	//	return E_FAIL;
 
-	// FireEffect
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_FireEffect"))))
-		return E_FAIL;
+	//// FireEffect
+	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_FireEffect"))))
+	//	return E_FAIL;
 
 	RELEASE_INSTANCE(CGameInstance);
 

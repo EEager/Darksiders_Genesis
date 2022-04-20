@@ -245,6 +245,12 @@ HRESULT CRenderer::Draw()
 		if (FAILED(m_pTarget_Manager->Begin_MRT_Alpha(m_pDeviceContext, TEXT("MRT_Alpha"))))
 			return E_FAIL;
 
+		// (나름 최적화)알파아이들만 카메라 거리를 업데이트하자.
+		for (auto& pGameObject : m_RenderObjects[RENDER_ALPHA])
+		{
+			pGameObject->Compute_CamDistance();
+		}
+
 		/* 카메라로부터 멀리 있는 객체부터 그린다. */
 		m_RenderObjects[RENDER_ALPHA].sort([&](CGameObject* pSour, CGameObject* pDest)
 			{

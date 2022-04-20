@@ -40,15 +40,32 @@ void CMeshEffect_Manager::Effect_War_Skill_1(_float fTimeDelta)
 	// War 스킬 1번이다. War 약간 밑에서 칼을 사방으로 생성하자
 	_vector vWarPos = m_pWarTransform->Get_State(CTransform::STATE_POSITION);
 
-	for (int i = 0; i < 15; i++)
+	// 안쪽은 6개. 길이는 2.
+	_float offset = 1.5f;
+	for (int i = 0; i < 6; i++)
 	{ 
 		CHAOSEATERDESC tempDesc; 
-		tempDesc.vPos = vWarPos + XMVectorSet(MathHelper::RandF(-2.f, 2.f),
-				-0.f,	MathHelper::RandF(-2.f, 2.f), 0.f);
+		tempDesc.vPos = vWarPos + XMVectorSet(offset * XMScalarCos(XMConvertToRadians(i * 60.f)), -0.75f,	offset * XMScalarSin(XMConvertToRadians(i * 60.f)), 0.f);
 			
 		// 칼이 보는 방향은 
 		_vector vDir = XMVector3Normalize(tempDesc.vPos - vWarPos);
-		tempDesc.vLook = vWarPos + vDir * MathHelper::RandF(10.f, 15.f);
+		tempDesc.vLook = vWarPos + vDir * 10.f;
+		tempDesc.vLook = XMVectorSetY(tempDesc.vLook, XMVectorGetY(vWarPos) + 20.f);
+
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_War_ChaosEater"), &tempDesc)))
+			assert(0);
+	}
+
+	// 바깥쪽은은 8개. 길이는 4.
+	offset = 3.f;
+	for (int i = 0; i < 8; i++)
+	{
+		CHAOSEATERDESC tempDesc;
+		tempDesc.vPos = vWarPos + XMVectorSet(offset * XMScalarCos(XMConvertToRadians(i * 45.f)), 0.f, offset * XMScalarSin(XMConvertToRadians(i * 45.f)), 0.f);
+
+		// 칼이 보는 방향은 
+		_vector vDir = XMVector3Normalize(tempDesc.vPos - vWarPos);
+		tempDesc.vLook = vWarPos + vDir * 10.f;
 		tempDesc.vLook = XMVectorSetY(tempDesc.vLook, XMVectorGetY(vWarPos) + 20.f);
 
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_War_ChaosEater"), &tempDesc)))

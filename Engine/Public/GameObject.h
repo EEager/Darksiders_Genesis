@@ -17,6 +17,14 @@ public:
 	_float Get_CamDistance() const {
 		return m_fCamDistance;
 	}
+	void Compute_CamDistance()
+	{
+		CTransform* pTransform = static_cast<CTransform*>(Get_ComponentPtr(L"Com_Transform"));
+		if (pTransform == nullptr)
+			return;
+		m_fCamDistance = XMVectorGetX(XMVector3Length(CPipeLine::GetInstance()->Get_CamPosition() - pTransform->Get_State(CTransform::STATE_POSITION)));
+	}
+
 public:
 	/* 원형객체를 초기화하기위한 함수. (서버,파일로부터 데이터를 읽어서 저장ㅎ나다. ) */
 	virtual HRESULT NativeConstruct_Prototype();

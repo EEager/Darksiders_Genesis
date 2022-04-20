@@ -33,10 +33,12 @@
 #include "MapObject\Flag.h"
 #include "MapObject\Trees.h"
 
+
 // Effect
 #include "Effect\RectEffect.h"
 #include "Effect\PointEffect.h"
 #include "Effect\FireEffect.h"
+#include "Effect\Explosion.h"
 
 // Particles
 #include "ParticleSystem\ParticleSystem_Manager.h"
@@ -173,6 +175,11 @@ HRESULT CLoader::Add_GameObject()
 	/* For.Prototype_GameObject_FireEffect */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FireEffect"),
 		CFireEffect::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Explosion */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Explosion"),
+		CExplosion::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Sky */
@@ -510,6 +517,11 @@ HRESULT CLoader::Add_Texture()
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Particles/RockChips%d.dds"), 16))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_Texture_Explosion */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Explosion"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Explosion/Explostion%d.dds"), 48))))
+		return E_FAIL;
+
 
 	RELEASE_INSTANCE(CGameInstance);
 	return S_OK;
@@ -524,7 +536,7 @@ HRESULT CLoader::Add_Model()
 	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
 
 
-#if 1 // JJLEE 잠시만 막아두자
+#if 0 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment4*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
@@ -574,7 +586,7 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage2.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
-#if 1 // JJLEE 잠시만 막아두자
+#if 0 // JJLEE 잠시만 막아두자
 
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage3"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage3"),

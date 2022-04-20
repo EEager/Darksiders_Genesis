@@ -70,6 +70,30 @@ VS_OUT VS_MAIN(VS_IN In)
 	return Out;
 }
 
+struct VS_OUT_Rect
+{
+	float4		vPosition : SV_POSITION;
+	float2		vTexUV : TEXCOORD0;
+	float4		vProjPos : TEXCOORD1;
+};
+
+VS_OUT_Rect VS_MAIN_RECT(VS_IN In)
+{
+	VS_OUT_Rect		Out = (VS_OUT_Rect)0;
+
+	matrix		matWV, matWVP;
+
+	matWV = mul(g_WorldMatrix, g_ViewMatrix);
+	matWVP = mul(matWV, g_ProjMatrix);
+
+	Out.vPosition = mul(vector(In.vPosition, 1.f), matWVP);
+	Out.vProjPos = Out.vPosition;
+
+	Out.vTexUV = In.vTexUV;
+
+	return Out;
+}
+
 
 
 struct VS_OUT_DISTORTION
@@ -123,11 +147,7 @@ struct PS_OUT
 };
 
 
-struct PS_OUT_DISTORTION
-{
-	float4		vBackBuffer : SV_TARGET0;
-	float4		vDistortion : SV_TARGET1;
-};
+
 
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -164,6 +184,42 @@ PS_OUT PS_MAIN_HollowLord(PS_IN In)
 
 	return Out;
 }
+
+
+texture2D		g_DepthTexture; // 소프트 렌더링
+PS_OUT PS_MAIN_Rect(VS_OUT_Rect In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+
+	//  소프트 렌더링
+	float4		vRealProjPos = In.vProjPos / In.vProjPos.w;
+	float2		vTexUV;
+	vTexUV.x = vRealProjPos.x * 0.5f + 0.5f;
+	vTexUV.y = vRealProjPos.y * -0.5f + 0.5f;
+	vector		vDepthDesc = g_DepthTexture.Sample(DefaultSampler, vTexUV);
+	float		fViewZ = vDepthDesc.y * 700.f;
+	float		fDistance = max(fViewZ - In.vProjPos.w, 0.f);
+	Out.vColor.a = Out.vColor.a * fDistance;
+	return Out;
+}
+
+PS_OUT PS_MAIN_Rect2(VS_OUT_Rect In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	clip(Out.vColor.a - 0.1f);
+
+	return Out;
+}
+
+struct PS_OUT_DISTORTION
+{
+	float4		vBackBuffer : SV_TARGET0;
+	float4		vDistortion : SV_TARGET1;
+};
 
 PS_OUT_DISTORTION PS_MAIN_DISTORTION(VS_OUT_DISTORTION In)
 {
@@ -291,5 +347,29 @@ technique11	DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_HollowLord();
+	}
+
+	// explosion 재생용
+	pass P5
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN_RECT();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_Rect();
+	}
+
+	// explosion 재생용
+	pass P6
+	{
+		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN_RECT();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_Rect2();
 	}
 }

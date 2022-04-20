@@ -280,7 +280,7 @@ _int CMeshEffect_Sphere::Tick(_float fTimeDelta)
 		return -1;
 
 	// 공기팡 사이즈를 서서히 증가시키자
-	fTimeDelta *= 15.f;
+	fTimeDelta *= 20.f;
 	XMStoreFloat3(&m_vSize, XMLoadFloat3(&m_vSize) + XMVectorSet(fTimeDelta, fTimeDelta, fTimeDelta, 0.f));
 	m_pTransformCom->Set_Scale(m_vSize);
 
@@ -316,7 +316,7 @@ _int CMeshEffect_Sphere::LateTick(_float fTimeDelta)
 	}
 
 	// 공기팡 사이즈가 5.0f 이상이 되면 죽자.
-	if (m_vSize.x >= 5.f)
+	if (m_vSize.x >= 6.f)
 	{
 		m_isDead = true;
 	}
@@ -534,7 +534,7 @@ _int CMeshEffect_Ring::LateTick(_float fTimeDelta)
 	}
 
 	// 공기팡 사이즈가 이상이 되면 죽자.
-	if (m_vSize.x >= 20.f)
+	if (m_vSize.x >= 10.f)
 	{
 		m_isDead = true;
 	}
