@@ -28,7 +28,7 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 10;
-	m_tGameInfo.iMaxHp = 100;
+	m_tGameInfo.iMaxHp = 160;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
 
@@ -341,7 +341,7 @@ void CHollowLord::DoState(float fTimeDelta)
 	if (m_pCurState == "HollowLord.ao|HollowLord_Idle")
 	{
 		m_fTimeIdle += fTimeDelta;
-		// idle 상태에서 잠시 쉬었다가 공격하자 
+		// idle 상태에서 잠시 쉬었다가 공격하자.
 		if (m_fTimeIdle > IDLE_TIME_TO_ATK_DELAY)
 		{
 			if (randNextState == 0)	m_pNextState = "HollowLord.ao|HollowLord_Atk_Barrage";
@@ -368,7 +368,7 @@ void CHollowLord::DoState(float fTimeDelta)
 			if (m_fDoubleSlamTimeAcc > .7f)
 			{
 				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-				pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(MathHelper::RandF(553.f, 595.f), 9.5f, MathHelper::RandF(43.f, 80.f), 1.f));
+				pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(MathHelper::RandF(553.f, 590.f), 9.5f, MathHelper::RandF(43.f, 80.f), 1.f));
 				pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(MathHelper::RandF(553.f, 595.f), 9.5f, MathHelper::RandF(43.f, 80.f), 1.f));
 				RELEASE_INSTANCE(CGameInstance);
 				m_fDoubleSlamTimeAcc = 0.f;

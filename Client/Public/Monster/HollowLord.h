@@ -51,7 +51,7 @@ protected:
 
 
 private:
-	const _float IDLE_TIME_TO_ATK_DELAY = 5.6f;
+	const _float IDLE_TIME_TO_ATK_DELAY = 2.3f;
 	const _float ATK_RANGE = 10.f;
 	const _float INIT_RANGE = 50.f;
 

@@ -40,6 +40,9 @@ _int CExplosion::Tick(_float fTimeDelta)
 
 	m_fAnimIdx += fTimeDelta*30.f;
 
+	// Collider 
+	__super::Update_Colliders(m_pTransformCom->Get_WorldMatrix());
+
 	return _int();
 }
 
@@ -56,7 +59,16 @@ _int CExplosion::LateTick(_float fTimeDelta)
 	m_pTransformCom->Set_BillBoard();
 
 	if (m_isDead == false)
+	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHA, this);
+#ifdef _DEBUG
+		m_pRendererCom->Add_PostRenderGroup(this);
+#endif
+	}
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	pGameInstance->Add_Collision(this, true, m_pTransformCom, L"Layer_War", 5.f);
+	RELEASE_INSTANCE(CGameInstance);
 
 	return _int();
 }
@@ -71,6 +83,17 @@ HRESULT CExplosion::Render(_uint iPassIndex)
 
 	return S_OK;
 }
+
+HRESULT CExplosion::PostRender(unique_ptr<SpriteBatch>& m_spriteBatch, unique_ptr<SpriteFont>& m_spriteFont)
+{
+#ifdef _DEBUG
+	// Collider 
+	__super::Render_Colliders();
+#endif // _DEBUG
+
+	return S_OK;
+}
+
 
 HRESULT CExplosion::SetUp_Component()
 {
@@ -89,6 +112,14 @@ HRESULT CExplosion::SetUp_Component()
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+	/* For.Com_Sphere */
+	CCollider::COLLIDERDESC		ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof(CCollider::COLLIDERDESC));
+	ColliderDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	ColliderDesc.fRadius = 4.0f/7.0f;
+	ColliderDesc.eColType = CCollider::COL_TYPE_SPHERE;
+	__super::Add_Collider(&ColliderDesc, COL_MONSTER_WEAPON);
 	
 	return S_OK;
 }
