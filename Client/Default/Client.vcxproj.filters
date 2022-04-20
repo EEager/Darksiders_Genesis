@@ -351,6 +351,9 @@
     <ClInclude Include="..\Public\Effect\Explosion.h">
       <Filter>02.GameObjects\Effect\Rect</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Effect\Decal.h">
+      <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -507,6 +510,9 @@
       <Filter>02.GameObjects\Effect\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Effect\Explosion.cpp">
+      <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Effect\Decal.cpp">
       <Filter>02.GameObjects\Effect\Rect</Filter>
     </ClCompile>
   </ItemGroup>

@@ -34,11 +34,19 @@ cbuffer HollowLord
 	float			g_HollowLordCurHpUVX;
 };
 
+cbuffer Decal
+{
+	float g_DissolvePwr;
+};
+
+
 texture2D		g_DiffuseTexture;
 texture2D		g_NoiseTexture; // Noise
 texture2D		g_NoiseTexture_HeatHaze; // Noise
 texture2D		g_AlphaTexture; // Alpha
 texture2D		g_AlphaTexture_HeatHaze; // Alpha
+texture2D		g_DissolveTexture; 
+texture2D		g_DepthTexture; // 소프트 렌더링
 
 
 struct VS_IN
@@ -106,7 +114,6 @@ struct VS_OUT_DISTORTION
 	float2 texCoords2 : TEXCOORD2;
 	float2 texCoords3 : TEXCOORD3;
 }; 
-
 
 
 VS_OUT_DISTORTION VS_MAIN_DISTORTION(VS_IN In)
@@ -186,7 +193,6 @@ PS_OUT PS_MAIN_HollowLord(PS_IN In)
 }
 
 
-texture2D		g_DepthTexture; // 소프트 렌더링
 PS_OUT PS_MAIN_Rect(VS_OUT_Rect In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -205,12 +211,37 @@ PS_OUT PS_MAIN_Rect(VS_OUT_Rect In)
 	return Out;
 }
 
-PS_OUT PS_MAIN_Rect2(VS_OUT_Rect In)
+PS_OUT PS_MAIN_DECAL(VS_OUT_Rect In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	Out.vColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	clip(Out.vColor.a - 0.1f);
+	float4 textureColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
+	Out.vColor.r = textureColor.r;
+	Out.vColor.g = textureColor.r;
+	Out.vColor.b = textureColor.r;
+
+	// Dissolve
+	if (g_DissolvePwr > 0)
+	{
+		float Dissolve = g_DissolveTexture.Sample(DefaultSampler, In.vTexUV).g; // r:잘게, g:부드럽게, b:한쪽먼저
+		float dissolveTest = Dissolve - g_DissolvePwr;
+		clip(dissolveTest);
+
+		if (dissolveTest > 0.03 && dissolveTest <= 0.05)
+		{
+			Out.vColor = float4(1, 0, 0, 1); // 빨
+		}
+		else if (dissolveTest <= 0.03f && dissolveTest > 0.01f)
+		{
+			Out.vColor = float4(1, 1, 0, 1); // 노
+		}
+		else if (dissolveTest <= 0.01f)
+		{
+			Out.vColor = float4(1, 1, 1, 1); // 흰
+		}
+	}
+
+	Out.vColor.a = textureColor;
 
 	return Out;
 }
@@ -364,12 +395,12 @@ technique11	DefaultTechnique
 	// explosion 재생용
 	pass P6
 	{
-		SetBlendState(NonBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(DefaultRasterizerState);
 
 		VertexShader = compile vs_5_0 VS_MAIN_RECT();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_Rect2();
+		PixelShader = compile ps_5_0 PS_MAIN_DECAL();
 	}
 }

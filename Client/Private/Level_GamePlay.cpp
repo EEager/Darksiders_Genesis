@@ -126,6 +126,8 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 			return E_FAIL; 
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Explosion", TEXT("Prototype_GameObject_Explosion"), &pWarPos)))
 			return E_FAIL;
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal"), &pWarPos)))
+			return E_FAIL;
 
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
 

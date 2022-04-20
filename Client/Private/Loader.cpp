@@ -39,6 +39,7 @@
 #include "Effect\PointEffect.h"
 #include "Effect\FireEffect.h"
 #include "Effect\Explosion.h"
+#include "Effect\Decal.h"
 
 // Particles
 #include "ParticleSystem\ParticleSystem_Manager.h"
@@ -180,6 +181,11 @@ HRESULT CLoader::Add_GameObject()
 	/* For.Prototype_GameObject_Explosion */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Explosion"),
 		CExplosion::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
+	/* For.Prototype_GameObject_Decal */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Decal"),
+		CDecal::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
 	/* For.Prototype_GameObject_Sky */
@@ -520,6 +526,11 @@ HRESULT CLoader::Add_Texture()
 	/* For.Prototype_Component_Texture_Explosion */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Explosion"),
 		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Explosion/Explostion%d.dds"), 48))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Texture_Decal */
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Decal"),
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Decal/Decal%d.dds"), 1))))
 		return E_FAIL;
 
 

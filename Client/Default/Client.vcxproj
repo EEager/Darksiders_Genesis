@@ -176,6 +176,7 @@
     <ClInclude Include="..\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="..\ImGUI\imstb_textedit.h" />
     <ClInclude Include="..\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="..\Public\Effect\Decal.h" />
     <ClInclude Include="..\Public\Effect\Explosion.h" />
     <ClInclude Include="..\Public\Effect\FireEffect.h" />
     <ClInclude Include="..\Public\Effect\PointEffect.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="..\ImGUI\imgui_Manager.cpp" />
     <ClCompile Include="..\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="..\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="..\Private\Effect\Decal.cpp" />
     <ClCompile Include="..\Private\Effect\Explosion.cpp" />
     <ClCompile Include="..\Private\Effect\FireEffect.cpp" />
     <ClCompile Include="..\Private\Effect\PointEffect.cpp" />
