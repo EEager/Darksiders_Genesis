@@ -393,11 +393,23 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_Rect();
 	}
 
-	// µ¥Ä®¿ë
+	// µ¥Ä®2 ¿ë
 	pass P6
 	{
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		SetDepthStencilState(NonZTestDepthStencilState, 0);
+		SetRasterizerState(DefaultRasterizerState);
+
+		VertexShader = compile vs_5_0 VS_MAIN_RECT();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_DECAL();
+	}
+
+	// War ½ºÅ³ 
+	pass P7
+	{
+		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetDepthStencilState(DefaultDepthStencilState, 0);
 		SetRasterizerState(DefaultRasterizerState);
 
 		VertexShader = compile vs_5_0 VS_MAIN_RECT();

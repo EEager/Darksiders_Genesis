@@ -60,7 +60,7 @@ _int CDecal::LateTick(_float fTimeDelta)
 
 HRESULT CDecal::Render(_uint iPassIndex) 
 {
-	iPassIndex = 6;  
+	iPassIndex = 7;  
 	if (FAILED(SetUp_ConstantTable())) 
 		return E_FAIL;
 

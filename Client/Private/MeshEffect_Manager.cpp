@@ -38,9 +38,9 @@ void CMeshEffect_Manager::Effect_War_Skill_1(_float fTimeDelta)
 	}
 	_vector vWarPos = m_pWarTransform->Get_State(CTransform::STATE_POSITION);
 
-
+	_vector vDecal = vWarPos + XMVectorSet(0.f, 0.15f, 0.f, 0.f);
 	// #3. 그다음 데칼을 생성합니다.
-	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal"), &vWarPos)))
+	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal"), &vDecal)))
 		assert(0);
 
 	// #1. 먼저 검들을 생성한다.
