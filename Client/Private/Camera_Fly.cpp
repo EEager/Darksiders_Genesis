@@ -119,11 +119,13 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		if (pInput_Device->Key_Pressing(DIK_UP))
 		{
 			m_fRadius += 4.f * CONST_TIME_DELTA_F;
+			m_fHeight = m_fRadius * 0.6f;
 		}
 
 		if (pInput_Device->Key_Pressing(DIK_DOWN))
 		{
 			m_fRadius -= 4.f * CONST_TIME_DELTA_F;
+			m_fHeight = m_fRadius * 0.6f;
 		}
 
 		if (pInput_Device->Key_Pressing(DIK_LEFT))

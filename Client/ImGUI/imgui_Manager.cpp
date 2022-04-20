@@ -398,9 +398,9 @@ void CImguiManager::ShowCameraControlWindow()
 
 	ImGui::Text("Position");
 	auto vStatePos = pCamera_Transform->Get_State_Flt(CTransform::STATE_POSITION);
-	dCheck(ImGui::SliderFloat("X", &vStatePos.x, -180.0f, 180.0f, "%.1f"), posDirty);
-	dCheck(ImGui::SliderFloat("Y", &vStatePos.y, -180.0f, 180.0f, "%.1f"), posDirty);
-	dCheck(ImGui::SliderFloat("Z", &vStatePos.z, -180.0f, 180.0f, "%.1f"), posDirty);
+	dCheck(ImGui::DragFloat("X", &vStatePos.x, 0.1f), posDirty);
+	dCheck(ImGui::DragFloat("Y", &vStatePos.y, 0.1f), posDirty);
+	dCheck(ImGui::DragFloat("Z", &vStatePos.z, 0.1f), posDirty);
 
 	ImGui::Text("Orientation");
 

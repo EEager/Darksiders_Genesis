@@ -118,16 +118,14 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 		
-		auto pWarPos = static_cast<CTransform*>(pGameInstance->Get_War()->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
-		/*
+	/*	auto pWarPos = static_cast<CTransform*>(pGameInstance->Get_War()->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
+		
 		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Ring"), &pWarPos)))
-			return E_FAIL; */
-		//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Explosion", TEXT("Prototype_GameObject_Explosion"), &pWarPos)))
-		//	return E_FAIL;
-	/*	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal2"), &pWarPos)))
+			return E_FAIL; 
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Explosion", TEXT("Prototype_GameObject_Explosion"), &pWarPos)))
 			return E_FAIL;*/
 
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_FallenDog", TEXT("Prototype_GameObject_FallenDog")); 
@@ -281,7 +279,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
 		return E_FAIL;
-#if 0 // JJLEE 잠시만 막아두자
+#if 1 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment2 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
 		return E_FAIL;

@@ -43,9 +43,9 @@ HRESULT CWar::NativeConstruct_Prototype()
 HRESULT CWar::NativeConstruct(void * pArg)
 {
 
-#ifdef _DEBUG
-	CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
-#endif
+//#ifdef _DEBUG
+//	CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Sword");
+//#endif
 
 
 	// Init GameInfo

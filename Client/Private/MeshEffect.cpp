@@ -500,6 +500,11 @@ _int CMeshEffect_Ring::Tick(_float fTimeDelta)
 	// 공기팡 사이즈를 서서히 증가시키자
 	fTimeDelta *= 15.f;
 	XMStoreFloat3(&m_vSize, XMLoadFloat3(&m_vSize) + XMVectorSet(fTimeDelta, fTimeDelta, fTimeDelta, 0.f));
+	// 그러나 y축은 최대 제한크기를 두자. 
+	if (m_vSize.y >= 1.5f)
+		m_vSize.y = 1.5f;
+
+
 	m_pTransformCom->Set_Scale(m_vSize);
 
 	return _int();
@@ -534,7 +539,7 @@ _int CMeshEffect_Ring::LateTick(_float fTimeDelta)
 	}
 
 	// 공기팡 사이즈가 이상이 되면 죽자.
-	if (m_vSize.x >= 10.f)
+	if (m_vSize.x >= 30.f)
 	{
 		m_isDead = true;
 	}

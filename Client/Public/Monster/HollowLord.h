@@ -61,10 +61,23 @@ private:
 	_float m_fHitDmgAcc = 0.f;
 	//----------------------------------------------
 
-
 private:
 	class CUI_HollowLord_HpBar* m_pHpBar = nullptr;
 
+private:
+	void Slam_R(_float fTimeDelta);
+	std::queue <_vector> m_qSlam_R;
+	_float m_fLastSlamTimeAcc_R = 0.f;
+	_bool m_bSlamed_R = false;
+	_bool m_bSlamed_R_First = false;
+
+	void Slam_L(_float fTimeDelta);
+	std::queue <_vector> m_qSlam_L;
+	_float m_fLastSlamTimeAcc_L = 0.f;
+	_bool m_bSlamed_L = false;
+	_bool m_bSlamed_L_First = false;
+
+	_float m_fDoubleSlamTimeAcc = 0.f;
 public:
 	void UI_Init();
 

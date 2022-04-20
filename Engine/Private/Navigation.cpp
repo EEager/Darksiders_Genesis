@@ -44,14 +44,17 @@ void CNavigation::SetUp_CurrentIdx(_fvector vPos)
 {
 	// Cells 돌면서~ isIn 인지 검사하면되는거 아녀? 
 	CCell* pNeighbor = nullptr;
-
-	for (int i = 0;i < m_Cells.size();i++)
+	auto maxsize = m_Cells.size();
+	_uint searchCnt = 0;
+	for (int i = m_iSearchInitIdx;i < maxsize + m_iSearchInitIdx;i = (i+1)% maxsize, searchCnt++)
 	{
 		if (m_Cells[i]->isIn(vPos, m_pWorldMatrixPtr, &pNeighbor))
 		{
 			m_iCurrentIndex = i;
 			return;
 		}
+		if (searchCnt == maxsize) // 못찾은거지 뭐...
+			return;
 	}
 
 	return;

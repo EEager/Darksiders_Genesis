@@ -133,6 +133,21 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	return S_OK;
 }
 
+void Add_SlamImpact(_vector vPos)
+{
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	// 링팡
+	if (pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Ring"), &vPos))
+		assert(0);
+	// 폭발.
+	if (pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Explosion", TEXT("Prototype_GameObject_Explosion"), &vPos))
+		assert(0);
+	// 공기팡
+	if (pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Sphere"), &vPos))
+		assert(0);
+	RELEASE_INSTANCE(CGameInstance);
+}
+
 _int CHollowLord::Tick(_float fTimeDelta)
 {
 	// 모든 몬스터는 Collider list 를 update해야한다
@@ -146,11 +161,58 @@ _int CHollowLord::Tick(_float fTimeDelta)
 	CMonster::DoGlobalState(fTimeDelta); // 히트파워 감소
 	UpdateState();
 	// 로컬위치변화를 월행에 적용시키자
-	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_HL_Root", m_pNaviCom, m_eDir);
+	m_pModelCom->Update_Animation(fTimeDelta, static_cast<CTransform*>(m_pTransformCom)->Get_WorldMatrix_4x4(), "Bone_HL_Root", m_pNaviCom, m_eDir, 0);
 	DoState(fTimeDelta);
 
 	// Hp바 Tick
 	m_pHpBar->Tick(fTimeDelta);
+
+	// Impact를 채워넣었으면 확인하고 하나씩 꺼내서 실행하자.
+
+	// 먼저 오른손에 있는 폭발물 체크
+	if (m_qSlam_R.empty() == false)
+	{
+		if (m_bSlamed_R_First == false) 
+		{
+			// 처음것은 바로 꺼내자.
+			Add_SlamImpact(m_qSlam_R.front());
+			m_qSlam_R.pop();
+			m_bSlamed_R_First = true;
+		}
+		else
+		{
+			if (m_fLastSlamTimeAcc_R > .5f)
+			{
+				Add_SlamImpact(m_qSlam_R.front());
+				m_qSlam_R.pop();
+				m_fLastSlamTimeAcc_R = 0.f;
+			}
+			m_fLastSlamTimeAcc_R += fTimeDelta;
+		}
+	}
+
+	// 왼손에 있는 폭발물을 체크한다.
+		// 먼저 오른손에 있는 폭발물 체크
+	if (m_qSlam_L.empty() == false)
+	{
+		if (m_bSlamed_L_First == false)
+		{
+			// 처음것은 바로 꺼내자.
+			Add_SlamImpact(m_qSlam_L.front());
+			m_qSlam_L.pop();
+			m_bSlamed_L_First = true;
+		}
+		else
+		{
+			if (m_fLastSlamTimeAcc_L > .5f)
+			{
+				Add_SlamImpact(m_qSlam_L.front());
+				m_qSlam_L.pop();
+				m_fLastSlamTimeAcc_L = 0.f;
+			}
+			m_fLastSlamTimeAcc_L += fTimeDelta;
+		}
+	}
 
 	return _int();
 }
@@ -203,15 +265,27 @@ void CHollowLord::UpdateState()
 	// m_eCurState Exit
 	if (
 		m_pCurState == "HollowLord.ao|HollowLord_Atk_Barrage" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_DoubleSlam" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_L" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_R" ||
 		m_pCurState == "HollowLord.ao|HollowLord_Atk_Swipe_L" ||
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_DoubleSlam" ||
 		m_pCurState == "HollowLord.ao|HollowLord_Atk_Swipe_R"
 		)
 	{
 		// 해당 상태에서 무기 콜라이더 끄자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+		m_bSlamed_L = false;
+		m_bSlamed_R = false;
+	}
+	else if (m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_L")
+	{
+		// 해당 상태에서 무기 콜라이더 끄자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+		m_bSlamed_L = false;
+	}
+	else if (m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_R")
+	{
+		// 해당 상태에서 무기 콜라이더 끄자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
+		m_bSlamed_R = false;
 	}
 
 	// m_eNextState Enter
@@ -224,8 +298,6 @@ void CHollowLord::UpdateState()
 	else if (
 		m_pNextState == "HollowLord.ao|HollowLord_Atk_Barrage" ||
 		m_pNextState == "HollowLord.ao|HollowLord_Atk_DoubleSlam" ||
-		m_pNextState == "HollowLord.ao|HollowLord_Atk_Slam_L" ||
-		m_pNextState == "HollowLord.ao|HollowLord_Atk_Slam_R" ||
 		m_pNextState == "HollowLord.ao|HollowLord_Atk_Swipe_L" ||
 		m_pNextState == "HollowLord.ao|HollowLord_Atk_Swipe_R"
 		)
@@ -233,6 +305,22 @@ void CHollowLord::UpdateState()
 		// 해당 상태에서 무기 콜라이더 키자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
 		isLoop = false;
+		m_bSlamed_R_First = false; 
+		m_bSlamed_L_First = false; 
+	}
+	else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Slam_L")
+	{
+		// 해당 상태에서 무기 콜라이더 키자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
+		isLoop = false;
+		m_bSlamed_L_First = false;
+	}
+	else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Slam_R")
+	{
+		// 해당 상태에서 무기 콜라이더 키자
+		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
+		isLoop = false;
+		m_bSlamed_R_First = false;
 	}
 	else if (m_pNextState == "HollowLord.ao|HollowLord_Emerge" || 
 			 m_pNextState == "HollowLord.ao|HollowLord_Death" ||
@@ -265,25 +353,86 @@ void CHollowLord::DoState(float fTimeDelta)
 			randNextState = (randNextState + 1) % 6; // 순차적으로 하나씩 수행하자.
 		}
 	}
-	//-----------------------------------------------------
+
+	// =========================================================================
+	// 공격 패턴 시작
+	// "HollowLord.ao|HollowLord_Atk_Barrage"
 	else if (
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Barrage" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_DoubleSlam" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_L" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_R" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Swipe_L" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Atk_Swipe_R" ||
-		m_pCurState == "HollowLord.ao|HollowLord_Emerge")
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_Barrage")
 	{
+		// 몇초동안 랜덤하게 고블린과 Legion 을 생성하자.
+		auto curKeyFrameIdx = m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState);
+		if (70 <= curKeyFrameIdx && curKeyFrameIdx <= 202)
+		{
+			m_fDoubleSlamTimeAcc += fTimeDelta;
+			if (m_fDoubleSlamTimeAcc > .7f)
+			{
+				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+				pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(MathHelper::RandF(553.f, 595.f), 9.5f, MathHelper::RandF(43.f, 80.f), 1.f));
+				pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), &_float4(MathHelper::RandF(553.f, 595.f), 9.5f, MathHelper::RandF(43.f, 80.f), 1.f));
+				RELEASE_INSTANCE(CGameInstance);
+				m_fDoubleSlamTimeAcc = 0.f;
+			}
+		}
 
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			// 공격 애니메이션 끝나면 Idle로 
 			m_pNextState = "HollowLord.ao|HollowLord_Idle";
 		}
 	}
-	////-----------------------------------------------------
-	else if (m_pCurState == "HollowLord.ao|HollowLord_Emerge")
+	// "HollowLord.ao|HollowLord_Atk_DoubleSlam"
+	else if (
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_DoubleSlam")
+	{
+		if (m_bSlamed_R == false && m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState) == 80)
+		{
+			Slam_R(fTimeDelta);
+			Slam_L(fTimeDelta);
+			m_bSlamed_R = true;
+		}
+
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "HollowLord.ao|HollowLord_Idle";
+		}
+	}
+	//-----------------------------------------------------
+	// "HollowLord.ao|HollowLord_Atk_Slam_L"
+	else if (
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_L")
+	{
+		if (m_bSlamed_L == false && m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState) == 62)
+		{
+			Slam_L(fTimeDelta);
+			m_bSlamed_L = true;
+		}
+
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "HollowLord.ao|HollowLord_Idle";
+		}
+	}
+	//-----------------------------------------------------
+	// "HollowLord.ao|HollowLord_Atk_Slam_R"
+	else if (
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_R")
+	{
+		if (m_bSlamed_R == false && m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState) == 62) 
+		{
+			Slam_R(fTimeDelta);
+			m_bSlamed_R = true;
+		}
+
+		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
+		{
+			m_pNextState = "HollowLord.ao|HollowLord_Idle";
+		}
+	}
+	// 공격패턴 종료
+	// =========================================================================
+	else if (m_pCurState == "HollowLord.ao|HollowLord_Emerge" || 
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_Swipe_L" ||
+		m_pCurState == "HollowLord.ao|HollowLord_Atk_Swipe_R")
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
@@ -390,6 +539,68 @@ void CHollowLord::UI_Init()
 	m_pHpBar->m_bInit = true;
 }
 
+// 현재 오른손 위치를 채워넣는다.
+void CHollowLord::Slam_R(_float fTimeDelta)
+{
+	// vector에 vector를 채워넣는다.(웃음ㅎ) Tick에서 해당 위치 꺼내서 Ring + Explosion + Sphere를 실행할 것이다.
+	_matrix		OffsetMatrix = XMLoadFloat4x4(&m_Lord_RightHandDesc.OffsetMatrix); // 뼈->정점
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_Lord_RightHandDesc.pBoneMatrix); // Root->뼈 
+	_matrix		PivotMatrix = XMLoadFloat4x4(&m_Lord_RightHandDesc.PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_Lord_RightHandDesc.pTargetWorldMatrix);
+	_matrix		TransformationMatrix =
+		(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix를 안곱하니간 뭔가 되는거 같다... 왜?
+		TargetWorldMatrix;
+
+	// 발사할때 손 위치
+	auto CurHandPos = XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 0.f, 1.f), TransformationMatrix);
+	CurHandPos = XMVectorSetY(CurHandPos, 9.5f);
+
+	// 가야할 방향
+	_vector DirToWar = XMVector3Normalize(m_pTargetTransform->Get_State(CTransform::STATE_POSITION) - CurHandPos);
+	DirToWar = XMVectorSetY(DirToWar, 0.f);
+
+	// 1) 처음 것은 War 방향으로 조금 가도록 하자.
+	auto firstPos = CurHandPos + DirToWar * 3.f;
+	m_qSlam_R.push(firstPos);
+
+	// 2) 2~4번째까지는  War 방향으로 조금식 앞으로 보내면됩니다. 
+	for (int i = 1; i < 5; i++/*_*/)
+	{
+		auto nextPos = CurHandPos + DirToWar * 8.5f * i;
+		m_qSlam_R.push(nextPos);
+	}
+}
+void CHollowLord::Slam_L(_float fTimeDelta) 
+{
+	// vector에 vector를 채워넣는다.(웃음ㅎ) Tick에서 해당 위치 꺼내서 Ring + Explosion + Sphere를 실행할 것이다.
+	_matrix		OffsetMatrix = XMLoadFloat4x4(&m_Lord_LeftHandDesc.OffsetMatrix); // 뼈->정점
+	_matrix		CombinedTransformationMatrix = XMLoadFloat4x4(m_Lord_LeftHandDesc.pBoneMatrix); // Root->뼈 
+	_matrix		PivotMatrix = XMLoadFloat4x4(&m_Lord_LeftHandDesc.PivotMatrix);
+	_matrix		TargetWorldMatrix = XMLoadFloat4x4(m_Lord_LeftHandDesc.pTargetWorldMatrix);
+	_matrix		TransformationMatrix =
+		(CombinedTransformationMatrix * PivotMatrix) * //OffsetMatrix를 안곱하니간 뭔가 되는거 같다... 왜?
+		TargetWorldMatrix;
+
+	// 발사할때 손 위치
+	auto CurHandPos = XMVector3TransformCoord(XMVectorSet(0.f, 0.f, 0.f, 1.f), TransformationMatrix);
+	CurHandPos = XMVectorSetY(CurHandPos, 9.5f);
+
+	// 가야할 방향
+	_vector DirToWar = XMVector3Normalize(m_pTargetTransform->Get_State(CTransform::STATE_POSITION) - CurHandPos);
+	DirToWar = XMVectorSetY(DirToWar, 0.f);
+
+	// 1) 처음 것은 War 방향으로 조금 가도록 하자.
+	auto firstPos = CurHandPos + DirToWar * 3.f;
+	m_qSlam_L.push(firstPos);
+
+	// 2) 2~4번째까지는  War 방향으로 조금식 앞으로 보내면됩니다. 
+	for (int i = 1; i < 5; i++/*_*/)
+	{
+		auto nextPos = CurHandPos + DirToWar * 8.5f * i;
+		m_qSlam_L.push(nextPos);
+	}
+}
+
 
 CHollowLord* CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 {
@@ -403,6 +614,8 @@ CHollowLord* CHollowLord::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pDe
 
 	return pInstance;
 }
+
+
 
 
 CGameObject* CHollowLord::Clone(void* pArg)

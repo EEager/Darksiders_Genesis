@@ -25,10 +25,10 @@ HRESULT CExplosion::NativeConstruct(void * pArg)
 
 	if (SetUp_Component())
 		return E_FAIL;
+	_vector vPos = *(_vector*)pArg + XMVectorSet(0.f, 1.5f, 0.f, 0.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
-
-	m_pTransformCom->Set_Scale(_float3(6.f, 6.f, 6.f));
+	m_pTransformCom->Set_Scale(_float3(7.f, 7.f, 7.f));
 	
 	return S_OK;
 }

@@ -36,6 +36,7 @@ private:
 
 public:
 	_uint			m_iCurrentIndex = 0;
+	_uint	        m_iSearchInitIdx = 0;
 
 public:
 	HRESULT SetUp_Neighbor();

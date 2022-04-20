@@ -2460,6 +2460,9 @@ void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelt
 			CMeshEffect_Manager::GetInstance()->Add_MeshEffects_To_Layer(L"Effect_War_Skill_1", fTimeDelta);
 			// 검 불꽃 파티클을 생성하자
 			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand");
+			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand"); 
+			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4"); 
+			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4"); 
 			m_bCreate = true;
 		}
 	}

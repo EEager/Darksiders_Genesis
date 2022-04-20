@@ -31,7 +31,7 @@ private:
 	void CameraFly_Key(_float fTimeDelta);
 
 private:
-	CAMERA_MODE m_eType = MODE_FREE;
+	CAMERA_MODE m_eType = MODE_TARGET;
 
 public: // 타겟팅
 	_bool m_bSetTargetOnce = false; // War 타겟팅을 Tick에서 하는데 한번만하자.

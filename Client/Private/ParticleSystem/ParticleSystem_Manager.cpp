@@ -41,7 +41,7 @@ void CParticleSystem_Manager::Add_Particle_To_Layer(const _tchar* pParticleTag, 
 		pParticle->mEmitPosW = *vPos;
 
 
-	// 오브젝트 매니져에 등록하자
+	// 오브젝트 매니져에 등록하자. 참고로 이 함수는 프로토타입을 넣어주는 것이 아니라. set만 하는것이다.
 	auto ret = CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Particles", pParticle, L"Prototype_ParticleSystem");
 	if (ret < 0)
 		assert(0);
