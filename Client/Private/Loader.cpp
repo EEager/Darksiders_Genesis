@@ -188,6 +188,11 @@ HRESULT CLoader::Add_GameObject()
 		CDecal::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
+	/* For.Prototype_GameObject_Decal2 */
+	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Decal2"),
+		CDecal2::Create(m_pDevice, m_pDeviceContext))))
+		return E_FAIL;
+
 	/* For.Prototype_GameObject_Sky */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Sky"),
 		CSky::Create(m_pDevice, m_pDeviceContext))))
@@ -530,7 +535,7 @@ HRESULT CLoader::Add_Texture()
 
 	/* For.Prototype_Component_Texture_Decal */
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Texture_Decal"),
-		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Decal/Decal%d.dds"), 1))))
+		CTexture::Create(m_pDevice, m_pDeviceContext, TEXT("../Bin/Resources/Textures/VFX/Decal/Decal%d.dds"), 2))))
 		return E_FAIL;
 
 

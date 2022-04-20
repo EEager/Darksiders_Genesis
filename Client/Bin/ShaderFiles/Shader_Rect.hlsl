@@ -37,6 +37,7 @@ cbuffer HollowLord
 cbuffer Decal
 {
 	float g_DissolvePwr;
+	float3 g_RGB;
 };
 
 
@@ -216,9 +217,9 @@ PS_OUT PS_MAIN_DECAL(VS_OUT_Rect In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	float4 textureColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexUV);
-	Out.vColor.r = textureColor.r;
-	Out.vColor.g = textureColor.r;
-	Out.vColor.b = textureColor.r;
+	Out.vColor.r = textureColor.r*g_RGB.x;
+	Out.vColor.g = textureColor.g*g_RGB.y;
+	Out.vColor.b = textureColor.b*g_RGB.z;
 
 	// Dissolve
 	if (g_DissolvePwr > 0)
@@ -392,11 +393,11 @@ technique11	DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_Rect();
 	}
 
-	// explosion 재생용
+	// 데칼용
 	pass P6
 	{
 		SetBlendState(AlphaBlendState, vector(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		SetDepthStencilState(DefaultDepthStencilState, 0);
+		SetDepthStencilState(NonZTestDepthStencilState, 0);
 		SetRasterizerState(DefaultRasterizerState);
 
 		VertexShader = compile vs_5_0 VS_MAIN_RECT();

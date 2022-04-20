@@ -111,7 +111,10 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 
 	// 모든 몬스터는 Navigation 초기 인덱스를 잡아줘야한다
 	m_pNaviCom->SetUp_CurrentIdx(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION));
-	
+
+	// 생성할때 밑에 데칼만들자.
+	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVectorSet(0.f, 1.0f, 0.f, 0.f);
+	CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal2"), &vPos);
 	return S_OK;
 }
 
