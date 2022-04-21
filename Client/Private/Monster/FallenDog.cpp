@@ -460,8 +460,9 @@ void CFallenDog::UpdateState()
 		isLoop = false;
 
 		// 사운드
-		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
-		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, 0.6f);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, 0.6f);
+		SoundManager::Get_Instance()->ForcePlay(L"char_war_land_explode.ogg", SoundManager::CHANNELID::BREAKABLE3, FALLENDOG_VOLUME);
 	}
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
 	{
@@ -622,9 +623,12 @@ void CFallenDog::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			// BGM은 여기서바꿉니다 ^_^
-			SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
-			SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+			if (m_bExecutionAnimEnd == false)
+			{
+				// BGM은 여기서바꿉니다 ^_^
+				SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+				SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+			}
 			m_bExecutionAnimEnd = true;
 		}
 	}

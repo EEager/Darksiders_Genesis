@@ -3,5 +3,7 @@ MakeSpriteFont "DotumChe" myfile.spritefont /FontSize:32 /FontStyle:Bold
 
 MakeSpriteFont "Comic Sans MS" myfile.spritefont /FontSize:16 /FontStyle:Bold
 
+MakeSpriteFont "Requiem" Requiem_40.spritefont /FontSize:40 /FontStyle:Bold
+
 - 응용법
 https://github.com/microsoft/DirectXTK/wiki/Drawing-text

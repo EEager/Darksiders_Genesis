@@ -130,12 +130,12 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	m_pHpBar->m_pHollowLord = this; 
 	Safe_AddRef(m_pHpBar->m_pHollowLord); // 이건 나중에 hpBar에서 해제해주자
 
-	// BGM은 여기서 바꿉니다.
+	// BGM은 여기서 바꿉니다. ^_^
 	SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
 	SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_hollowlord.ogg");
 
 	// 처음엔 Emerge이다.
-	SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_emerge_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+	SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_emerge_01.ogg", SoundManager::BREAKABLE5, 0.8f);
 
 	return S_OK;
 }
@@ -158,11 +158,11 @@ void Add_SlamImpact(_vector vPos)
 	if (randSound == 0)
 		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_01.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
 	else if (randSound == 1)
-		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_02.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_02.ogg", SoundManager::BREAKABLE2, WAR_ATK_VOLUME);
 	else if (randSound == 2)
-		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_03.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_03.ogg", SoundManager::BREAKABLE3, WAR_ATK_VOLUME);
 	else if (randSound == 3)
-		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_04.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_04.ogg", SoundManager::BREAKABLE4, WAR_ATK_VOLUME);
 	RELEASE_INSTANCE(CGameInstance);
 }
 
@@ -382,7 +382,11 @@ void CHollowLord::UpdateState()
 		// 사운드
 		if (m_pNextState == "HollowLord.ao|HollowLord_Death")
 		{
+			// BGM은 일단 좀 다 끄자.
+			SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+
 			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_death_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"general_death_boss.ogg", SoundManager::BREAKABLE4, 0.68f);
 		}
 		else if (m_pNextState == "HollowLord.ao|HollowLord_Impact_F")
 		{

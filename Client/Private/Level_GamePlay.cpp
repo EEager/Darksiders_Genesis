@@ -595,8 +595,8 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		//SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", .3f);
 		//SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
 
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
-		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
+		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 		
 	/*	auto pWarPos = static_cast<CTransform*>(pGameInstance->Get_War()->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
 		

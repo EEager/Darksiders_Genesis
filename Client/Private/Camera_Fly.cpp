@@ -66,7 +66,7 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 	auto pInput_Device = CInput_Device::GetInstance();
 
 	// 디버그 모드일 때는 FreeMode로 동작하자. 키보드, 마우스로 카메라를 움직이자
-#define CONST_TIME_DELTA_F 0.016f // 고정 시간값을 사용하는 이유 : Speed Factor 조정시에도 동일한 카메라 속도를 내기위함.
+#define CONST_TIME_DELTA_F 0.008f // 고정 시간값을 사용하는 이유 : Speed Factor 조정시에도 동일한 카메라 속도를 내기위함.
 #if defined(USE_IMGUI)
 	if (CImguiManager::GetInstance()->GetCursorEnable() == true) // 디버그 모드일때는 움직이지말자
 	{

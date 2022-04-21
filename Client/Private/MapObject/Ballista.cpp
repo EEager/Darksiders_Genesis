@@ -155,14 +155,6 @@ _int CBallista::Tick(_float fTimeDelta)
 			if (forSoundBool2 == false || forSoundBool2 == false)
 				forSoundTimeAcc += fTimeDelta;
 
-#ifdef _DEBUG
-			if (CInput_Device::GetInstance()->Key_Down(DIK_0))
-			{
-				forSoundBool2 = false;
-				forSoundBool1 = false;
-				forSoundTimeAcc = 0.f;
-			}
-#endif
 			if (forSoundBool1 == false && forSoundTimeAcc > 1.3f)
 			{
 				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_load.ogg", SoundManager::BREAKABLE7, 5.f);

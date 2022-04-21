@@ -56,6 +56,7 @@ HRESULT CMainApp::NativeConstruct()
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_pDeviceContext);
 	m_spriteFont = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/Requiem_18.spritefont");
+	m_spriteFont2 = std::make_unique<DirectX::SpriteFont>(m_pDevice, L"../Bin/Resources/Font/Requiem_40.spritefont");
 
 
 #if defined(USE_IMGUI)
@@ -118,6 +119,8 @@ HRESULT CMainApp::Render()
 	return S_OK;
 }
 
+
+
 HRESULT CMainApp::PostRender()
 {
 	assert(m_pGameInstance);
@@ -128,6 +131,82 @@ HRESULT CMainApp::PostRender()
 	m_pRenderer->PostDraw(m_spriteBatch, m_spriteFont); // Post Draw
 
 	m_pGameInstance->PostRender_Engine(m_spriteBatch, m_spriteFont); // Level Post Dummy
+
+	// 마지막 0번 누르면 글자 띄우자. thank you for watching
+	if (CInput_Device::GetInstance()->Key_Pressing(DIK_0))
+	{
+		finalFloatingStart = true;
+	}
+
+	if (finalFloatingStart)
+	{
+		// Thank you
+		{
+			wstring str = DXString::Format(L"Thank You");
+
+			const wchar_t* output = str.c_str();
+
+			auto origin = DirectX::g_XMZero;
+
+			_float2 tmpPos;
+			finalFloatingTextPosY -= 0.4f;
+			if (finalFloatingTextPosY <= 380.f)
+				finalFloatingTextPosY = 380.f;
+			tmpPos = _float2(600.f, finalFloatingTextPosY);
+			XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
+
+			// Outline Effect
+			tmpPos = _float2(1.f, 1.f);
+			m_spriteFont2->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+			tmpPos = _float2(-1.f, 1.f);
+			m_spriteFont2->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+			tmpPos = _float2(-1.f, -1.f);
+			m_spriteFont2->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+			tmpPos = _float2(1.f, -1.f);
+			m_spriteFont2->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+
+			// Origin Text
+			m_spriteFont2->DrawString(m_spriteBatch.get(), output,
+				m_fontPos, Colors::White, 0.f, origin, 1.f);
+		}
+
+
+		// Speical Thanks to KYH. 
+		{
+			wstring str = DXString::Format(L"Speical Thanks to KYH.");
+
+			const wchar_t* output = str.c_str();
+
+			auto origin = DirectX::g_XMZero;
+
+			_float2 tmpPos;
+			tmpPos = _float2(1250.f, finalFloatingTextPosY + 450.f);
+			XMVECTOR m_fontPos = XMLoadFloat2(&tmpPos);
+
+			// Outline Effect
+			tmpPos = _float2(1.f, 1.f);
+			m_spriteFont->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+			tmpPos = _float2(-1.f, 1.f);
+			m_spriteFont->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+			tmpPos = _float2(-1.f, -1.f);
+			m_spriteFont->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+			tmpPos = _float2(1.f, -1.f);
+			m_spriteFont->DrawString(m_spriteBatch.get(), output,
+				m_fontPos + XMLoadFloat2(&tmpPos), Colors::Black, 0.f, origin, 1.f);
+
+			// Origin Text
+			m_spriteFont->DrawString(m_spriteBatch.get(), output,
+				m_fontPos, Colors::White, 0.f, origin, 1.f);
+		}
+	}
+
 	m_spriteBatch->End();
 
 

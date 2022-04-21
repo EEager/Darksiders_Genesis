@@ -553,11 +553,19 @@ HRESULT CLoader::Add_Model()
 
 
 #if 1 // JJLEE 잠시만 막아두자
-	/* For.Prototype_Component_Model_Enviroment4*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment4/", "Enviroment4.fbx", EnviromentPivotMatrix))))
+	/* For.Prototype_Component_Model_Enviroment1*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
+
+	/* For.Prototype_Component_Model_Enviroment2*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
+		return E_FAIL;
+
+
 
 	/* For.Prototype_Component_Model_Enviroment3_1*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment3_1"));
@@ -580,19 +588,14 @@ HRESULT CLoader::Add_Model()
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment3/", "Enviroment3_4.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
 
-
-	/* For.Prototype_Component_Model_Enviroment2*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
+	/* For.Prototype_Component_Model_Enviroment4*/
+	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
+	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
+		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment4/", "Enviroment4.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
 #endif
 
-	/* For.Prototype_Component_Model_Enviroment1*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+
 
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage1"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage1"),
@@ -722,7 +725,7 @@ HRESULT CLoader::Add_Model()
 	// ▼ Map Objects Models
 	/* For.Prototype_Component_Model_Ballista*/
 	_matrix		Ballista_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista.fbx", Ballista_PivotMat))))
 		return E_FAIL;
@@ -733,7 +736,7 @@ HRESULT CLoader::Add_Model()
 		return E_FAIL;
 
 	/* For.Prototype_Component_Model_Ballista_Bolt*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Ballista_Bolt"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista_Bolt"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Bolt"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/Ballista_Bolt/", "Ballista_Bolt.fbx", Ballista_PivotMat))))
 		return E_FAIL;
@@ -741,7 +744,7 @@ HRESULT CLoader::Add_Model()
 	// SoulBarrier
 	/* For.Prototype_Component_Model_SoulBarrier */
 	_matrix		SoulBarrier_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_SoulBarrier"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_SoulBarrier"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SoulBarrier"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/SoulBarrier/", "SoulBarrier.fbx", SoulBarrier_PivotMat))))
 		return E_FAIL;
@@ -749,43 +752,43 @@ HRESULT CLoader::Add_Model()
 	// ▼ Breakables
 	_matrix		Breakables_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
 	/* For.Prototype_Component_Model_Breakable1 => Barrel */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable1"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable1"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable1"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barrel.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Breakable2 => Wood_Barrel */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable2"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable2"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Wood_Barrel.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Model_Breakable3 => Barricade_A */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable3"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable3"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable3"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_A.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Breakable4 => Barricade_B */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable4"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable4"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable4"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_B.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Breakable5 => Barricade_C */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable5"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable5"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable5"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_C.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Breakable6 => Barricade_D */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable6"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable6"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable6"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_C.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Breakable7 => Barricade_E */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable7"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable7"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable7"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_E.fbx", Breakables_PivotMat))))
 		return E_FAIL;
 	/* For.Prototype_Component_Model_Breakable8 => Barricade_F */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Breakable8"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Breakable8"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Breakable8"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Breakable/", "Barricade_F.fbx", Breakables_PivotMat))))
 		return E_FAIL;
@@ -794,13 +797,13 @@ HRESULT CLoader::Add_Model()
 	// BrokenCorner
 	/* For.Prototype_Component_Model_BrokenCorner */
 	_matrix		Dynamic_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_BrokenCorner"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_BrokenCorner"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_BrokenCorner"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/BrokenCorner/", "BrokenCorner.fbx", Dynamic_PivotMat))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Model_SpikeGate */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_SpikeGate"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_SpikeGate"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_SpikeGate"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/SpikeGate/", "SpikeGate.fbx", Dynamic_PivotMat))))
 		return E_FAIL;
@@ -815,19 +818,19 @@ HRESULT CLoader::Add_Model()
 	// 여기서부터는 Mesh Effects
 	_matrix		MeshEffect_PivotMat = XMMatrixScaling(0.02f, 0.02f, 0.02f) *
 		XMMatrixRotationY(XMConvertToRadians(-90.f));	/* For.Prototype_Component_Model_MeshEffect_ChaosEater */
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_MeshEffect_ChaosEater"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_MeshEffect_ChaosEater"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_ChaosEater"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/MeshEffect/ChaosEater/", "ChaosEater.fbx", MeshEffect_PivotMat))))
 		return E_FAIL;
 
 
 	_matrix		MeshEffect_Sphere_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_MeshEffect_Sphere"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_MeshEffect_Sphere"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_Sphere"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/MeshEffect/Sphere/", "Sphere.fbx", MeshEffect_Sphere_PivotMat))))
 		return E_FAIL;
 
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_MeshEffect_Ring"));
+	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_MeshEffect_Ring"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_MeshEffect_Ring"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/MeshEffect/Ring/", "Ring.fbx", MeshEffect_Sphere_PivotMat))))
 		return E_FAIL;

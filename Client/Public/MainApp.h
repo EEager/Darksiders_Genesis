@@ -36,6 +36,10 @@ private:
 	CRenderer*						m_pRenderer = nullptr;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont2;
+
+	_float finalFloatingTextPosY = 900.f;
+	bool finalFloatingStart = false;
 
 private:
 	HRESULT Open_Level(LEVEL eStartID);
