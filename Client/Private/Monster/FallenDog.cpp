@@ -459,6 +459,10 @@ void CFallenDog::UpdateState()
 	}
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
 	{
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_death_war_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_death_war_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+
 		// War 또한 처형 모션으로 바꿔주자.
 		static_cast<CWar*>(m_pTarget)->Get_StateMachine()->ChangeState(CState_War_IA_Death_FallenDog::GetInstance());
 		m_bExecutionAnim = true; // 처형일때는 월행 움직이지말자.

@@ -113,7 +113,7 @@ void SoundManager::ForcePlayAMBIENT(TCHAR* pSoundKey, float fVolume)
 
 void SoundManager::ForcePlay(TCHAR * pSoundKey, CHANNELID eID, float fVolume)
 {
-	FMOD_Channel_Stop(m_pChannelArr[eID]);
+ 	FMOD_Channel_Stop(m_pChannelArr[eID]);
 	PlaySound(pSoundKey, eID, fVolume);
 }
 
