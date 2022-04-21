@@ -89,6 +89,12 @@ _int CSoulBarrier::Tick(_float fTimeDelta)
 				m_pNextState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Impact")
 			{
 				isLoop = false;
+
+				// »ç¿îµå
+				if (m_pNextState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Death")
+					SoundManager::Get_Instance()->ForcePlay(L"prop_soul_door_destroyed.ogg", SoundManager::CHANNELID::HOLLOLORD, .4f);
+				else if (m_pNextState == "Dn_SoulBarrier.ao|Dn_SoulBarrier_Impact")
+					SoundManager::Get_Instance()->ForcePlay(L"prop_soul_door_impact_2_03.ogg", SoundManager::CHANNELID::HOLLOLORD, .25f);
 			}
 
 			m_pModelCom->SetUp_Animation(m_pNextState, isLoop);

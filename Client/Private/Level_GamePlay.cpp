@@ -575,8 +575,8 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 
 	// »ç¿îµå
 	//SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+	//SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", 0.01f);
 	SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
-	SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", 0.01f);
 	 
 	return S_OK;
 }
@@ -591,12 +591,12 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
-		SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
-		SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", .3f);
-		SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+		//SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+		//SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", .3f);
+		//SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
 
-		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
-		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
+		pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 		
 	/*	auto pWarPos = static_cast<CTransform*>(pGameInstance->Get_War()->Get_ComponentPtr(L"Com_Transform"))->Get_State(CTransform::STATE_POSITION);
 		

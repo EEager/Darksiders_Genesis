@@ -10,6 +10,8 @@
 #include "imgui_Manager.h"
 #endif
 
+int g_breakableSound;
+
 CBreakableBase::CBreakableBase(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
 {
@@ -50,6 +52,10 @@ _int CBreakableBase::Tick(_float fTimeDelta)
 		_float3 temp = {};
 		XMStoreFloat3(&temp, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Box", &temp);
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"imp_fire_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::BREAKABLE1 + g_breakableSound), .5f);
+		g_breakableSound = (g_breakableSound + 1) % 7;
 		return -1;
 	}
 
@@ -155,6 +161,10 @@ void CBreakableBase::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float f
 		m_bHitted = true;
 		m_fHitPower = 1.0f;
 		m_tGameInfo.iHp -= pDst->Get_Owner()->m_tGameInfo.iAtt;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"imp_sword_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::IMPACT1 + g_breakableSound), MONSTER_HIT_VOLUME);
+		g_breakableSound = (g_breakableSound + 1) % 7;
 		return;
 	}
 }

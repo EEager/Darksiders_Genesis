@@ -261,5 +261,190 @@ void SoundManager::LoadSoundFile()
 		_findclose(handle);
 	}
 
+	// FallenDog
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/FallenDog/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/FallenDog/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
+
+
+	// General
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/General/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/General/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
+
+	// Legion
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/Legion/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/Legion/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
+
+	// HollowLord
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/HollowLord/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/HollowLord/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
+
+	// Impacts
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/Impacts/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/Impacts/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
 
 }

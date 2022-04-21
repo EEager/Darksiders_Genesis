@@ -9,6 +9,10 @@
 #include "imgui_Manager.h"
 #endif
 
+// 사운드 채널
+int g_voiceSoundChannel;
+int g_atkSoundChannel;
+int g_soundDeadLegionChannelIdx;
 
 CLegion::CLegion(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CMonster(pDevice, pDeviceContext)
@@ -118,6 +122,13 @@ HRESULT CLegion::NativeConstruct(void * pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetY(vPosition, curFloorHeight));
 	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVectorSet(0.f, 1.0f, 0.f, 0.f);
 	CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal2"), &vPos);
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"en_legion_spawn_01_vo_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_VO1 + g_voiceSoundChannel), MONSTER_VOLUME);
+	g_voiceSoundChannel = (g_voiceSoundChannel + 1) % 4;
+
+	SoundManager::Get_Instance()->ForcePlay(L"en_legion_spawn_01.ogg", SoundManager::CHANNELID::LEGION, MONSTER_VOLUME);
+
 	return S_OK;
 }
 
@@ -388,9 +399,17 @@ void CLegion::UpdateState()
 	}
 	else if (
 		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_01" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" ||
-		m_pNextState == "Legion_Mesh.ao|Legion_Ballista_Idle" 
-		)
+		m_pNextState == "Legion_Mesh.ao|Legion_Taunt_02" )
+	{
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_legionchampion_taunt_a_01.ogg", SoundManager::CHANNELID::LEGION_TAUNT, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_legionchampion_taunt_a_vo_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_VO1 + g_voiceSoundChannel), MONSTER_VOLUME);
+		g_voiceSoundChannel = (g_voiceSoundChannel + 1) % 4;
+	}
+	else if (m_pNextState == "Legion_Mesh.ao|Legion_Ballista_Idle")
 	{
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
@@ -402,9 +421,24 @@ void CLegion::UpdateState()
 		m_bSuperArmor = true;
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"general_soul_explode_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::MON_DEATH1 + g_soundDeadLegionChannelIdx), MONSTER_DEAD_VOLUME);
+		g_soundDeadLegionChannelIdx = (g_soundDeadLegionChannelIdx + 1) % 8;
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_knockback_start_01.ogg", SoundManager::CHANNELID::LEGION_KNOCKBACK, WAR_ATK_VOLUME);
+
+	}
+	else if (m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land")
+	{
+		m_bSuperArmor = true;
+		m_eDir = OBJECT_DIR::DIR_F;
+		isLoop = false;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_knockback_land_01.ogg", SoundManager::CHANNELID::LEGION_LAND, WAR_ATK_VOLUME);
 	}
 	else if (
-		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Land" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop1" ||
 		m_pNextState == "Legion_Mesh.ao|Legion_Knockback_Loop2"
 		)
@@ -428,27 +462,64 @@ void CLegion::UpdateState()
 
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
+
+		// 사운드 
+		if (m_pNextState == "Legion_Mesh.ao|Legion_Atk_Flurry")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_legion_atk_flurry_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_ATK1 + g_atkSoundChannel), MONSTER_VOLUME);
+			g_atkSoundChannel = (g_atkSoundChannel + 1) % 7;
+		}
+		else if (m_pNextState == "Legion_Mesh.ao|Legion_Atk_Heavy")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_legion_atk_heavy_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_ATK1 + g_atkSoundChannel), MONSTER_VOLUME);
+			g_atkSoundChannel = (g_atkSoundChannel + 1) % 7;
+		}
+		else if (m_pNextState == "Legion_Mesh.ao|Legion_Attack_02")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_legion_attack_02.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_ATK1 + g_atkSoundChannel), MONSTER_VOLUME);
+			g_atkSoundChannel = (g_atkSoundChannel + 1) % 7;
+		}
+		else if (m_pNextState == "Legion_Mesh.ao|Legion_Atk_Slam")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_legion_attack_02.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_ATK1 + g_atkSoundChannel), MONSTER_VOLUME);
+			g_atkSoundChannel = (g_atkSoundChannel + 1) % 7;
+		}
 	}
 	else if (m_pNextState == "Legion_Mesh.ao|Legion_Evade_Left")
 	{
 		m_eDir = OBJECT_DIR::DIR_L;
 		isLoop = false;
+
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_evade_left_01.ogg", SoundManager::CHANNELID::LEGION, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_evade_left_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_VO1 + g_voiceSoundChannel), MONSTER_VOLUME);
+		g_voiceSoundChannel = (g_voiceSoundChannel + 1) % 4;
 	}
 	else if (m_pNextState == "Legion_Mesh.ao|Legion_Evade_Right")
 	{
 		m_eDir = OBJECT_DIR::DIR_R;
 		isLoop = false;
+
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_evade_left_01.ogg", SoundManager::CHANNELID::LEGION, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_evade_left_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::LEGION_VO1 + g_voiceSoundChannel), MONSTER_VOLUME);
+		g_voiceSoundChannel = (g_voiceSoundChannel + 1) % 4;
+
 	}
 	// Impact States
 	else if (m_pNextState == m_pImpactState_B)
 	{
 		m_eDir = OBJECT_DIR::DIR_B;
 		isLoop = false;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_impact_B_01.ogg", SoundManager::LEGION_LAND, MONSTER_VOLUME);
 	}
 	else if (m_pNextState == m_pImpactState_F)
 	{
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
+
+		// 사운드 
+		SoundManager::Get_Instance()->ForcePlay(L"en_legion_impact_F_01.ogg", SoundManager::LEGION_LAND, MONSTER_VOLUME);
 	}
 	// Spawn State
 	else if (m_pNextState == "Legion_Mesh.ao|Legion_Spawn_01")
@@ -691,7 +762,6 @@ void CLegion::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
-			// Todo : 바로 죽이지 말고 디졸브 끝나면 죽이자 
 			m_isDead = true;
 		}
 	}

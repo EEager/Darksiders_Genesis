@@ -3,6 +3,11 @@
 #include "GameInstance.h"
 #include "Camera.h"
 
+int g_soundDeadChannelIdx;
+
+int g_soundGoblinSpawnIdx;
+
+
 
 CGoblin_Armor::CGoblin_Armor(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CMonster(pDevice, pDeviceContext)
@@ -114,6 +119,10 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	_vector vPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION) + XMVectorSet(0.f, 1.0f, 0.f, 0.f);
 	CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal2"), &vPos);
 
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"general_spawn_portal_medium_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::GOBLIN1 + g_soundGoblinSpawnIdx), 0.2f);
+	g_soundGoblinSpawnIdx = (g_soundGoblinSpawnIdx + 1) % 5;
+
 	return S_OK;
 }
 
@@ -162,6 +171,9 @@ _int CGoblin_Armor::LateTick(_float fTimeDelta)
 	{
 		m_bWillDead = true;
 		m_pNextState = "Goblin_Armor_Mesh.ao|Goblin_Death_01";
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"general_soul_explode_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::MON_DEATH1 + g_soundDeadChannelIdx), 0.2f);
+		g_soundDeadChannelIdx = (g_soundDeadChannelIdx + 1) % 8;
 	}
 
 	return _int();
@@ -382,6 +394,10 @@ void CGoblin_Armor::UpdateState()
 		//m_bSuperArmor = true;
 		m_eDir = OBJECT_DIR::DIR_F;
 		isLoop = false;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_skeleton_atk_melee_07.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::GOBLIN1 + g_soundGoblinSpawnIdx), 0.1f);
+		g_soundGoblinSpawnIdx = (g_soundGoblinSpawnIdx + 1) % 5;
 	}
 	else if (
 		m_pNextState == "Goblin_Armor_Mesh.ao|Goblin_SnS_Dash_Back"

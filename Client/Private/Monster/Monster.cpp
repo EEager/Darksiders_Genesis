@@ -8,6 +8,7 @@
 #include "imgui_Manager.h"
 #endif
 
+int g_monsterhitSound;
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CGameObject(pDevice, pDeviceContext)
@@ -42,7 +43,7 @@ _int CMonster::Tick(_float fTimeDelta)
 	{
 		m_fDissolvePower += fTimeDelta/2.f;
 		if (m_fDissolvePower >= 1.f) // 1이면 다 사라졌다. 이때는 진짜로 죽이자.
-		{
+		{			
 			return -1;
 		}
 		return 1; // 바로 삭제시키지말고. 
@@ -248,6 +249,10 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		// 피격 당했다. 
 		// 피 파티클을 생성하자. 
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"impact_enemy_default_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::IMPACT1 + g_monsterhitSound), MONSTER_HIT_VOLUME);
+		g_monsterhitSound = (g_monsterhitSound + 1) % 7; 
 
 		m_bHitted = true;
 		m_fHitPower = .8f;

@@ -3075,6 +3075,9 @@ void CState_War_Impact_From_Front_01::Enter(CGameObject* pOwner, _float fTimeDel
 	g_pWar->m_eDir = OBJECT_DIR::DIR_B;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Front_01", false);//Not Loop
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"en_legion_impact_B_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Impact_From_Front_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3139,6 +3142,10 @@ void CState_War_Impact_From_Back_01::Enter(CGameObject* pOwner, _float fTimeDelt
 	g_pWar->m_eDir = OBJECT_DIR::DIR_F;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Back_01", false);//Not Loop
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"en_legion_impact_B_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME); 
 }
 
 void CState_War_Impact_From_Back_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3201,6 +3208,9 @@ void CState_War_Impact_From_Left_01::Enter(CGameObject* pOwner, _float fTimeDelt
 	g_pWar->m_eDir = OBJECT_DIR::DIR_R;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Left_01", false);//Not Loop
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"en_legion_impact_B_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Impact_From_Left_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3262,6 +3272,9 @@ void CState_War_Impact_From_Right_01::Enter(CGameObject* pOwner, _float fTimeDel
 	g_pWar->m_eDir = OBJECT_DIR::DIR_L;
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Impact_From_Right_01", false);//Not Loop
 	static_cast<CWar*>(pOwner)->Set_Dont_Key(true);
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"en_legion_impact_B_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Impact_From_Right_01::Execute(CGameObject* pOwner, _float fTimeDelta)

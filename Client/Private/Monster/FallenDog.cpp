@@ -135,6 +135,9 @@ void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTime
 		m_fHitPower = .8f;
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
 
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"impact_enemy_default_01.ogg", SoundManager::CHANNELID::DOG, MONSTER_HIT_VOLUME);
+
 
 		if (m_bStiffnessRecovery == false) // 회복상태에서는 감소하지말자.
 			m_fStiffness -= 2.5f;

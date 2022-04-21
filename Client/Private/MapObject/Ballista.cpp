@@ -344,6 +344,9 @@ void CBallista::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeD
 	if (m_bHitted == false && pSrc->Get_ColliderTag() == COL_BALLISTA_BODY &&
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
+		// »ç¿îµå 
+		SoundManager::Get_Instance()->ForcePlay(L"imp_sword_01.ogg", SoundManager::CHANNELID::HOLLOLORD, MONSTER_HIT_VOLUME);
+
 		m_bHitted = true;
 		m_fHitPower = 1.f;
 
