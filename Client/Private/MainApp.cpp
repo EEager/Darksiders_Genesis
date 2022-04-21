@@ -175,9 +175,9 @@ HRESULT CMainApp::PostRender()
 		}
 
 
-		// Speical Thanks to KYH. 
+		// Speical Thanks to 122. 
 		{
-			wstring str = DXString::Format(L"Speical Thanks to KYH.");
+			wstring str = DXString::Format(L"Speical Thanks to 122.");
 
 			const wchar_t* output = str.c_str();
 

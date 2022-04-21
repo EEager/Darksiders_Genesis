@@ -431,7 +431,7 @@ void CHollowLord::DoState(float fTimeDelta)
 		if (70 <= curKeyFrameIdx && curKeyFrameIdx <= 202)
 		{
 			m_fDoubleSlamTimeAcc += fTimeDelta;
-			if (m_fDoubleSlamTimeAcc > .7f)
+			if (m_fDoubleSlamTimeAcc > .6f) 
 			{
 				CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 				pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), &_float4(MathHelper::RandF(553.f, 590.f), 9.5f, MathHelper::RandF(43.f, 80.f), 1.f));

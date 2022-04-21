@@ -23,7 +23,7 @@ public:
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 	CModel(const CModel& rhs);
-	virtual ~CModel() = default;
+ 	virtual ~CModel() = default;
 
 public:
 	_uint Get_NumMeshContainer() const {
