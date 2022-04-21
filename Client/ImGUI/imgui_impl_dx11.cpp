@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#if defined(USE_IMGUI) 
+
 // dear imgui: Renderer Backend for DirectX11
 // This needs to be used along with a Platform Backend (e.g. Win32)
 
@@ -593,3 +595,5 @@ void ImGui_ImplDX11_NewFrame()
     if (!bd->pFontSampler)
         ImGui_ImplDX11_CreateDeviceObjects();
 }
+
+#endif

@@ -77,7 +77,7 @@
     <OutDir>../Bin/</OutDir>
     <IncludePath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Client\Default;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
-    <PublicIncludeDirectories>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Client\Default\FMod_2;C:\Users\JJLEE\Desktop\Darksiders_Genesis\Client\Default;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -85,7 +85,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>../Bin/</OutDir>
-    <PublicIncludeDirectories>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Client\Default\FMod_2;C:\Users\JJLEE\Desktop\Darksiders_Genesis\Client\Default;$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
     <IncludePath>C:\Users\JJLEE\Desktop\Darksiders_Genesis\Client\Default;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#ifdef USE_IMGUI
 // dear imgui, v1.87 WIP
 // (main code and documentation)
 
@@ -12627,3 +12628,5 @@ void ImGui::UpdateDebugToolStackQueries() {}
 //-----------------------------------------------------------------------------
 
 #endif // #ifndef IMGUI_DISABLE
+
+#endif

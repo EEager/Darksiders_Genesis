@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#if defined(USE_IMGUI) 
 
 // dear imgui, v1.87 WIP
 // (drawing and font code)
@@ -4184,3 +4185,5 @@ static const char* GetDefaultCompressedFontDataTTFBase85()
 }
 
 #endif // #ifndef IMGUI_DISABLE
+
+#endif

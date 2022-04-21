@@ -1,6 +1,6 @@
 // dear imgui, v1.87 WIP
 // (headers)
-
+#if defined(USE_IMGUI) 
 // Help:
 // - Read FAQ at http://dearimgui.org/faq
 // - Newcomers, read 'Programmer guide' in imgui.cpp for notes on how to setup Dear ImGui in your codebase.
@@ -2914,3 +2914,4 @@ enum ImDrawCornerFlags_
 #endif
 
 #endif // #ifndef IMGUI_DISABLE
+#endif
