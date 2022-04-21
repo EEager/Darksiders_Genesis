@@ -38,6 +38,9 @@ HRESULT CSceneChangeEffect1::NativeConstruct_Prototype()
 
 HRESULT CSceneChangeEffect1::NativeConstruct(void * pArg)
 {
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"ui_map_open.ogg", SoundManager::MON_DEATH3, 1.f);
+	SoundManager::Get_Instance()->ForcePlay(L"ui_toast_tutorial.ogg", SoundManager::MON_DEATH4, .5f);
 
 	return S_OK;
 }
@@ -219,7 +222,9 @@ HRESULT CSceneChangeEffect2::NativeConstruct_Prototype()
 
 HRESULT CSceneChangeEffect2::NativeConstruct(void* pArg)
 {
-
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"ui_map_open.ogg", SoundManager::MON_DEATH3, 1.f);
+	SoundManager::Get_Instance()->ForcePlay(L"ui_toast_tutorial.ogg", SoundManager::MON_DEATH4, .5f);
 	return S_OK;
 }
 
@@ -269,6 +274,8 @@ HRESULT CSceneChangeEffect2::Render(_uint iPassIndex)
 			// 만약에 마지막 아이 또한 다 그렸을 경우. 다시 끝에서 부터 내려가자
 			if (i == 10 && finalposY <= MAX_TEXTURE_POS_Y)
 			{
+				// 사운드
+				SoundManager::Get_Instance()->ForcePlay(L"ui_map_open.ogg", SoundManager::MON_DEATH3, 1.f);
 				m_eType = DESCENT;
 				m_fTexturePosY = MAX_TEXTURE_POS_Y;
 			}

@@ -574,9 +574,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	}
 
 	// »ç¿îµå
-	//SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
-	//SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", 0.01f);
-	SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+	SoundManager::Get_Instance()->StopAll();
+	SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+	SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", 0.08f);
 	 
 	return S_OK;
 }

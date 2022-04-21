@@ -50,6 +50,7 @@ HRESULT CBallista::NativeConstruct(void* pArg)
 
 _int CBallista::Tick(_float fTimeDelta)
 {
+
 	// CBallista는 죽으면 죽은 상태 유지하자
 	if (m_isDead)
 	{
@@ -79,7 +80,7 @@ _int CBallista::Tick(_float fTimeDelta)
 		}
 	}
 
-	m_pModelCom->Update_Animation(fTimeDelta);
+	m_pModelCom->Update_Animation(fTimeDelta, nullptr, nullptr, nullptr,DIR_F, 0);
 	if (m_pCurState == "Ballista_A.ao|Ballista_A_Full") // 바리스타 발사 동작중일때만 고블린 애니메이션 업데이트 하자
 	{
 		m_pModelGoblinCom->Update_Animation(fTimeDelta);
@@ -112,9 +113,18 @@ _int CBallista::Tick(_float fTimeDelta)
 			{
 				isLoop = true;
 			}
-			else if (m_pNextState == "Ballista_A.ao|Ballista_A_Impact" ||
-					 m_pNextState == "Ballista_A_Destroyed.ao|Ballista_A_Explode")
+			else if (m_pNextState == "Ballista_A.ao|Ballista_A_Impact")
+			{
 				isLoop = false;
+			}
+			
+			else if (m_pNextState == "Ballista_A_Destroyed.ao|Ballista_A_Explode")
+			{
+				isLoop = false;
+
+				// 사운드
+				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_sequence_wall_explosion.ogg", SoundManager::CHANNELID::BREAKABLE2, MONSTER_VOLUME);
+			}
 			if (m_pNextState == "Ballista_A.ao|Ballista_A_Full") // Idle일때는 대충 아무거나 고블린이 던져서 발리스타 밑에 깔리게 끔하자.
 				m_pModelGoblinCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_Ballista_Full", isLoop);
 
@@ -138,6 +148,31 @@ _int CBallista::Tick(_float fTimeDelta)
 			if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 			{
 				m_isDead = true;
+			}
+		}
+		else if (m_pCurState == "Ballista_A.ao|Ballista_A_Full")
+		{
+			if (forSoundBool2 == false || forSoundBool2 == false)
+				forSoundTimeAcc += fTimeDelta;
+
+#ifdef _DEBUG
+			if (CInput_Device::GetInstance()->Key_Down(DIK_0))
+			{
+				forSoundBool2 = false;
+				forSoundBool1 = false;
+				forSoundTimeAcc = 0.f;
+			}
+#endif
+			if (forSoundBool1 == false && forSoundTimeAcc > 1.3f)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_load.ogg", SoundManager::BREAKABLE7, 5.f);
+				forSoundBool1 = true;
+			}
+
+			if (forSoundBool2 == false && forSoundTimeAcc > 7.6f)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_fleamag_shoot.ogg", SoundManager::BREAKABLE6, 5.f);
+				forSoundBool2 = true;
 			}
 		}
 	}

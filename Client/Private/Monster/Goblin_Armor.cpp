@@ -6,6 +6,7 @@
 int g_soundDeadChannelIdx;
 
 int g_soundGoblinSpawnIdx;
+int g_soundGoblinSpawnVOIdx;
 
 
 
@@ -120,8 +121,10 @@ HRESULT CGoblin_Armor::NativeConstruct(void * pArg)
 	CObject_Manager::GetInstance()->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Decal", TEXT("Prototype_GameObject_Decal2"), &vPos);
 
 	// 사운드
-	SoundManager::Get_Instance()->ForcePlay(L"general_spawn_portal_medium_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::GOBLIN1 + g_soundGoblinSpawnIdx), 0.2f);
-	g_soundGoblinSpawnIdx = (g_soundGoblinSpawnIdx + 1) % 5;
+	SoundManager::Get_Instance()->ForcePlay(L"en_fleamag_spawn_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::GOBLIN1 + g_soundGoblinSpawnIdx), 0.2f);
+	g_soundGoblinSpawnIdx = (g_soundGoblinSpawnIdx + 1) % 5;	
+	SoundManager::Get_Instance()->ForcePlay(L"en_fleamag_spawn_vo_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::BREAKABLE1 + g_soundGoblinSpawnVOIdx), 0.2f);
+	g_soundGoblinSpawnVOIdx = (g_soundGoblinSpawnVOIdx + 1) % 5;
 
 	return S_OK;
 }
@@ -396,7 +399,7 @@ void CGoblin_Armor::UpdateState()
 		isLoop = false;
 
 		// 사운드
-		SoundManager::Get_Instance()->ForcePlay(L"en_skeleton_atk_melee_07.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::GOBLIN1 + g_soundGoblinSpawnIdx), 0.1f);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fleamag_swipe_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::GOBLIN1 + g_soundGoblinSpawnIdx), 0.1f);
 		g_soundGoblinSpawnIdx = (g_soundGoblinSpawnIdx + 1) % 5;
 	}
 	else if (

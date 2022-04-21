@@ -60,6 +60,10 @@ private:
 	_float m_fHitPower = 0.f;
 	_bool m_bWillDead = false;
 
+	_bool forSoundBool1 = false;
+	_bool forSoundBool2 = false;
+	_float forSoundTimeAcc = 0.f;
+
 
 	// Legion 이 탑승중인지 아닌지 판단하자
 private:
