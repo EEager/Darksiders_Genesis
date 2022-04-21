@@ -62,6 +62,9 @@ HRESULT CMainApp::NativeConstruct()
 	CImguiManager::GetInstance()->Initialize(m_pDevice, m_pDeviceContext);
 #endif
 
+	// Ready Sound
+	SoundManager::Get_Instance()->Initialize();
+
 	if (FAILED(Ready_Component_ForStatic()))
 		return E_FAIL;
 
@@ -380,6 +383,7 @@ void CMainApp::Free()
 
 	CParticleSystem_Manager::GetInstance()->DestroyInstance();
 	CMeshEffect_Manager::GetInstance()->DestroyInstance();
+	SoundManager::Get_Instance()->Destroy_Instance();
 
 	CGameInstance::Release_Engine();
 }

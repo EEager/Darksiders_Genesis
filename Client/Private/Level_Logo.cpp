@@ -18,11 +18,22 @@ HRESULT CLevel_Logo::NativeConstruct()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlayBGM(L"mus_mainmenu.OGG"); 
+
 	return S_OK;
 }
 
 _int CLevel_Logo::Tick(_float fTimeDelta)
 {
+#ifdef _DEBUG
+	if (CInput_Device::GetInstance()->Key_Down(DIK_M))
+	{
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"char_chaos_attack_2_03.ogg", SoundManager::WAR, 0.35f);
+	}
+#endif
+
 	if (0 > (__super::Tick(fTimeDelta)))
 		return -1;
 

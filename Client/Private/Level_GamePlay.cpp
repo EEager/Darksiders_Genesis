@@ -572,6 +572,9 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	{
 
 	}
+
+	// »ç¿îµå
+	SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
 	 
 	return S_OK;
 }

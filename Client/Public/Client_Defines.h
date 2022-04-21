@@ -61,3 +61,4 @@ static const unsigned int		g_iWinCY = 900;
 
 #define ENVIROMENT_OFFSET_X 20
 #define ENVIROMENT_OFFSET_Z 400
+

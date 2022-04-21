@@ -354,6 +354,9 @@
     <ClInclude Include="..\Public\Effect\Decal.h">
       <Filter>02.GameObjects\Effect\Rect</Filter>
     </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>98.Default</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -514,6 +517,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Effect\Decal.cpp">
       <Filter>02.GameObjects\Effect\Rect</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>98.Default</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
