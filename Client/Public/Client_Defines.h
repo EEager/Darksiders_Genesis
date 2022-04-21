@@ -66,5 +66,6 @@ static const unsigned int		g_iWinCY = 900;
 // »ç¿îµå 
 #define WAR_ATK_VOLUME 0.45f
 #define MONSTER_VOLUME 0.2f
+#define FALLENDOG_VOLUME 0.5f
 #define MONSTER_DEAD_VOLUME 0.2f
 #define MONSTER_HIT_VOLUME 0.15f

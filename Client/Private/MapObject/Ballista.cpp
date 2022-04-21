@@ -123,7 +123,7 @@ _int CBallista::Tick(_float fTimeDelta)
 				isLoop = false;
 
 				// 사운드
-				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_sequence_wall_explosion.ogg", SoundManager::CHANNELID::BREAKABLE2, MONSTER_VOLUME);
+				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_sequence_wall_explosion.ogg", SoundManager::CHANNELID::BREAKABLE2, 0.5f);
 			}
 			if (m_pNextState == "Ballista_A.ao|Ballista_A_Full") // Idle일때는 대충 아무거나 고블린이 던져서 발리스타 밑에 깔리게 끔하자.
 				m_pModelGoblinCom->SetUp_Animation("Goblin_Armor_Mesh.ao|Goblin_Ballista_Full", isLoop);
@@ -169,7 +169,7 @@ _int CBallista::Tick(_float fTimeDelta)
 				forSoundBool1 = true;
 			}
 
-			if (forSoundBool2 == false && forSoundTimeAcc > 7.6f)
+			if (forSoundBool2 == false && forSoundTimeAcc > 7.75f)
 			{
 				SoundManager::Get_Instance()->ForcePlay(L"prop_ballista_fleamag_shoot.ogg", SoundManager::BREAKABLE6, 5.f);
 				forSoundBool2 = true;

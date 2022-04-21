@@ -371,13 +371,13 @@ void CFallenDog::UpdateState()
 		// 사운드
 		if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 		{
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 		}
 		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Sleeping_GetUp")
 		{
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 		}
 	}
 	// Atk State
@@ -398,23 +398,23 @@ void CFallenDog::UpdateState()
 		// 사운드
 		if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo")
 		{
-			SoundManager::Get_Instance()->ForcePlay(L"impact_enemy_default_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_3hitcombo_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"impact_enemy_default_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_3hitcombo_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 		}
 		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 		{
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 		}
 		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt")
 		{
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_headbutt_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_headbutt_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_headbutt_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_headbutt_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 		}
 		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" || m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R")
 		{
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_slash_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_slash_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_slash_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_slash_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 		}
 	}
 	// Impact State
@@ -454,14 +454,14 @@ void CFallenDog::UpdateState()
 		isLoop = false;
 
 		// 사운드
-		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 	}
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
 	{
 		// 사운드
-		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_death_war_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
-		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_death_war_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_death_war_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_death_war_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
 
 		// War 또한 처형 모션으로 바꿔주자.
 		static_cast<CWar*>(m_pTarget)->Get_StateMachine()->ChangeState(CState_War_IA_Death_FallenDog::GetInstance());
