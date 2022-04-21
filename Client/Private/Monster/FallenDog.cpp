@@ -136,7 +136,7 @@ void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTime
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
 
 		// 사운드
-		SoundManager::Get_Instance()->ForcePlay(L"impact_enemy_default_01.ogg", SoundManager::CHANNELID::DOG, MONSTER_HIT_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_01.ogg", SoundManager::CHANNELID::FALLENDOG, MONSTER_HIT_VOLUME);
 
 
 		if (m_bStiffnessRecovery == false) // 회복상태에서는 감소하지말자.
@@ -367,14 +367,25 @@ void CFallenDog::UpdateState()
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
 	{
 		isLoop = false;
+
+		// 사운드
+		if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		}
+		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Sleeping_GetUp")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		}
 	}
 	// Atk State
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo" ||
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Breath" ||
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt" ||
 		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" ||
-		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R" ||
-		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
+		m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R")
 	{
 		// 플레이어 바라보게 한뒤. 공격수행.
 		m_pTransformCom->LookAt(XMVectorSetY(m_pTargetTransform->Get_State(CTransform::STATE::STATE_POSITION), XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION))));
@@ -383,6 +394,28 @@ void CFallenDog::UpdateState()
 		
 		// 해당 상태에서 무기 콜라이더 키자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, false);
+
+		// 사운드
+		if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_3HitCombo")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"impact_enemy_default_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_3hitcombo_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		}
+		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_GroundSlam")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_groundslam_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		}
+		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Headbutt")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_headbutt_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_headbutt_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		}
+		else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_L" || m_pNextState == "FallenDog_Mesh.ao|FallenDog_Atk_Slash_R")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_slash_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_atk_slash_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
+		}
 	}
 	// Impact State
 	else if (m_pNextState == m_pImpactState_B)
@@ -419,6 +452,10 @@ void CFallenDog::UpdateState()
 	{
 		m_eDir = OBJECT_DIR::DIR_B;
 		isLoop = false;
+
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, MONSTER_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, MONSTER_VOLUME);
 	}
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
 	{

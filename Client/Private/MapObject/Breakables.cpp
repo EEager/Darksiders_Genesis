@@ -164,7 +164,7 @@ void CBreakableBase::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float f
 
 		// »ç¿îµå
 		SoundManager::Get_Instance()->ForcePlay(L"imp_sword_01.ogg", (SoundManager::CHANNELID)(SoundManager::CHANNELID::IMPACT1 + g_breakableSound), MONSTER_HIT_VOLUME);
-		g_breakableSound = (g_breakableSound + 1) % 7;
+		g_breakableSound = (g_breakableSound + 1) % 2;
 		return;
 	}
 }
