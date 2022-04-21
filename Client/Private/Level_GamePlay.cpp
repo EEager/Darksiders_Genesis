@@ -24,6 +24,471 @@ bool OnEvent2(_float fTimeDelta); // 모험의 서. 경치 보여주는 장면.
 bool OnEvent3(_float fTimeDelta); // 성 문앞에서, 몬스터 삼인방 나오는 장면. 
 bool OnEvent4(_float fTimeDelta); // 보스 씬.
 bool OnEvent5(_float fTimeDelta); // 보스 씬 Spike
+
+
+// ---------------------------------------------------
+// 아래 3개는 몬스터 스포너가 공통으로 사용하자
+bool monsterSpanwed;
+int monosterSpawnCnt;
+_float monsterSpawnTimeAcc;
+
+// Navi #4
+// 5/5
+bool MonsterSpanwer1(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 4)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 5)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(113.f, 131.f),
+				0.661f,
+				MathHelper::RandF(420.f, 442.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(115.f, 125.f),
+				0.661f,
+				MathHelper::RandF(429.f, 437.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+// --------------------
+// Navi #7
+bool MonsterSpanwer2(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 7)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 5)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(123.f, 143.f),
+				0.661f,
+				MathHelper::RandF(423.f, 440.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(123.f, 143.f),
+				0.661f,
+				MathHelper::RandF(423.f, 440.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+// ----------------------
+// Navi #143
+bool MonsterSpanwer3(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 143)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 6)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(160.f, 170.f),
+				0.661f,
+				MathHelper::RandF(425.f, 438.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(160.f, 170.f),
+				0.661f,
+				MathHelper::RandF(425.f, 438.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+// ----------------------
+// Navi #9
+bool MonsterSpanwer4(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 9)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 6)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(228.f, 248.f),
+				0.661f,
+				MathHelper::RandF(425.f, 445.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(228.f, 248.f),
+				0.661f,
+				MathHelper::RandF(425.f, 445.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+
+// ----------------------
+// Navi #164 : 첫번째 바리스타
+bool MonsterSpanwer5(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 164)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 3)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(394.f, 404.f),
+				1.f,
+				MathHelper::RandF(527.f, 537.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(394.f, 404.f),
+				1.f,
+				MathHelper::RandF(527.f, 537.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+
+// 전망대
+bool MonsterSpanwer6(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 178)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 5)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(451, 465.f),
+				1.f,
+				MathHelper::RandF(462, 475.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(451, 465.f),
+				1.f,
+				MathHelper::RandF(462, 475.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+// 두번째 바리스타
+bool MonsterSpanwer7(_float fTimeDelta)
+{
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 59)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 5)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(592, 605.f),
+				1.f,
+				MathHelper::RandF(391, 406.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(592, 605.f),
+				1.f,
+				MathHelper::RandF(391, 406.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+bool MonsterSpanwer8(_float fTimeDelta)
+{
+	// 세번째 바리스타
+
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 77)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 3)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(709, 728.f),
+				1.f,
+				MathHelper::RandF(292, 304.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(709, 728.f),
+				1.f,
+				MathHelper::RandF(292, 304.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+bool MonsterSpanwer9(_float fTimeDelta)
+{
+	// 성 첫번째 기둥.
+	if (monsterSpanwed == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 98)
+			return false;
+		monsterSpanwed = true;
+	}
+
+	if (monosterSpawnCnt >= 5)
+	{
+		monsterSpanwed = false;
+		monosterSpawnCnt = 0;
+		monsterSpawnTimeAcc = 0;
+		return true;
+	}
+
+	monsterSpawnTimeAcc += fTimeDelta;
+	if (monsterSpawnTimeAcc > .5f)
+	{
+		monosterSpawnCnt++;
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		{
+			_float4* vPos = &_float4(
+				MathHelper::RandF(633.f, 646.f),
+				1.f,
+				MathHelper::RandF(208.f, 230.f),
+				1.f);
+			/* For.Prototype_GameObject_Legion*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+				assert(0);
+
+			vPos = &_float4(
+				MathHelper::RandF(633.f, 646.f),
+				1.f,
+				MathHelper::RandF(208.f, 230.f),
+				1.f);
+			/* For.Prototype_GameObject_Goblin_Armor*/
+			if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+				assert(0);
+		}
+		RELEASE_INSTANCE(CGameInstance);
+		monsterSpawnTimeAcc = 0.f;
+	}
+
+	return false;
+}
+
+
 // ------------------------------
 
 
@@ -92,12 +557,15 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 
 	// Ready Monster Spawner
 	{
-		//// MonsterSpanwer1
-		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer1, placeholders::_1));
-		//// MonsterSpanwer2
-		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer2, placeholders::_1));
-		//// MonsterSpanwer3
-		//m_queueMonsterSpawner.push(bind(&MonsterSpanwer3, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer1, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer2, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer3, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer4, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer5, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer6, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer7, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer8, placeholders::_1));
+		m_queueMonsterSpawner.push(bind(&MonsterSpanwer9, placeholders::_1));
 	}
 
 	// Create Mesh Effects
@@ -118,6 +586,24 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
+		_float4* vPos = &_float4(
+			MathHelper::RandF(633.f, 646.f),
+			1.f,
+			MathHelper::RandF(208.f, 230.f),
+			1.f);
+		/* For.Prototype_GameObject_Legion*/
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
+			assert(0);
+
+		vPos = &_float4(
+			MathHelper::RandF(633.f, 646.f),
+			1.f,
+			MathHelper::RandF(208.f, 230.f),
+			1.f);
+		/* For.Prototype_GameObject_Goblin_Armor*/
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
+			assert(0);
+
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
 		
@@ -203,6 +689,17 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 		{
 			// 만약 해당 이벤트가 완료 하였다. pop front
 			m_queueEventCallBack.pop();
+		}
+	}
+
+	// 몬스터 스포너 Q에서 하나씩 꺼내 사용하자.
+	if (m_queueMonsterSpawner.empty() == false)
+	{
+		auto pEvent = m_queueMonsterSpawner.front();
+		if (pEvent(fTimeDelta))
+		{
+			// 만약 해당 이벤트가 완료 하였다. pop front
+			m_queueMonsterSpawner.pop();
 		}
 	}
 
@@ -783,7 +1280,7 @@ bool OnEvent3(_float fTimeDelta)
 		static_cast<CSoulBarrier*>(pSoulBarrier)->InitAnimation();
 	}
 
-	if (event3TimeAcc > 9.f)
+	if (event3TimeAcc > 7.f)
 	{
 		// 이벤트가 종료되었으니 원복.
 		static_cast<CCamera_Fly*>(g_pCamera)->Set_Target(static_cast<CWar*>(g_pWar));
@@ -960,86 +1457,7 @@ bool OnEvent5(_float fTimeDelta)
 }
 
 
-// ---------------------------------------------------
-// 순서대로 Spawn을 하자
-// 처음 외나무 다리 전. 파티클도 보여줄겸 성도 보여줄겸 1마리씩 생성하자.
-bool monsterSpanwed1;
-bool MonsterSpanwer1(_float fTimeDelta)
-{
-	// War가 Navi 120번을 탈 때 이벤트를 실행한다
-	if (monsterSpanwed1 == false)
-	{
-		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
-		if (pWarNavi->m_iCurrentIndex != 120)
-			return false;
-		monsterSpanwed1 = true;
-	}
-
-	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
-	/* For.Prototype_GameObject_Legion*/
-	for (int i = 0; i < 2; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"))))
-			assert(0);
-
-	/* For.Prototype_GameObject_Goblin_Armor*/
-	for (int i = 0; i < 4; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"))))
-			assert(0);
-	RELEASE_INSTANCE(CGameInstance);
-
-	return true;
-}
-
-// --------------------
-// 외나무 다리. 휘린드로 조지다가. 
-bool MonsterSpanwer2(_float fTimeDelta)
-{
-	return true;
-}
-
-// ----------------------
-// 외나무 다리 중간. 1번 스킬을 사용한다 여기서.
-bool MonsterSpanwer3(_float fTimeDelta)
-{
-	return true;
-}
-
-// ----------------------
-// 이벤트 1끝나고 첫 바리스타 내려가는 계단에서 생성하자. 
-bool MonsterSpanwer4(_float fTimeDelta)
-{
-	return true;
-}
 
 
-// ----------------------
-// 높은곳에서 한번 또 싸워줘야지 
-bool MonsterSpanwer5(_float fTimeDelta)
-{
-	return true;
-}
-
-// ----------------------
-// 두번째 바리스타 지키는 몹들도 있어야할거 아니야? ㅋ
-bool MonsterSpanwer6(_float fTimeDelta)
-{
-	return true;
-}
-
-
-// ----------------------
-// 세번째 바리스타를 지키는 몹들도 있어야할거 아니야? ㅋ
-bool MonsterSpanwer7(_float fTimeDelta)
-{
-	return true;
-}
-
-
-// -------------------------
-// 성에 입성해서 첫번째 기둥 지나기전에도 한바탕 해야지
-bool MonsterSpanwer8(_float fTimeDelta)
-{
-	return true;
-}
 
 

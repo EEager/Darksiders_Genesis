@@ -238,7 +238,10 @@ HRESULT CBallista::Render(_uint iPassIndex)
 		m_pModelGoblinCom->Set_RawValue("g_UseEmissiveMap", &g_bUseEmissiveMap, sizeof(bool));
 
 		// 피격시 색상은 없다.
-		m_pModelCom->Set_RawValue("g_vHitPower", &XMVectorSet(0.f, 0.f, 0.f, 0.f), sizeof(_vector));
+		m_pModelGoblinCom->Set_RawValue("g_vHitPower", &XMVectorSet(0.f, 0.f, 0.f, 0.f), sizeof(_vector));
+
+		_float tempFloat = 0.f;
+		m_pModelGoblinCom->Set_RawValue("g_DissolvePwr", &tempFloat, sizeof(_float));
 
 		RELEASE_INSTANCE(CGameInstance);
 
