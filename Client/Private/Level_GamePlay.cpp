@@ -574,7 +574,8 @@ HRESULT CLevel_GamePlay::NativeConstruct()
 	}
 
 	// 사운드
-	SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+	//SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
+	SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
 	SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", 0.01f);
 	 
 	return S_OK;
@@ -590,23 +591,9 @@ _int CLevel_GamePlay::Tick(_float fTimeDelta)
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 	if (CInput_Device::GetInstance()->Key_Down(DIK_E))
 	{
-		_float4* vPos = &_float4(
-			MathHelper::RandF(633.f, 646.f),
-			1.f,
-			MathHelper::RandF(208.f, 230.f),
-			1.f);
-		/* For.Prototype_GameObject_Legion*/
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"), vPos)))
-			assert(0);
-
-		vPos = &_float4(
-			MathHelper::RandF(633.f, 646.f),
-			1.f,
-			MathHelper::RandF(208.f, 230.f),
-			1.f);
-		/* For.Prototype_GameObject_Goblin_Armor*/
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"), vPos)))
-			assert(0);
+		SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+		SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_sand.ogg", .3f);
+		SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
 
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"));
 		//pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"));
@@ -780,7 +767,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Enviroment()
 	/* For.Prototype_Component_Model_Enviroment1 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment1")))
 		return E_FAIL;
-#if 1 // JJLEE 잠시만 막아두자
+#if 0 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment2 */
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Enviroment", TEXT("Prototype_GameObject_CEnviroment"), L"Prototype_Component_Model_Enviroment2")))
 		return E_FAIL;

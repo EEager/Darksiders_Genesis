@@ -26,12 +26,12 @@ HRESULT CLevel_Logo::NativeConstruct()
 
 _int CLevel_Logo::Tick(_float fTimeDelta)
 {
-#ifdef _DEBUG
 	if (CInput_Device::GetInstance()->Key_Down(DIK_M))
 	{
-		// »ç¿îµå
-		SoundManager::Get_Instance()->ForcePlay(L"char_chaos_attack_2_03.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
+
 	}
+#ifdef _DEBUG
+
 #endif
 
 	if (0 > (__super::Tick(fTimeDelta)))

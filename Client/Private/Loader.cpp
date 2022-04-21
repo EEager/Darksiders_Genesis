@@ -552,7 +552,7 @@ HRESULT CLoader::Add_Model()
 	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
 
 
-#if 1 // JJLEE 잠시만 막아두자
+#if 0 // JJLEE 잠시만 막아두자
 	/* For.Prototype_Component_Model_Enviroment4*/
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment4"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment4"),
@@ -602,7 +602,7 @@ HRESULT CLoader::Add_Model()
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage2"),
 		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Foliage/", "Foliage2.fbx", EnviromentPivotMatrix))))
 		return E_FAIL;
-#if 1 // JJLEE 잠시만 막아두자
+#if 0 // JJLEE 잠시만 막아두자
 
 	wsprintf(m_szLoading, TEXT("Loading Component_Model_Foliage3"));
 	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Foliage3"),

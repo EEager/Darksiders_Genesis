@@ -64,4 +64,4 @@ static const unsigned int		g_iWinCY = 900;
 
 
 // »ç¿îµå 
-#define WAR_ATK_VOLUME 0.35f
+#define WAR_ATK_VOLUME 0.45f

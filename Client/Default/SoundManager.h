@@ -24,7 +24,13 @@ public:
 		}
 	}
 public:
-	enum CHANNELID { BGM, AMBIENT, WAR, WAR_ATK, MAXCHANNEL };
+	enum CHANNELID { BGM, AMBIENT, 
+
+		WAR, WAR_ATK, WAR_DASH, WAR_FLAME, WAR_BLADEGEYSER, WAR_STEP,
+
+		RUIN, RUIN_STEP1, RUIN_STEP2, RUIN_STEP3,
+		
+		MAXCHANNEL };
 private:
 	SoundManager();
 	~SoundManager();

@@ -314,6 +314,9 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	_float m_fSoundTimeAcc = 0.f;
+
 public:
 	virtual void Free() final;
 };
@@ -405,6 +408,9 @@ public:
 	virtual void Enter(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
+
+private:
+	_float m_fSoundTimeAcc = 0.f;
 
 public:
 	virtual void Free() final;
@@ -1350,6 +1356,11 @@ public:
 	virtual void Execute(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 	virtual void Exit(class CGameObject* pOwner = nullptr, _float fTimeDelta = 0.f);
 
+private:
+	_float fTimeSoundAllAcc = 0.f;
+	_float fTimeSoundGallop = 0.f;
+	bool soundAccwStart = false;
+
 public:
 	virtual void Free() final;
 };
@@ -1401,6 +1412,11 @@ public:
 
 private:
 	bool m_bParticleOn = false;
+
+private:
+	_float fTimeSoundAllAcc = 0.f;
+	_float fTimeSoundGallop = 0.f;
+	bool soundAccwStart = false;
 
 public:
 	virtual void Free() final;

@@ -53,12 +53,12 @@ void SoundManager::PlaySound(TCHAR * pSoundKey, CHANNELID eID, float fVolume)
 		return;
 
 	FMOD_BOOL bPlay = FALSE;
-	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 	if (FMOD_Channel_IsPlaying(m_pChannelArr[eID], &bPlay))
 	{
 		FMOD_System_PlaySound(m_pSystem, iter->second, nullptr,FALSE, &m_pChannelArr[eID]);
 	}
 
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 	FMOD_System_Update(m_pSystem);
 }
 
@@ -91,9 +91,9 @@ void SoundManager::PlayAMBIENT(TCHAR* pSoundKey,float fVolume)
 	if (iter == m_mapSound.end())
 		return;
 
-	FMOD_Channel_SetVolume(m_pChannelArr[AMBIENT], fVolume);
 	FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[AMBIENT]);
 	FMOD_Channel_SetMode(m_pChannelArr[AMBIENT], FMOD_LOOP_NORMAL);
+	FMOD_Channel_SetVolume(m_pChannelArr[AMBIENT], fVolume);
 	FMOD_System_Update(m_pSystem);
 }
 
@@ -150,37 +150,116 @@ _float SoundManager::GetPlayTime(CHANNELID eID)
 
 void SoundManager::LoadSoundFile()
 {
-	_tfinddata64_t fd;
-	__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/*.*", &fd);
-	if (handle == -1 || handle == 0)
-		return;
-
-	int iResult = 0;
-
-	char szCurPath[128] = "../Bin/Resources/Sound/";
-	char szFullPath[128] = "";
-	char szFilename[MAX_PATH];
-	while (iResult != -1)
+	// ¹è°æ
 	{
-		WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
-		strcpy_s(szFullPath, szCurPath);
-		strcat_s(szFullPath, szFilename);
-		FMOD_SOUND* pSound = nullptr;
-		
-		FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
-		if (eRes == FMOD_OK)
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/BackGround/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/BackGround/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
 		{
-			int iLength = (int)strlen(szFilename) + 1;
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
 
-			TCHAR* pSoundKey = new TCHAR[iLength];
-			ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
-			MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
 
-			m_mapSound.emplace(pSoundKey, pSound);
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
 		}
-		iResult = _tfindnext64(handle, &fd);
-	}
-	FMOD_System_Update(m_pSystem);
+		FMOD_System_Update(m_pSystem);
 
-	_findclose(handle);
+		_findclose(handle);
+	}
+
+	// War
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/War/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/War/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
+
+	// Ruin
+	{
+		_tfinddata64_t fd;
+		__int64 handle = _tfindfirst64(L"../Bin/Resources/Sound/Ruin/*.*", &fd);
+		if (handle == -1 || handle == 0)
+			return;
+
+		int iResult = 0;
+
+		char szCurPath[128] = "../Bin/Resources/Sound/Ruin/";
+		char szFullPath[128] = "";
+		char szFilename[MAX_PATH];
+		while (iResult != -1)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, fd.name, -1, szFilename, sizeof(szFilename), NULL, NULL);
+			strcpy_s(szFullPath, szCurPath);
+			strcat_s(szFullPath, szFilename);
+			FMOD_SOUND* pSound = nullptr;
+
+			FMOD_RESULT eRes = FMOD_System_CreateSound(m_pSystem, szFullPath, FMOD_DEFAULT, 0, &pSound);
+			if (eRes == FMOD_OK)
+			{
+				int iLength = (int)strlen(szFilename) + 1;
+
+				TCHAR* pSoundKey = new TCHAR[iLength];
+				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
+				MultiByteToWideChar(CP_ACP, 0, szFilename, iLength, pSoundKey, iLength);
+
+				m_mapSound.emplace(pSoundKey, pSound);
+			}
+			iResult = _tfindnext64(handle, &fd);
+		}
+		FMOD_System_Update(m_pSystem);
+
+		_findclose(handle);
+	}
+
+
 }

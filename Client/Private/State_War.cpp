@@ -16,6 +16,10 @@
 #include "ParticleSystem\ParticleSystem_Manager.h"
 #include "MeshEffect_Manager.h"
 
+_bool g_bCommonSoundOnce;
+_bool g_bCommonSoundOnce1;
+_bool g_bCommonSoundOnce2;
+
 // 
 // Global War State Machine in War.cpp
 // 
@@ -352,6 +356,14 @@ void CState_War_Run::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
 
+	m_fSoundTimeAcc += fTimeDelta;
+	if (m_fSoundTimeAcc > 0.5f)
+	{
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"char_war_foot_01.ogg", SoundManager::WAR_STEP, 0.2f);
+		m_fSoundTimeAcc = 0.f;
+	}
+
 	// [Event] H (말타기)	
 	// [State]  -> CState_War_Horse_Mount_Running 
 	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
@@ -412,6 +424,8 @@ void CState_War_Run::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
 	static_cast<CWar*>(pOwner)->Set_Speed(WAR_SPEED);
+
+	m_fSoundTimeAcc = 0.f;
 }
 
 void CState_War_Run::Free()
@@ -532,6 +546,9 @@ void CState_War_Idle_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// Loop 애니메이션
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Idle_Combat");
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_general_movement_leather_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Idle_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -738,11 +755,20 @@ void CState_War_Run_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Run_F_Combat");
+
 }
 
 void CState_War_Run_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	m_fSoundTimeAcc += fTimeDelta;
+	if (m_fSoundTimeAcc > 0.5f)
+	{
+		// 사운드
+		SoundManager::Get_Instance()->ForcePlay(L"char_war_foot_01.ogg", SoundManager::WAR_STEP, 0.2f);
+		m_fSoundTimeAcc = 0.f;
+	}
 
 	// [Event] H (말타기)	
 	// [State]  -> CState_War_Horse_Mount_Running 
@@ -803,6 +829,8 @@ void CState_War_Run_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Run_Combat::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+
+	m_fSoundTimeAcc = 0.f;
 }
 
 void CState_War_Run_Combat::Free()
@@ -841,6 +869,9 @@ void CState_War_Atk_Light_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_1_03.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Light_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -940,6 +971,9 @@ void CState_War_Atk_Light_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_2_03.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Light_02::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1031,6 +1065,9 @@ void CState_War_Atk_Light_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_4_a_03.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Light_03::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1124,6 +1161,8 @@ void CState_War_Atk_Light_04::Enter(CGameObject* pOwner, _float fTimeDelta)
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
 
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_3_02.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1136,6 +1175,13 @@ void CState_War_Atk_Light_04::Execute(CGameObject* pOwner, _float fTimeDelta)
 	{
 		// 검 불꽃 파티클을 생성하자
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4");
+
+		// 사운드
+		if (g_bCommonSoundOnce == false)
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"char_war_flipsaw_land.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
+			g_bCommonSoundOnce = true;
+		}
 	}
 
 
@@ -1192,6 +1238,9 @@ void CState_War_Atk_Light_04::Exit(CGameObject* pOwner, _float fTimeDelta)
 
 	// 검트레일 Off
 	g_pWar->m_bTrailOn = false;
+
+	// 공통 글로벌 변수 원복
+	g_bCommonSoundOnce = false;
 }
 
 void CState_War_Atk_Light_04::Free()
@@ -1226,7 +1275,7 @@ void CState_War_Atk_Heavy_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bTrailOn = true;
 
 	// 사운드
-	SoundManager::Get_Instance()->ForcePlay(L"char_chaos_attack_2_03.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_heavy_1.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1356,6 +1405,9 @@ void CState_War_Atk_Heavy_02::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_heavy_1b.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1368,6 +1420,13 @@ void CState_War_Atk_Heavy_02::Execute(CGameObject* pOwner, _float fTimeDelta)
 	{
 		// 검 불꽃 파티클을 생성하자
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4");
+
+		// 사운드
+		if (g_bCommonSoundOnce == false)
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"char_war_flipsaw_land.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
+			g_bCommonSoundOnce = true;
+		}
 	}
 
 	// 공격후 몇초간 바로 움직이게 하지말자
@@ -1424,6 +1483,9 @@ void CState_War_Atk_Heavy_02::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = false;
 	// 검트레일 Off
 	g_pWar->m_bTrailOn = false;
+
+	// 공통 글로벌 변수 원복
+	g_bCommonSoundOnce = false;
 }
 
 void CState_War_Atk_Heavy_02::Free()
@@ -1456,6 +1518,9 @@ void CState_War_Atk_Heavy_03::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_attack_heavy_3.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1468,6 +1533,13 @@ void CState_War_Atk_Heavy_03::Execute(CGameObject* pOwner, _float fTimeDelta)
 	{
 		// 검 불꽃 파티클을 생성하자
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand"); 
+
+		// 사운드
+		if (g_bCommonSoundOnce == false)
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"char_war_flipsaw_land.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
+			g_bCommonSoundOnce = true;
+		}
 	}
 
 	// 공격후 몇초간 바로 움직이게 하지말자
@@ -1522,6 +1594,9 @@ void CState_War_Atk_Heavy_03::Exit(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = false;
 	// 검트레일 Off
 	g_pWar->m_bTrailOn = false;
+
+	// 공통 글로벌 변수 원복
+	g_bCommonSoundOnce = false;
 }
 
 void CState_War_Atk_Heavy_03::Free()
@@ -1549,6 +1624,9 @@ void CState_War_Jump::Enter(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Jump();
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_jump_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Jump::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1708,6 +1786,9 @@ void CState_War_Jump_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	// Not Loop
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Jump_Land", false);
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_jump_ledge_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Jump_Land::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -1870,6 +1951,9 @@ void CState_War_Jump_Combat::Enter(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Jump();
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_jump_01.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 }
 
 void CState_War_Jump_Combat::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2142,6 +2226,8 @@ void CState_War_Jump_Double::Enter(CGameObject* pOwner, _float fTimeDelta)
 	static_cast<CWar*>(pOwner)->Set_Jump();
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_jumpdouble_01.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
 }
 
 void CState_War_Jump_Double::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2249,6 +2335,9 @@ void CState_War_Atk_Air_Light_03_NoImpulse::Enter(CGameObject* pOwner, _float fT
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_air_attack_3.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Air_Light_03_NoImpulse::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2318,6 +2407,7 @@ void CState_War_Atk_Air_Light_03_Fall::Enter(CGameObject* pOwner, _float fTimeDe
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
 }
 
 void CState_War_Atk_Air_Light_03_Fall::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2375,6 +2465,10 @@ void CState_War_Atk_Air_Land::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_flipsaw_land.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
+
 	
 }
 
@@ -2449,6 +2543,9 @@ void CState_War_Wrath_BladeGeyser::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 	// 검사하는 뼈를 바꿔야한다. 
 	g_pWar->m_iBoneChannelIdx = 10;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_wrath_bladegeyser.ogg", SoundManager::WAR_BLADEGEYSER, WAR_ATK_VOLUME);
 }
 
 void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2466,6 +2563,14 @@ void CState_War_Wrath_BladeGeyser::Execute(CGameObject* pOwner, _float fTimeDelt
 			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_AirLand"); 
 			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4"); 
 			CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_LightAtk4"); 
+
+			// 사운드 
+			if (g_bCommonSoundOnce == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_war_land_explode.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
+				g_bCommonSoundOnce = true;
+			}
+
 			m_bCreate = true;
 		}
 	}
@@ -2490,6 +2595,8 @@ void CState_War_Wrath_BladeGeyser::Exit(CGameObject* pOwner, _float fTimeDelta)
 	m_bCreate = false;
 
 	g_pWar->m_iBoneChannelIdx = 0;
+
+	g_bCommonSoundOnce = false;
 }
 
 void CState_War_Wrath_BladeGeyser::Free()
@@ -2680,6 +2787,9 @@ void CState_War_Atk_Flamebrand_Start::Enter(CGameObject* pOwner, _float fTimeDel
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_flamebrand_start_01.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Flamebrand_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2735,6 +2845,9 @@ void CState_War_Atk_Flamebrand::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_flamebrand_level1_loop.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Flamebrand::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2794,6 +2907,9 @@ void CState_War_Atk_Flamebrand_End::Enter(CGameObject* pOwner, _float fTimeDelta
 	g_pWar->Set_Collider_Attribute(COL_WAR_WEAPON, false);
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_flamebrand_end_level1.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Flamebrand_End::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -2858,6 +2974,9 @@ void CState_War_DashTo_F::Enter(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
 		m_bParticleOn = true;
 	}
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_war_dash_1_01.ogg", SoundManager::WAR_DASH, WAR_ATK_VOLUME);
 }
 
 void CState_War_DashTo_F::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3276,6 +3395,9 @@ void CState_War_Horse_Mount_Standing::Enter(CGameObject* pOwner, _float fTimeDel
 
 		// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_spawn_1.ogg", SoundManager::RUIN, WAR_ATK_VOLUME);
 }
 
 void CState_War_Horse_Mount_Standing::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3329,6 +3451,9 @@ void CState_War_Horse_Mount_Running::Enter(CGameObject* pOwner, _float fTimeDelt
 
 	// 슈퍼아머
 	g_pWar->m_bSuperArmor = true;
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_spawn_1.ogg", SoundManager::RUIN, WAR_ATK_VOLUME);
 }
 
 void CState_War_Horse_Mount_Running::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3375,6 +3500,9 @@ void CState_War_Horse_Dismount::Enter(CGameObject* pOwner, _float fTimeDelta)
 
 		// 슈퍼아머
 	g_pWar->m_bSuperArmor = false;
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_despawn_1.ogg", SoundManager::RUIN, WAR_ATK_VOLUME);
 
 }
 
@@ -3483,11 +3611,63 @@ void CState_War_Horse_Gallop::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Gallop");// Loop
 	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Gallop");// Loop
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_saddle_01.ogg", SoundManager::RUIN, WAR_ATK_VOLUME);
 }
 
 void CState_War_Horse_Gallop::Execute(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Execute(pOwner, fTimeDelta);
+
+	// 말발굽 소리를 내자. 0.5초마다
+	if (soundAccwStart == false)
+	{
+		fTimeSoundAllAcc += fTimeDelta;
+		if (fTimeSoundAllAcc > 0.38f)
+		{
+			g_bCommonSoundOnce = false;
+			g_bCommonSoundOnce1 = false;
+			g_bCommonSoundOnce2 = false;
+			soundAccwStart = true;
+			fTimeSoundAllAcc = 0.f;
+		}
+	}
+	else
+	{
+		fTimeSoundGallop += fTimeDelta;
+		if (fTimeSoundGallop <= 0.1f)
+		{
+			// 사운드 
+			if (g_bCommonSoundOnce == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_ruin_foot_base_01.ogg", SoundManager::RUIN_STEP1, 0.3f);
+				g_bCommonSoundOnce = true;
+			}
+		}
+		else if (0.1f < fTimeSoundGallop && fTimeSoundGallop < 0.2f)
+		{
+			// 사운드 
+			if (g_bCommonSoundOnce1 == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_ruin_foot_base_02.ogg", SoundManager::RUIN_STEP2, WAR_ATK_VOLUME);
+				g_bCommonSoundOnce1 = true;
+			}
+		}
+		else if (0.2f < fTimeSoundGallop && fTimeSoundGallop < 0.3f)
+		{
+			// 사운드 
+			if (g_bCommonSoundOnce2 == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_ruin_foot_base_03.ogg", SoundManager::RUIN_STEP3, WAR_ATK_VOLUME);
+				soundAccwStart = false;
+				fTimeSoundGallop = 0.f;
+				g_bCommonSoundOnce2 = true;
+			}
+		}
+	}
+	
+
 	// [Event] H 버튼	
 	// [State]  -> CState_War_Horse_Dismount
 	if (CInput_Device::GetInstance()->Key_Down(DIK_H))
@@ -3524,6 +3704,14 @@ void CState_War_Horse_Gallop::Execute(CGameObject* pOwner, _float fTimeDelta)
 void CState_War_Horse_Gallop::Exit(CGameObject* pOwner, _float fTimeDelta)
 {
 	CState::Exit();
+	fTimeSoundAllAcc = 0.f;
+	fTimeSoundGallop = 0.f;
+	soundAccwStart = false;
+
+	g_bCommonSoundOnce = false;
+	g_bCommonSoundOnce1 = false;
+	g_bCommonSoundOnce2 = false;
+
 }
 
 void CState_War_Horse_Gallop::Free()
@@ -3554,6 +3742,11 @@ void CState_War_Horse_Gallop_Fast_Start::Enter(CGameObject* pOwner, _float fTime
 	// 먼지 파티클 On
 	g_bParticleOn = true;
 	g_pWar->m_pParticle[g_pWar->m_iParticleIdx]->Toggle_Enable();
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_fast_fire.ogg", SoundManager::RUIN, WAR_ATK_VOLUME);
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_vo_snort_low_01.ogg", SoundManager::WAR_BLADEGEYSER, WAR_ATK_VOLUME);
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_saddle_01.ogg", SoundManager::WAR_FLAME, WAR_ATK_VOLUME);
 }
 
 void CState_War_Horse_Gallop_Fast_Start::Execute(CGameObject* pOwner, _float fTimeDelta)
@@ -3603,6 +3796,53 @@ void CState_War_Horse_Gallop_Fast::Execute(CGameObject* pOwner, _float fTimeDelt
 	CState::Execute(pOwner, fTimeDelta);
 
 
+	// 말발굽 소리를 내자. 0.5초마다
+	if (soundAccwStart == false)
+	{
+		fTimeSoundAllAcc += fTimeDelta;
+		if (fTimeSoundAllAcc > 0.36f)
+		{
+			g_bCommonSoundOnce = false;
+			g_bCommonSoundOnce1 = false;
+			g_bCommonSoundOnce2 = false;
+			soundAccwStart = true;
+			fTimeSoundAllAcc = 0.f;
+		}
+	}
+	else
+	{
+		fTimeSoundGallop += fTimeDelta;
+		if (fTimeSoundGallop <= 0.1f)
+		{
+			// 사운드 
+			if (g_bCommonSoundOnce == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_ruin_foot_base_01.ogg", SoundManager::RUIN_STEP1, WAR_ATK_VOLUME);
+				g_bCommonSoundOnce = true;
+			}
+		}
+		else if (0.1f < fTimeSoundGallop && fTimeSoundGallop < 0.2f)
+		{
+			// 사운드 
+			if (g_bCommonSoundOnce1 == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_ruin_foot_base_02.ogg", SoundManager::RUIN_STEP2, WAR_ATK_VOLUME);
+				g_bCommonSoundOnce1 = true;
+			}
+		}
+		else if (0.2f < fTimeSoundGallop && fTimeSoundGallop < 0.3f)
+		{
+			// 사운드 
+			if (g_bCommonSoundOnce2 == false)
+			{
+				SoundManager::Get_Instance()->ForcePlay(L"char_ruin_foot_base_03.ogg", SoundManager::RUIN_STEP3, WAR_ATK_VOLUME);
+				soundAccwStart = false;
+				fTimeSoundGallop = 0.f;
+				g_bCommonSoundOnce2 = true;
+			}
+		}
+	}
+
 	// [Event] LSHIFT 뗀경우	
 	// [State]  -> CState_War_Horse_Gallop
 	if (CInput_Device::GetInstance()->Key_Pressing(DIK_LSHIFT) == false)
@@ -3640,6 +3880,10 @@ void CState_War_Horse_Gallop_Fast::Exit(CGameObject* pOwner, _float fTimeDelta)
 		g_pWar->m_iParticleIdx = (g_pWar->m_iParticleIdx + 1) % 4;
 		g_bParticleOn = false;
 	}
+
+	fTimeSoundAllAcc = 0.f;
+	fTimeSoundGallop = 0.f;
+	soundAccwStart = false;
 }
 
 void CState_War_Horse_Gallop_Fast::Free()
@@ -3662,6 +3906,9 @@ void CState_War_Horse_Stop::Enter(CGameObject* pOwner, _float fTimeDelta)
 	CState::Enter();
 	g_pWar_Model_Context->SetUp_Animation("War_Mesh.ao|War_Horse_Stop", false);
 	g_pWar_Model_Ruin_Context->SetUp_Animation("War_Ruin_Mesh.ao|War_Horse_Stop", false);
+
+	// 사운드 
+	SoundManager::Get_Instance()->ForcePlay(L"char_ruin_stop_voice_01.ogg", SoundManager::RUIN, WAR_ATK_VOLUME);
 }
 
 void CState_War_Horse_Stop::Execute(CGameObject* pOwner, _float fTimeDelta)
