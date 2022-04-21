@@ -69,7 +69,7 @@ public:
 
 	_float m_fRadius = 13.1f; // 타겟간의 거리 
 	_float m_fRadian = XMConvertToRadians(250.f); // +x가 0도임. 반시계방향
-	_float m_fHeight = 13.f;
+	_float m_fHeight = 11.f;
 	_float m_fPositionRatio = 0.03f;
 	_float m_fLookAtRatio = 0.05f;
 

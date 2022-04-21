@@ -489,7 +489,7 @@ bool MonsterSpanwer9(_float fTimeDelta)
 }
 
 
-// ------------------------------
+// ------------------------------ 5½Ã°£ + 1
 
 
 CLevel_GamePlay::CLevel_GamePlay(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
