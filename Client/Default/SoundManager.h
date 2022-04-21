@@ -24,7 +24,7 @@ public:
 		}
 	}
 public:
-	enum CHANNELID { BGM, AMBIENT, WAR, MAXCHANNEL };
+	enum CHANNELID { BGM, AMBIENT, WAR, WAR_ATK, MAXCHANNEL };
 private:
 	SoundManager();
 	~SoundManager();
@@ -36,10 +36,10 @@ public:
 public:
 	void PlaySound(TCHAR* pSoundKey, CHANNELID eID, float fVolume = 1.f);
 	void PlayBGM(TCHAR* pSoundKey);
-	void PlayAMBIENT(TCHAR* pSoundKey);
+	void PlayAMBIENT(TCHAR* pSoundKey, float fVolume = 1.f);
 
 	void ForcePlayBGM(TCHAR* pSoundKey);
-	void ForcePlayAMBIENT(TCHAR* pSoundKey);
+	void ForcePlayAMBIENT(TCHAR* pSoundKey, float fVolume = 1.f);
 
 	void ForcePlay(TCHAR* pSoundKey, CHANNELID eID, float v = 1.f);
 

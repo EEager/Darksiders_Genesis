@@ -30,7 +30,7 @@ _int CLevel_Logo::Tick(_float fTimeDelta)
 	if (CInput_Device::GetInstance()->Key_Down(DIK_M))
 	{
 		// »ç¿îµå
-		SoundManager::Get_Instance()->ForcePlay(L"char_chaos_attack_2_03.ogg", SoundManager::WAR, 0.35f);
+		SoundManager::Get_Instance()->ForcePlay(L"char_chaos_attack_2_03.ogg", SoundManager::WAR, WAR_ATK_VOLUME);
 	}
 #endif
 

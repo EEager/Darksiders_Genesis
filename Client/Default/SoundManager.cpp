@@ -53,12 +53,12 @@ void SoundManager::PlaySound(TCHAR * pSoundKey, CHANNELID eID, float fVolume)
 		return;
 
 	FMOD_BOOL bPlay = FALSE;
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 	if (FMOD_Channel_IsPlaying(m_pChannelArr[eID], &bPlay))
 	{
 		FMOD_System_PlaySound(m_pSystem, iter->second, nullptr,FALSE, &m_pChannelArr[eID]);
 	}
 
-	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 	FMOD_System_Update(m_pSystem);
 }
 
@@ -79,7 +79,7 @@ void SoundManager::PlayBGM(TCHAR * pSoundKey)
 	FMOD_System_Update(m_pSystem);
 }
 
-void SoundManager::PlayAMBIENT(TCHAR* pSoundKey)
+void SoundManager::PlayAMBIENT(TCHAR* pSoundKey,float fVolume)
 {
 	map<TCHAR*, FMOD_SOUND*>::iterator iter;
 
@@ -91,7 +91,8 @@ void SoundManager::PlayAMBIENT(TCHAR* pSoundKey)
 	if (iter == m_mapSound.end())
 		return;
 
-	FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[BGM]);
+	FMOD_Channel_SetVolume(m_pChannelArr[AMBIENT], fVolume);
+	FMOD_System_PlaySound(m_pSystem, iter->second, nullptr, FALSE, &m_pChannelArr[AMBIENT]);
 	FMOD_Channel_SetMode(m_pChannelArr[AMBIENT], FMOD_LOOP_NORMAL);
 	FMOD_System_Update(m_pSystem);
 }
@@ -102,17 +103,18 @@ void SoundManager::ForcePlayBGM(TCHAR* pSoundKey)
 	PlayBGM(pSoundKey);
 }
 
-void SoundManager::ForcePlayAMBIENT(TCHAR* pSoundKey)
+// 앰비언튼은 사운드 조절하도록 하자
+void SoundManager::ForcePlayAMBIENT(TCHAR* pSoundKey, float fVolume)
 {
 	FMOD_Channel_Stop(m_pChannelArr[AMBIENT]);
-	PlayAMBIENT(pSoundKey);
+	PlayAMBIENT(pSoundKey, fVolume);
 }
 
 
-void SoundManager::ForcePlay(TCHAR * pSoundKey, CHANNELID eID, float volume)
+void SoundManager::ForcePlay(TCHAR * pSoundKey, CHANNELID eID, float fVolume)
 {
 	FMOD_Channel_Stop(m_pChannelArr[eID]);
-	PlaySound(pSoundKey, eID, volume);
+	PlaySound(pSoundKey, eID, fVolume);
 }
 
 void SoundManager::StopSound(CHANNELID eID)

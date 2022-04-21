@@ -1224,6 +1224,9 @@ void CState_War_Atk_Heavy_01::Enter(CGameObject* pOwner, _float fTimeDelta)
 	g_pWar->m_bSuperArmor = true;
 	// 검트레일 On
 	g_pWar->m_bTrailOn = true;
+
+	// 사운드
+	SoundManager::Get_Instance()->ForcePlay(L"char_chaos_attack_2_03.ogg", SoundManager::WAR_ATK, WAR_ATK_VOLUME);
 }
 
 void CState_War_Atk_Heavy_01::Execute(CGameObject* pOwner, _float fTimeDelta)

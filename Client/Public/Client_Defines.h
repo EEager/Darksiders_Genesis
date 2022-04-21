@@ -62,3 +62,6 @@ static const unsigned int		g_iWinCY = 900;
 #define ENVIROMENT_OFFSET_X 20
 #define ENVIROMENT_OFFSET_Z 400
 
+
+// »ç¿îµå 
+#define WAR_ATK_VOLUME 0.35f
