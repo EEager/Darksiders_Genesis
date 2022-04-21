@@ -425,7 +425,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _tchar* pLayerTag)
 	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_RectEffect"))))
 		return E_FAIL;
 
-
 	// PointEffect
 	//if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, pLayerTag, TEXT("Prototype_GameObject_PointEffect"))))
 	//	return E_FAIL;
@@ -461,15 +460,15 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster()
 {
 	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
 
-	/* For.Prototype_GameObject_Legion*/
-	for (int i = 0; i < 2; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"))))
-			return E_FAIL;
+	///* For.Prototype_GameObject_Legion*/
+	//for (int i = 0; i < 2; i++)
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"))))
+	//		return E_FAIL;
 
-	/* For.Prototype_GameObject_Goblin_Armor*/
-	for (int i = 0; i < 4; i++)
-		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"))))
-			return E_FAIL;
+	///* For.Prototype_GameObject_Goblin_Armor*/
+	//for (int i = 0; i < 4; i++)
+	//	if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"))))
+	//		return E_FAIL;
 
 	/* For.Prototype_GameObject_FallenDog*/
 	//for (int i = 0; i < 2; i++)
@@ -963,18 +962,84 @@ bool OnEvent5(_float fTimeDelta)
 
 // ---------------------------------------------------
 // 순서대로 Spawn을 하자
+// 처음 외나무 다리 전. 파티클도 보여줄겸 성도 보여줄겸 1마리씩 생성하자.
+bool monsterSpanwed1;
 bool MonsterSpanwer1(_float fTimeDelta)
 {
+	// War가 Navi 120번을 탈 때 이벤트를 실행한다
+	if (monsterSpanwed1 == false)
+	{
+		CNavigation* pWarNavi = static_cast<CNavigation*>(g_pWar->Get_ComponentPtr(L"Com_Navi"));
+		if (pWarNavi->m_iCurrentIndex != 120)
+			return false;
+		monsterSpanwed1 = true;
+	}
+
+	CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+	/* For.Prototype_GameObject_Legion*/
+	for (int i = 0; i < 2; i++)
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Legion", TEXT("Prototype_GameObject_Legion"))))
+			assert(0);
+
+	/* For.Prototype_GameObject_Goblin_Armor*/
+	for (int i = 0; i < 4; i++)
+		if (FAILED(pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_Goblin", TEXT("Prototype_GameObject_Goblin_Armor"))))
+			assert(0);
+	RELEASE_INSTANCE(CGameInstance);
+
 	return true;
 }
 
+// --------------------
+// 외나무 다리. 휘린드로 조지다가. 
 bool MonsterSpanwer2(_float fTimeDelta)
 {
 	return true;
 }
 
+// ----------------------
+// 외나무 다리 중간. 1번 스킬을 사용한다 여기서.
 bool MonsterSpanwer3(_float fTimeDelta)
 {
 	return true;
 }
+
+// ----------------------
+// 이벤트 1끝나고 첫 바리스타 내려가는 계단에서 생성하자. 
+bool MonsterSpanwer4(_float fTimeDelta)
+{
+	return true;
+}
+
+
+// ----------------------
+// 높은곳에서 한번 또 싸워줘야지 
+bool MonsterSpanwer5(_float fTimeDelta)
+{
+	return true;
+}
+
+// ----------------------
+// 두번째 바리스타 지키는 몹들도 있어야할거 아니야? ㅋ
+bool MonsterSpanwer6(_float fTimeDelta)
+{
+	return true;
+}
+
+
+// ----------------------
+// 세번째 바리스타를 지키는 몹들도 있어야할거 아니야? ㅋ
+bool MonsterSpanwer7(_float fTimeDelta)
+{
+	return true;
+}
+
+
+// -------------------------
+// 성에 입성해서 첫번째 기둥 지나기전에도 한바탕 해야지
+bool MonsterSpanwer8(_float fTimeDelta)
+{
+	return true;
+}
+
 

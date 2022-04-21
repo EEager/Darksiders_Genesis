@@ -246,7 +246,7 @@ void CMonster::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTimeDe
 		pDst->Get_ColliderTag() == COL_WAR_WEAPON)
 	{
 		// 피격 당했다. 
-		// 피 파티클을 생성하자.
+		// 피 파티클을 생성하자. 
 		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
 
 		m_bHitted = true;

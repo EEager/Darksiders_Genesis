@@ -7,6 +7,8 @@
 #include "imgui_Manager.h"
 #endif
 
+#include "ParticleSystem\ParticleSystem_Manager.h"
+
 CFallenDog::CFallenDog(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	: CMonster(pDevice, pDeviceContext)
 {
@@ -131,6 +133,8 @@ void CFallenDog::OnCollision_Enter(CCollider* pSrc, CCollider* pDst, float fTime
 		// 피격 당했다. 
 		m_bHitted = true;
 		m_fHitPower = .8f;
+		CParticleSystem_Manager::GetInstance()->Add_Particle_To_Layer(L"Particle_Blood");
+
 
 		if (m_bStiffnessRecovery == false) // 회복상태에서는 감소하지말자.
 			m_fStiffness -= 2.5f;

@@ -30,7 +30,7 @@ HRESULT CMeshEffect_ChaosEater::NativeConstruct_Prototype()
 HRESULT CMeshEffect_ChaosEater::NativeConstruct(void * pArg)
 {
 	// 게임 정보
-	m_tGameInfo.iAtt = 15.f;
+	m_tGameInfo.iAtt = 10.f;
 
 	if (!pArg) // 무조건 이펙트를 생성할 위치 + LookAt 할 방향이다.
 		assert(0);

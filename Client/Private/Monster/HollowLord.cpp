@@ -28,7 +28,7 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	// GameInfo Init
 	m_tGameInfo.iAtt = 2;
 	m_tGameInfo.iEnergy = rand() % 10 + 10;
-	m_tGameInfo.iMaxHp = 160;
+	m_tGameInfo.iMaxHp = 140;
 	m_tGameInfo.iHp = m_tGameInfo.iMaxHp;
 	m_tGameInfo.iSoul = rand() % 10 + 10;
 

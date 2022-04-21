@@ -207,7 +207,7 @@ _int CDecal2::Tick(_float fTimeDelta)
 
 	m_TimeAcc += fTimeDelta;
 	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
-	m_fScale += fTimeDelta * 10.f;
+	m_fScale += fTimeDelta * 5.f;
 	if (m_fScale >= 4.f)
 		m_fScale = 4.f;
 	m_pTransformCom->Set_Scale(_float3(m_fScale, m_fScale, m_fScale));

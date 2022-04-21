@@ -119,7 +119,7 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		if (pInput_Device->Key_Pressing(DIK_UP))
 		{
 			m_fRadius += 4.f * CONST_TIME_DELTA_F;
-			m_fHeight = m_fRadius * 0.625f;
+			m_fHeight = m_fRadius * 0.675f;
 			if (m_fHeight >= 13.f)
 				m_fHeight = 13.f;
 		}
@@ -127,7 +127,7 @@ void CCamera_Fly::CameraFly_Key(_float fTimeDelta)
 		if (pInput_Device->Key_Pressing(DIK_DOWN))
 		{
 			m_fRadius -= 4.f * CONST_TIME_DELTA_F;
-			m_fHeight = m_fRadius * 0.625f;
+			m_fHeight = m_fRadius * 0.675f;
 			if (m_fHeight >= 13.f)
 				m_fHeight = 13.f;
 		}
