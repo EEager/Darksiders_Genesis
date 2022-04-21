@@ -378,6 +378,12 @@ void CFallenDog::UpdateState()
 		{
 			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_01.ogg", SoundManager::CHANNELID::FALLENDOG_ATK, FALLENDOG_VOLUME);
 			SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_sleeping_getup_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, FALLENDOG_VOLUME);
+
+			// BGM은 여기서바꿉니다 ^_^
+			SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+			SoundManager::Get_Instance()->StopSound(SoundManager::AMBIENT);
+			SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_combat.ogg");
+			SoundManager::Get_Instance()->ForcePlayAMBIENT(L"amb_hell_high.ogg", 0.08f);
 		}
 	}
 	// Atk State
@@ -616,6 +622,9 @@ void CFallenDog::DoState(float fTimeDelta)
 	{
 		if (m_pModelCom->Get_Animation_isFinished(m_pCurState))
 		{
+			// BGM은 여기서바꿉니다 ^_^
+			SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+			SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_ambient.ogg");
 			m_bExecutionAnimEnd = true;
 		}
 	}

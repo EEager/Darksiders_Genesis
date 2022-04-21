@@ -130,6 +130,13 @@ HRESULT CHollowLord::NativeConstruct(void* pArg)
 	m_pHpBar->m_pHollowLord = this; 
 	Safe_AddRef(m_pHpBar->m_pHollowLord); // 이건 나중에 hpBar에서 해제해주자
 
+	// BGM은 여기서 바꿉니다.
+	SoundManager::Get_Instance()->StopSound(SoundManager::BGM);
+	SoundManager::Get_Instance()->ForcePlayBGM(L"mus_level01_hollowlord.ogg");
+
+	// 처음엔 Emerge이다.
+	SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_emerge_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+
 	return S_OK;
 }
 
@@ -145,6 +152,17 @@ void Add_SlamImpact(_vector vPos)
 	// 공기팡
 	if (pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Sphere"), &vPos))
 		assert(0);
+
+	// 사운드
+	auto randSound = rand() % 4;
+	if (randSound == 0)
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_01.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
+	else if (randSound == 1)
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_02.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
+	else if (randSound == 2)
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_03.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
+	else if (randSound == 3)
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_explosion_04.ogg", SoundManager::BREAKABLE1, WAR_ATK_VOLUME);
 	RELEASE_INSTANCE(CGameInstance);
 }
 
@@ -280,12 +298,18 @@ void CHollowLord::UpdateState()
 		// 해당 상태에서 무기 콜라이더 끄자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
 		m_bSlamed_L = false;
+
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_L_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_L_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
 	}
 	else if (m_pCurState == "HollowLord.ao|HollowLord_Atk_Slam_R")
 	{
 		// 해당 상태에서 무기 콜라이더 끄자
 		Set_Collider_Attribute(COL_MONSTER_WEAPON, true);
 		m_bSlamed_R = false;
+
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_R_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+		SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_slam_R_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
 	}
 
 	// m_eNextState Enter
@@ -307,6 +331,33 @@ void CHollowLord::UpdateState()
 		isLoop = false;
 		m_bSlamed_R_First = false; 
 		m_bSlamed_L_First = false; 
+
+		// 사운드
+		if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Barrage")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_barrage_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_barrage_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
+		}
+		else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_DoubleSlam")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_doubleslam_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_doubleslam_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
+		}
+		else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Swipe_L")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_swipe_L_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_swipe_L_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
+		}
+		else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Swipe_R")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_swipe_R_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_swipe_R_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
+		}
+		else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Swipe_R")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_swipe_R_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_atk_swipe_R_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
+		}
 	}
 	else if (m_pNextState == "HollowLord.ao|HollowLord_Atk_Slam_L")
 	{
@@ -327,6 +378,17 @@ void CHollowLord::UpdateState()
 			 m_pNextState == "HollowLord.ao|HollowLord_Impact_F")
 	{
 		isLoop = false;
+
+		// 사운드
+		if (m_pNextState == "HollowLord.ao|HollowLord_Death")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_death_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+		}
+		else if (m_pNextState == "HollowLord.ao|HollowLord_Impact_F")
+		{
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_impact_01.ogg", SoundManager::HOLLOLORD, HOLLOWLORD_VOLUME);
+			SoundManager::Get_Instance()->ForcePlay(L"en_hollowlord_impact_vo_01.ogg", SoundManager::HOLLOLORD_VO, HOLLOWLORD_VOLUME);
+		}
 	}
 
 	m_pModelCom->SetUp_Animation(m_pNextState, isLoop);
@@ -386,6 +448,8 @@ void CHollowLord::DoState(float fTimeDelta)
 	{
 		if (m_bSlamed_R == false && m_pModelCom->Get_Current_KeyFrame_Index(m_pCurState) == 80)
 		{
+			// 더블슬램시 소리 웅장하게
+			SoundManager::Get_Instance()->ForcePlay(L"en_scarab_shockwave.ogg", SoundManager::HOLLOLORD_ATK, HOLLOWLORD_VOLUME);
 			Slam_R(fTimeDelta);
 			Slam_L(fTimeDelta);
 			m_bSlamed_R = true;
