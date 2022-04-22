@@ -464,7 +464,12 @@ void CFallenDog::UpdateState()
 		SoundManager::Get_Instance()->ForcePlay(L"en_fallendog_impact_heavy_vo_01.ogg", SoundManager::CHANNELID::FALLENDOG_VO, 0.6f);
 		SoundManager::Get_Instance()->ForcePlay(L"char_war_land_explode.ogg", SoundManager::CHANNELID::BREAKABLE3, FALLENDOG_VOLUME);
 
-		// 구체하나 생성해주자.
+		// 공기팡
+		CGameInstance* pGameInstance = GET_INSTANCE(CGameInstance);
+		auto tempPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+		if (pGameInstance->Add_GameObjectToLayer(LEVEL_GAMEPLAY, L"Layer_MeshEffect", TEXT("Prototype_GameObject_MeshEffect_Sphere"), &tempPos));
+			assert(0);
+		RELEASE_INSTANCE(CGameInstance);
 	}
 	else if (m_pNextState == "FallenDog_Mesh.ao|FallenDog_IA_Death_War")
 	{
