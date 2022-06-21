@@ -171,8 +171,6 @@ HRESULT CLight_Manager::Update(_float fTimeDelta)
 			XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 			// ºûÀ§Ä¡°è»ê 
-			//_float SceneRadius = 18.f;
-			//_float SceneRadius = 36.f;
 			_float SceneRadius = m_fSceneRadius;
 			XMVECTOR lightPos = -2 * SceneRadius * lightDir + targetPos;
 

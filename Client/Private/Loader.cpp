@@ -219,37 +219,37 @@ HRESULT CLoader::Add_GameObject()
 		return E_FAIL;
 
 
-	// Monsters
-	/* For.Prototype_GameObject_Legion */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Legion"),
-		CLegion::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
-	/* For.Prototype_GameObject_Goblin_Armor */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Goblin_Armor"),
-		CGoblin_Armor::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
-	/* For.Prototype_GameObject_Goblin_Spear */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Goblin_Spear"),
-		CGoblin_Spear::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
-	/* For.Prototype_GameObject_FallenDog */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FallenDog"),
-		CFallenDog::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
+	//// Monsters
+	///* For.Prototype_GameObject_Legion */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Legion"),
+	//	CLegion::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_Goblin_Armor */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Goblin_Armor"),
+	//	CGoblin_Armor::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_Goblin_Spear */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Goblin_Spear"),
+	//	CGoblin_Spear::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_FallenDog */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_FallenDog"),
+	//	CFallenDog::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
 	/* For.Prototype_GameObject_HollowLord */
 	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_HollowLord"),
 		CHollowLord::Create(m_pDevice, m_pDeviceContext))))
 		return E_FAIL;
 
-	// Map Objects
-	/* For.Prototype_GameObject_Ballista */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista"),
-		CBallista::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
-	/* For.Prototype_GameObject_Ballista_Bolt */
-	if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista_Bolt"),
-		CBallista_Bolt::Create(m_pDevice, m_pDeviceContext))))
-		return E_FAIL;
+	//// Map Objects
+	///* For.Prototype_GameObject_Ballista */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista"),
+	//	CBallista::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
+	///* For.Prototype_GameObject_Ballista_Bolt */
+	//if (FAILED(pGameInstance->Add_Prototype(TEXT("Prototype_GameObject_Ballista_Bolt"),
+	//	CBallista_Bolt::Create(m_pDevice, m_pDeviceContext))))
+	//	return E_FAIL;
 
 	// CSoulBarrier
 	/* For.Prototype_GameObject_SoulBarrier */
@@ -552,18 +552,18 @@ HRESULT CLoader::Add_Model()
 	_matrix		EnviromentPivotMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationX(XMConvertToRadians(90.f));
 
 
-#if 1 // JJLEE 잠시만 막아두자
-	/* For.Prototype_Component_Model_Enviroment1*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+#if 1 // 개인포폴은 끝났다. 이제 필요없는것들은 날려버리고, TA 관련된 기술들을 적용할 프레임 워크를 하나 만들것이다. 
+	///* For.Prototype_Component_Model_Enviroment1*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment1"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment1"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment1/", "Enviroment1.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Model_Enviroment2*/
-	wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Enviroment2*/
+	//wsprintf(m_szLoading, TEXT("Loading Component_Model_Enviroment2"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Enviroment2"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Enviroment/Enviroment2/", "Enviroment2.fbx", EnviromentPivotMatrix))))
+	//	return E_FAIL;
 
 
 
@@ -670,48 +670,48 @@ HRESULT CLoader::Add_Model()
 
 	// ▼ Monsters
 	/* For.Prototype_Component_Model_Legion*/
-	_matrix		Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/", "Legion.fbx", Legion_PivotMat))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Legion_Axe_L*/
-	Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe_L"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_L"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_L.fbx", Legion_PivotMat))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Legion_Axe_R*/
-	Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe_R"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_R"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_R.fbx", Legion_PivotMat))))
-		return E_FAIL;
+	//_matrix		Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/", "Legion.fbx", Legion_PivotMat))))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Legion_Axe_L*/
+	//Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe_L"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_L"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_L.fbx", Legion_PivotMat))))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Legion_Axe_R*/
+	//Legion_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Legion_Axe_R"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Legion_Axe_R"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Legion/Legion/Legion_Axe/", "Legion_Axe_R.fbx", Legion_PivotMat))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Model_Goblin_Armor*/
-	_matrix		Goblin_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Armor"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Armor"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Armor/", "Goblin_Armor.fbx", Goblin_PivotMat))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Goblin_Spear*/
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Spear"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Spear"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Spear/", "Goblin_Spear.fbx", Goblin_PivotMat))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Goblin_Quiver*/
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Quiver"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Quiver"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Quiver/", "Goblin_Quiver.fbx", Goblin_PivotMat))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Goblin_Armor*/
+	//_matrix		Goblin_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Armor"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Armor"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Armor/", "Goblin_Armor.fbx", Goblin_PivotMat))))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Goblin_Spear*/
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Spear"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Spear"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Spear/", "Goblin_Spear.fbx", Goblin_PivotMat))))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Goblin_Quiver*/
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Goblin_Quiver"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Goblin_Quiver"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/Goblin/Goblin_Quiver/", "Goblin_Quiver.fbx", Goblin_PivotMat))))
+	//	return E_FAIL;
 
 
-	/* For.Prototype_Component_Model_FallenDog*/
-	_matrix		FallenDog_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_FallenDog"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_FallenDog"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/FallenDog/", "FallenDog.fbx", FallenDog_PivotMat))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_FallenDog*/
+	//_matrix		FallenDog_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_FallenDog"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_FallenDog"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Characters/Creatures/FallenDog/", "FallenDog.fbx", FallenDog_PivotMat))))
+	//	return E_FAIL;
 
 	// ▼ Boss
 	/* For.Prototype_Component_Model_HollowLord*/
@@ -722,24 +722,24 @@ HRESULT CLoader::Add_Model()
 		return E_FAIL;
 
 
-	// ▼ Map Objects Models
-	/* For.Prototype_Component_Model_Ballista*/
-	_matrix		Ballista_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista.fbx", Ballista_PivotMat))))
-		return E_FAIL;
-	/* For.Prototype_Component_Model_Ballista_Destroyed*/
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista_Destroyed"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Destroyed"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista_Destroyed.fbx", Ballista_PivotMat))))
-		return E_FAIL;
+	//// ▼ Map Objects Models
+	///* For.Prototype_Component_Model_Ballista*/
+	//_matrix		Ballista_PivotMat = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista.fbx", Ballista_PivotMat))))
+	//	return E_FAIL;
+	///* For.Prototype_Component_Model_Ballista_Destroyed*/
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista_Destroyed"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Destroyed"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_ANIM, TEXT("../Bin/ShaderFiles/Shader_AnimMesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/", "Ballista_Destroyed.fbx", Ballista_PivotMat))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Model_Ballista_Bolt*/
-	wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista_Bolt"));
-	if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Bolt"),
-		CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/Ballista_Bolt/", "Ballista_Bolt.fbx", Ballista_PivotMat))))
-		return E_FAIL;
+	///* For.Prototype_Component_Model_Ballista_Bolt*/
+	//wsprintf(m_szLoading, TEXT("Loading Prototype_Component_Model_Ballista_Bolt"));
+	//if (FAILED(pGameInstance->Add_Prototype(LEVEL_GAMEPLAY, TEXT("Prototype_Component_Model_Ballista_Bolt"),
+	//	CModel::Create(m_pDevice, m_pDeviceContext, CModel::TYPE_NONANIM, TEXT("../Bin/ShaderFiles/Shader_Mesh_Normal.hlsl"), "../Bin/Resources/Meshes/Objects/Ballista/Ballista_Bolt/", "Ballista_Bolt.fbx", Ballista_PivotMat))))
+	//	return E_FAIL;
 
 	// SoulBarrier
 	/* For.Prototype_Component_Model_SoulBarrier */
